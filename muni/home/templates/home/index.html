@@ -10,9 +10,14 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
         }
+
+        /* Navbar */
         .navbar {
             background-color: #004080; /* Azul municipal */
+            padding: 1rem 0;
         }
         .navbar-brand, .nav-link {
             color: #fff !important;
@@ -20,27 +25,60 @@
         .navbar-brand img {
             height: 40px; /* Tamaño del logo */
         }
+        .navbar-nav .nav-link {
+            position: relative;
+            margin: 0 10px;
+            padding: 5px 0;
+        }
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 0;
+            height: 2px;
+            background-color: #fff; /* Línea blanca */
+            transition: width 0.3s ease;
+        }
+        .navbar-nav .nav-link:hover::after {
+            width: 100%; /* Línea se expande al hacer hover */
+        }
+
+        /* Hero Section */
         .hero-section {
             background: url('https://via.placeholder.com/1500x500') no-repeat center center/cover;
             color: #fff;
-            padding: 100px 0;
+            padding: 150px 0;
             text-align: center;
         }
         .hero-section h1 {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: bold;
+            margin-bottom: 20px;
         }
         .hero-section p {
             font-size: 1.5rem;
+            margin-bottom: 30px;
         }
-        .footer {
-            background-color: #004080;
-            color: #fff;
-            padding: 20px 0;
-            text-align: center;
+        .hero-section .btn {
+            font-size: 1.2rem;
+            padding: 10px 30px;
         }
 
-        /* Estilos personalizados para los botones */
+        /* Contenido Principal */
+        .container.my-5 {
+            padding: 50px 0;
+        }
+        .container.my-5 h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #004080; /* Azul municipal */
+        }
+        .container.my-5 p {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
         .btn-custom {
             background-color: #004080; /* Azul municipal */
             color: #fff;
@@ -51,6 +89,17 @@
             background-color: #fff; /* Fondo blanco al hacer hover */
             color: #004080; /* Texto azul al hacer hover */
             border: 2px solid #004080;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #004080;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        .footer p {
+            margin: 0;
         }
     </style>
 </head>
