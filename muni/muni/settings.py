@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'servicios',
     'tramites',
     'transparencia',
-
+    'informacion_municipal'
 ]
 
 MIDDLEWARE = [
