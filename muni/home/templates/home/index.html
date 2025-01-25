@@ -12,219 +12,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- Estilos personalizados -->
-    <style>
-        :root {
-            --color-primario: #4E1525;
-            --color-secundario: #6A1F36;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            color: #444;
-        }
-
-        /* Navbar mejorado */
-        .navbar {
-            background-color: var(--color-primario);
-            padding: 1rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .navbar-brand {
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        .navbar-brand img {
-            height: 45px;
-            margin-right: 10px;
-        }
-
-        .nav-link {
-            position: relative;
-            margin: 0 15px;
-            padding: 5px 0!important;
-            transition: all 0.3s ease;
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 0;
-            background-color: #fff;
-            transition: width 0.3s ease;
-        }
-
-        .nav-link:hover::after {
-            width: 100%;
-        }
-
-        /* Hero Section mejorado */
-        .hero-section {
-            background: linear-gradient(rgba(78,21,37,0.8), rgba(78,21,37,0.8)), 
-                        url('https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            padding: 120px 0;
-            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
-            margin-bottom: 80px;
-        }
-
-        .hero-section h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .hero-section p {
-            font-size: 1.4rem;
-            margin-bottom: 2rem;
-        }
-
-        .btn-hero {
-            background-color: white;
-            color: var(--color-primario);
-            padding: 15px 40px;
-            border-radius: 30px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border: 2px solid white;
-        }
-
-        .btn-hero:hover {
-            background-color: transparent;
-            color: white;
-        }
-
-        /* Tarjetas elegantes */
-        .card-elegante {
-            border: none;
-            border-radius: 15px;
-            transition: all 0.3s ease;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            background: #ffffff;
-        }
-
-        .card-elegante:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-        }
-
-        .card-icon {
-            font-size: 2.5rem;
-            color: var(--color-primario);
-            margin: 20px 0;
-        }
-
-        .card-title {
-            color: var(--color-primario);
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-
-        .card-text {
-            color: #666;
-            line-height: 1.6;
-            min-height: 80px;
-        }
-
-        .btn-card {
-            background-color: var(--color-primario);
-            color: white;
-            border-radius: 25px;
-            padding: 10px 30px;
-            border: 2px solid var(--color-primario);
-            transition: all 0.3s ease;
-        }
-
-        .btn-card:hover {
-            background-color: white;
-            color: var(--color-primario);
-        }
-
-        /* Footer mejorado */
-        .footer {
-            background-color: var(--color-primario);
-            color: white;
-            padding: 50px 0 20px;
-            margin-top: 100px;
-        }
-
-        .footer h5 {
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        .footer-links a {
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            display: block;
-            margin-bottom: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .footer-links a:hover {
-            color: white;
-            padding-left: 5px;
-        }
-
-        .social-icons a {
-            color: white;
-            font-size: 1.5rem;
-            margin-right: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .social-icons a:hover {
-            transform: translateY(-3px);
-        }
-
-        .copyright {
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 20px;
-            margin-top: 40px;
-        }
-        .navbar-transparent {
-        background-color: transparent !important;
-        transition: background-color 0.3s ease;
-        }
-
-        .navbar-transparent .nav-link,
-        .navbar-transparent .navbar-brand {
-            color: white !important; /* Texto blanco */
-            transition: color 0.3s ease;
-        }
-
-        /* Navbar sólido */
-        .navbar-dark {
-            background-color: var(--color-primario) !important;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .navbar-dark .nav-link,
-        .navbar-dark .navbar-brand {
-            color: white !important; /* Aseguramos que el texto también sea blanco en el navbar sólido */
-        }
-        .navbar-toggler {
-        border: none; /* Elimina el borde del botón */
-        background-color: transparent;
-        }
-
-        .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml;charset=UTF8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30' fill='white'%3E%3Cpath stroke='rgba(255,255,255,1)' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
-        }
-
-        .navbar-toggler:focus, .navbar-toggler:hover {
-            outline: none;
-            background-color: rgba(255, 255, 255, 0.2); /* Cambia el fondo al pasar el mouse o enfocar */
-            border-radius: 5px;
-        }
-    </style>
+     <link rel="stylesheet" href="{% static "css/stylos.css" %}">
 </head>
 <body>
 
@@ -249,6 +37,14 @@
             </div>
         </div>
     </nav>
+    <!-- Flotantes -->
+    <div class="social-icons-float">
+        <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+        <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="https://youtube.com" target="_blank"><i class="fab fa-youtube"></i></a>
+    </div>
+    
 
     <!-- Hero Section -->
     <section class="hero-section">
@@ -259,42 +55,59 @@
         </div>
     </section>
 
-    <!-- Sección de Tarjetas -->
-    <div class="container">
+    <div class="container my-section">
+        <!-- Título principal -->
+        <div class="section-header">
+            <span class="section-subtitle">NUESTROS SERVICIOS</span>
+            <h2 class="section-title">Descubre las opciones que tenemos para ti</h2>
+        </div>
+    
+        <!-- Contenedor de tarjetas -->
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="card card-elegante text-center p-4">
-                    <i class="fas fa-handshake card-icon"></i>
+                <div class="card-elegante">
+                    <div class="card-icon-container">
+                        <i class="fas fa-handshake card-icon"></i>
+                    </div>
                     <h3 class="card-title">Servicios Municipales</h3>
                     <p class="card-text">Accede a todos los servicios públicos disponibles para los ciudadanos de forma ágil y segura.</p>
-                    <a href="#" class="btn btn-card">Ver servicios</a>
+                    <a href="#" class="btn-card"><i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
-            
             <div class="col-md-4">
-                <div class="card card-elegante text-center p-4">
-                    <i class="fas fa-newspaper card-icon"></i>
+                <div class="card-elegante">
+                    <div class="card-icon-container">
+                        <i class="fas fa-newspaper card-icon"></i>
+                    </div>
                     <h3 class="card-title">Últimas Noticias</h3>
                     <p class="card-text">Mantente informado sobre las actividades y proyectos del gobierno municipal.</p>
-                    <a href="#" class="btn btn-card">Ver noticias</a>
+                    <a href="#" class="btn-card"><i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
-            
             <div class="col-md-4">
-                <div class="card card-elegante text-center p-4">
-                    <i class="fas fa-comments card-icon"></i>
+                <div class="card-elegante">
+                    <div class="card-icon-container">
+                        <i class="fas fa-comments card-icon"></i>
+                    </div>
                     <h3 class="card-title">Atención Ciudadana</h3>
                     <p class="card-text">Canales de comunicación directa para resolver tus dudas y recibir sugerencias.</p>
-                    <a href="#" class="btn btn-card">Contactar</a>
+                    <a href="#" class="btn-card"><i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </div>
     </div>
+    
+    
+
+
 
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="row g-4">
+                <div class="col-md-2 footer-logo">
+                    <img src="{% static 'logo.png' %}" alt="Imagen representativa" class="mb-4 img-fluid" style="width: 160px; height: 160px;">
+                </div>
                 <div class="col-md-4">
                     <h5>Gobierno Municipal</h5>
                     <p class="text-white-50">Comprometidos con el desarrollo sostenible y la transparencia institucional.</p>
@@ -307,7 +120,7 @@
                         <a href="#"><i class="fas fa-chevron-right me-2"></i>Convocatorias</a>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
                     <h5>Conéctate</h5>
                     <div class="social-icons">
                         <a href="#"><i class="fab fa-facebook"></i></a>
@@ -332,7 +145,7 @@
     
         function toggleNavbarClass() {
             // Ajustar clase según el scroll o el estado del menú desplegable
-            if (window.scrollY > 450 || navbarCollapse.classList.contains('show')) {
+            if (window.scrollY > 350 || navbarCollapse.classList.contains('show')) {
                 navbar.classList.remove('navbar-transparent');
                 navbar.classList.add('navbar-dark');
             } else {

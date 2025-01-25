@@ -1,0 +1,405 @@
+        :root {
+            --color-primario: #4E1525;
+            --color-secundario: #6A1F36;
+            --color-iconos: #AD9065;
+            --color-gradiente: linear-gradient(135deg, #6b001f, #d6004c);
+            /* Gradiente */
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #444;
+        }
+
+        /* Navbar mejorado */
+        .navbar {
+            background-color: var(--color-primario);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .navbar-brand img {
+            height: 45px;
+            margin-right: 10px;
+        }
+
+        .nav-link {
+            position: relative;
+            margin: 0 15px;
+            padding: 5px 0 !important;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #fff;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section mejorado */
+        .hero-section {
+            background: linear-gradient(rgba(78, 21, 37, 0.8), rgba(78, 21, 37, 0.8)),
+                url('https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 120px 0;
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+            margin-bottom: 80px;
+        }
+
+        .hero-section h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-section p {
+            font-size: 1.4rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn-hero {
+            background-color: white;
+            color: var(--color-primario);
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid white;
+        }
+
+        .btn-hero:hover {
+            background-color: transparent;
+            color: white;
+        }
+
+        /* Tarjetas elegantes */
+        .card-elegante {
+            background: white;
+            border-radius: 25px 0 25px 0;
+            /* Esquinas superior izquierda e inferior derecha redondeadas */
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: visible;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            height: 300px;
+            z-index: 1;
+        }
+
+        /* Pseudo-elemento para el efecto de gradiente desde el centro */
+        .card-elegante::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background: var(--color-gradiente);
+            z-index: -1;
+            /* Asegurar que quede detrás del contenido */
+            transition: width 0.4s ease;
+            border-radius: 25px 0 25px 0;
+            /* Asegurar que respeta las esquinas redondeadas */
+        }
+
+        .card-elegante:hover::before {
+            width: 100%;
+            /* Gradiente se expande al 100% */
+        }
+
+        /* Efecto hover para la tarjeta */
+        .card-elegante:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            color: white;
+            /* Cambiar el color del texto */
+        }
+
+        /* Icono y su contenedor */
+        .card-icon-container {
+            width: 80px;
+            height: 80px;
+            background: var(--color-gradiente);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+        }
+
+        .card-elegante:hover .card-icon-container {
+            background: white;
+            /* Fondo del contenedor del icono se vuelve blanco */
+        }
+
+        .card-icon {
+            color: white;
+            font-size: 2rem;
+            transition: all 0.4s ease;
+        }
+
+        .card-elegante:hover .card-icon {
+            color: var(--color-secundario);
+            /* Icono se vuelve del color del gradiente */
+        }
+
+        /* Título y texto */
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            transition: color 0.4s ease;
+        }
+
+        .card-text {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 20px;
+            transition: color 0.4s ease;
+        }
+
+        .card-elegante:hover .card-title,
+        .card-elegante:hover .card-text {
+            color: white;
+            /* Texto de la tarjeta se vuelve blanco */
+        }
+
+        /* Botón */
+        .btn-card {
+            width: 50px;
+            height: 50px;
+            background: var(--color-gradiente);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            bottom: -20px;
+            /* Asegura que el botón quede sobrepuesto */
+            left: 50%;
+            transform: translateX(-50%);
+            transition: all 0.4s ease;
+            border: none;
+        }
+
+        .card-elegante:hover .btn-card {
+            background: white;
+            /* Botón se vuelve blanco */
+            color: var(--color-gradiente);
+            /* Icono del botón se vuelve del gradiente */
+        }
+
+        .btn-card i {
+            font-size: 1rem;
+            transition: color 0.4s ease;
+        }
+
+        .card-elegante:hover .btn-card i {
+            color: var(--color-secundario);
+            /* Color del icono del botón */
+        }
+
+
+
+        /* Footer mejorado */
+        .footer {
+            background-color: var(--color-primario);
+            color: white;
+            padding: 50px 0 20px;
+            margin-top: 100px;
+        }
+
+        .footer h5 {
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .social-icons a {
+            color: white;
+            font-size: 1.5rem;
+            margin-right: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            margin-top: 40px;
+        }
+
+        .navbar-transparent {
+            background-color: transparent !important;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar-transparent .nav-link,
+        .navbar-transparent .navbar-brand {
+            color: white !important;
+            /* Texto blanco */
+            transition: color 0.3s ease;
+        }
+
+        /* Navbar sólido */
+        .navbar-dark {
+            background-color: var(--color-primario) !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-dark .nav-link,
+        .navbar-dark .navbar-brand {
+            color: white !important;
+            /* Aseguramos que el texto también sea blanco en el navbar sólido */
+        }
+
+        .navbar-toggler {
+            border: none;
+            /* Elimina el borde del botón */
+            background-color: transparent;
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=UTF8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30' fill='white'%3E%3Cpath stroke='rgba(255,255,255,1)' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+        }
+
+        .navbar-toggler:focus,
+        .navbar-toggler:hover {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.2);
+            /* Cambia el fondo al pasar el mouse o enfocar */
+            border-radius: 5px;
+        }
+
+        /* Redes sociales flotantes */
+        .social-icons-float {
+            position: fixed;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .social-icons-float a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background-color: var(--color-iconos);
+            color: white;
+            border-radius: 25px 0 0 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+        }
+
+        .social-icons-float a:hover {
+            background-color: var(--color-secundario);
+            transform: translateX(-5px);
+        }
+
+
+        /* --------- seccion de tarjetas home 
+        /* Estilo del título principal */
+.section-header {
+    margin-bottom: 40px;
+}
+
+.section-subtitle {
+    display: inline-block;
+    padding: 5px 15px;
+    font-size: 0.9rem;
+    color: white;
+    background: var(--color-iconos);
+    border-radius: 20px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--color-primario);
+    margin-bottom: 0;
+    line-height: 1.2;
+}
+
+/* Detalles en el contenedor */
+.my-section {
+    position: relative;
+    padding: 60px;
+    background: linear-gradient(135deg, rgba(75, 0, 30, 0.05), rgba(150, 0, 60, 0.05));
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.my-section::before {
+    content: "";
+    position: absolute;
+    top: -50px;
+    left: -50px;
+    width: 200px;
+    height: 200px;
+    background: rgba(200, 0, 70, 0.1);
+    border-radius: 50%;
+    z-index: 0;
+}
+
+.my-section::after {
+    content: "";
+    position: absolute;
+    bottom: -50px;
+    right: -50px;
+    width: 250px;
+    height: 250px;
+    background: rgba(200, 0, 70, 0.1);
+    border-radius: 50%;
+    z-index: 0;
+}
+
+.my-section .row {
+    position: relative;
+    z-index: 1;
+}
