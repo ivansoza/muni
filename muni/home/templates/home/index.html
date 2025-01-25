@@ -15,6 +15,14 @@
      <link rel="stylesheet" href="{% static "css/stylos.css" %}">
 </head>
 <body>
+   <!-- Preloader -->
+<!-- Preloader -->
+<div id="preloader">
+    <div class="preloader-content">
+        <img src="{% static 'logo.png' %}" alt="Imagen representativa" class="preloader-logo mb-4 img-fluid" style="width: 250px; height: 250px;">
+
+    </div>
+</div>
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-transparent fixed-top">
@@ -94,13 +102,143 @@
                     <a href="#" class="btn-card"><i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
+            <div class="col-md-4">
+                <div class="card-elegante">
+                    <div class="card-icon-container">
+                        <i class="fas fa-handshake card-icon"></i>
+                    </div>
+                    <h3 class="card-title">Servicios Municipales</h3>
+                    <p class="card-text">Accede a todos los servicios públicos disponibles para los ciudadanos de forma ágil y segura.</p>
+                    <a href="#" class="btn-card"><i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-elegante">
+                    <div class="card-icon-container">
+                        <i class="fas fa-newspaper card-icon"></i>
+                    </div>
+                    <h3 class="card-title">Últimas Noticias</h3>
+                    <p class="card-text">Mantente informado sobre las actividades y proyectos del gobierno municipal.</p>
+                    <a href="#" class="btn-card"><i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-elegante">
+                    <div class="card-icon-container">
+                        <i class="fas fa-comments card-icon"></i>
+                    </div>
+                    <h3 class="card-title">Atención Ciudadana</h3>
+                    <p class="card-text">Canales de comunicación directa para resolver tus dudas y recibir sugerencias.</p>
+                    <a href="#" class="btn-card"><i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="events-carousel">
+        <h2 class="carousel-title">ENTÉRATE DE LOS <span class="highlight">EVENTOS Y CONVOCATORIAS</span></h2>
+        <div class="carousel-container">
+            <button class="carousel-btn prev-btn">&lt;</button>
+            <div class="carousel-track">
+                <div class="carousel-card">
+                    <img src="https://sep.puebla.gob.mx/images/convocatorias/convocatoria-gamificathon_a_a_1.jpg" alt="Evento 1">
+                </div>
+                <div class="carousel-card">
+                    <img src="https://www.itesloscabos.edu.mx/wp-content/uploads/2023/10/mm-1583x2048.png" alt="Evento 2">
+                </div>
+                <div class="carousel-card">
+                    <img src="https://minatitlan.tecnm.mx/wp-content/uploads/2023/02/22022023_VOLEIBOL_TORNEO.png" alt="Evento 3">
+                </div>
+                <div class="carousel-card">
+                    <img src="https://peu.unam.mx/img/blog-img/poster3.jpg" alt="Evento 4">
+                </div>
+                <div class="carousel-card">
+                    <img src="https://educacion.durango.gob.mx/seed_wp/seed_archivos/Convocatorias/CONVOCATORIA%20DOCENTE%20Y%20ADMIVOS.%202023.jpeg" alt="Evento 5">
+                </div>
+                <div class="carousel-card">
+                    <img src="http://cultura.irapuato.gob.mx/wp-content/uploads/2025/01/WhatsApp-Image-2025-01-22-at-1.52.55-PM-1.jpeg" alt="Evento 6">
+                </div>
+                <div class="carousel-card">
+                    <img src="https://ucs.campeche.gob.mx/wp-content/uploads/2024/09/image-109.png" alt="Evento 7">
+                </div>
+            </div>
+            <button class="carousel-btn next-btn">&gt;</button>
         </div>
     </div>
     
     
+<div class="contact-section-full">
+    <!-- Imagen de fondo -->
+    <div class="background-image">
+        <img src="{% static 'img/presidencia.webp' %}" alt="Contacto" class="w-100 h-100">
+    </div>
 
+    <!-- Contenedor de la información -->
+    <div class="contact-info-container">
+        <h2 class="section-title2 mb-4">Contáctanos</h2>
+        <p class="section-description mb-4">Si tienes alguna consulta o necesitas ayuda, estamos aquí para ti. Puedes visitarnos en nuestras oficinas o comunicarte a través de los siguientes medios:</p>
 
+        <div class="info-item d-flex align-items-center mb-4">
+            <div class="icon-circle me-3">
+                <i class="fas fa-phone-alt"></i>
+            </div>
+            <div>
+                <h4 class="mb-1">Teléfono</h4>
+                <p>(555) 123-4567</p>
+            </div>
+        </div>
 
+        <div class="info-item d-flex align-items-center mb-4">
+            <div class="icon-circle me-3">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <div>
+                <h4 class="mb-1">Correo</h4>
+                <p>contacto@municipio.gob</p>
+            </div>
+        </div>
+
+        <div class="info-item d-flex align-items-center mb-4">
+            <div class="icon-circle me-3">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div>
+                <h4 class="mb-1">Ubicación</h4>
+                <button class="btn btn-link text-white p-0" id="open-map-modal">Ver mapa</button>
+            </div>
+        </div>
+
+        <!-- Horarios de atención -->
+        <div class="info-item d-flex align-items-center">
+            <div class="icon-circle me-3">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div>
+                <h4 class="mb-1">Horarios de Atención</h4>
+                <p>Lunes a Viernes: 8:00 AM - 4:00 PM</p>
+                <p>Sábado: 9:00 AM - 1:00 PM</p>
+                <p>Domingo: Cerrado</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+    <!-- Modal -->
+    <div class="modal" id="map-modal">
+        <div class="modal-content">
+            <button class="close-modal">&times;</button>
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.835434509438!2d-122.41941618468154!3d37.77492927975848!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80858192e2a4b97d%3A0x1045c52ec2e8f62!2sSan+Francisco%2C+CA%2C+EE.+UU.!5e0!3m2!1ses!2smx!4v1615955565655!5m2!1ses!2smx"
+                allowfullscreen=""
+                loading="lazy">
+            </iframe>
+        </div>
+    </div>
+    
+    
+    
+    
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -170,6 +308,72 @@
         // Listener para el cambio en el estado del colapso del navbar
         navbarCollapse.addEventListener('hidden.bs.collapse', toggleNavbarClass);
         navbarCollapse.addEventListener('shown.bs.collapse', toggleNavbarClass);
+        
+        document.addEventListener("DOMContentLoaded", function () {
+            const preloader = document.getElementById("preloader");
+            const preloaderContent = document.querySelector(".preloader-content");
+            const mainContent = document.getElementById("main-content");
+        
+            // Simula un tiempo de carga (2 segundos)
+            setTimeout(() => {
+                preloaderContent.classList.add("hide"); // Añade la clase para animar las mitades
+        
+                setTimeout(() => {
+                    preloader.style.display = "none"; // Oculta el preloader completamente
+                    mainContent.style.display = "block"; // Muestra el contenido principal
+                }, 600); // Tiempo para completar la animación
+            }, 1000); // Tiempo del preloader antes de la animación
+        });
+
+        const track = document.querySelector('.carousel-track');
+        const prevBtn = document.querySelector('.prev-btn');
+        const nextBtn = document.querySelector('.next-btn');
+
+        // Mover a la derecha (siguiente)
+        nextBtn.addEventListener('click', () => {
+            const firstCard = track.firstElementChild; // Selecciona la primera tarjeta
+            track.style.transition = 'transform 0.4s ease';
+            track.style.transform = `translateX(-${firstCard.getBoundingClientRect().width + 15}px)`; // Desplaza hacia la izquierda
+
+            // Después de la transición, reordena las tarjetas
+            setTimeout(() => {
+                track.style.transition = 'none';
+                track.style.transform = 'translateX(0)';
+                track.appendChild(firstCard); // Mueve la primera tarjeta al final
+            }, 400); // Tiempo de la transición (400ms)
+        });
+
+        // Mover a la izquierda (anterior)
+        prevBtn.addEventListener('click', () => {
+            const lastCard = track.lastElementChild; // Selecciona la última tarjeta
+            track.style.transition = 'none';
+            track.style.transform = `translateX(-${lastCard.getBoundingClientRect().width + 15}px)`; // Mueve la última tarjeta al frente
+            track.prepend(lastCard);
+
+            // Añade una transición para el deslizamiento hacia la derecha
+            setTimeout(() => {
+                track.style.transition = 'transform 0.4s ease';
+                track.style.transform = 'translateX(0)';
+            }, 10); // Delay mínimo para activar la transición
+        });
+        const modal = document.getElementById('map-modal');
+        const openModalBtn = document.getElementById('open-map-modal');
+        const closeModalBtn = modal.querySelector('.close-modal');
+
+        openModalBtn.addEventListener('click', () => {
+            modal.style.display = 'flex';
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
     </script>
     
 </body>

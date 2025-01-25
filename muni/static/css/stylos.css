@@ -3,6 +3,7 @@
             --color-secundario: #6A1F36;
             --color-iconos: #AD9065;
             --color-gradiente: linear-gradient(135deg, #6b001f, #d6004c);
+
             /* Gradiente */
         }
 
@@ -99,8 +100,9 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             overflow: visible;
             transition: transform 0.4s ease, box-shadow 0.4s ease;
-            height: 300px;
+            height: 210px;
             z-index: 1;
+            margin-bottom: 10px;
         }
 
         /* Pseudo-elemento para el efecto de gradiente desde el centro */
@@ -134,8 +136,8 @@
 
         /* Icono y su contenedor */
         .card-icon-container {
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
             background: var(--color-gradiente);
             border-radius: 50%;
             display: flex;
@@ -221,6 +223,7 @@
             /* Color del icono del botón */
         }
 
+        /* ---------------------------------------------------------------------------------------------------- */
 
 
         /* Footer mejorado */
@@ -339,67 +342,396 @@
             transform: translateX(-5px);
         }
 
+        /* ---------------------------------------------------------------------------------------------------- */
 
         /* --------- seccion de tarjetas home 
         /* Estilo del título principal */
-.section-header {
-    margin-bottom: 40px;
-}
+        .section-header {
+            margin-bottom: 40px;
+        }
 
-.section-subtitle {
-    display: inline-block;
-    padding: 5px 15px;
-    font-size: 0.9rem;
-    color: white;
-    background: var(--color-iconos);
-    border-radius: 20px;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-    font-weight: 500;
-}
+        .section-subtitle {
+            display: inline-block;
+            padding: 5px 15px;
+            font-size: 0.9rem;
+            color: white;
+            background: var(--color-iconos);
+            border-radius: 20px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
 
-.section-title {
-    font-size: 2rem;
-    font-weight: bold;
-    color: var(--color-primario);
-    margin-bottom: 0;
-    line-height: 1.2;
-}
+        .section-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--color-primario);
+            margin-bottom: 0;
+            line-height: 1.2;
+        }
 
-/* Detalles en el contenedor */
-.my-section {
-    position: relative;
-    padding: 60px;
-    background: linear-gradient(135deg, rgba(75, 0, 30, 0.05), rgba(150, 0, 60, 0.05));
-    border-radius: 20px;
-    overflow: hidden;
-}
+        /* Detalles en el contenedor */
+        .my-section {
+            position: relative;
+            padding: 60px;
+            background: linear-gradient(135deg, rgba(75, 0, 30, 0.05), rgba(150, 0, 60, 0.05));
+            border-radius: 20px;
+            overflow: hidden;
+        }
 
-.my-section::before {
-    content: "";
-    position: absolute;
-    top: -50px;
-    left: -50px;
-    width: 200px;
-    height: 200px;
-    background: rgba(200, 0, 70, 0.1);
-    border-radius: 50%;
-    z-index: 0;
-}
+        .my-section::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(200, 0, 70, 0.1);
+            border-radius: 50%;
+            z-index: 0;
+        }
 
-.my-section::after {
-    content: "";
-    position: absolute;
-    bottom: -50px;
-    right: -50px;
-    width: 250px;
-    height: 250px;
-    background: rgba(200, 0, 70, 0.1);
-    border-radius: 50%;
-    z-index: 0;
-}
+        .my-section::after {
+            content: "";
+            position: absolute;
+            bottom: -50px;
+            right: -50px;
+            width: 250px;
+            height: 250px;
+            background: rgba(200, 0, 70, 0.1);
+            border-radius: 50%;
+            z-index: 0;
+        }
 
-.my-section .row {
-    position: relative;
-    z-index: 1;
-}
+        .my-section .row {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Preloader */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 9999;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .preloader-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .preloader-content::before,
+        .preloader-content::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background: var(--color-gradiente);
+            z-index: 1000;
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .preloader-content::before {
+            left: 0;
+            transform: translateX(0);
+        }
+
+        .preloader-content::after {
+            right: 0;
+            transform: translateX(0);
+        }
+
+        .preloader-content.hide::before {
+            transform: translateX(-100%);
+        }
+
+        .preloader-content.hide::after {
+            transform: translateX(100%);
+        }
+
+        /* Logo */
+        .preloader-logo {
+            position: relative;
+            z-index: 1001;
+            /* Asegurar que quede sobre las mitades */
+            width: 150px;
+            /* Tamaño del logo */
+            animation: fadeInLogo 1s ease-in-out infinite alternate;
+            /* Efecto opcional */
+        }
+
+        /* Animaciones */
+        @keyframes fadeInLogo {
+            0% {
+                opacity: 0.8;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+        /* ---------------------------------------------------------------------------------------------------- */
+
+        /* Sección de contacto de lado a lado */
+        .contact-section-full {
+            position: relative;
+            width: 100%;
+            height: 65vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            margin-top: 60px;
+        }
+        .background-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        .contact-info-container {
+            background: rgba(106, 31, 54, 0.9); /* Fondo semitransparente */
+            border-radius: 20px;
+            padding: 40px;
+            color: white;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            text-align: left;
+        
+            /* Ajuste para desplazar a la derecha */
+            margin-right: 5%;
+            transform: translateX(50%); /* Desplaza hacia la derecha */
+        }
+        
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .section-description {
+            font-size: 1rem;
+            color: #ddd;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .icon-circle {
+            width: 50px;
+            height: 50px;
+            background: var(--color-iconos);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-item h4 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .info-item p {
+            margin: 0;
+            font-size: 1rem;
+            color: #ccc;
+        }
+
+        @media (max-width: 768px) {
+            .contact-info-container {
+                margin-right: 0;
+                transform: translateX(0); /* Centra en pantallas pequeñas */
+            }
+        }
+        
+        .contact-image img {
+            object-fit: cover;
+            height: 100%;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            height: 80%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .modal-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* ---------------------------------------------------------------------------------------------------- */
+
+        /* Estilo general del carrusel */
+        .events-carousel {
+            text-align: center;
+            padding: 30px 0;
+            background-color: #f9f9f9;
+            margin-top: 30px;
+        }
+
+        .carousel-title {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+        }
+
+        .carousel-title .highlight {
+            color: #6A1F36;
+            font-weight: bold;
+        }
+
+        .carousel-container {
+            position: relative;
+            width: 90%;
+            max-width: 1200px; /* Limita el ancho máximo del carrusel */
+            margin: 0 auto;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Centra el carrusel */
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 15px;
+            transition: transform 0.4s ease;
+            transform: translateX(0); /* Inicia en la tarjeta uno */
+        }
+
+
+        .carousel-card {
+            min-width: 200px;
+            height: 250px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .carousel-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #6A1F36;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px; /* Ajusta el tamaño del botón */
+            height: 50px;
+            font-size: 1.5rem; /* Ajusta el tamaño del icono */
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 2; /* Asegura que los botones estén por encima */
+        }
+
+        .carousel-btn:hover {
+            background-color: #4E1525;
+        }
+
+        .prev-btn {
+            left: 20px; /* Ajusta la posición del botón de retroceso */
+        }
+
+        .next-btn {
+            right: 20px; /* Ajusta la posición del botón de avance */
+        }
+
+        /* Ajuste para pantallas pequeñas */
+        @media (max-width: 768px) {
+            .carousel-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+
+            .carousel-card {
+                min-width: 180px; /* Reduce el tamaño de las tarjetas */
+                height: 220px; /* Ajusta la altura */
+            }
+
+            .carousel-track {
+                display: flex;
+                gap: 15px;
+                transition: transform 0.4s ease;
+            }
+            
+        }
+
+        .carousel-card {
+            min-width: 200px;
+            height: 250px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Suaviza el efecto de subida */
+        }
+
+        .carousel-card:hover {
+            transform: translateY(-10px); /* Hace que la tarjeta suba ligeramente */
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); /* Agrega una sombra más larga y pronunciada */
+            cursor: pointer; /* Cambia el cursor a una mano */
+        }
+
+
