@@ -472,6 +472,23 @@
             animation: fadeInLogo 1s ease-in-out infinite alternate;
             /* Efecto opcional */
         }
+        .my-section img {
+            max-width: 100%; /* Asegura que la imagen sea responsiva */
+            height: auto;
+            display: block;
+            margin-bottom: 20px; /* Espaciado inferior en pantallas pequeñas */
+
+        }
+    
+        
+        @media (max-width: 767px) {
+            .imagen-tarjeta {
+                display: none; /* Oculta la imagen en pantallas pequeñas */
+            }
+            .my-section img{
+                display: none;
+            }
+        }
 
         /* Animaciones */
         @keyframes fadeInLogo {
@@ -483,6 +500,7 @@
                 opacity: 1;
             }
         }
+        
         /* ---------------------------------------------------------------------------------------------------- */
 
         /* Sección de contacto de lado a lado */
@@ -566,6 +584,7 @@
                 margin-right: 0;
                 transform: translateX(0); /* Centra en pantallas pequeñas */
             }
+            
         }
         
         .contact-image img {
@@ -735,3 +754,60 @@
         }
 
 
+/*Alcalde seccion*/
+.alcalde-section {
+    background-color: #f8f9fa;
+    padding: 3rem 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.alcalde-section h2 {
+    color: #2c3e50;
+}
+
+.alcalde-section .info-box {
+    background-color: #ffffff;
+}
+
+.alcalde-section ul {
+    padding-left: 0;
+}
+
+.alcalde-section ul li {
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    color: #6c757d;
+}
+
+.image-wrapper {
+    margin-top: 2rem;
+}
+
+.name-tag h6 {
+    font-size: 0.875rem;
+    color: #495057;
+}
+
+.badge {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    letter-spacing: 0.05rem;
+}
+
+.image-wrapper img {
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important; /* Añadir !important si es necesario */
+}
+
+.image-wrapper img:hover {
+    transform: scale(1.1) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+p .fa-quote-left,
+p .fa-quote-right {
+    color: #6c757d; /* Color gris */
+    font-size: 1.5rem; /* Tamaño de las comillas */
+    vertical-align: middle; /* Alineación con el texto */
+}
