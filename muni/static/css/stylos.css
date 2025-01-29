@@ -756,7 +756,7 @@
 
 /*Alcalde seccion*/
 .alcalde-section {
-    background-color: #f8f9fa;
+    background-color: #f9f9f9;
     padding: 3rem 0;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -811,3 +811,248 @@ p .fa-quote-right {
     font-size: 1.5rem; /* Tamaño de las comillas */
     vertical-align: middle; /* Alineación con el texto */
 }
+
+/*--------------------------------Estilos de noticias------------------------------*/
+.news-section {
+    margin-top: 30px;
+    padding: 40px 0;
+    background-color: #f9f9f9;
+}
+
+.news-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: var(--color-primario);
+}
+
+.news-title span {
+    font-weight: normal;
+    color: #6c757d;
+}
+
+.news-card {
+    background: #fff;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 25px 0 25px 0;
+
+}
+
+.news-image {
+    height: 250px;
+    background-color: #f1f1f1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top-left-radius: 15px; /* Redondeo del borde superior izquierdo */
+    overflow: hidden; /* Oculta contenido desbordado */
+}
+
+.news-content {
+    padding: 20px;
+    border-radius: 25px 0 0 0;
+}
+
+
+.news-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+
+.news-logo {
+    max-height: 80px;
+}
+
+.news-content {
+    padding: 20px;
+}
+
+.news-date {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 10px;
+}
+
+.news-heading {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.news-link {
+    font-size: 0.9rem;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.news-link:hover {
+    text-decoration: underline;
+}
+
+.btn-news {
+    background: var(--color-primario);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 1rem;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-news:hover {
+    background: var(--color-iconos);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+.news-date i {
+    color: #6c757d;
+    margin-right: 5px; /* Espacio entre el ícono y el texto */
+}
+
+.news-link i {
+    color: #007bff;
+    margin-right: 5px; /* Espacio entre el ícono y el texto */
+    transition: transform 0.3s ease; /* Efecto al pasar el ratón */
+}
+
+.news-link:hover i {
+    transform: translateX(3px); /* Desplazamiento hacia la derecha al pasar el ratón */
+}
+
+/*-------------------------Convocatorias------------------------------------------------*/
+/* Sección de convocatorias */
+.convocatorias-section {
+    margin-top: 30px;
+    padding: 60px;
+    position: relative;
+    padding: 60px;
+    background: linear-gradient(135deg, rgba(75, 0, 30, 0.05), rgba(150, 0, 60, 0.05));
+    border-radius: 20px;
+    overflow: hidden;
+}
+.convocatorias-section::before {
+    content: "";
+    position: absolute;
+    top: -50px;
+    left: -50px;
+    width: 200px;
+    height: 200px;
+    background: rgba(200, 0, 70, 0.1);
+    border-radius: 50%;
+    z-index: 0;
+}
+
+.convocatorias-section::after {
+    content: "";
+    position: absolute;
+    bottom: -50px;
+    right: -50px;
+    width: 250px;
+    height: 250px;
+    background: rgba(200, 0, 70, 0.1);
+    border-radius: 50%;
+    z-index: 0;
+}
+
+.convocatorias-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: var(--color-primario);
+}
+
+
+/* Convocatoria grande */
+.convocatoria-grande {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: 700px; /* Altura fija */
+}
+
+.convocatoria-grande img {
+    width: 100%;
+    height: 100%; /* Se ajusta al contenedor */
+    object-fit: cover; /* Asegura que la imagen no se deforme */
+    border-radius: 12px;
+}
+
+.convocatoria-grande .convocatoria-text {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.convocatoria-grande .btn-convocatoria {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 15px;
+    background-color: var(--color-primario);
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.convocatoria-grande .btn-convocatoria:hover {
+    background-color: var(--color-iconos);
+}
+
+/* Convocatorias pequeñas */
+.convocatoria-pequena {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 335px;/* Ocupa exactamente la mitad de la grande */
+}
+
+.convocatoria-pequena img {
+    width: 100%;
+    height: 70%; /* Ajuste proporcional para imágenes */
+    object-fit: cover; /* Ajusta la imagen sin deformarla */
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.convocatoria-pequena .convocatoria-text {
+    padding: 10px;
+    background-color: #fff;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+}
+
+.convocatoria-pequena .link-convocatoria {
+    color: #ff6600;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    margin-top: 5px;
+    font-size: 0.9rem;
+}
+
+.convocatoria-pequena .link-convocatoria:hover {
+    color: #e65c00;
+}
+
+/* Ajustes adicionales */
+.container .row {
+    align-items: stretch; /* Asegura que todas las filas se alineen correctamente */
+}
+
