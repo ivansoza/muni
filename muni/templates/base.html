@@ -12,7 +12,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- Estilos personalizados -->
-     <link rel="stylesheet" href="{% static "css/stylos.css" %}">
+     <link rel="stylesheet" href="{% static "css/stylos.css"%}?v1.1">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -29,8 +29,11 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link active" href="{% url "home" %}">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url "homeServicios" %}">Servicios</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url "home" %}">Inicio</a></li>
+                    <li class="nav-item {% if sidebar == 'servicios' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'homeServicios' %}">Servicios</a>
+                    </li>
+                               
                     <li class="nav-item"><a class="nav-link" href="#">Noticias</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Transparencia</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>

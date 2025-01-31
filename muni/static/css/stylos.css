@@ -33,9 +33,11 @@
             position: relative;
             margin: 0 15px;
             padding: 5px 0 !important;
+            color: #fff; /* Asegura que el texto sea visible en todos los estados */
             transition: all 0.3s ease;
+            text-decoration: none;
         }
-
+        
         .nav-link::after {
             content: '';
             position: absolute;
@@ -43,13 +45,24 @@
             height: 2px;
             bottom: 0;
             left: 0;
-            background-color: #fff;
+            background-color: #fff; /* Línea blanca por defecto */
             transition: width 0.3s ease;
         }
-
+        
         .nav-link:hover::after {
             width: 100%;
         }
+        
+        /* Efecto `active` para que la línea se mantenga visible */
+        .nav-item.active .nav-link::after {
+            width: 100%;
+        }
+        
+        /* Opcional: Cambia el color del texto cuando está activo */
+        .nav-item.active .nav-link {
+            font-weight: bold; /* Opción para resaltar más */
+        }
+        
 
         /* Hero Section mejorado */
         .hero-section {
