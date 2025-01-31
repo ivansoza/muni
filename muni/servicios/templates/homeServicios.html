@@ -1,10 +1,71 @@
 {% extends "base.html" %}
-
+{% load static %}
 
 
 
 {% block content %}
 
+
+<div class="container my-section">
+    <!-- Título principal -->
+    <div class="section-header">
+        <span class="section-subtitle">NUESTROS SERVICIOS</span>
+        <h2 class="section-title">Descubre las opciones que tenemos para ti</h2>
+    </div>
+
+    <div class="row align-items-center">
+        <!-- Columna izquierda con la imagen -->
+        <div class="col-md-4 text-center">
+            <img src="{% static 'img/persona.png' %}" alt="Persona señalando" class="img-fluid" style="width:700px; height: auto;">
+        </div>
+
+        <!-- Columna derecha con las tarjetas -->
+        <div class="col-md-8">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card-elegante">
+                        <div class="card-icon-container">
+                            <i class="fas fa-handshake card-icon"></i>
+                        </div>
+                        <h3 class="card-title">Servicios Municipales</h3>
+                        <p class="card-text">Accede a todos los servicios públicos disponibles para los ciudadanos de forma ágil y segura.</p>
+                        <a href="#" class="btn-card"><i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card-elegante">
+                        <div class="card-icon-container">
+                            <i class="fas fa-newspaper card-icon"></i>
+                        </div>
+                        <h3 class="card-title">Comunicaciones</h3>
+                        <p class="card-text">Mantente informado a traves de una comunicación directa gobierno municipal.</p>
+                        <a href="#" class="btn-card"><i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card-elegante">
+                        <div class="card-icon-container">
+                            <i class="fas fa-comments card-icon"></i>
+                        </div>
+                        <h3 class="card-title">Atención Ciudadana</h3>
+                        <p class="card-text">Canales de comunicación directa para resolver tus dudas y recibir sugerencias.</p>
+                        <a href="#" class="btn-card"><i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card-elegante">
+                        <div class="card-icon-container">
+                            <i class="fas fa-people-arrows card-icon"></i>
+                        </div>
+                        <h3 class="card-title">Proyectos Comunitarios</h3>
+                        <p class="card-text">Explora los proyectos comunitarios que transforman nuestra ciudad.</p>
+                        <a href="#" class="btn-card"><i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 

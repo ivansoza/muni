@@ -24,6 +24,11 @@
             letter-spacing: 1px;
         }
 
+        main {
+            margin-top: 120px;
+        }
+        
+
         .navbar-brand img {
             height: 45px;
             margin-right: 10px;
