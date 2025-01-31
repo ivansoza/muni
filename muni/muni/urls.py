@@ -5,8 +5,17 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('home.urls')),  # Homepage
-    path('/servicios', include('servicios.urls')),  # Homepage
+    path('', include('home.urls')), 
+    path('servicios/', include('servicios.urls')), 
+    path('contactos/', include('contactos.urls')),  
+    path('enlaces/', include('enlaces.urls')), 
+    path('eventos/', include('eventos.urls')),  
+    path('gobierno/', include('gobierno.urls')), 
+    path('informacion/', include('informacion_municipal.urls')), 
+    path('inicio/', include('inicio.urls')),  
+    path('noticias/', include('noticias.urls')), 
+    path('tramites/', include('tramites.urls')), 
+    path('transparencia/', include('transparencia.urls')), 
 
 ]
 
