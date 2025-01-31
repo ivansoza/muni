@@ -281,6 +281,13 @@
             transition: color 0.3s ease;
         }
 
+        .navbar-no-transparent .nav-link,
+        .navbar-no-transparent .navbar-brand {
+            color: white !important;
+            /* Texto blanco */
+            transition: color 0.3s ease;
+        }
+
         /* Navbar sólido */
         .navbar-dark {
             background-color: var(--color-primario) !important;
