@@ -411,13 +411,10 @@
         /* Preloader */
         #preloader {
             position: fixed;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
             background: white;
             z-index: 9999;
-            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -594,7 +591,6 @@
         
         /* Modal */
         .modal {
-            margin-top: 30px;
             display: none;
             position: fixed;
             top: 0;
@@ -602,18 +598,19 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.7);
-            display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 9999;
             opacity: 0;
             transform: scale(0.9);
             transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none; /* Esto evita que bloquee clics cuando está oculto */
         }
-    
+        
         .modal.show {
             opacity: 1;
             transform: scale(1);
+            pointer-events: auto; /* Permite interacción cuando está visible */
         }
     
         .modal-content {
@@ -653,6 +650,9 @@
         .close-modal:hover {
             background: var(--color-iconos);
         }
+        .modal:not(.show) iframe {
+            pointer-events: none;
+        }
     
         @media (max-width: 600px) {
             .modal-content {
@@ -662,125 +662,6 @@
         }
 
         /* ---------------------------------------------------------------------------------------------------- */
-
-        /* Estilo general del carrusel */
-        .events-carousel {
-            text-align: center;
-            padding: 30px 0;
-            background-color: #f9f9f9;
-            margin-top: 30px;
-        }
-
-        .carousel-title {
-            font-size: 1.8rem;
-            margin-bottom: 30px;
-        }
-
-        .carousel-title .highlight {
-            color: #6A1F36;
-            font-weight: bold;
-        }
-
-        .carousel-container {
-            position: relative;
-            width: 90%;
-            max-width: 1200px; /* Limita el ancho máximo del carrusel */
-            margin: 0 auto;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center; /* Centra el carrusel */
-        }
-
-        .carousel-track {
-            display: flex;
-            gap: 15px;
-            transition: transform 0.4s ease;
-            transform: translateX(0); /* Inicia en la tarjeta uno */
-        }
-
-
-        .carousel-card {
-            min-width: 200px;
-            height: 250px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            text-align: center;
-        }
-
-        .carousel-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .carousel-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: #6A1F36;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px; /* Ajusta el tamaño del botón */
-            height: 50px;
-            font-size: 1.5rem; /* Ajusta el tamaño del icono */
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            z-index: 2; /* Asegura que los botones estén por encima */
-        }
-
-        .carousel-btn:hover {
-            background-color: #4E1525;
-        }
-
-        .prev-btn {
-            left: 20px; /* Ajusta la posición del botón de retroceso */
-        }
-
-        .next-btn {
-            right: 20px; /* Ajusta la posición del botón de avance */
-        }
-
-        /* Ajuste para pantallas pequeñas */
-        @media (max-width: 768px) {
-            .carousel-btn {
-                width: 40px;
-                height: 40px;
-                font-size: 1.2rem;
-            }
-
-            .carousel-card {
-                min-width: 180px; /* Reduce el tamaño de las tarjetas */
-                height: 220px; /* Ajusta la altura */
-            }
-
-            .carousel-track {
-                display: flex;
-                gap: 15px;
-                transition: transform 0.4s ease;
-            }
-            
-        }
-
-        .carousel-card {
-            min-width: 200px;
-            height: 250px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Suaviza el efecto de subida */
-        }
-
-        .carousel-card:hover {
-            transform: translateY(-10px); /* Hace que la tarjeta suba ligeramente */
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); /* Agrega una sombra más larga y pronunciada */
-            cursor: pointer; /* Cambia el cursor a una mano */
-        }
 
 
 /*Alcalde seccion*/
@@ -797,6 +678,12 @@
 
 .alcalde-section .info-box {
     background-color: #ffffff;
+    position: relative; /* Mantiene su posición normal */
+    z-index: 1 !important; /* Se asegura de que no cubra nada más */
+    display: inline-block;
+    width: auto; /* Asegura que no bloquee más de lo necesario */
+    max-width: 100%;
+    overflow: hidden; 
 }
 
 .alcalde-section ul {
@@ -811,6 +698,8 @@
 
 .image-wrapper {
     margin-top: 2rem;
+    position: relative;
+    z-index: 10; /* Asegura que la imagen esté encima */
 }
 
 .name-tag h6 {
@@ -1101,3 +990,99 @@ p .fa-quote-right {
     transform: scale(0.9);
     opacity: 0.8;
 }
+
+/* ------------ social media -----------------*/
+/* Estilos para la sección de redes sociales */
+.social-section {
+    margin-top: 30px;
+    padding: 50px 0;
+    background-color: #f9f9f9;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.social-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: var(--color-primario);
+    z-index: 2; /* Asegura que el título esté encima de la imagen de fondo */
+}
+
+
+/* Fondo decorativo con emojis */
+.social-background {
+    position: absolute;
+    top: 50px; /* Mueve la imagen hacia abajo para evitar que cubra el título */
+    left: 0;
+    width: 100%;
+    height: calc(100% - 50px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+
+.social-bg-image {
+    width: 100%;
+    max-width: 1200px;
+    opacity: 0.5;
+    animation: floatAnimation 6s infinite ease-in-out alternate;
+}
+
+@keyframes floatAnimation {
+    from {
+        transform: translateY(0) scale(1);
+    }
+    to {
+        transform: translateY(-20px) scale(1.05);
+    }
+}
+
+/* Contenedor de publicaciones */
+.social-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    z-index: 1; /* Mantiene el contenido sobre el fondo */
+}
+
+.social-posts {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.social-box {
+    width: 350px;
+    background: white;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    transition: transform 0.3s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.social-box:hover {
+    transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .social-posts {
+        flex-direction: column;
+    }
+    .social-box {
+        width: 90%;
+    }
+    .social-bg-image {
+        width: 100%;
+    }
+}
+
+
