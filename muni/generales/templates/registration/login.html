@@ -15,6 +15,12 @@
     .custom-alert-message {
       font-weight: bold;
     }
+
+    .custom-img {
+      width: 200px !important;
+      height: auto !important;
+  }
+
 </style>
 
 {% if messages %}
@@ -28,7 +34,8 @@
 <!-- Página de inicio de sesión -->
 <div class="container-fluid">
   <div class="row">
-      <div class="col-xl-7"><img class="bg-img-cover bg-center" src="{% static 'assets/images/login/2.jpg' %}" alt="página de inicio de sesión"></div>
+      <div class="col-xl-7">   
+        <img class="bg-img-cover bg-center custom-img" src="{% static 'assets/images/login/soporte.png' %}" alt="página de inicio de sesión">      </div>
       <div class="col-xl-5 p-0">
           <div class="login-card login-dark">
               <div>
