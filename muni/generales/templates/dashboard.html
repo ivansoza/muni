@@ -6,6 +6,162 @@
 
 
 {% block content %}
+<style>
+    .contenedor {
+        padding-top: 100px;
+    }
+
+    .apps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1.9rem;
+        justify-items: center;
+    }
+
+    .app-item {
+        text-decoration: none;
+        color: #000;
+        transition: transform 0.2s ease;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .app-card {
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 89px;
+        background: rgba(255, 255, 255, 0.2); /* Fondo semi-transparente por defecto */
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+    }
+
+    .app-item:hover .app-card {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .app-card:hover {
+        transform: scale(1.1); /* Aumentar el tamaño del fondo al hacer hover */
+    }
+
+    .app-icon {
+        font-size: 2rem;
+        color: white;
+        user-select: none;
+        transition: transform 0.2s ease; /* Para el efecto hover del icono */
+    }
+
+    .app-icon:hover {
+        transform: scale(1.2); /* Aumenta el tamaño del icono al hacer hover */
+    }
+
+    .app-name {
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-top: 0.8rem;
+        text-align: center;
+        line-height: 1.2;
+        color: #1a1a1a;
+        padding: 0 5px;
+        word-break: break-word;
+        max-width: 180px;
+    }
+
+
+    @media (max-width: 1500px) {
+
+        .app-card {
+            border-radius: 27px;
+        }
+        
+
+        
+
+    }
+    @media (max-width: 768px) {
+        .apps-grid {
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+        }
+        
+        .app-card {
+            border-radius: 27px;
+        }
+        
+        .app-icon {
+            font-size: 1.8rem;
+        }
+        
+        .app-name {
+            font-size: 0.65rem;
+            margin-top: 0.6rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        body {
+            padding: 1rem 0.5rem;
+        }
+        
+        .apps-grid {
+            gap: 0.8rem;
+        }
+    }
+</style>
+
+
+<div class="container-fluid mt-4 contenedor">
+ <div class="apps-grid mt-4">
+            <!-- Calendario -->
+            <a class="app-item" href="#">
+                <div class="app-card" style="background-image: url('{% static 'img/apps/news.png' %}');">
+                </div>
+                <div class="app-name">Noticias</div>
+            </a>
+    
+            <!-- Fotos -->
+            <a class="app-item" href="#">
+                <div class="app-card" style="background-image: url('{% static 'img/apps/social.png' %}');">
+                </div>
+                <div class="app-name">Redes Sociales</div>
+            </a>
+
+            <!-- Mensajes -->
+            <a class="app-item" href="#">
+                <div class="app-card" style="background-image: url('{% static 'img/apps/servicios.png' %}');">
+                </div>
+                <div class="app-name">Servicios</div>
+            </a>
+
+           
+            <a class="app-item" href="#">
+                <div class="app-card" style="background-image: url('{% static 'img/apps/custom.png' %}');">
+                </div>
+                <div class="app-name">Personalizar</div>
+            </a>
+            <a class="app-item" href="#">
+                <div class="app-card" style="background-image: url('{% static 'img/apps/trans.png' %}');">
+                </div>
+                <div class="app-name">Transparencia</div>
+            </a>
+
+            <a class="app-item" href="#">
+                <div class="app-card" style="background-image: url('{% static 'img/apps/SEVAC.png' %}');">
+                </div>
+                <div class="app-name">SEVAC</div>
+            </a>
+
+        </div>
+
+</div>
+
 
 
 

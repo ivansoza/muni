@@ -17,7 +17,7 @@
     }
 
     .custom-img {
-      width: 200px !important;
+      width: 100px !important;
       height: auto !important;
   }
 
@@ -35,15 +35,17 @@
 <div class="container-fluid">
   <div class="row">
       <div class="col-xl-7">   
-        <img class="bg-img-cover bg-center custom-img" src="{% static 'assets/images/login/soporte.png' %}" alt="página de inicio de sesión">      </div>
+        <img class="bg-img-cover bg-center custom-img" style="height: 30%;width: 30%;display: inline-block;" src="{% static 'assets/images/login/soporte1.png' %}" alt="página de inicio de sesión" >      </div>
       <div class="col-xl-5 p-0">
           <div class="login-card login-dark">
               <div>
                   <div style="text-align: center;">
                       <a class="logo" href="#">
-                          <img class="img-fluid for-light" src="{% static 'assets/images/logo/logo-nuevo-big.png' %}" alt="página de inicio de sesión" style="height: 30%;width: 30%;display: inline-block;">
-                          <img class="img-fluid for-dark" src="{% static 'assets/images/logo/logo-3.png' %}" alt="página de inicio de sesión">
+                          <img class="img-fluid for-light" src="{% static 'assets/images/logo/logo-new.png' %}" alt="página de inicio de sesión" style="height: 30%;width: 30%;display: inline-block;">
+                          <img class="img-fluid for-dark" src="{% static 'assets/images/logo/logo-new.png' %}" alt="página de inicio de sesión" >
                       </a>
+                      <h1 style="margin-top: -10px; margin-bottom: 10px;">MUNIX</h1>
+
                   </div>
                   <div class="login-main">
                       <form class="theme-form" action="{% url 'login' %}" method="post">

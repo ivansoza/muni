@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f8fafc;
+            padding: 2rem;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px -20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(241, 245, 249, 0.8);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 0.75rem;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+
+        .card-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .card-content {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #0f172a;
+            font-family: 'Space Mono', monospace;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .time-content {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.25rem;
+        }
+
+        .time-subtext {
+            font-size: 0.875rem;
+            font-weight: 400;
+            color: #64748b;
+            font-family: inherit;
+        }
+
+        #visit-count {
+            color: #10b981;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .card {
+                padding: 1.25rem;
+            }
+            
+            .card-content {
+                font-size: 1.875rem;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeIn 0.6s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Tarjeta 1: Fecha y Hora -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Hora Actual</span>
+                <div class="card-icon" id="time-icon">
+                    <svg id="time-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path id="icon-path" d="M12 6v6l4 2"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="card-content time-content">
+                <span id="current-time"></span>
+                <span class="time-subtext" id="current-date"></span>
+            </div>
+        </div>
+
+        <!-- Tarjeta 2: Contador de visitas -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Visitas Totales</span>
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </div>
+            </div>
+            <div class="card-content" id="visit-count">0</div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de íconos dinámicos
+        const timeIcon = document.getElementById('time-icon-svg');
+        const iconPath = document.getElementById('icon-path');
+        
+        function updateDateTime() {
+            const now = new Date();
+            const optionsTime = {
+                hour: 'numeric',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            };
+            
+            const optionsDate = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            };
+
+            document.getElementById('current-time').textContent = now.toLocaleTimeString('es-ES', optionsTime);
+            document.getElementById('current-date').textContent = now.toLocaleDateString('es-ES', optionsDate);
+
+            // Animación de ícono
+            const hours = now.getHours();
+            const isDay = hours >= 6 && hours < 18;
+            const newIcon = isDay ? 
+                'M12 6v6l4 2M21 12a9 9 0 11-18 0 9 9 0 0118 0z' : 
+                'M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z';
+            
+            if (iconPath.getAttribute('d') !== newIcon) {
+                timeIcon.style.opacity = '0';
+                setTimeout(() => {
+                    iconPath.setAttribute('d', newIcon);
+                    timeIcon.style.opacity = '1';
+                }, 300);
+            }
+        }
+
+        function updateVisitCounter() {
+            let visits = localStorage.getItem('pageVisits') || 0;
+            visits = parseInt(visits) + 1;
+            localStorage.setItem('pageVisits', visits);
+            
+            const counterElement = document.getElementById('visit-count');
+            counterElement.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                counterElement.style.transform = 'scale(1)';
+            }, 200);
+            counterElement.textContent = visits.toLocaleString();
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            
+            updateVisitCounter();
+            
+            // Efecto de carga inicial
+            document.querySelectorAll('.card').forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>

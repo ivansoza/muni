@@ -64,7 +64,12 @@
           {% include 'layout/sidebar.html' %}
           
           <div class="page-body">
+
+            {% block sin_breadcumb %}
+
             {% include 'layout/breadcrumb.html' %}
+
+            {% endblock sin_breadcumb %}
             {% block content %} {% endblock content %}
           </div>
 
@@ -104,7 +109,6 @@
 
     <!-- Theme js-->
     <script src="{% static 'assets/js/script.js' %}"></script>
-    <script src="{% static 'assets/js/theme-customizer/customizer.js' %}"></script>
 
   </body>
 </html>
