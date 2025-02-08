@@ -48,7 +48,29 @@ INSTALLED_APPS = [
     'servicios',
     'tramites',
     'transparencia',
-    'informacion_municipal'
+    'generales',
+    'informacion_municipal',
+    "crispy_forms",
+    "crispy_bootstrap5",
+    'sass_processor',
+    'widget_tweaks',
+]
+
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'usuarios.middleware.SessionTimeoutMiddleware',  # Añade el middleware aquí, ajusta el path según tu estructura
+
 ]
 
 MIDDLEWARE = [
@@ -139,3 +161,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+LOGIN_REDIRECT_URL = 'dashboard'   
+LOGOUT_REDIRECT_URL = 'home'
+
+

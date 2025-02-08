@@ -1,0 +1,65 @@
+{% extends 'baselogin.html' %}
+
+{% load static %}
+{% load sass_tags %}
+{% load crispy_forms_tags %} 
+{% block content %}
+<style>
+    .custom-alert {
+      background-color: #f44336;
+      color: white;
+      padding: 10px;
+      text-align: center;
+    }
+    
+    .custom-alert-message {
+      font-weight: bold;
+    }
+</style>
+
+{% if messages %}
+  <div class="custom-alert">
+    {% for message in messages %}
+      <span class="custom-alert-message">{{ message }}</span>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<!-- Página de inicio de sesión -->
+<div class="container-fluid">
+  <div class="row">
+      <div class="col-xl-7"><img class="bg-img-cover bg-center" src="{% static 'assets/images/login/2.jpg' %}" alt="página de inicio de sesión"></div>
+      <div class="col-xl-5 p-0">
+          <div class="login-card login-dark">
+              <div>
+                  <div style="text-align: center;">
+                      <a class="logo" href="#">
+                          <img class="img-fluid for-light" src="{% static 'assets/images/logo/logo-nuevo-big.png' %}" alt="página de inicio de sesión" style="height: 30%;width: 30%;display: inline-block;">
+                          <img class="img-fluid for-dark" src="{% static 'assets/images/logo/logo-3.png' %}" alt="página de inicio de sesión">
+                      </a>
+                  </div>
+                  <div class="login-main">
+                      <form class="theme-form" action="{% url 'login' %}" method="post">
+                          {% csrf_token %}
+                          <h3>Inicia sesión en tu cuenta</h3>
+                          <p>Introduce tu nombre de usuario o correo electrónico para iniciar sesión</p>
+                          {{ form|crispy }}  <!-- Usa el formulario con crispy_forms para aplicar los estilos -->
+                          <input type="hidden" name="next" value="{{ next }}">
+                          <div class="form-group mb-0">
+                              <div class="checkbox p-0">
+                                  <input id="checkbox1" type="checkbox">
+                                  <label class="text-muted" for="checkbox1">Recordar contraseña</label>
+                              </div>
+                              <button class="btn btn-primary btn-block w-100" type="submit">Iniciar sesión</button>
+                              <p></p>
+                              <h4 style="text-align: center;">By SIP Tlax.</h4>
+                          </div>
+                      </form>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+{% endblock content %}

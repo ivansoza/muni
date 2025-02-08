@@ -1,0 +1,641 @@
+// /**=====================
+//     3.9 Dashboard_2 CSS Start
+// ==========================**/
+@each $activity-dot-name,
+$activity-dot-color in (primary, $primary-color),
+(secondary, $secondary-color),
+(success, $success-color),
+(danger, $danger-color),
+(info, $info-color),
+(light, $light-color),
+(dark, $dark-color),
+(warning, $warning-color) {
+  .activity-dot-#{$activity-dot-name} {
+    min-width: 10px;
+    height: 10px;
+    background-color: $activity-dot-color;
+    border-radius: 100%;
+    outline: 5px solid rgba($activity-dot-color, 0.25);
+    position: relative;
+    z-index: 2;
+  }
+
+  // timeline
+  .timeline-dot-#{$activity-dot-name} {
+    min-width: 12px;
+    height: 12px;
+    background-color: $activity-dot-color;
+    outline: 5px solid rgba($activity-dot-color, 0.25);
+    position: relative;
+    z-index: 2;
+  }
+}
+@media only screen and (max-width: 1660px) and (min-width: 1400px) {
+  .col-ed-12 {
+    width: 100%;
+  }
+  .col-ed-7 {
+    width: 58%;
+  }
+  .col-ed-5 {
+    width: 42%;
+  }
+  .col-ed-9 {
+    width: 75%;
+  }
+  .col-ed-3 {
+    width: 25%;
+  }
+  .col-ed-6 {
+    width: 50%;
+  }
+  .col-ed-4 {
+    width: 33.33333333%;
+  }
+  .col-ed-8 {
+    width: 66.66%;
+  }
+  .col-ed-none {
+    display: none !important;
+  }
+}
+@media only screen and (max-width: 1660px) and (min-width: 1200px) {
+  .xl-30 {
+    max-width: 30%;
+    flex: 0 0 30%;
+  }
+  .xl-70 {
+    max-width: 70%;
+    flex: 0 0 70%;
+  }
+}
+@media only screen and (max-width: 420px) {
+  .size-column {
+    .col-6 {
+      width: 100%;
+    }
+  }
+}
+.crm_dashboard {
+  .update-card{
+    background-image: url(../images/dashboard-2/Upgrade-card.png);
+    background-size: cover;
+    background-position: bottom;
+    background-repeat: no-repeat;
+    min-height: 140px;
+    .btn {
+      font-weight: 700;
+    }
+  }
+  .transaction {
+    table{
+      thead {
+        tr {
+          th {
+            padding: 10px 14px 10px 0px;
+            color: $theme-body-sub-title-color;
+            &:last-child{
+              text-align: center;
+            }
+            [dir="rtl"] & {
+              padding: 0px 14px 10px 0px;
+            }
+          }
+        }
+      }
+      tr{
+        &:hover {
+          td{
+            .d-flex{
+              .flex-grow-1.ms-2{
+                a{
+                  h5{
+                    color: $primary-color !important;
+                    transition: all 0.4s;
+                  }
+                }
+              }
+            }
+            p , h5{
+              color: $primary-color !important;
+              transition: all 0.4s;
+            }
+          }
+        }
+        td{
+          padding: 10px 12px 10px 0px;
+          [dir="rtl"] & {
+            padding: 12px 0px 11px 14px;
+          }
+          .d-flex{
+            .flex-grow-1.ms-2{
+              a{
+                h5{
+                    color: $theme-font-color;
+                    font-size: 14px;
+                    transition: all 0.4s;
+                }
+                span{
+                  color: $theme-body-sub-title-color;
+                }
+              }
+            }
+          }
+          p , h5{
+            font-weight: 600;
+            transition: all 0.4s;
+          }
+          img{
+            border-radius: 50px;
+          }
+          &:last-child{
+            text-align: center;
+          }
+          button{
+            width: 76px;
+          }
+        }
+        &:last-child{
+          td{
+            border-bottom: none;
+            padding-bottom: 0px !important;
+          }
+        }
+      }
+    }
+  }
+  div.dataTables_wrapper {
+    position: unset;
+    div.dataTables_filter {
+      position: absolute;
+      top: 15px;
+      right: 22px;
+      @media (max-width: 575px) {
+        top: 55px;
+        left: 18px;
+        right: unset;
+        [dir="rtl"] & {
+          left: unset !important;
+          right: 0 !important;
+        }
+      }
+      [dir="rtl"] & {
+        left: 22px;
+        right: unset;
+      }
+      input[type=search] {
+        width: 150px !important;
+        height: 34px;
+        border-radius: 6px;
+      }
+    }
+    table.dataTable {
+      margin-top: 13px !important;
+      border: none;
+      @media (max-width: 575px) {
+        margin-top: 42px !important;
+      }
+      &.display {
+        tbody {
+          tr.odd,
+          tr.even {
+            background-color: transparent !important;
+            >.sorting_1 {
+              background-color: transparent !important;
+            }
+          }
+        }
+      }
+      thead {
+        >tr {
+          >th {
+            text-transform: capitalize;
+            font-family: $font-nunito;
+            font-weight: 700;
+            &:before,
+            &:after {
+              display: none;
+            }
+          }
+        }
+      }
+      tbody {
+        >tr {
+          >td {
+            font-family: $font-nunito;
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+  .widget-sell {
+    .sale {
+      background-color: $light-color;
+      width: 100%;
+      padding: 17px;
+      height: 180px;
+      h3 {
+        font-weight: 600;
+        color: $theme-font-color;
+        margin-bottom: 24px;
+      }
+      h5 {
+        font-weight: 800;
+        font-size: 26px;
+        color: $theme-font-color;
+        margin-bottom: 20px;
+      }
+      p {
+        color: $theme-body-sub-title-color;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 0;
+        align-items: center !important;
+        span[class*="bg-"] {
+          width: 20px;
+          height: 20px;
+          border-radius: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          svg {
+            position: absolute;
+            fill: $secondary-color;
+            padding-top: 0;
+            width: 14px;
+            height: 14px;
+          }
+        }
+      }
+      span {
+        &.sale-title {
+          font-weight: 600;
+          color: $theme-body-sub-title-color;
+          margin-left: 25px;
+          [dir="rtl"] & {
+            margin-left: unset;
+            margin-right: 25px;
+          }
+        }
+      }
+    }
+  }
+  .top-customer {
+    .d-flex {
+      padding: 19px 0px 20px 0px;
+      border-bottom: 1px solid $light-gray;
+      &:last-child {
+        border: none;
+      }
+      img {
+        border-radius: 50px;
+      }
+      .flex-grow-1 {
+        h5 {
+          font-size: 14px;
+          font-weight: 600;
+          color: $theme-font-color;
+        }
+        span {
+          font-size: 13px;
+          font-weight: 600;
+          color: $theme-body-sub-title-color;
+        }
+      }
+      .flex-shrink-0 {
+        button {
+          border-radius: 10px;
+        }
+      }
+    }
+  }
+  .customer-chart {
+    ul {
+      li {
+        &.d-flex {
+          background-color: $light-color;
+          padding: 11px 16px;
+          margin-bottom: 20px;
+          transition: all 0.4s;
+          &:last-child {
+            margin-bottom: 0;
+          }
+          .flex-grow-1 {
+            p {
+              margin-bottom: 0;
+              margin-left: 14px;
+              font-size: 14px;
+              font-weight: 600;
+              [dir="rtl"] & {
+                margin-right: 14px;
+                margin-left: unset;
+              }
+            }
+            span {
+              margin-left: 14px;
+              [dir="rtl"] & {
+                margin-right: 14px;
+                margin-left: unset;
+              }
+            }
+          }
+          &:hover {
+            transform: translateY(-5px);
+            transition: all 0.4s;
+          }
+        }
+      }
+    }
+  }
+  .all-notification {
+    .d-flex {
+      padding: 17px 0px 17px 0px;
+      border-bottom: 1px solid $light-gray;
+      &:last-child {
+        border: none;
+      }
+      img {
+        border-radius: 50px;
+      }
+      .flex-grow-1 {
+        a {
+          display: block;
+          h5 {
+            font-size: 14px;
+            font-weight: 600;
+            color: $theme-font-color;
+          }
+          span {
+            font-size: 13px;
+            font-weight: 600;
+            color: $theme-body-sub-title-color;
+          }
+        }
+        span {
+          font-size: 13px;
+          font-weight: 600;
+          color: $theme-body-sub-title-color;
+        }
+      }
+      .flex-shrink-0 {
+        button {
+          border-radius: 0;
+          padding: 8px 30px;
+          min-width: 175px;
+        }
+      }
+      @each $circle-name, $circle-color in (primary, $primary-color),
+        (secondary, $secondary-color), (success, $success-color),
+        (danger, $danger-color), (info, $info-color), (light, $light-color),
+        (dark, $dark-color), (warning, $warning-color)
+      {
+        .circle-dot-#{$circle-name} {
+          background-color: rgba($circle-color, 0.25);
+          border-radius: 100%;
+          padding: 10px;
+          font-size: 10px;
+          color: $circle-color;
+          &::before {
+            border: 2px solid $white;
+            border-radius: 50px;
+          }
+        }
+      }
+    }
+  }
+  .deal-open {
+    .card-body {
+      ul {
+        li {
+          border: 1px solid $light-gray;
+          border-radius: 8px;
+          padding: 6px 10px;
+          margin-bottom: 10px;
+          &.d-flex {
+            img {
+              border-radius: 50px;
+            }
+            a {
+              min-width: 175px;
+            }
+            h5 {
+              font-size: 13px;
+              font-weight: 600;
+              color: $theme-body-sub-title-color;
+              margin-bottom: 5px;
+            }
+            span {
+              font-size: 14px;
+              font-weight: 600;
+              color: $theme-font-color;
+              letter-spacing: 0;
+            }
+            .flex-grow-1 {
+              text-align: left;
+              align-items: center;
+              justify-content: center;
+              display: grid;
+            }
+            .flex-shrink-0 {
+              h5 {
+                font-size: 16px;
+                font-weight: 700;
+                text-align: center;
+                color: $theme-font-color;
+              }
+              button {
+                border-radius: 10px;
+              }
+              text-align: center;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 1660px) and (min-width: 1200px) {
+  .crm_dashboard {
+    .widget-sell {
+      .sale {
+        padding: 12px;
+        h3 {
+          margin-bottom: 12px;
+          font-size: 15px;
+        }
+        h5 {
+          font-size: 20px;
+          margin-bottom: 12px;
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 1400px) and (min-width: 1200px) {
+  .crm_dashboard {
+    .transaction {
+      table {
+        tr {
+          td {
+            &:first-child {
+              min-width: 160px;
+            }
+            padding: 5px 12px 5px 0px;
+            [dir="rtl"] & {
+              padding: 8px 12px 8px 0px;
+            }
+          }
+        }
+      }
+    }
+    .all-notification {
+      .d-flex {
+        padding: 10px 12px 9px 0px;
+      }
+    }
+    .deal-open {
+      .card-body {
+        ul {
+          li {
+            &.d-flex {
+              a {
+                min-width: 100px;
+              }
+              h5 , span{
+                text-overflow: ellipsis;
+                overflow: hidden;
+                display: -webkit-box !important;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                white-space: normal;
+              }
+              .flex-shrink-0 {
+                h5 {
+                  font-size: 14px;
+                }
+                button {
+                  padding: 5px 5px;
+                }
+              }
+              img {
+                width: 35px;
+              }
+            }
+          }
+        }
+      }
+    }
+    .top-customer {
+      .d-flex {
+        .flex-shrink-0 {
+          button {
+            min-width: 75px;
+            span {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 1399px) { 
+  .customer-chart {
+    ul {
+      display: none;
+    }
+  }
+}
+@media screen and (max-width: 1199px) and (min-width: 992px) {
+  .crm_dashboard {
+    .top-customer {
+      .d-flex {
+        padding: 11px 0px 11px 0px;
+      }
+    }
+    .deal-open {
+      .card-body {
+        ul {
+          li {
+            &.d-flex {
+              a {
+                min-width: 100px;
+              }
+              h5 , span{
+                text-overflow: ellipsis;
+                overflow: hidden;
+                display: -webkit-box !important;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                white-space: normal;
+              }
+              .flex-shrink-0 {
+                h5 {
+                  font-size: 14px;
+                }
+                button {
+                  padding: 5px 5px;
+                }
+              }
+              img {
+                width: 35px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 768px) {
+  .crm_dashboard { 
+    .transaction {
+      table {
+        &.dataTable {
+          thead {
+            tr {
+              th {
+                &:first-child {
+                  min-width: 180px;
+                }
+                &:nth-child(2){
+                  min-width: 180px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    .deal-open {
+      .card-body {
+        ul {
+          overflow-x: auto;
+          li {
+            min-width: 500px;
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 480px) {
+  .crm_dashboard { 
+    .top-customer {
+      .d-flex {
+        .flex-shrink-0 {
+          button {
+            min-width: 75px;
+            span {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+// /**=====================
+//     3.9 Dashboard_2 CSS End
+// ==========================**/

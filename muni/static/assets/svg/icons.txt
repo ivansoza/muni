@@ -1,0 +1,253 @@
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#cart"></use>
+</svg>
+
+
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#halfcircle"></use>
+</svg>
+
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#tag"></use>
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#return-box"></use>
+</svg>
+
+<!-- Icono de Rate -->
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#rate"></use>
+</svg>
+
+<!-- Icono de Income -->
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#income"></use>
+</svg>
+
+<!-- Icono de Expense -->
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#expense"></use>
+</svg>
+
+<!-- Icono de Dollar Return -->
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#doller-return"></use>
+</svg>
+
+<!-- Icono de New Order -->
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#new-order"></use>
+</svg>
+
+<!-- Icono de Customers -->
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#customers"></use>
+</svg>
+
+
+<!-- Icono de Sale -->
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#sale"></use>
+</svg>
+
+<!-- Icono de Profit -->
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#profit"></use>
+</svg>
+
+<!-- Icono de Orders -->
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#orders"></use>
+</svg>
+
+<!-- Icono de User-Visitor -->
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#user-visitor"></use>
+</svg>
+
+<!-- Icono de 24-hour -->
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#24-hour"></use>
+</svg>
+
+<!-- Icono de Course-1 -->
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#course-1"></use>
+</svg>
+
+<!-- Icono de ArrowRight -->
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#arrowright"></use>
+</svg>
+
+<!-- Icono de Course-2 -->
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#course-2"></use>
+</svg>
+
+<!-- Icono de Bag -->
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#bag"></use>
+</svg>
+
+<!-- Icono de Clock -->
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#clock"></use>
+</svg>
+
+<!-- Icono de Beta -->
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#beta"></use>
+</svg>
+
+<!-- Icono de Bell -->
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#Bell"></use>
+</svg>
+
+<!-- Icono de Eth -->
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#eth"></use>
+
+</svg>
+
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#ltc"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#bin"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#te"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#dash"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#pencil"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#profile-check"></use>
+
+</svg>
+<svg class="stroke-icon ">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#breadcrumb-home"></use>
+
+</svg>
+<svg class="stroke-icon">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#stroke-home"></use>
+
+</svg>
+
+<svg class="stroke-icon">
+    <use href="{% static 'assets/svg/icon-sprite.svg' %}#fill-home"></use>
+</svg></a>
+
+
+
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#stroke-widget"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#fill-widget"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#stroke-layout"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#fill-layout"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#stroke-project"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#fill-project"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#stroke-file"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#fill-file"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#stroke-board"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#fill-board"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#stroke-ecommerce"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#fill-ecommerce"></use>
+
+</svg>
+<svg class="stroke-icon ">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#stroke-email"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#fill-email"></use>
+
+</svg>
+<svg class="stroke-icon ">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#stroke-chat"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#fill-chat"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#stroke-user"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#fill-user"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#fill-builders"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#stroke-builders"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#fill-maps"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#stroke-maps"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#location"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#eth"></use>
+
+</svg>
+<svg class="stroke-icon svg-fill">
+    <use href="{% static 'assets/svg/icon-sprite.svg'%}#eth"></use>
+
+</svg>
+
