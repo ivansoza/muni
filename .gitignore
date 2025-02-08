@@ -1,5 +1,4 @@
 #Produccion 
-settings_prod.py
 
 # Virtualenv
 .venv
