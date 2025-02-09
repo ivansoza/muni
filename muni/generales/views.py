@@ -35,7 +35,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             'parent': {'name': 'Dashboard', 'url': '/index'},
             'child': {'name': 'Home comisión de agua potable'}
         }
-        context['sidebar'] = 'inicio'
+        context['sidebar'] = 'dashboard'
 
         return context
     
@@ -51,6 +51,6 @@ class PersonalizacionView(LoginRequiredMixin, TemplateView):
             'parent': {'name': 'Dashboard', 'url': url_configuracion},
             'child': {'name': 'Personalizar', 'url': ''}
         }
-        context['sidebar'] = 'inicio'
+        context['sidebar'] = 'perso'
 
         return context

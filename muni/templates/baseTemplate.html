@@ -46,6 +46,91 @@
   </head>
 
   <body> 
+    <style>
+      :root {
+        --theme-default: #2F698F;
+        --theme-default_dark:rgb(26, 60, 83);
+
+        --theme-secondary: #FF6150;
+
+        --light-background: rgba(242, 243, 247, 0.7);
+        --body-font-color: #2F2F3B;
+        --chart-border: #ECF3FA;
+        --recent-chart-bg: #FCFCFD;
+        --light-bg: #F6F7F9;
+        --white: #fff;
+        --light2: #F5F6F9;
+        --sidebar-border: rgb(65, 39, 36);
+        --chart-text-color: rgba(82, 82, 108, 0.8);
+        --recent-dashed-border: rgba(82, 82, 108, 0.3);
+        --chart-dashed-border: rgba(82, 82, 108, 0.2);
+        --chart-progress-light: rgba(82, 82, 108, 0.1);
+        --recent-box-bg: #F2F4F7;
+        --recent-border: rgba(97, 101, 122, 0.25);
+        --course-light-btn: #F2F3F7;
+        --course-bg: #F7F7F7;
+        --balance-profie-bg: #E0DFEF;
+        --view-grid-bg: #ECF3FA80;
+        --view-border-marker: #cfcdfc;
+        --bs-heading-color: #1F2F3E;
+        --fc-button-bg-color: var(--theme-default);
+        --fc-button-active-bg-color: var(--theme-default);
+        --fc-button-active-border-color: var(--theme-default);
+        --fc-button-border-color: var(--theme-default);
+        --fc-button-hover-bg-color: var(--theme-default);
+        --fc-button-hover-border-color: var(--theme-default);
+        --normal: #ECEAF3;
+        --normal-shadow: #D9D8E3;
+        --normal-mouth: #9795A4;
+        --normal-eye: #595861;
+        --active: #F8DA69;
+        --active-shadow: #F4B555;
+        --active-mouth: #F05136;
+        --active-eye: #313036;
+        --active-tear: #76b5e7;
+        --active-shadow-angry: #e94f1d;
+      }
+      .page-wrapper.compact-sidebar .simplebar-wrapper .simplebar-mask .simplebar-content-wrapper .simplebar-content {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+            -ms-flex-direction: column;
+                flex-direction: column;
+        height: 100%;
+        background:  var(--theme-default) !important;
+      }
+      .page-wrapper.compact-small .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-list {
+        padding: 20px;
+        background-color: var(--theme-default) !important;
+      }
+
+      .page-wrapper .sidebar-wrapper .logo-wrapper {
+        padding: 20px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+            -ms-flex-align: center;
+                align-items: center;
+        -webkit-box-pack: center;
+            -ms-flex-pack: center;
+                justify-content: center;
+        background-color: var(--theme-default) !important;
+      }
+
+      .page-wrapper.compact-small .sidebar-list {
+        border-top: 1px solid var(--sidebar-border) !important;
+      }
+
+
+      .page-wrapper.compact-small .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-list.active {
+        background-color: var(--theme-default_dark) !important; /* Nuevo color de fondo para el elemento activo */
+      }
+
+
+    </style>
     <!-- Loader starts-->
     <div class="loader-wrapper">
       <div class="loader"></div>
