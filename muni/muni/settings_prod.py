@@ -48,7 +48,12 @@ INSTALLED_APPS = [
     'servicios',
     'tramites',
     'transparencia',
-    'informacion_municipal'
+    'generales',
+    'informacion_municipal',
+    "crispy_forms",
+    "crispy_bootstrap5",
+    'sass_processor',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
