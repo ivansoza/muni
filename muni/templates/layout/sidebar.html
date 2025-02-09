@@ -19,27 +19,22 @@
                 <h6>Pinned</h6>
               </div>
             </li>
-            <li class="sidebar-list"><a class="sidebar-link sidebar-title" href="https://yuridjango.pixelstrap.net/" target="_blank">
+            <li class="sidebar-list"><a class="sidebar-link sidebar-title" href="#" >
                 <svg class="stroke-icon">
                   <use href="{% static 'assets/svg/icon-sprite.svg' %}#home"></use>
                 </svg>
                 <svg class="fill-icon">
                   <use href="{% static 'assets/svg/icon-sprite.svg' %}#fill-home"></use>
-                </svg><span>Dashboard</span></a></li>
-            <li class="sidebar-list"><a class="sidebar-link sidebar-title" href="https://support.pixelstrap.com/agent/pixelstrap/pixelstrap/tickets/list/open-cases" target="_blank">
+                </svg><span>Dashboard</span></a>
+            </li>
+            <li class="sidebar-list"><a class="sidebar-link sidebar-title" href="{% url "personalizacion_view" %}" >
                 <svg class="stroke-icon">
-                  <use href="{% static 'assets/svg/icon-sprite.svg' %}#stroke-social"></use>
+                  <use href="{% static 'assets/svg/icon-sprite.svg' %}#home"></use>
                 </svg>
                 <svg class="fill-icon">
-                  <use href="{% static 'assets/svg/icon-sprite.svg' %}#fill-social"></use>
-                </svg><span>Raise Support</span></a></li>
-            <li class="sidebar-list"><a class="sidebar-link sidebar-title" href="https://docs.pixelstrap.net/django/cion/document/" target="_blank">
-                <svg class="stroke-icon">
-                  <use href="{% static 'assets/svg/icon-sprite.svg' %}#Editor"></use>
-                </svg>
-                <svg class="fill-icon">
-                  <use href="{% static 'assets/svg/icon-sprite.svg' %}#fill-form"></use>
-                </svg><span>Document</span></a></li>
+                  <use href="{% static 'assets/svg/icon-sprite.svg' %}#fill-home"></use>
+                </svg><span>Personalizar</span></a>
+            </li>
           </ul>
         </div>
         <div class="right-arrow" id="right-arrow"><i data-feather="arrow-right"></i></div>
