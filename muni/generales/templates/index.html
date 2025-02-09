@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalizador de Estilos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --secondary-color: #FF9800;
+            --tertiary-color: #4CAF50;
+            --font-primary: 'Arial', sans-serif;
+            --font-secondary: 'Georgia', serif;
+            --font-tertiary: 'Courier New', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+
+        .controls {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+
+        .control-group {
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .color-picker {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .color-picker input[type="color"] {
+            width: 40px;
+            height: 40px;
+            border: none;
+            margin-right: 1rem;
+            cursor: pointer;
+        }
+
+        .font-selector {
+            margin-bottom: 1rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .preview {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+
+        .preview h1 {
+            color: var(--primary-color);
+            font-family: var(--font-primary);
+            margin-bottom: 1rem;
+        }
+
+        .preview h2 {
+            color: var(--secondary-color);
+            font-family: var(--font-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .preview p {
+            color: var(--tertiary-color);
+            font-family: var(--font-tertiary);
+            line-height: 1.6;
+        }
+
+        .reset-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+
+        .reset-btn:hover {
+            background: #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="controls">
+            <div class="control-group">
+                <h2>Colores</h2>
+                <div class="color-picker">
+                    <input type="color" id="primaryColor">
+                    <label for="primaryColor">Primario</label>
+                </div>
+                <div class="color-picker">
+                    <input type="color" id="secondaryColor">
+                    <label for="secondaryColor">Secundario</label>
+                </div>
+                <div class="color-picker">
+                    <input type="color" id="tertiaryColor">
+                    <label for="tertiaryColor">Terciario</label>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h2>Tipografías</h2>
+                <div class="font-selector">
+                    <select id="fontPrimary">
+                        <option value="Arial">Arial (Primaria)</option>
+                        <option value="Roboto">Roboto</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="Courier New">Courier New</option>
+                    </select>
+                </div>
+                <div class="font-selector">
+                    <select id="fontSecondary">
+                        <option value="Georgia">Georgia (Secundaria)</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Verdana">Verdana</option>
+                    </select>
+                </div>
+                <div class="font-selector">
+                    <select id="fontTertiary">
+                        <option value="Courier New">Courier New (Terciaria)</option>
+                        <option value="Monaco">Monaco</option>
+                        <option value="Consolas">Consolas</option>
+                    </select>
+                </div>
+            </div>
+            <button class="reset-btn" onclick="resetStyles()">Resetear Estilos</button>
+        </div>
+
+        <div class="preview">
+            <h1>Vista Previa - Título Principal</h1>
+            <h2>Subtítulo de Ejemplo</h2>
+            <p>Este es un texto de ejemplo para visualizar cómo quedará la combinación de colores y tipografías seleccionadas. Puedes personalizar todos los aspectos visuales usando los controles del panel izquierdo.</p>
+        </div>
+    </div>
+
+    <script>
+        // Color pickers
+        document.getElementById('primaryColor').addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--primary-color', e.target.value);
+        });
+
+        document.getElementById('secondaryColor').addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--secondary-color', e.target.value);
+        });
+
+        document.getElementById('tertiaryColor').addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--tertiary-color', e.target.value);
+        });
+
+        // Font selectors
+        document.getElementById('fontPrimary').addEventListener('change', (e) => {
+            document.documentElement.style.setProperty('--font-primary', e.target.value);
+        });
+
+        document.getElementById('fontSecondary').addEventListener('change', (e) => {
+            document.documentElement.style.setProperty('--font-secondary', e.target.value);
+        });
+
+        document.getElementById('fontTertiary').addEventListener('change', (e) => {
+            document.documentElement.style.setProperty('--font-tertiary', e.target.value);
+        });
+
+        // Reset function
+        function resetStyles() {
+            const root = document.documentElement.style;
+            root.removeProperty('--primary-color');
+            root.removeProperty('--secondary-color');
+            root.removeProperty('--tertiary-color');
+            root.removeProperty('--font-primary');
+            root.removeProperty('--font-secondary');
+            root.removeProperty('--font-tertiary');
+            
+            document.getElementById('primaryColor').value = '#2196F3';
+            document.getElementById('secondaryColor').value = '#FF9800';
+            document.getElementById('tertiaryColor').value = '#4CAF50';
+            document.getElementById('fontPrimary').value = 'Arial';
+            document.getElementById('fontSecondary').value = 'Georgia';
+            document.getElementById('fontTertiary').value = 'Courier New';
+        }
+    </script>
+</body>
+</html>

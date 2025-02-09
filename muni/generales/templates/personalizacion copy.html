@@ -1,5 +1,4 @@
 {% extends "baseTemplate.html" %}
-{% load static %}
 
 {% block css %}
 <style>
@@ -96,7 +95,7 @@
     }
 
     /* NAVBAR (usa color primario) */
-    .navbar-preview {
+    .navbar {
         background-color: var(--primary-color, #2196F3);
         color: #fff;
         padding: 1rem 2rem;
@@ -106,28 +105,61 @@
         font-family: var(--font-primary, Arial);
     }
 
-    .navbar-preview .nav-links a {
-        color: #fff;
-        text-decoration: none;
-        margin-left: 1rem;
-        transition: opacity 0.3s;
-      }
-
-    .navbar-preview .nav-links a:hover {
-        opacity: 0.8;
-    }
-
     .navbar .logo {
         font-size: 1.5rem;
         font-weight: bold;
     }
 
+    .navbar .nav-links a {
+        color: #fff;
+        text-decoration: none;
+        margin-left: 1rem;
+        font-family: var(--font-secondary, Georgia);
+    }
 
+    /* CONTENIDO PRINCIPAL */
+    .content-area {
+        flex: 1;
+        padding: 2rem;
+    }
 
+    /* Tarjeta con color secundario */
+    .card {
+        background-color: var(--secondary-color, #FF9800);
+        color: #fff;
+        margin: 2rem auto;
+        padding: 2rem;
+        max-width: 600px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        font-family: var(--font-tertiary, Courier New);
+        gap: 1rem;
+    }
 
+    .card .icon {
+        font-size: 2rem;
+        background: rgba(255,255,255,0.2);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .card-content {
+        flex: 1;
+    }
+    .card-content h2 {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        font-family: var(--font-primary, Arial);
+    }
 
     /* Footer (mismo color que el navbar => color primario) */
-    .footer_preview {
+    .footer {
         background-color: var(--primary-color, #2196F3);
         color: #fff;
         text-align: center;
@@ -153,7 +185,7 @@
         justify-content: center;
         width: 50px;
         height: 50px;
-        background-color: var(--primary-color, #2196F3); /* Usamos el color primario */
+        background-color: var(--icon-bg);
         color: white;
         border-radius: 25px 0 0 25px;
         text-decoration: none;
@@ -162,111 +194,9 @@
     }
 
     .social-icons-float a:hover {
-        background-color: var(--secondary-color, #FF9800); /* En hover, cambia al color secundario */
+        background-color: var(--secondary-color, #FF9800);
         transform: translateX(-5px);
     }
-
-
-    /* CONTENIDO PRINCIPAL */
-    .content-area {
-        padding: 2rem;
-    }
-
-    .content-container {
-        max-width: 100%;
-        width: 100%;
-        display: block;
-        margin: 0 auto;
-    }
-
-    
-    /* =========================
-   Adaptaciones para el Preview de la Sección Alcalde
-   ========================= */
-.preview .alcalde-section {
-    /* Reducir el padding y márgenes para que la sección sea más compacta */
-    padding: 1.5rem 1rem;
-}
-
-.preview .alcalde-section h2 {
-    font-family: var(--font-primary, Arial);
-
-    /* Disminuir el tamaño del título (display-4 es muy grande para preview) */
-    font-size: 1.75rem;
-}
-
-.preview .alcalde-section h5,
-.preview .alcalde-section .section-subtitle,
-.preview .alcalde-section .name-tag h6 {
-    font-family: var(--font-secondary, Georgia);
-}
-
-.preview .alcalde-section p,
-.preview .alcalde-section li {
-    font-family: var(--font-tertiary, "Courier New");
-}
-
-
-.preview .alcalde-section p.lead {
-    /* Ajustar el tamaño de la fuente de los párrafos descriptivos */
-    font-size: 0.9rem;
-}
-
-.preview .alcalde-section .info-box {
-    /* Reducir el padding interno de la caja de información */
-    padding: 1rem;
-    margin-top: 1rem;
-}
-
-.preview .image-wrapper img {
-    /* Reducir las dimensiones de la imagen del alcalde */
-    width: 150px !important;
-    height: 150px !important;
-    border-width: 3px !important;
-}
-
-.preview .name-tag h6 {
-    /* Ajustar el tamaño de la etiqueta del nombre y su posición */
-    font-size: 0.75rem;
-    color: #333;
-    bottom: -16px;
-}
-
-    .badge {
-        font-size: 0.875rem;
-        padding: 0.5rem 1rem;
-        font-weight: 600;
-        letter-spacing: 0.05rem;
-    }
-    
-    .image-wrapper img {
-        transition: transform 0.3s ease, box-shadow 0.3s ease !important; /* Añadir !important si es necesario */
-    }
-    
-    .image-wrapper img:hover {
-        transform: scale(1.1) !important;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2) !important;
-    }
-    
-    p .fa-quote-left,
-    p .fa-quote-right {
-        color: #6c757d; /* Color gris */
-        font-size: 0.9rem; /* Tamaño de las comillas */
-        vertical-align: middle; /* Alineación con el texto */
-    }
-    
-    .section-subtitle {
-        display: inline-block;
-        padding: 2px 15px;
-        font-size: 0.8rem;
-        color: white;
-        background: var(--secondary-color, #FF9800);
-        border-radius: 20px;
-        text-transform: uppercase;
-        font-weight: 500;
-    }
-
-
 </style>
 {% endblock css %}
 
@@ -292,13 +222,9 @@
         </div>
 
         <!-- Control de Tipografías -->
-        <!-- Control de Tipografías -->
         <div class="control-group">
             <h2>Tipografías</h2>
-            
             <div class="font-selector">
-                <!-- Etiqueta para indicar uso -->
-                <label for="fontPrimary">Tipografía Principal (Títulos)</label>
                 <select id="fontPrimary">
                     <option value="Arial">Arial (Primaria)</option>
                     <option value="Roboto">Roboto</option>
@@ -306,20 +232,14 @@
                     <option value="Courier New">Courier New</option>
                 </select>
             </div>
-
             <div class="font-selector">
-                <!-- Etiqueta para indicar uso -->
-                <label for="fontSecondary">Tipografía Secundaria (Subtítulos)</label>
                 <select id="fontSecondary">
                     <option value="Georgia">Georgia (Secundaria)</option>
                     <option value="Times New Roman">Times New Roman</option>
                     <option value="Verdana">Verdana</option>
                 </select>
             </div>
-
             <div class="font-selector">
-                <!-- Etiqueta para indicar uso -->
-                <label for="fontTertiary">Tipografía Terciaria (Párrafos)</label>
                 <select id="fontTertiary">
                     <option value="Courier New">Courier New (Terciaria)</option>
                     <option value="Monaco">Monaco</option>
@@ -327,7 +247,6 @@
                 </select>
             </div>
         </div>
-
 
         <!-- Botón para Resetear Estilos -->
         <button class="reset-btn" onclick="resetStyles()">Resetear Estilos</button>
@@ -337,69 +256,44 @@
     <div class="preview">
         <!-- Iconos Flotantes - Redes Sociales -->
         <div class="social-icons-float">
-            <a href="#"><i class="fa fa-facebook-f"></i></a>
-            <a href="#" ><i class="fa fa-twitter"></i></a>
-            <a href="#" ><i class="fa fa-instagram"></i></a>
-            <a href="#" ><i class="fa fa-youtube"></i></a>
+            <a href="https://facebook.com" target="_blank"><i class="fa fa-facebook-f"></i></a>
+            <a href="https://twitter.com" target="_blank"><i class="fa fa-twitter"></i></a>
+            <a href="https://instagram.com" target="_blank"><i class="fa fa-instagram"></i></a>
+            <a href="https://youtube.com" target="_blank"><i class="fa fa-youtube"></i></a>
         </div>
 
         <!-- NAVBAR -->
-        <div class="navbar-preview">
-            <div class="logo">Logo Municipal</div>
+        <div class="navbar">
+            <div class="logo">Mi Marca</div>
             <div class="nav-links">
-                <a href="">Inicio</a>
-                <a href="">Servicio</a>
-                <a href="">Noticias</a>
+                <a href="#">Inicio</a>
+                <a href="#">Sobre</a>
+                <a href="#">Contacto</a>
             </div>
         </div>
 
-
         <!-- CONTENIDO PRINCIPAL -->
         <div class="content-area">
-            <section class="alcalde-section ">
-                <div class="content-container">
-                    <div class="row align-items-center">
-                        <!-- Texto e información -->
-                        <div class="col-md-8">
-                            <div class="mb-3">
-                                <span class="section-subtitle">Por amor a Apizaco</span>
-                            </div>
-                            <h2 class="display-4 fw-bold">Alcalde de Apizaco Tlaxcala</h2>
-                                <p class="lead text-muted">
-                                    <i class="fa fa-quote-left me-2"></i>Apizaco, Ciudad Heroica y en Crecimiento. Tierra Brava y Ferrocarrilera.<i class="fa fa-quote-right ms-2"></i>
-                                </p> 
-                                
-                                <div class="info-box mt-4 p-4 border rounded-3 shadow-sm position-relative">
-                                    <h5 class="fw-bold">Apizaco, el corazón industrial de Tlaxcala, México.</h5>
-                                    <ul class="list-unstyled mt-3">
-                                        <li><i class="fa fa-check-circle me-2" style='color:#AD9065'></i>Es una ciudad dinámica que combina desarrollo, historia y tradición.</li>
-                                        <li><i class="fa fa-check-circle me-2" style='color:#AD9065'></i>Reconocida por su destacada actividad ferroviaria y su contribución al progreso regional.</li>
-                                        <li><i class="fa fa-check-circle me-2" style='color:#AD9065'></i>Un crisol de cultura que se refleja en su gente trabajadora, su gastronomía y sus eventos emblemáticos.</li>
-                                        <li><i class="fa fa-check-circle me-2" style='color:#AD9065'></i>Apizaco narra un capítulo de esfuerzo y crecimiento que inspira a todos sus visitantes.</li>
-                                    </ul>
-                                
-                                </div>
-                        </div>
-                        
-                        
-                        <!-- Imagen del alcalde y logo -->
-                        <div class="col-md-4 text-center position-relative">
-                            <div class="image-wrapper">
-                                <br>
-                                <img src="{% static 'img/alcalde.jpg' %}" alt="Imagen del Alcalde" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid var(--primary-color, #2196F3);">
-                                <div class="name-tag position-absolute text-center w-100" style="bottom: -22px;">
-                                    <h6 class="bg-light py-2 px-3 d-inline-block rounded-pill shadow-sm">Lic. Javier Rivera Bonilla</h6>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Tarjeta con color secundario -->
+            <div class="card">
+                <div class="icon">
+                    <i class="fas fa-user"></i>
                 </div>
-            </section>
+                <div class="card-content">
+                    <h2>Título de Tarjeta</h2>
+                    <p>
+                        Aquí puedes ver cómo luce una tarjeta con color 
+                        secundario y un ícono de ejemplo. El texto y las tipografías 
+                        cambian según lo que elijas en los controles.
+                    </p>
+                </div>
+            </div>
+            <!-- Aquí podrías agregar más elementos si lo deseas -->
         </div>
 
         <!-- FOOTER -->
-        <div class="footer_preview">
-            © 2024 - 2027 Gobierno Municipal de Apizaco. Todos los derechos reservados.        
+        <div class="footer">
+            © 2025 - Mi Sitio Web - Todos los derechos reservados.
         </div>
     </div>
 </div>
