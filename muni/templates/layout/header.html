@@ -4,7 +4,7 @@
 <!-- Page Header Start-->
 <div class="page-header">
     <div class="header-wrapper row">
-      <div class="logo-wrapper"><a href="/index"><img class="img-fluid" src="{% static 'assets/images/logo/logo.png' %}" alt=""></a></div>
+      <div class="logo-wrapper"><a href="{% url "dashboard" %}"><img class="img-fluid" src="{% static 'assets/images/logo/logo.png' %}" alt=""></a></div>
       <svg class="stroke-icon toggle-sidebar">
         <use class="status_toggle middle sidebar-toggle" href="{% static 'assets/svg/icon-sprite.svg' %}#Grid"> </use>
       </svg>
@@ -21,7 +21,9 @@
 
           <li class="profile-nav onhover-dropdown pe-0 py-0">
             <div class="d-flex align-items-center profile-media"><img class="b-r-25" src="{% static 'assets/images/dashboard/profile1.png' %}" alt="">
-              <div class="flex-grow-1 user"><span>Dani Flow</span>
+              <div class="flex-grow-1 user">
+                
+                <span>{{ user_first_name }}</span>
                 <p class="mb-0 font-nunito">Soporte <i class="middle fa fa-angle-down"></i></p>
               </div>
             </div>

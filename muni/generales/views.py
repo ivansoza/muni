@@ -54,3 +54,51 @@ class PersonalizacionView(LoginRequiredMixin, TemplateView):
         context['sidebar'] = 'perso'
 
         return context
+    
+
+class SocialMediaView(LoginRequiredMixin, TemplateView):
+    template_name = "socialmedia.html"  
+    login_url = reverse_lazy('login')  # Redirigir si no está autenticado
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        url_configuracion = reverse('dashboard')
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': url_configuracion},
+            'child': {'name': 'Redes Sociales', 'url': ''}
+        }
+        context['sidebar'] = 'socialmedia'  # Cambiar a 'socialmedia' para que el sidebar refleje correctamente la sección
+
+        return context
+
+
+class NewsView(LoginRequiredMixin, TemplateView):
+    template_name = "noticias.html"  
+    login_url = reverse_lazy('login')  # Redirigir si no está autenticado
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        url_configuracion = reverse('dashboard')
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': url_configuracion},
+            'child': {'name': 'Noticias', 'url': ''}
+        }
+        context['sidebar'] = 'noticias'  # Asegura que el sidebar resalte la sección de Noticias
+
+        return context
+
+
+class ServicesView(LoginRequiredMixin, TemplateView):
+    template_name = "servicios.html"  
+    login_url = reverse_lazy('login')  # Redirigir si no está autenticado
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        url_configuracion = reverse('dashboard')
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': url_configuracion},
+            'child': {'name': 'Servicios', 'url': ''}
+        }
+        context['sidebar'] = 'servicios'  # Asegura que el sidebar resalte la sección de Servicios
+
+        return context
