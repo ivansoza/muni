@@ -8,7 +8,7 @@
 {% block content %}
 <style>
     .contenedor {
-        padding-top: 100px;
+        padding-top: 50px;
     }
 
     .apps-grid {
@@ -116,8 +116,155 @@
     }
 </style>
 
+<style>
 
+.dashboard {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+    gap: 3rem !important;
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin-bottom: 60px;
+}
+
+.cardash {
+    background: white !important;
+    border-radius: 1rem !important;
+    padding: 1.5rem !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px -20px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(241, 245, 249, 0.8) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.cardash:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 25px 50px -12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.cardash::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 4px !important;
+    background: linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #ec4899 100%) !important;
+}
+
+.cardash-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.cardash-title {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+}
+
+.cardash-icon {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 0.75rem !important;
+    background: #f1f5f9 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.3s ease !important;
+    font-size: 1.5rem !important;
+}
+
+.cardash-content {
+    font-size: 1.85rem !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    font-family: inherit !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+}
+
+.time-content {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.25rem !important;
+}
+
+.time-subtext {
+    font-size: 0.875rem !important;
+    font-weight: 400 !important;
+    color: #64748b !important;
+    font-family: inherit !important;
+}
+
+#visit-count {
+    color: #10b981 !important;
+}
+
+@media (max-width: 640px) {
+    body {
+        padding: 1rem !important;
+    }
+    
+    .cardash {
+        padding: 1.25rem !important;
+    }
+    
+    .cardash-content {
+        font-size: 1.875rem !important;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0 !important; transform: translateY(10px) !important; }
+    to { opacity: 1 !important; transform: translateY(0) !important; }
+}
+
+.cardash {
+    animation: fadeIn 0.6s ease forwards !important;
+}
+
+.emoji-transition {
+    transition: opacity 0.3s ease, transform 0.3s ease !important;
+}
+
+</style>
 <div class="container-fluid mt-4 contenedor">
+    <div class="dashboard">
+        <!-- Tarjeta 1: Fecha y Hora -->
+        <div class="cardash">
+            <div class="cardash-header">
+                <span class="cardash-title">Hora Actual</span>
+                <div class="cardash-icon">
+                    <span id="time-icon" class="emoji-transition">🌤️</span>
+                </div>
+            </div>
+            <div class="cardash-content time-content">
+                <span id="current-time"></span>
+                <span class="time-subtext" id="current-date"></span>
+            </div>
+        </div>
+
+        <!-- Tarjeta 2: Contador de visitas -->
+        <div class="cardash">
+            <div class="cardash-header">
+                <span class="cardash-title">Visitas Totales</span>
+                <div class="cardash-icon">
+                    <span class="emoji-transition">👤</span>
+                </div>
+            </div>
+            <div class="cardash-content" id="visit-count">0</div>
+        </div>
+    </div>
+
+
+
  <div class="apps-grid mt-4">
             <!-- Calendario -->
             <a class="app-item" href="#">
@@ -169,5 +316,65 @@
 
 {% block scriptcontent %}
 
+<script>
+    function updateDateTime() {
+        const now = new Date();
+        const optionsTime = {
+            hour: 'numeric',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        };
+        
+        const optionsDate = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
 
+        document.getElementById('current-time').textContent = now.toLocaleTimeString('es-ES', optionsTime);
+        document.getElementById('current-date').textContent = now.toLocaleDateString('es-ES', optionsDate);
+
+        // Actualizar emoji con transición
+        const timeIcon = document.getElementById('time-icon');
+        const hours = now.getHours();
+        const isDay = hours >= 6 && hours < 18;
+        const newEmoji = isDay ? '🌤️' : '🌙';
+        
+        if (timeIcon.textContent !== newEmoji) {
+            timeIcon.style.opacity = '0';
+            timeIcon.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                timeIcon.textContent = newEmoji;
+                timeIcon.style.opacity = '1';
+                timeIcon.style.transform = 'scale(1)';
+            }, 300);
+        }
+    }
+
+    function updateVisitCounter() {
+        let visits = localStorage.getItem('pageVisits') || 0;
+        visits = parseInt(visits) + 1;
+        localStorage.setItem('pageVisits', visits);
+        
+        const counterElement = document.getElementById('visit-count');
+        counterElement.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+            counterElement.style.transform = 'scale(1)';
+        }, 200);
+        counterElement.textContent = visits.toLocaleString();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+        
+        updateVisitCounter();
+        
+        document.querySelectorAll('.card').forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+        });
+    });
+</script>
 {% endblock %}
