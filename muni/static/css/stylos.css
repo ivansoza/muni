@@ -70,16 +70,7 @@
         
 
         /* Hero Section mejorado */
-        .hero-section {
-            background: linear-gradient(rgba(78, 21, 37, 0.8), rgba(78, 21, 37, 0.8)),
-                url('https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            padding: 120px 0;
-            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
-            margin-bottom: 80px;
-        }
+    
 
         .hero-section h1 {
             font-size: 3.5rem;

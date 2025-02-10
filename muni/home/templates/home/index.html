@@ -53,8 +53,14 @@
                 rgba(var(--color-primario-rgb), 0.8), 
                 rgba(var(--color-secundario-rgb), 0.8)
             ),
-            url('https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg');
-
+            url(
+                {% if municipio.banner %}
+                    '{{ municipio.banner.url }}'
+                {% else %}
+                    'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'
+                {% endif %}
+            );
+        
             background-size: cover;
             background-position: center;
             color: white;
@@ -62,6 +68,7 @@
             clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
             margin-bottom: 80px;
         }
+        
 
         .card-elegante:hover .card-icon {
             color: var(--color-secundario);
