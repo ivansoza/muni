@@ -23,7 +23,7 @@
         :root {
             {% if municipio.colores.exists %}
                 --color-primario:{{ municipio.colores.first.color_primario_dark }};
-                --color-primario:{{ municipio.colores.first.color_primario }};
+                --color-secundario:{{ municipio.colores.first.color_primario }};
                 --color-iconos:{{municipio.colores.first.color_secundario}} ;
                 --color-primario-rgb: {{municipio.colores.first.color_primario_dark_rgb}}; 
                 --color-secundario-rgb: {{municipio.colores.first.color_primario_rgb}};
@@ -63,7 +63,38 @@
             margin-bottom: 80px;
         }
 
+        .card-elegante:hover .card-icon {
+            color: var(--color-secundario);
+        }
 
+        .news-link {
+            font-size: 0.9rem;
+            color: var(--color-iconos);
+            text-decoration: none;
+        }
+        .news-link i {
+            color: var(--color-iconos);
+        }
+
+        .contact-info-container {
+            background: rgba(var(--color-primario-rgb),0.8); /* Fondo semitransparente */
+            border-radius: 20px;
+            padding: 40px;
+            color: white;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            text-align: left;
+        
+            /* Ajuste para desplazar a la derecha */
+            margin-right: 5%;
+            transform: translateX(50%); /* Desplaza hacia la derecha */
+        }
+           
+        .social-icons-float a:hover {
+            background-color: var(--color-secundario);
+            transform: translateX(-5px);
+        }
 
     </style>
 
@@ -481,10 +512,11 @@
                         <div class="info-box mt-4 p-4 border rounded-3 shadow-sm position-relative">
                             <h5 class="fw-bold">Apizaco, el corazón industrial de Tlaxcala, México.</h5>
                             <ul class="list-unstyled mt-3">
-                                <li><i class="fas fa-check-circle me-2" style='color:#AD9065'></i>Es una ciudad dinámica que combina desarrollo, historia y tradición.</li>
-                                <li><i class="fas fa-check-circle me-2" style='color:#AD9065'></i>Reconocida por su destacada actividad ferroviaria y su contribución al progreso regional.</li>
-                                <li><i class="fas fa-check-circle me-2" style='color:#AD9065'></i>Un crisol de cultura que se refleja en su gente trabajadora, su gastronomía y sus eventos emblemáticos.</li>
-                                <li><i class="fas fa-check-circle me-2" style='color:#AD9065'></i>Apizaco narra un capítulo de esfuerzo y crecimiento que inspira a todos sus visitantes.</li>
+                                <li><i class="fas fa-check-circle me-2" style='color:var(--color-iconos)'></i>Es una ciudad dinámica que combina desarrollo, historia y tradición.</li>
+                                <li><i class="fas fa-check-circle me-2" style='color:var(--color-iconos)'></i>Reconocida por su destacada actividad ferroviaria y su contribución al progreso regional.</li>
+                                <li><i class="fas fa-check-circle me-2" style='color:var(--color-iconos)'></i>Un crisol de cultura que se refleja en su gente trabajadora, su gastronomía y sus eventos emblemáticos.</li>
+                                <li><i class="fas fa-check-circle me-2" style='color:var(--color-iconos)'></i>
+                                Apizaco narra un capítulo de esfuerzo y crecimiento que inspira a todos sus visitantes.</li>
                             </ul>
                         
                         </div>
@@ -495,7 +527,7 @@
                 <div class="col-md-4 text-center position-relative">
                     <div class="image-wrapper">
                         <br>
-                        <img src="{% static 'img/alcalde.jpg' %}" alt="Imagen del Alcalde" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid rgb(139, 14, 14);">
+                        <img src="{% static 'img/alcalde.jpg' %}" alt="Imagen del Alcalde" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid rgb(var(--color-primario-rgb));">
                         <div class="name-tag position-absolute text-center w-100" style="bottom: -22px;">
                             <h6 class="bg-light py-2 px-3 d-inline-block rounded-pill shadow-sm">Lic. Javier Rivera Bonilla</h6>
                         </div>
