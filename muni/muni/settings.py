@@ -97,6 +97,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'generales.context_processors.user_info', 
+                'generales.context_processors.municipio',  # Aquí se agrega tu context processor
 
             ],
         },

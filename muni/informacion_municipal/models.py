@@ -1,8 +1,6 @@
 from django.db import models
 
-
-
-class DatosMunicipio(models.Model):
+class Municipio(models.Model):
     nombre = models.CharField("Nombre oficial", max_length=120, unique=True)
     logotipo = models.ImageField("Logotipo", upload_to='municipio/')
     banner = models.ImageField(
@@ -14,13 +12,14 @@ class DatosMunicipio(models.Model):
     ultima_actualizacion = models.DateTimeField("Última actualización", auto_now=True)
 
     class Meta:
-        verbose_name = "Datos Municipales"
-        verbose_name_plural = "Datos Municipales"
+        verbose_name = "Municipio"
+        verbose_name_plural = "Municipios"
 
     def __str__(self):
         return self.nombre
-    
+
 class ColoresMunicipio(models.Model):
+    municipio = models.ForeignKey(Municipio, related_name='colores', on_delete=models.CASCADE)
     color_primario = models.CharField("Color primario (HEX)", max_length=7, default='#003366')
     color_secundario = models.CharField("Color secundario (HEX)", max_length=7, default='#FFD700')
     color_terciario = models.CharField("Color terciario (HEX)", max_length=7, default='#FFFFFF')
@@ -31,6 +30,7 @@ class ColoresMunicipio(models.Model):
         verbose_name_plural = "Paleta de Colores"
 
 class GobiernoActual(models.Model):
+    municipio = models.ForeignKey(Municipio, related_name='gobierno_actual', on_delete=models.CASCADE)
     nombre_alcalde = models.CharField("Alcalde/sa", max_length=150)
     periodo = models.CharField("Período", max_length=9, help_text="Ej: 2024-2025")
     fecha_inicio = models.DateField("Inicio de gestión")
@@ -42,6 +42,7 @@ class GobiernoActual(models.Model):
         verbose_name_plural = "Gobierno Actual"
 
 class MisionVision(models.Model):
+    municipio = models.ForeignKey(Municipio, related_name='mision_vision', on_delete=models.CASCADE)
     mision = models.TextField("Misión", max_length=500)
     vision = models.TextField("Visión", max_length=500)
     valores = models.TextField("Valores", max_length=300, help_text="Separados por comas")
