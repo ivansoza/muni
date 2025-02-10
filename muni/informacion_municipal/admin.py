@@ -52,49 +52,76 @@ class MunicipioAdmin(admin.ModelAdmin):
         return "-"
     preview_banner.short_description = 'Banner Actual'
 
-# Registro de ColoresMunicipio
+
 @admin.register(ColoresMunicipio)
 class ColoresMunicipioAdmin(admin.ModelAdmin):
-    # Campos REALES editables
-    list_editable = ("color_primario", "color_secundario", "color_terciario")
-
-    # list_display incluye los campos editables + métodos visuales
+    list_editable = ("color_primario", "color_secundario")
     list_display = (
-        "muestra_color_primario",
-        "color_primario",
-        "muestra_color_secundario",
-        "color_secundario",
-        "muestra_color_terciario",
-        "color_terciario",
+        "municipio",
+        "muestra_color_primario", "color_primario",
+        "muestra_color_primario_dark", "color_primario_dark",
+        "muestra_color_primario_light", "color_primario_light",
+        "muestra_color_primario_rgb", "color_primario_rgb",
+        "muestra_color_primario_dark_rgb", "color_primario_dark_rgb",
+        "muestra_color_secundario", "color_secundario",
+        "muestra_color_secundario_dark", "color_secundario_dark",
+        "muestra_color_secundario_light", "color_secundario_light",
+        "muestra_color_secundario_rgb", "color_secundario_rgb",
+        "muestra_color_secundario_dark_rgb", "color_secundario_dark_rgb",
         "fecha_creacion",
     )
 
-    # Métodos para mostrar bloques de color
+    # Bloque visual para el color primario en HEX
     def muestra_color_primario(self, obj):
-        return format_html(
-            '<div style="background:{}; width:50px; height:20px; border:1px solid #000"></div>',
-            obj.color_primario
-        )
-
-    def muestra_color_secundario(self, obj):
-        return format_html(
-            '<div style="background:{}; width:50px; height:20px; border:1px solid #000"></div>',
-            obj.color_secundario
-        )
-
-    def muestra_color_terciario(self, obj):
-        return format_html(
-            '<div style="background:{}; width:50px; height:20px; border:1px solid #000"></div>',
-            obj.color_terciario
-        )
-
-    # Configuración adicional
-    list_display_links = None
+        return format_html('<div style="background:{}; width:50px; height:20px; border:1px solid #000;"></div>', obj.color_primario)
     muestra_color_primario.short_description = "Color Primario"
+    
+    # Bloque visual para el color primario dark en HEX
+    def muestra_color_primario_dark(self, obj):
+        return format_html('<div style="background:{}; width:50px; height:20px; border:1px solid #000;"></div>', obj.color_primario_dark)
+    muestra_color_primario_dark.short_description = "Primario Dark"
+    
+    # Bloque visual para el color primario light en HEX
+    def muestra_color_primario_light(self, obj):
+        return format_html('<div style="background:{}; width:50px; height:20px; border:1px solid #000;"></div>', obj.color_primario_light)
+    muestra_color_primario_light.short_description = "Primario Light"
+    
+    # Mostrar el RGB (números) para el color primario
+    def muestra_color_primario_rgb(self, obj):
+        return obj.color_primario_rgb
+    muestra_color_primario_rgb.short_description = "Primario RGB"
+    
+    # Mostrar el RGB (números) para el color primario dark
+    def muestra_color_primario_dark_rgb(self, obj):
+        return obj.color_primario_dark_rgb
+    muestra_color_primario_dark_rgb.short_description = "Primario Dark RGB"
+    
+    # Bloque visual para el color secundario en HEX
+    def muestra_color_secundario(self, obj):
+        return format_html('<div style="background:{}; width:50px; height:20px; border:1px solid #000;"></div>', obj.color_secundario)
     muestra_color_secundario.short_description = "Color Secundario"
-    muestra_color_terciario.short_description = "Color Terciario"
-
-# Registro de GobiernoActual
+    
+    # Bloque visual para el color secundario dark en HEX
+    def muestra_color_secundario_dark(self, obj):
+        return format_html('<div style="background:{}; width:50px; height:20px; border:1px solid #000;"></div>', obj.color_secundario_dark)
+    muestra_color_secundario_dark.short_description = "Secundario Dark"
+    
+    # Bloque visual para el color secundario light en HEX
+    def muestra_color_secundario_light(self, obj):
+        return format_html('<div style="background:{}; width:50px; height:20px; border:1px solid #000;"></div>', obj.color_secundario_light)
+    muestra_color_secundario_light.short_description = "Secundario Light"
+    
+    # Mostrar el RGB (números) para el color secundario
+    def muestra_color_secundario_rgb(self, obj):
+        return obj.color_secundario_rgb
+    muestra_color_secundario_rgb.short_description = "Secundario RGB"
+    
+    # Mostrar el RGB (números) para el color secundario dark
+    def muestra_color_secundario_dark_rgb(self, obj):
+        return obj.color_secundario_dark_rgb
+    muestra_color_secundario_dark_rgb.short_description = "Secundario Dark RGB"
+    
+    list_display_links = ("municipio",)
 @admin.register(GobiernoActual)
 class GobiernoActualAdmin(admin.ModelAdmin):
     list_display = ('nombre_alcalde', 'periodo', 'fecha_inicio', 'fecha_fin', 'estado_actual', 'fecha_registro')

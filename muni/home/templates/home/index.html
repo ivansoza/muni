@@ -21,13 +21,24 @@
 
     <style>
         :root {
-            --color-primario:#1e4765;
-            --color-secundario: #295E84;
-            --color-iconos: #AD9065;
+            {% if municipio.colores.exists %}
+                --color-primario:{{ municipio.colores.first.color_primario_dark }};
+                --color-primario:{{ municipio.colores.first.color_primario }};
+                --color-iconos:{{municipio.colores.first.color_secundario}} ;
+                --color-primario-rgb: {{municipio.colores.first.color_primario_dark_rgb}}; 
+                --color-secundario-rgb: {{municipio.colores.first.color_primario_rgb}};
+            {% else %}
+                --color-primario: #1e4765;
+                --color-secundario: #295E84;
+                --color-iconos:rgb(109, 109, 109);
+
+                --color-primario-rgb: 30, 71, 101;  
+                --color-secundario-rgb: 41, 94, 132;
+            {% endif %}
+            
             --color-gradiente: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
 
-            --color-primario-rgb: 30, 71, 101;  /* RGB de #1e4765 */
-            --color-secundario-rgb: 41, 94, 132; /* RGB de #295E84 */
+           
             /* Gradiente */
         }
 
@@ -69,9 +80,9 @@
         </div>
     </div>
 
-
-
-    <!-- Navbar -->
+    {{municipio.colores.first.color_primario_rgb}}
+    
+            <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-transparent fixed-top">
         <div class="container">
             <a class="navbar-brand" href="{% url "home" %}">

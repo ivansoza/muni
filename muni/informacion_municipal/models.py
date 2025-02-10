@@ -1,4 +1,5 @@
 from django.db import models
+import colorsys
 
 class Municipio(models.Model):
     nombre = models.CharField("Nombre oficial", max_length=120, unique=True)
@@ -22,12 +23,71 @@ class ColoresMunicipio(models.Model):
     municipio = models.ForeignKey(Municipio, related_name='colores', on_delete=models.CASCADE)
     color_primario = models.CharField("Color primario (HEX)", max_length=7, default='#003366')
     color_secundario = models.CharField("Color secundario (HEX)", max_length=7, default='#FFD700')
-    color_terciario = models.CharField("Color terciario (HEX)", max_length=7, default='#FFFFFF')
-    fecha_creacion = models.DateTimeField("Fecha de creación", auto_now_add=True)  # Fecha de registro inicial
+    
+    # Campos adicionales para almacenar las versiones derivadas
+    color_primario_dark = models.CharField("Color primario oscuro (HEX)", max_length=7, blank=True, editable=False)
+    color_primario_light = models.CharField("Color primario suave (HEX)", max_length=7, blank=True, editable=False)
+    color_secundario_dark = models.CharField("Color secundario oscuro (HEX)", max_length=7, blank=True, editable=False)
+    color_secundario_light = models.CharField("Color secundario suave (HEX)", max_length=7, blank=True, editable=False)
+    
+    # Nuevos campos para almacenar los colores en formato RGB
+    color_primario_rgb = models.CharField("Color primario (RGB)", max_length=20, blank=True, editable=False)
+    color_secundario_rgb = models.CharField("Color secundario (RGB)", max_length=20, blank=True, editable=False)
+    
+    # Nuevos campos para almacenar los colores oscuros en formato RGB (sólo números)
+    color_primario_dark_rgb = models.CharField("Color primario oscuro (RGB)", max_length=20, blank=True, editable=False)
+    color_secundario_dark_rgb = models.CharField("Color secundario oscuro (RGB)", max_length=20, blank=True, editable=False)
+    
+
+    fecha_creacion = models.DateTimeField("Fecha de creación", auto_now_add=True)
 
     class Meta:
         verbose_name = "Paleta de Colores"
         verbose_name_plural = "Paleta de Colores"
+
+    def ajustar_luminosidad(self, hex_color, factor):
+        """
+        Ajusta la luminosidad del color en formato HEX.
+        - factor > 1 para hacer el color más claro.
+        - factor < 1 para hacerlo más oscuro.
+        """
+        hex_color = hex_color.lstrip('#')
+        r, g, b = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+        
+        # Convertir a HLS (Hue, Lightness, Saturation)
+        h, l, s = colorsys.rgb_to_hls(r/255, g/255, b/255)
+        
+        # Ajustar luminosidad (manteniendo el mismo tono y saturación)
+        l = max(0, min(1, l * factor))
+        
+        # Convertir de nuevo a RGB
+        r, g, b = colorsys.hls_to_rgb(h, l, s)
+        return f'#{int(r*255):02X}{int(g*255):02X}{int(b*255):02X}'
+    def hex_to_rgb(self, hex_color):
+        """
+        Convierte un color en formato HEX a una cadena con los números separados por comas.
+        Por ejemplo, "#003366" se convertirá en "0,51,102".
+        """
+        hex_color = hex_color.lstrip('#')
+        r, g, b = (int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+        return f"{r},{g},{b}"
+    
+    def save(self, *args, **kwargs):
+        # Calcular los colores derivados para el primario
+        self.color_primario_dark = self.ajustar_luminosidad(self.color_primario, 0.6)
+        self.color_primario_light = self.ajustar_luminosidad(self.color_primario, 1.4)
+        # Calcular los colores derivados para el secundario
+        self.color_secundario_dark = self.ajustar_luminosidad(self.color_secundario, 0.6)
+        self.color_secundario_light = self.ajustar_luminosidad(self.color_secundario, 1.4)
+        # Calcular la representación en RGB para los colores base
+  
+        self.color_primario_rgb = self.hex_to_rgb(self.color_primario)
+        self.color_secundario_rgb = self.hex_to_rgb(self.color_secundario)
+        # Calcular la representación en RGB para las versiones oscuras
+        self.color_primario_dark_rgb = self.hex_to_rgb(self.color_primario_dark)
+        self.color_secundario_dark_rgb = self.hex_to_rgb(self.color_secundario_dark)
+        
+        super().save(*args, **kwargs)  # Factor < 1 = más oscuro
 
 class GobiernoActual(models.Model):
     municipio = models.ForeignKey(Municipio, related_name='gobierno_actual', on_delete=models.CASCADE)
