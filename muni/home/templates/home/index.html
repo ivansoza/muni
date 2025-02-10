@@ -18,20 +18,76 @@
 
 </head>
 <body>
+
+    <style>
+        :root {
+            --color-primario:#1e4765;
+            --color-secundario: #295E84;
+            --color-iconos: #AD9065;
+            --color-gradiente: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+
+            --color-primario-rgb: 30, 71, 101;  /* RGB de #1e4765 */
+            --color-secundario-rgb: 41, 94, 132; /* RGB de #295E84 */
+            /* Gradiente */
+        }
+
+        .navbar {
+            background-color: var(--color-primario);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-section {
+            background: linear-gradient(
+                rgba(var(--color-primario-rgb), 0.8), 
+                rgba(var(--color-secundario-rgb), 0.8)
+            ),
+            url('https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg');
+
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 120px 0;
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+            margin-bottom: 80px;
+        }
+
+
+
+    </style>
+
+
    <!-- Preloader -->
 <!-- Preloader -->
-<div id="preloader">
-    <div class="preloader-content">
-        <img src="{% static 'logo.png' %}" alt="Imagen representativa" class="preloader-logo mb-4 img-fluid" style="width: 250px; height: 250px;">
+    <div id="preloader">
+        <div class="preloader-content">
+            {% if  municipio.logotipo %}
+                <img src="{{municipio.logotipo.url}}" alt="Imagen representativa" class="preloader-logo mb-4 img-fluid" style="width: 250px; height: 250px;">
+            {% else %}
+                <img src="{% static 'assets/images/logo/logo-new.png' %}"alt="Imagen representativa" class="preloader-logo mb-4 img-fluid" style="width: 250px; height: 250px;">
+            {% endif %}
+        </div>
     </div>
-</div>
+
+
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-transparent fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="{% static 'img/logo.png' %}" alt="Logo Municipal">
-                Gobierno Municipal de Apizaco
+            <a class="navbar-brand" href="{% url "home" %}">
+
+                {% if  municipio.logotipo %}
+                    <img src="{{municipio.logotipo.url}}" alt="Logo Municipal">
+
+                {% else %}
+                    <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Logo Municipal">
+                {% endif %}
+
+                {% if municipio.nombre %}
+                    {{municipio.nombre}}
+                {% else %}
+                    Introducir el Nombre de tu Municipio
+                {% endif %}
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -50,6 +106,7 @@
             </div>
         </div>
     </nav>
+
     <!-- Flotantes -->
     <div class="social-icons-float">
         <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
@@ -62,8 +119,20 @@
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="container text-center">
-            <img src="{% static 'logo.png' %}" alt="Imagen representativa" class="mb-4 img-fluid" style="width: 250px; height: 250px;">
-            <p class="mb-5">Servicios públicos eficientes para el bienestar de nuestra comunidad</p>
+
+            {% if  municipio.logotipo %}
+                <img src="{{municipio.logotipo.url}}" alt="Imagen representativa" class="mb-4 img-fluid" style="width: 250px; height: 250px;">
+
+            {% else %}
+                <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Imagen representativa" class="mb-4 img-fluid" style="width: 250px; height: 250px;">
+            {% endif %}
+
+            {% if municipio.descripcion %}
+                <p class="mb-5">{{ municipio.descripcion }}</p>
+            {% else %}
+                <p class="mb-5 text-gray-500">Aún no has agregado la descripción de tu municipio. ¡Hazlo ahora para que todos lo conozcan!</p>
+            {% endif %}
+        
             <a href="#" class="btn btn-hero">Explora nuestros servicios <i class="fas fa-arrow-right ms-2"></i></a>
         </div>
     </section>
