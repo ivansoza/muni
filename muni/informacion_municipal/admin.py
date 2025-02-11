@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Municipio, ColoresMunicipio, GobiernoActual, MisionVision
+from .models import Municipio, ColoresMunicipio, GobiernoActual, MisionVision,SeccionInicio
 
 # Registro de Municipio
 @admin.register(Municipio)
@@ -173,3 +173,6 @@ class MisionVisionAdmin(admin.ModelAdmin):
     def short_vision(self, obj):
         return f"{obj.vision[:70]}..." if len(obj.vision) > 70 else obj.vision
     short_vision.short_description = 'Visión (resumen)'
+
+
+admin.site.register(SeccionInicio)
