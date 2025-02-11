@@ -1,4 +1,7 @@
 {% load static %}
+
+{% load render_dynamic %}
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -188,24 +191,34 @@
     {% if municipio %}
         {% with secciones=municipio.secciones.all %}
             {% if secciones %}
-                {# Secciones definidas: iterar y mostrar cada componente según su tipo #}
                 {% for seccion in secciones %}
-                    {% if seccion.nombre == 'servicios' %}
-                        {% include "home/components/nuestros_servicios.html" %}
-                    {% elif seccion.nombre == 'ultimas_noticias' %}
-                        {% include "home/components/ultimas_noticias.html" %}
-                    {% elif seccion.nombre == 'convocatorias' %}
-                        {% include "home/components/ultimas_convocatorias.html" %}
-                    {% elif seccion.nombre == 'redes_sociales' %}
-                        {% include "home/components/nuestras_redes.html" %}
-                    {% elif seccion.nombre == 'contactos' %}
-                        {% include "home/components/nuestros_contactos.html" %}
-                    {% elif seccion.nombre == 'informacion_presidente' %}
-                        {% include "home/components/alcalde.html" %}
+                    {% if seccion.nombre == 'dinamica' %}
+                        {% if seccion.contenido_dinamico %}
+                            <div class="seccion-dinamica">
+                                {{ seccion.contenido_dinamico|render_dynamic }}
+                            </div>
+                        {% else %}
+                            <p>Sección dinámica sin contenido definido.</p>
+                        {% endif %}
+                    {% else %}
+                        {# Aquí tus condiciones para las secciones estáticas, por ejemplo: #}
+                        {% if seccion.nombre == 'servicios' %}
+                            {% include "home/components/nuestros_servicios.html" %}
+                        {% elif seccion.nombre == 'ultimas_noticias' %}
+                            {% include "home/components/ultimas_noticias.html" %}
+                        {% elif seccion.nombre == 'convocatorias' %}
+                            {% include "home/components/ultimas_convocatorias.html" %}
+                        {% elif seccion.nombre == 'redes_sociales' %}
+                            {% include "home/components/nuestras_redes.html" %}
+                        {% elif seccion.nombre == 'contactos' %}
+                            {% include "home/components/nuestros_contactos.html" %}
+                        {% elif seccion.nombre == 'informacion_presidente' %}
+                            {% include "home/components/alcalde.html" %}
+                        {% endif %}
                     {% endif %}
                 {% endfor %}
             {% else %}
-                {# No se han definido secciones: se usa el orden predeterminado #}
+                {# Orden predeterminado si no hay secciones definidas #}
                 {% include "home/components/nuestros_servicios.html" %}
                 {% include "home/components/ultimas_noticias.html" %}
                 {% include "home/components/ultimas_convocatorias.html" %}
