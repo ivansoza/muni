@@ -1,14 +1,15 @@
 from django.contrib import admin
-from .models import DatosMunicipio, ColoresMunicipio, GobiernoActual, MisionVision
 from django.utils.html import format_html
+from .models import Municipio, ColoresMunicipio, GobiernoActual, MisionVision,SeccionInicio
 
-@admin.register(DatosMunicipio)
-class DatosMunicipioAdmin(admin.ModelAdmin):
+# Registro de Municipio
+@admin.register(Municipio)
+class MunicipioAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'ultima_actualizacion', 'preview_logotipo', 'preview_banner')
     search_fields = ('nombre', 'descripcion')
     list_filter = ('ultima_actualizacion',)
     readonly_fields = ('preview_logotipo', 'preview_banner', 'ultima_actualizacion')
-    
+
     fieldsets = (
         ('Información Básica', {
             'fields': ('nombre', 'descripcion')
@@ -27,7 +28,7 @@ class DatosMunicipioAdmin(admin.ModelAdmin):
         })
     )
 
-    # Vista previa del logotipo (mejorada)
+    # Vista previa del logotipo
     def preview_logotipo(self, obj):
         if obj.logotipo:
             return format_html(
@@ -39,7 +40,7 @@ class DatosMunicipioAdmin(admin.ModelAdmin):
         return "-"
     preview_logotipo.short_description = 'Logo Actual'
 
-    # Vista previa del banner (mejorada)
+    # Vista previa del banner
     def preview_banner(self, obj):
         if obj.banner:
             return format_html(
@@ -51,71 +52,84 @@ class DatosMunicipioAdmin(admin.ModelAdmin):
         return "-"
     preview_banner.short_description = 'Banner Actual'
 
-from django.utils.html import format_html
-from django.contrib import admin
-from .models import ColoresMunicipio
 
 @admin.register(ColoresMunicipio)
 class ColoresMunicipioAdmin(admin.ModelAdmin):
-    # Campos REALES editables (deben estar en list_display)
-    list_editable = ("color_primario", "color_secundario", "color_terciario")
-    
-    # list_display incluye los campos editables + métodos visuales
+    list_editable = ("color_primario", "color_secundario")
     list_display = (
-        "muestra_color_primario",
-        "color_primario",  # <--- Campo real incluido
-        "muestra_color_secundario",
-        "color_secundario",  # <--- Campo real incluido
-        "muestra_color_terciario",
-        "color_terciario",  # <--- Campo real incluido
+        "municipio",
+        "muestra_color_primario", "color_primario",
+        "muestra_color_primario_dark", "color_primario_dark",
+        "muestra_color_primario_light", "color_primario_light",
+        "muestra_color_primario_rgb", "color_primario_rgb",
+        "muestra_color_primario_dark_rgb", "color_primario_dark_rgb",
+        "muestra_color_secundario", "color_secundario",
+        "muestra_color_secundario_dark", "color_secundario_dark",
+        "muestra_color_secundario_light", "color_secundario_light",
+        "muestra_color_secundario_rgb", "color_secundario_rgb",
+        "muestra_color_secundario_dark_rgb", "color_secundario_dark_rgb",
         "fecha_creacion",
     )
-    
-    # Ocultar los títulos de los campos reales
-    def color_primario(self, obj):
-        return ""  # Devuelve un string vacío
-    
-    def color_secundario(self, obj):
-        return ""
-    
-    def color_terciario(self, obj):
-        return ""
-    
-    # Métodos para mostrar bloques de color
+
+    # Bloque visual para el color primario en HEX
     def muestra_color_primario(self, obj):
-        return format_html(
-            '<div style="background:{}; width:50px; height:20px; border:1px solid #000"></div>',
-            obj.color_primario
-        )
-    
-    def muestra_color_secundario(self, obj):
-        return format_html(
-            '<div style="background:{}; width:50px; height:20px; border:1px solid #000"></div>',
-            obj.color_secundario
-        )
-    
-    def muestra_color_terciario(self, obj):
-        return format_html(
-            '<div style="background:{}; width:50px; height:20px; border:1px solid #000"></div>',
-            obj.color_terciario
-        )
-    
-    # Configuración adicional
-    list_display_links = None  # Desactiva los enlaces
+        return format_html('<div style="background:{}; width:50px; height:20px; border:1px solid #000;"></div>', obj.color_primario)
     muestra_color_primario.short_description = "Color Primario"
+    
+    # Bloque visual para el color primario dark en HEX
+    def muestra_color_primario_dark(self, obj):
+        return format_html('<div style="background:{}; width:50px; height:20px; border:1px solid #000;"></div>', obj.color_primario_dark)
+    muestra_color_primario_dark.short_description = "Primario Dark"
+    
+    # Bloque visual para el color primario light en HEX
+    def muestra_color_primario_light(self, obj):
+        return format_html('<div style="background:{}; width:50px; height:20px; border:1px solid #000;"></div>', obj.color_primario_light)
+    muestra_color_primario_light.short_description = "Primario Light"
+    
+    # Mostrar el RGB (números) para el color primario
+    def muestra_color_primario_rgb(self, obj):
+        return obj.color_primario_rgb
+    muestra_color_primario_rgb.short_description = "Primario RGB"
+    
+    # Mostrar el RGB (números) para el color primario dark
+    def muestra_color_primario_dark_rgb(self, obj):
+        return obj.color_primario_dark_rgb
+    muestra_color_primario_dark_rgb.short_description = "Primario Dark RGB"
+    
+    # Bloque visual para el color secundario en HEX
+    def muestra_color_secundario(self, obj):
+        return format_html('<div style="background:{}; width:50px; height:20px; border:1px solid #000;"></div>', obj.color_secundario)
     muestra_color_secundario.short_description = "Color Secundario"
-    muestra_color_terciario.short_description = "Color Terciario"
-
-
-
-
+    
+    # Bloque visual para el color secundario dark en HEX
+    def muestra_color_secundario_dark(self, obj):
+        return format_html('<div style="background:{}; width:50px; height:20px; border:1px solid #000;"></div>', obj.color_secundario_dark)
+    muestra_color_secundario_dark.short_description = "Secundario Dark"
+    
+    # Bloque visual para el color secundario light en HEX
+    def muestra_color_secundario_light(self, obj):
+        return format_html('<div style="background:{}; width:50px; height:20px; border:1px solid #000;"></div>', obj.color_secundario_light)
+    muestra_color_secundario_light.short_description = "Secundario Light"
+    
+    # Mostrar el RGB (números) para el color secundario
+    def muestra_color_secundario_rgb(self, obj):
+        return obj.color_secundario_rgb
+    muestra_color_secundario_rgb.short_description = "Secundario RGB"
+    
+    # Mostrar el RGB (números) para el color secundario dark
+    def muestra_color_secundario_dark_rgb(self, obj):
+        return obj.color_secundario_dark_rgb
+    muestra_color_secundario_dark_rgb.short_description = "Secundario Dark RGB"
+    
+    list_display_links = ("municipio",)
 @admin.register(GobiernoActual)
 class GobiernoActualAdmin(admin.ModelAdmin):
     list_display = ('nombre_alcalde', 'periodo', 'fecha_inicio', 'fecha_fin', 'estado_actual', 'fecha_registro')
     search_fields = ('nombre_alcalde', 'periodo')
     list_filter = ('fecha_inicio', 'fecha_fin')
     date_hierarchy = 'fecha_inicio'
-    readonly_fields = ('fecha_registro',)  # <--- Campo de solo lectura
+    readonly_fields = ('fecha_registro',)  # Campo de solo lectura
+
     fieldsets = (
         ('Información de Gestión', {
             'fields': ('nombre_alcalde', 'periodo')
@@ -123,19 +137,20 @@ class GobiernoActualAdmin(admin.ModelAdmin):
         ('Periodo Oficial', {
             'fields': ('fecha_inicio', 'fecha_fin')
         }),
-        # Elimina la sección de 'Registro' del fieldsets
     )
 
     def estado_actual(self, obj):
         from django.utils.timezone import now
         return "En funciones" if obj.fecha_inicio <= now().date() <= obj.fecha_fin else "Finalizado"
-    estado_actual.short_description = 'Estado'  # <--- Quita la coma al final
+    estado_actual.short_description = 'Estado'
 
+# Registro de MisionVision
 @admin.register(MisionVision)
 class MisionVisionAdmin(admin.ModelAdmin):
     list_display = ('short_mision', 'short_vision', 'fecha_actualizacion')
     search_fields = ('mision', 'vision', 'valores')
     readonly_fields = ('fecha_actualizacion',)
+    
     fieldsets = (
         ('Declaraciones Institucionales', {
             'fields': ('mision', 'vision'),
@@ -158,3 +173,6 @@ class MisionVisionAdmin(admin.ModelAdmin):
     def short_vision(self, obj):
         return f"{obj.vision[:70]}..." if len(obj.vision) > 70 else obj.vision
     short_vision.short_description = 'Visión (resumen)'
+
+
+admin.site.register(SeccionInicio)

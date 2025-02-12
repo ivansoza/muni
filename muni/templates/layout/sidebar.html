@@ -1,10 +1,53 @@
 {% load static %}
 {% load sass_tags %}
+<style>
+  .stroke-icon {
+    color: #ffffff;
+    transition: transform 0.3s !important;
+    opacity: 1 !important;
+  }
 
+  .fill-icon {
+    color: #f00;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0 !important; /* Mantenemos oculto el ícono relleno */
+    transition: transform 0.3s !important;
+  }
+
+  .sidebar-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #ffffff;
+    border-radius: 8px;
+    transition: all 0.3s !important;
+  }
+
+  .sidebar-link:hover {
+    transform: scale(1.05) !important;
+  }
+
+  .sidebar-link:hover .stroke-icon {
+    transform: translateY(-5px) scale(1.1) !important; /* Nueva animación */
+  }
+
+  .sidebar-link i {
+    font-size: 1.5em;
+  }
+
+  .sidebar-link span {
+    transition: color 0.3s !important;
+  }
+
+
+</style>
 <!-- Page Sidebar Start-->
 <div class="sidebar-wrapper" data-layout="stroke-svg">
     <div>
-      <div class="logo-wrapper"><a href="/index"><img class="img-fluid" src="{% static 'assets/images/logo/logo-new.png' %}" alt=""></a>
+      <div class="logo-wrapper"><a href="{% url "dashboard" %}"><img class="img-fluid" src="{% static 'assets/images/logo/logo-new.png' %}" alt=""></a>
         <div class="back-btn"><i class="fa fa-angle-left"></i></div>
       </div>
       <nav class="sidebar-main">
@@ -19,27 +62,47 @@
                 <h6>Pinned</h6>
               </div>
             </li>
-            <li class="sidebar-list"><a class="sidebar-link sidebar-title" href="https://yuridjango.pixelstrap.net/" target="_blank">
-                <svg class="stroke-icon">
-                  <use href="{% static 'assets/svg/icon-sprite.svg' %}#home"></use>
-                </svg>
-                <svg class="fill-icon">
-                  <use href="{% static 'assets/svg/icon-sprite.svg' %}#fill-home"></use>
-                </svg><span>Dashboard</span></a></li>
-            <li class="sidebar-list"><a class="sidebar-link sidebar-title" href="https://support.pixelstrap.com/agent/pixelstrap/pixelstrap/tickets/list/open-cases" target="_blank">
-                <svg class="stroke-icon">
-                  <use href="{% static 'assets/svg/icon-sprite.svg' %}#stroke-social"></use>
-                </svg>
-                <svg class="fill-icon">
-                  <use href="{% static 'assets/svg/icon-sprite.svg' %}#fill-social"></use>
-                </svg><span>Raise Support</span></a></li>
-            <li class="sidebar-list"><a class="sidebar-link sidebar-title" href="https://docs.pixelstrap.net/django/cion/document/" target="_blank">
-                <svg class="stroke-icon">
-                  <use href="{% static 'assets/svg/icon-sprite.svg' %}#Editor"></use>
-                </svg>
-                <svg class="fill-icon">
-                  <use href="{% static 'assets/svg/icon-sprite.svg' %}#fill-form"></use>
-                </svg><span>Document</span></a></li>
+            <li class="sidebar-list {% if sidebar == 'dashboard' %}active{% endif %}">
+              <a class="sidebar-link sidebar-title" href="{% url "dashboard" %}" >
+                <i class="fa fa-home stroke-icon"></i>
+                <i class="fa fa-home fill-icon"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li class="sidebar-list {% if sidebar == 'perso' %}active{% endif %}">
+              <a class="sidebar-link sidebar-title" href="{% url "personalizacion_view" %}" >
+                <i class="fa fa-paint-brush stroke-icon"></i>
+                <i class="fa fa-paint-brush fill-icon"></i>
+                <span>Personalizar</span>
+              </a>
+            </li>
+            <li class="sidebar-list {% if sidebar == 'socialmedia' %}active{% endif %}">
+              <a class="sidebar-link sidebar-title" href="{% url "social_view" %}">
+                <i class="fa fa-share-alt stroke-icon"></i>
+                <i class="fa fa-share-alt fill-icon"></i>
+                <span>Redes Sociales</span>
+              </a>
+            </li>
+            
+            <li class="sidebar-list {% if sidebar == 'noticias' %}active{% endif %}">
+              <a class="sidebar-link sidebar-title" href="{% url "noticias_view" %}">
+                <i class="fa fa-newspaper-o stroke-icon"></i>
+                <i class="fa fa-newspaper-o fill-icon"></i>
+                <span>Noticias</span>
+              </a>
+            </li>
+          
+
+            <li class="sidebar-list {% if sidebar == 'servicios' %}active{% endif %}">
+              <a class="sidebar-link sidebar-title" href="{% url "servicios_view" %}">
+                <i class="fa fa-cogs stroke-icon"></i>
+                <i class="fa fa-cogs fill-icon"></i>
+                <span>Servicios</span>
+              </a>
+            </li>
+            
+
+
           </ul>
         </div>
         <div class="right-arrow" id="right-arrow"><i data-feather="arrow-right"></i></div>
