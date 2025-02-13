@@ -492,13 +492,11 @@
                         <label for="secondaryColor">Secundario</label>
                         <div class="color-preview"></div>
                     </div>
-                    <div class="color-item">
-                        <input type="color" id="tertiaryColor" value="#4CAF50">
-                        <label for="tertiaryColor">Terciario</label>
-                        <div class="color-preview"></div>
-                    </div>
+                    <!-- Se elimina el color terciario -->
                 </div>
             </div>
+        
+        
         
             <!-- Control de Tipografías -->
             <div class="control-group">
@@ -537,6 +535,11 @@
                     </div>
                 </div>
             </div>
+
+            <button id="btnSave" class="save-btn">
+                <i class="fa fa-save"></i> Guardar
+            </button>
+            
         
             <!-- Botón para Resetear Estilos -->
             <button id="btnReset" class="reset-btn">
@@ -644,25 +647,31 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Variable para almacenar los colores originales
         let originalColors = {
-            primary:       '#2196F3',
-            secondary:     '#FF9800',
-            tertiary:      '#4CAF50',
+            primary:   '#2196F3',
+            secondary: '#FF9800',
             fontPrimary:   'Arial',
             fontSecondary: 'Georgia',
             fontTertiary:  'Courier New'
         };
     
-        function fetchMunicipioData(id) {
-            // 1. Mostrar el loader antes de iniciar la petición
+        // Función para mostrar/ocultar loader
+        function showLoader() {
             const loader = document.getElementById('loader2');
-            loader.style.display = 'block';
+            if (loader) loader.style.display = 'block';
+        }
+        function hideLoader() {
+            const loader = document.getElementById('loader2');
+            if (loader) loader.style.display = 'none';
+        }
     
+        // 1. Función para obtener datos del municipio (GET)
+        function fetchMunicipioData(id) {
+            showLoader();
             fetch(`/informacion/ajax/municipio/?id=${id}`)
                 .then(response => response.json())
                 .then(data => {
                     console.log("Datos del municipio:", data);
                     
-                    // Asegurarnos que vengan los colores en data.colores
                     if (data && data.colores) {
                         const colorPrimario   = data.colores.color_primario   || '#2196F3';
                         const colorSecundario = data.colores.color_secundario || '#FF9800';
@@ -671,24 +680,20 @@
                         originalColors.primary   = colorPrimario;
                         originalColors.secondary = colorSecundario;
                         
-                        // Actualizamos variables CSS
+                        // Actualizar CSS
                         document.documentElement.style.setProperty('--primary-color',   colorPrimario);
                         document.documentElement.style.setProperty('--secondary-color', colorSecundario);
                         
-                        // Actualizamos los inputs
-                        const primaryColorInput   = document.getElementById('primaryColor');
-                        const secondaryColorInput = document.getElementById('secondaryColor');
-                        
-                        if (primaryColorInput)   primaryColorInput.value   = colorPrimario;
-                        if (secondaryColorInput) secondaryColorInput.value = colorSecundario;
+                        // Actualizar inputs
+                        document.getElementById('primaryColor').value   = colorPrimario;
+                        document.getElementById('secondaryColor').value = colorSecundario;
                     }
                 })
                 .catch(error => {
                     console.error("Error en la petición AJAX:", error);
                 })
                 .finally(() => {
-                    // 2. Ocultar el loader cuando la petición acaba (éxito o error)
-                    loader.style.display = 'none';
+                    hideLoader();
                 });
         }
     
@@ -701,18 +706,15 @@
             });
         }
     
-        // Inputs de color
+        // Event Listeners para los inputs de color
         document.getElementById('primaryColor').addEventListener('input', (e) => {
             document.documentElement.style.setProperty('--primary-color', e.target.value);
         });
         document.getElementById('secondaryColor').addEventListener('input', (e) => {
             document.documentElement.style.setProperty('--secondary-color', e.target.value);
         });
-        document.getElementById('tertiaryColor').addEventListener('input', (e) => {
-            document.documentElement.style.setProperty('--tertiary-color', e.target.value);
-        });
     
-        // Inputs de tipografía
+        // Event Listeners para las tipografías
         document.getElementById('fontPrimary').addEventListener('change', (e) => {
             document.documentElement.style.setProperty('--font-primary', e.target.value);
         });
@@ -725,10 +727,8 @@
     
         // Función de reset
         function resetStyles() {
-            // Volver a los colores originales
             document.documentElement.style.setProperty('--primary-color',   originalColors.primary);
             document.documentElement.style.setProperty('--secondary-color', originalColors.secondary);
-            document.documentElement.style.setProperty('--tertiary-color',  originalColors.tertiary);
             
             document.documentElement.style.setProperty('--font-primary',   originalColors.fontPrimary);
             document.documentElement.style.setProperty('--font-secondary', originalColors.fontSecondary);
@@ -736,17 +736,67 @@
     
             document.getElementById('primaryColor').value   = originalColors.primary;
             document.getElementById('secondaryColor').value = originalColors.secondary;
-            document.getElementById('tertiaryColor').value  = originalColors.tertiary;
-    
-            document.getElementById('fontPrimary').value   = originalColors.fontPrimary;
-            document.getElementById('fontSecondary').value = originalColors.fontSecondary;
-            document.getElementById('fontTertiary').value  = originalColors.fontTertiary;
+            document.getElementById('fontPrimary').value    = originalColors.fontPrimary;
+            document.getElementById('fontSecondary').value  = originalColors.fontSecondary;
+            document.getElementById('fontTertiary').value   = originalColors.fontTertiary;
         }
     
-        // Conectamos el botón de reset
+        // Botón de reset
         const btnReset = document.getElementById('btnReset');
         if (btnReset) {
             btnReset.addEventListener('click', resetStyles);
+        }
+    
+        // 2. Función para GUARDAR los colores (POST)
+        function saveColors() {
+            const municipalityId = municipioSelect ? municipioSelect.value : null;
+            if (!municipalityId) {
+                console.error("No se encontró ID de municipio");
+                return;
+            }
+    
+            // Obtenemos los colores actuales
+            const colorPrimario   = document.getElementById('primaryColor').value;
+            const colorSecundario = document.getElementById('secondaryColor').value;
+    
+            showLoader();  // Mostrar loader antes de la petición
+            
+            fetch('/informacion/ajax/guardar-colores/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Si usas CSRF token:
+                    // 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    municipio_id: municipalityId,
+                    color_primario: colorPrimario,
+                    color_secundario: colorSecundario
+                })
+            })
+            .then(response => response.json())
+            .then(respData => {
+                console.log("Respuesta al guardar colores:", respData);
+                if (respData.success) {
+                    // 3. Si el guardado fue exitoso, volvemos a llamar fetchMunicipioData 
+                    //    para recargar con los nuevos valores
+                    fetchMunicipioData(municipalityId);
+                } else {
+                    console.error("Error en respData:", respData);
+                }
+            })
+            .catch(err => {
+                console.error("Error al guardar colores:", err);
+            })
+            .finally(() => {
+                hideLoader(); // Ocultamos loader al finalizar
+            });
+        }
+    
+        // Botón de GUARDAR
+        const btnSave = document.getElementById('btnSave');
+        if (btnSave) {
+            btnSave.addEventListener('click', saveColors);
         }
     });
     </script>
