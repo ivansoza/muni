@@ -357,6 +357,40 @@
     }
 
 
+    /* Ajustes Responsivos para móviles (max-width: 768px) */
+@media (max-width: 768px) {
+
+/* 1. Para que los paneles se apilen en lugar de ir lado a lado */
+.container-control {
+    grid-template-columns: 1fr; 
+    /* Con esto .controls y .preview se colocan uno encima del otro */
+}
+
+/* 2. Para que cada bloque de la sección de controles se vea en fila separada
+   (si deseas dejar cada .control-group completo en una sola columna) */
+.control-group {
+    margin-bottom: 2rem; 
+    /* Ajuste de margen si lo deseas */
+}
+
+/* 3. Para que en la sección de colores, cada 'color-item' se muestre en una fila */
+.color-grid {
+    grid-template-columns: 1fr;
+}
+
+/* 4. Para la sección de tipografías, si quieres que cada font-card
+   se muestre uno debajo de otro también en una sola columna */
+.font-grid {
+    grid-template-columns: 1fr;
+}
+
+/* Opcionalmente, podrías agregar algo de espacio entre .controls y .preview */
+.controls {
+    margin-bottom: 2rem;
+}
+}
+
+
 </style>
 {% endblock css %}
 
