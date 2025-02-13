@@ -3,6 +3,7 @@ from django.contrib.auth.views import LoginView
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.http import JsonResponse
 
 from django.urls import reverse_lazy
 
@@ -60,6 +61,47 @@ class PersonalizacionView(LoginRequiredMixin, TemplateView):
         context['municipios'] = municipios if municipios.exists() else None
         
         return context
+    
+
+def get_municipio_data(request):
+    # Se obtiene el parámetro 'id' desde la URL (si es que se envía)
+    municipio_id = request.GET.get('id')
+    
+    try:
+        if municipio_id:
+            municipio = Municipio.objects.get(id=municipio_id)
+        else:
+            # Si no se envía id, se obtiene el primer municipio activo
+            municipio = Municipio.objects.filter(status='activo').first()
+    except Municipio.DoesNotExist:
+        return JsonResponse({'error': 'Municipio no encontrado'}, status=404)
+    
+    # Se asume que existe un objeto de ColoresMunicipio relacionado
+    color = municipio.colores.first()
+    
+    data = {
+        'id': municipio.id,
+        'nombre': municipio.nombre,
+        'descripcion': municipio.descripcion,
+        'logotipo': municipio.logotipo.url if municipio.logotipo else '',
+        'banner': municipio.banner.url if municipio.banner else '',
+        'ultima_actualizacion': municipio.ultima_actualizacion.isoformat(),
+        'status': municipio.status,
+        'colores': {
+            'color_primario': color.color_primario if color else '',
+            'color_secundario': color.color_secundario if color else '',
+            'color_primario_dark': color.color_primario_dark if color else '',
+            'color_primario_light': color.color_primario_light if color else '',
+            'color_secundario_dark': color.color_secundario_dark if color else '',
+            'color_secundario_light': color.color_secundario_light if color else '',
+            'color_primario_rgb': color.color_primario_rgb if color else '',
+            'color_secundario_rgb': color.color_secundario_rgb if color else '',
+            'color_primario_dark_rgb': color.color_primario_dark_rgb if color else '',
+            'color_secundario_dark_rgb': color.color_secundario_dark_rgb if color else '',
+        }
+    }
+    return JsonResponse(data)
+
     
 
 class SocialMediaView(LoginRequiredMixin, TemplateView):

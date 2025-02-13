@@ -390,7 +390,72 @@
 }
 }
 
+/* Estilos para el selector de municipio */
+.municipio-selector {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    max-width: 300px;
+}
 
+.municipio-selector h2 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.custom-dropdown {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fff;
+    appearance: none;
+    font-size: 1rem;
+    color: #444;
+    transition: all 0.3s ease;
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+}
+
+.custom-dropdown:hover {
+    border-color: #2196F3;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+}
+
+.custom-dropdown:focus {
+    outline: none;
+    border-color: #2196F3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.select-wrapper {
+    position: relative;
+}
+
+/* Estilo para las opciones */
+.custom-dropdown option {
+    padding: 12px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    transition: background 0.3s ease;
+}
+
+.custom-dropdown option:hover {
+    background: #f5f5f5 !important;
+}
+
+.custom-dropdown option:checked {
+    background: #2196F3 linear-gradient(0deg, #2196F3 0%, #2196F3 100%);
+    color: #fff;
+}
 </style>
 {% endblock css %}
 
@@ -398,145 +463,160 @@
 
 <div class="container-fluid">
 
-<div class="container-control">
-    <!-- PANEL DE CONTROLES -->
-    <div class="controls">
-        <!-- Control de Colores -->
-        <div class="control-group">
-            <h2><i class="fa fa-paint-brush"></i> Esquema de Color</h2>
-            <div class="color-grid">
-                <div class="color-item">
-                    <input type="color" id="primaryColor" value="#2196F3">
-                    <label for="primaryColor">Primario</label>
-                    <div class="color-preview"></div>
-                </div>
-                <div class="color-item">
-                    <input type="color" id="secondaryColor" value="#FF9800">
-                    <label for="secondaryColor">Secundario</label>
-                    <div class="color-preview"></div>
-                </div>
-                <div class="color-item">
-                    <input type="color" id="tertiaryColor" value="#4CAF50">
-                    <label for="tertiaryColor">Terciario</label>
-                    <div class="color-preview"></div>
-                </div>
-            </div>
+
+    <div class="control-group municipio-selector">
+        <h2><i class="fa fa-map-marker"></i> Seleccionar Municipio</h2>
+        <div class="select-wrapper">
+            <select id="municipioSelect" class="custom-dropdown">
+                {% for municipio in municipios %}
+                    <option value="{{ municipio.id }}">{{ municipio.nombre }}</option>
+                {% endfor %}
+            </select>
         </div>
-    
-        <!-- Control de Tipografías -->
-        <div class="control-group">
-            <h2><i class="fa fa-font"></i> Sistema Tipográfico</h2>
-            <div class="font-grid">
-                <div class="font-card">
-                    <label for="fontPrimary">Títulos</label>
-                    <div class="select-wrapper">
-                        <select id="fontPrimary" class="font-dropdown">
-                            <option value="Arial">Arial</option>
-                            <option value="Roboto">Roboto</option>
-                            <option value="Montserrat">Montserrat</option>
-                            <option value="Poppins">Poppins</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="font-card">
-                    <label for="fontSecondary">Subtítulos</label>
-                    <div class="select-wrapper">
-                        <select id="fontSecondary" class="font-dropdown">
-                            <option value="Georgia">Georgia</option>
-                            <option value="Merriweather">Merriweather</option>
-                            <option value="Playfair Display">Playfair Display</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="font-card">
-                    <label for="fontTertiary">Cuerpo</label>
-                    <div class="select-wrapper">
-                        <select id="fontTertiary" class="font-dropdown">
-                            <option value="Courier New">Courier New</option>
-                            <option value="Open Sans">Open Sans</option>
-                            <option value="Lato">Lato</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-    
-        <!-- Botón para Resetear Estilos -->
-        <button class="reset-btn" onclick="resetStyles()">
-            <i class="fa fa-undo"></i> Restablecer Valores
-        </button>
     </div>
 
-    <!-- VISTA PREVIA -->
-    <div class="preview">
-        <!-- Iconos Flotantes - Redes Sociales -->
-        <div class="social-icons-float">
-            <a href="#"><i class="fa fa-facebook-f"></i></a>
-            <a href="#" ><i class="fa fa-twitter"></i></a>
-            <a href="#" ><i class="fa fa-instagram"></i></a>
-            <a href="#" ><i class="fa fa-youtube"></i></a>
-        </div>
-
-        <!-- NAVBAR -->
-        <div class="navbar-preview">
-            <div class="logo">Logo Municipal</div>
-            <div class="nav-links">
-                <a href="">Inicio</a>
-                <a href="">Servicio</a>
-                <a href="">Noticias</a>
+    <div class="container-control">
+        <!-- PANEL DE CONTROLES -->
+        <div class="controls">
+            <!-- Control de Colores -->
+            <div class="control-group">
+                <h2><i class="fa fa-paint-brush"></i> Esquema de Color</h2>
+                <div class="color-grid">
+                    <div class="color-item">
+                        <input type="color" id="primaryColor" value="#2196F3">
+                        <label for="primaryColor">Primario</label>
+                        <div class="color-preview"></div>
+                    </div>
+                    <div class="color-item">
+                        <input type="color" id="secondaryColor" value="#FF9800">
+                        <label for="secondaryColor">Secundario</label>
+                        <div class="color-preview"></div>
+                    </div>
+                    <div class="color-item">
+                        <input type="color" id="tertiaryColor" value="#4CAF50">
+                        <label for="tertiaryColor">Terciario</label>
+                        <div class="color-preview"></div>
+                    </div>
+                </div>
             </div>
-        </div>
-
-
-        <!-- CONTENIDO PRINCIPAL -->
-        <div class="content-area">
-            <section class="alcalde-section ">
-                <div class="content-container">
-                    <div class="row align-items-center">
-                        <!-- Texto e información -->
-                        <div class="col-md-8">
-                            <div class="mb-3">
-                                <span class="section-subtitle">Por amor a Apizaco</span>
-                            </div>
-                            <h2 class="display-4 fw-bold">Alcalde de Apizaco Tlaxcala</h2>
-                                <p class="lead text-muted">
-                                    <i class="fa fa-quote-left me-2"></i>Apizaco, Ciudad Heroica y en Crecimiento. Tierra Brava y Ferrocarrilera.<i class="fa fa-quote-right ms-2"></i>
-                                </p> 
-                                
-                                <div class="info-box mt-4 p-4 border rounded-3 shadow-sm position-relative">
-                                    <h5 class="fw-bold">Apizaco, el corazón industrial de Tlaxcala, México.</h5>
-                                    <ul class="list-unstyled mt-3">
-                                        <li><i class="fa fa-check-circle me-2" style='color:#AD9065'></i>Es una ciudad dinámica que combina desarrollo, historia y tradición.</li>
-                                        <li><i class="fa fa-check-circle me-2" style='color:#AD9065'></i>Reconocida por su destacada actividad ferroviaria y su contribución al progreso regional.</li>
-                                        <li><i class="fa fa-check-circle me-2" style='color:#AD9065'></i>Un crisol de cultura que se refleja en su gente trabajadora, su gastronomía y sus eventos emblemáticos.</li>
-                                        <li><i class="fa fa-check-circle me-2" style='color:#AD9065'></i>Apizaco narra un capítulo de esfuerzo y crecimiento que inspira a todos sus visitantes.</li>
-                                    </ul>
-                                
-                                </div>
+        
+            <!-- Control de Tipografías -->
+            <div class="control-group">
+                <h2><i class="fa fa-font"></i> Sistema Tipográfico</h2>
+                <div class="font-grid">
+                    <div class="font-card">
+                        <label for="fontPrimary">Títulos</label>
+                        <div class="select-wrapper">
+                            <select id="fontPrimary" class="font-dropdown">
+                                <option value="Arial">Arial</option>
+                                <option value="Roboto">Roboto</option>
+                                <option value="Montserrat">Montserrat</option>
+                                <option value="Poppins">Poppins</option>
+                            </select>
                         </div>
-                        
-                        
-                        <!-- Imagen del alcalde y logo -->
-                        <div class="col-md-4 text-center position-relative">
-                            <div class="image-wrapper">
-                                <br>
-                                <img src="{% static 'img/alcalde.jpg' %}" alt="Imagen del Alcalde" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid var(--primary-color, #2196F3);">
-                                <div class="name-tag position-absolute text-center w-100" style="bottom: -22px;">
-                                    <h6 class="bg-light py-2 px-3 d-inline-block rounded-pill shadow-sm">Lic. Javier Rivera Bonilla</h6>
-                                </div>
-                            </div>
+                    </div>
+                    <div class="font-card">
+                        <label for="fontSecondary">Subtítulos</label>
+                        <div class="select-wrapper">
+                            <select id="fontSecondary" class="font-dropdown">
+                                <option value="Georgia">Georgia</option>
+                                <option value="Merriweather">Merriweather</option>
+                                <option value="Playfair Display">Playfair Display</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="font-card">
+                        <label for="fontTertiary">Cuerpo</label>
+                        <div class="select-wrapper">
+                            <select id="fontTertiary" class="font-dropdown">
+                                <option value="Courier New">Courier New</option>
+                                <option value="Open Sans">Open Sans</option>
+                                <option value="Lato">Lato</option>
+                            </select>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
+        
+            <!-- Botón para Resetear Estilos -->
+            <button class="reset-btn" onclick="resetStyles()">
+                <i class="fa fa-undo"></i> Restablecer Valores
+            </button>
         </div>
 
-        <!-- FOOTER -->
-        <div class="footer_preview">
-            © 2024 - 2027 Gobierno Municipal de Apizaco. Todos los derechos reservados.        
+        <!-- VISTA PREVIA -->
+        <div class="preview">
+            <!-- Iconos Flotantes - Redes Sociales -->
+            <div class="social-icons-float">
+                <a href="#"><i class="fa fa-facebook-f"></i></a>
+                <a href="#" ><i class="fa fa-twitter"></i></a>
+                <a href="#" ><i class="fa fa-instagram"></i></a>
+                <a href="#" ><i class="fa fa-youtube"></i></a>
+            </div>
+
+            <!-- NAVBAR -->
+            <div class="navbar-preview">
+                <div class="logo">Logo Municipal</div>
+                <div class="nav-links">
+                    <a href="">Inicio</a>
+                    <a href="">Servicio</a>
+                    <a href="">Noticias</a>
+                </div>
+            </div>
+
+
+            <!-- CONTENIDO PRINCIPAL -->
+            <div class="content-area">
+                <section class="alcalde-section ">
+                    <div class="content-container">
+                        <div class="row align-items-center">
+                            <!-- Texto e información -->
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <span class="section-subtitle">Por amor a Apizaco</span>
+                                </div>
+                                <h2 class="display-4 fw-bold">Alcalde de Apizaco Tlaxcala</h2>
+                                    <p class="lead text-muted">
+                                        <i class="fa fa-quote-left me-2"></i>Apizaco, Ciudad Heroica y en Crecimiento. Tierra Brava y Ferrocarrilera.<i class="fa fa-quote-right ms-2"></i>
+                                    </p> 
+                                    
+                                    <div class="info-box mt-4 p-4 border rounded-3 shadow-sm position-relative">
+                                        <h5 class="fw-bold">Apizaco, el corazón industrial de Tlaxcala, México.</h5>
+                                        <ul class="list-unstyled mt-3">
+                                            <li><i class="fa fa-check-circle me-2" style='color:#AD9065'></i>Es una ciudad dinámica que combina desarrollo, historia y tradición.</li>
+                                            <li><i class="fa fa-check-circle me-2" style='color:#AD9065'></i>Reconocida por su destacada actividad ferroviaria y su contribución al progreso regional.</li>
+                                            <li><i class="fa fa-check-circle me-2" style='color:#AD9065'></i>Un crisol de cultura que se refleja en su gente trabajadora, su gastronomía y sus eventos emblemáticos.</li>
+                                            <li><i class="fa fa-check-circle me-2" style='color:#AD9065'></i>Apizaco narra un capítulo de esfuerzo y crecimiento que inspira a todos sus visitantes.</li>
+                                        </ul>
+                                    
+                                    </div>
+                            </div>
+                            
+                            
+                            <!-- Imagen del alcalde y logo -->
+                            <div class="col-md-4 text-center position-relative">
+                                <div class="image-wrapper">
+                                    <br>
+                                    <img src="{% static 'img/alcalde.jpg' %}" alt="Imagen del Alcalde" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid var(--primary-color, #2196F3);">
+                                    <div class="name-tag position-absolute text-center w-100" style="bottom: -22px;">
+                                        <h6 class="bg-light py-2 px-3 d-inline-block rounded-pill shadow-sm">Lic. Javier Rivera Bonilla</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="footer_preview">
+                © 2024 - 2027 Gobierno Municipal de Apizaco. Todos los derechos reservados.        
+            </div>
         </div>
     </div>
-</div>
+
+
+
 </div>
 
 {% endblock content %}
@@ -587,4 +667,35 @@
         document.getElementById('fontTertiary').value   = 'Courier New';
     }
 </script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Función para hacer la petición AJAX y obtener los datos del municipio
+        function fetchMunicipioData(id) {
+            fetch(`/informacion/ajax/municipio/?id=${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Datos del municipio:", data);
+                    // Aquí puedes actualizar la vista o manipular el DOM según los datos recibidos.
+                })
+                .catch(error => console.error("Error en la petición AJAX:", error));
+        }
+    
+        // Obtener el elemento select de municipios
+        var municipioSelect = document.getElementById('municipioSelect');
+        if (municipioSelect) {
+            // Al cargar la página, se toma el valor seleccionado (por defecto el primero)
+            fetchMunicipioData(municipioSelect.value);
+    
+            // Al cambiar de opción, se hace la petición AJAX para el nuevo municipio seleccionado
+            municipioSelect.addEventListener('change', function() {
+                fetchMunicipioData(this.value);
+            });
+        }
+    });
+    </script>
+
+    
+
 {% endblock scriptcontent %}
