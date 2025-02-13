@@ -1,0 +1,59 @@
+{% load static %}
+
+
+
+<div class="contact-section-full">
+    <!-- Imagen de fondo -->
+    <div class="background-image">
+        <img src="{% static 'img/presidencia.webp' %}" alt="Contacto" class="w-100 h-100">
+    </div>
+
+    <!-- Contenedor de la información -->
+    <div class="contact-info-container">
+        <h2 class="section-title2 mb-4">Contáctanos</h2>
+        <p class="section-description mb-4">Si tienes alguna consulta o necesitas ayuda, estamos aquí para ti. Puedes visitarnos en nuestras oficinas o comunicarte a través de los siguientes medios:</p>
+
+        <div class="info-item d-flex align-items-center mb-4">
+            <div class="icon-circle me-3">
+                <i class="fas fa-phone-alt"></i>
+            </div>
+            <div>
+                <h4 class="mb-1">Teléfono</h4>
+                <p>(555) 123-4567</p>
+            </div>
+        </div>
+
+        <div class="info-item d-flex align-items-center mb-4">
+            <div class="icon-circle me-3">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <div>
+                <h4 class="mb-1">Correo</h4>
+                <p>contacto@municipio.gob</p>
+            </div>
+        </div>
+
+        <div class="info-item d-flex align-items-center mb-4">
+            <div class="icon-circle me-3">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div>
+                <h4 class="mb-1">Ubicación</h4>
+                <button class="btn btn-link text-white p-0" id="open-map-modal">Ver mapa</button>
+            </div>
+        </div>
+
+        <!-- Horarios de atención -->
+        <div class="info-item d-flex align-items-center">
+            <div class="icon-circle me-3">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div>
+                <h4 class="mb-1">Horarios de Atención</h4>
+                <p>Lunes a Viernes: 8:00 AM - 4:00 PM</p>
+                <p>Sábado: 9:00 AM - 1:00 PM</p>
+                <p>Domingo: Cerrado</p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -2,6 +2,10 @@ from django.db import models
 import colorsys
 
 class Municipio(models.Model):
+    STATUS_CHOICES = [
+        ('activo', 'Activo'),
+        ('inactivo', 'Inactivo'),
+    ]
     nombre = models.CharField("Nombre oficial", max_length=120, unique=True)
     logotipo = models.ImageField("Logotipo", upload_to='municipio/')
     banner = models.ImageField(
@@ -11,6 +15,8 @@ class Municipio(models.Model):
     )
     descripcion = models.TextField("Descripción breve", max_length=300)
     ultima_actualizacion = models.DateTimeField("Última actualización", auto_now=True)
+
+    status = models.CharField("Estado", max_length=10, choices=STATUS_CHOICES, default='activo')
 
     class Meta:
         verbose_name = "Municipio"
@@ -111,3 +117,44 @@ class MisionVision(models.Model):
     class Meta:
         verbose_name = "Misión y Visión"
         verbose_name_plural = "Misión y Visión"
+
+
+
+class SeccionInicio(models.Model):
+    OPCIONES_SECCIONES = [
+        ('servicios', 'Servicios'),
+        ('ultimas_noticias', 'Últimas Noticias'),
+        ('convocatorias', 'Convocatorias'),
+        ('redes_sociales', 'Redes Sociales'),
+        ('contactos', 'Contactos'),
+        ('informacion_presidente', 'Información del Presidente'),
+    ]
+    
+    municipio = models.ForeignKey(
+        Municipio, 
+        on_delete=models.CASCADE,
+        verbose_name="Municipio",
+        help_text="Selecciona el municipio al que pertenece esta configuración",
+        related_name='secciones'  # Esto permite acceder a las secciones desde Municipio: municipio.secciones.all()
+    )
+    nombre = models.CharField(
+        "Nombre de la sección",
+        max_length=50,
+        choices=OPCIONES_SECCIONES,
+        help_text="Selecciona la sección a mostrar"
+    )
+    orden = models.PositiveIntegerField(
+        "Orden",
+        default=0,
+        help_text="Número que indica la posición en la página (menor es primero)"
+    )
+
+    class Meta:
+        ordering = ['orden']  # Ordena automáticamente por el campo 'orden'
+        verbose_name = "Sección de Inicio"
+        verbose_name_plural = "Secciones de Inicio"
+        unique_together = ('municipio', 'nombre')  # Evita secciones duplicadas para un mismo municipio
+
+    def __str__(self):
+        return f"{self.get_nombre_display()} (Orden: {self.orden})"
+    
