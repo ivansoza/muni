@@ -8,6 +8,8 @@ from django.urls import reverse_lazy
 
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+from informacion_municipal.models import Municipio
 from .forms import CustomAuthenticationForm
 # Create your views here.
 class CustomLoginView(LoginView):
@@ -52,7 +54,11 @@ class PersonalizacionView(LoginRequiredMixin, TemplateView):
             'child': {'name': 'Personalizar', 'url': ''}
         }
         context['sidebar'] = 'perso'
-
+        
+        # Obtener todos los municipios o asignar None si no hay registros
+        municipios = Municipio.objects.all()
+        context['municipios'] = municipios if municipios.exists() else None
+        
         return context
     
 
