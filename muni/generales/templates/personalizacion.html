@@ -539,9 +539,10 @@
             </div>
         
             <!-- Botón para Resetear Estilos -->
-            <button class="reset-btn" onclick="resetStyles()">
+            <button id="btnReset" class="reset-btn">
                 <i class="fa fa-undo"></i> Restablecer Valores
             </button>
+            
         </div>
 
         <!-- VISTA PREVIA -->
@@ -636,58 +637,26 @@
 {% endblock content %}
 
 {% block scriptcontent %}
-<script>
-    // Color Primario
-    document.getElementById('primaryColor').addEventListener('input', (e) => {
-        document.documentElement.style.setProperty('--primary-color', e.target.value);
-    });
 
-    // Color Secundario
-    document.getElementById('secondaryColor').addEventListener('input', (e) => {
-        document.documentElement.style.setProperty('--secondary-color', e.target.value);
-    });
-
-    // Color Terciario (si lo usas en otra parte, por ahora no está en la página)
-    document.getElementById('tertiaryColor').addEventListener('input', (e) => {
-        document.documentElement.style.setProperty('--tertiary-color', e.target.value);
-    });
-
-    // Tipografías
-    document.getElementById('fontPrimary').addEventListener('change', (e) => {
-        document.documentElement.style.setProperty('--font-primary', e.target.value);
-    });
-    document.getElementById('fontSecondary').addEventListener('change', (e) => {
-        document.documentElement.style.setProperty('--font-secondary', e.target.value);
-    });
-    document.getElementById('fontTertiary').addEventListener('change', (e) => {
-        document.documentElement.style.setProperty('--font-tertiary', e.target.value);
-    });
-
-    // Reset Styles
-    function resetStyles() {
-        const root = document.documentElement.style;
-        root.removeProperty('--primary-color');
-        root.removeProperty('--secondary-color');
-        root.removeProperty('--tertiary-color');
-        root.removeProperty('--font-primary');
-        root.removeProperty('--font-secondary');
-        root.removeProperty('--font-tertiary');
-
-        document.getElementById('primaryColor').value   = '#2196F3';
-        document.getElementById('secondaryColor').value = '#FF9800';
-        document.getElementById('tertiaryColor').value  = '#4CAF50';
-        document.getElementById('fontPrimary').value    = 'Arial';
-        document.getElementById('fontSecondary').value  = 'Georgia';
-        document.getElementById('fontTertiary').value   = 'Courier New';
-    }
-</script>
 
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        
-        // 1. Función para hacer la petición AJAX y obtener los datos del municipio
+        // Variable para almacenar los colores originales
+        let originalColors = {
+            primary:       '#2196F3',
+            secondary:     '#FF9800',
+            tertiary:      '#4CAF50',
+            fontPrimary:   'Arial',
+            fontSecondary: 'Georgia',
+            fontTertiary:  'Courier New'
+        };
+    
         function fetchMunicipioData(id) {
+            // 1. Mostrar el loader antes de iniciar la petición
+            const loader = document.getElementById('loader2');
+            loader.style.display = 'block';
+    
             fetch(`/informacion/ajax/municipio/?id=${id}`)
                 .then(response => response.json())
                 .then(data => {
@@ -695,59 +664,55 @@
                     
                     // Asegurarnos que vengan los colores en data.colores
                     if (data && data.colores) {
-                        // Obtenemos cada color
                         const colorPrimario   = data.colores.color_primario   || '#2196F3';
                         const colorSecundario = data.colores.color_secundario || '#FF9800';
                         
-                        // 1. Actualizamos las variables CSS
-                        document.documentElement.style
-                            .setProperty('--primary-color', colorPrimario);
-                        document.documentElement.style
-                            .setProperty('--secondary-color', colorSecundario);
+                        // Guardamos los colores originales para reset
+                        originalColors.primary   = colorPrimario;
+                        originalColors.secondary = colorSecundario;
                         
-                        // 2. Actualizamos los valores de los inputs
+                        // Actualizamos variables CSS
+                        document.documentElement.style.setProperty('--primary-color',   colorPrimario);
+                        document.documentElement.style.setProperty('--secondary-color', colorSecundario);
+                        
+                        // Actualizamos los inputs
                         const primaryColorInput   = document.getElementById('primaryColor');
                         const secondaryColorInput = document.getElementById('secondaryColor');
+                        
                         if (primaryColorInput)   primaryColorInput.value   = colorPrimario;
                         if (secondaryColorInput) secondaryColorInput.value = colorSecundario;
                     }
                 })
                 .catch(error => {
                     console.error("Error en la petición AJAX:", error);
+                })
+                .finally(() => {
+                    // 2. Ocultar el loader cuando la petición acaba (éxito o error)
+                    loader.style.display = 'none';
                 });
         }
     
-        // 2. Obtener el elemento select de municipios
+        // Select de municipios
         var municipioSelect = document.getElementById('municipioSelect');
         if (municipioSelect) {
-            // Al cargar la página, tomamos el valor seleccionado y llamamos a fetchMunicipioData
             fetchMunicipioData(municipioSelect.value);
-    
-            // Al cambiar de opción, se hace la petición para el nuevo municipio seleccionado
             municipioSelect.addEventListener('change', function() {
                 fetchMunicipioData(this.value);
             });
         }
-
-        // 3. Lógica existente para cambiar los colores al mover los inputs
-        //    (Se mantendrán estos eventListeners funcionando normalmente)
-        
-        // Color Primario
+    
+        // Inputs de color
         document.getElementById('primaryColor').addEventListener('input', (e) => {
             document.documentElement.style.setProperty('--primary-color', e.target.value);
         });
-
-        // Color Secundario
         document.getElementById('secondaryColor').addEventListener('input', (e) => {
             document.documentElement.style.setProperty('--secondary-color', e.target.value);
         });
-
-        // Color Terciario (si lo usas o planeas usarlo)
         document.getElementById('tertiaryColor').addEventListener('input', (e) => {
             document.documentElement.style.setProperty('--tertiary-color', e.target.value);
         });
-
-        // Tipografías
+    
+        // Inputs de tipografía
         document.getElementById('fontPrimary').addEventListener('change', (e) => {
             document.documentElement.style.setProperty('--font-primary', e.target.value);
         });
@@ -757,32 +722,34 @@
         document.getElementById('fontTertiary').addEventListener('change', (e) => {
             document.documentElement.style.setProperty('--font-tertiary', e.target.value);
         });
-
-        // Reset Styles
+    
+        // Función de reset
         function resetStyles() {
-            const root = document.documentElement.style;
-            root.removeProperty('--primary-color');
-            root.removeProperty('--secondary-color');
-            root.removeProperty('--tertiary-color');
-            root.removeProperty('--font-primary');
-            root.removeProperty('--font-secondary');
-            root.removeProperty('--font-tertiary');
-
-            document.getElementById('primaryColor').value   = '#2196F3';
-            document.getElementById('secondaryColor').value = '#FF9800';
-            document.getElementById('tertiaryColor').value  = '#4CAF50';
-            document.getElementById('fontPrimary').value    = 'Arial';
-            document.getElementById('fontSecondary').value  = 'Georgia';
-            document.getElementById('fontTertiary').value   = 'Courier New';
+            // Volver a los colores originales
+            document.documentElement.style.setProperty('--primary-color',   originalColors.primary);
+            document.documentElement.style.setProperty('--secondary-color', originalColors.secondary);
+            document.documentElement.style.setProperty('--tertiary-color',  originalColors.tertiary);
+            
+            document.documentElement.style.setProperty('--font-primary',   originalColors.fontPrimary);
+            document.documentElement.style.setProperty('--font-secondary', originalColors.fontSecondary);
+            document.documentElement.style.setProperty('--font-tertiary',  originalColors.fontTertiary);
+    
+            document.getElementById('primaryColor').value   = originalColors.primary;
+            document.getElementById('secondaryColor').value = originalColors.secondary;
+            document.getElementById('tertiaryColor').value  = originalColors.tertiary;
+    
+            document.getElementById('fontPrimary').value   = originalColors.fontPrimary;
+            document.getElementById('fontSecondary').value = originalColors.fontSecondary;
+            document.getElementById('fontTertiary').value  = originalColors.fontTertiary;
         }
-
-        // (Si quieres exponer la función resetStyles para un botón, hazlo aquí)
-        // document.getElementById('btnReset').addEventListener('click', resetStyles);
-
+    
+        // Conectamos el botón de reset
+        const btnReset = document.getElementById('btnReset');
+        if (btnReset) {
+            btnReset.addEventListener('click', resetStyles);
+        }
     });
-</script>
-
-
+    </script>
     
 
 {% endblock scriptcontent %}
