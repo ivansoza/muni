@@ -612,6 +612,20 @@
             <div class="footer_preview">
                 © 2024 - 2027 Gobierno Municipal de Apizaco. Todos los derechos reservados.        
             </div>
+            <div id="loader" style="
+                display: none;
+                position: fixed;
+                top: 0; left: 0;
+                width: 100%; height: 100%;
+                background: rgba(0,0,0,0.3);
+                z-index: 9999;
+                color: #fff;
+                font-size: 1.5rem;
+                text-align: center;
+                padding-top: 20%;
+            ">
+                Cargando datos...
+            </div>
         </div>
     </div>
 
@@ -671,30 +685,103 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Función para hacer la petición AJAX y obtener los datos del municipio
+        
+        // 1. Función para hacer la petición AJAX y obtener los datos del municipio
         function fetchMunicipioData(id) {
             fetch(`/informacion/ajax/municipio/?id=${id}`)
                 .then(response => response.json())
                 .then(data => {
                     console.log("Datos del municipio:", data);
-                    // Aquí puedes actualizar la vista o manipular el DOM según los datos recibidos.
+                    
+                    // Asegurarnos que vengan los colores en data.colores
+                    if (data && data.colores) {
+                        // Obtenemos cada color
+                        const colorPrimario   = data.colores.color_primario   || '#2196F3';
+                        const colorSecundario = data.colores.color_secundario || '#FF9800';
+                        
+                        // 1. Actualizamos las variables CSS
+                        document.documentElement.style
+                            .setProperty('--primary-color', colorPrimario);
+                        document.documentElement.style
+                            .setProperty('--secondary-color', colorSecundario);
+                        
+                        // 2. Actualizamos los valores de los inputs
+                        const primaryColorInput   = document.getElementById('primaryColor');
+                        const secondaryColorInput = document.getElementById('secondaryColor');
+                        if (primaryColorInput)   primaryColorInput.value   = colorPrimario;
+                        if (secondaryColorInput) secondaryColorInput.value = colorSecundario;
+                    }
                 })
-                .catch(error => console.error("Error en la petición AJAX:", error));
+                .catch(error => {
+                    console.error("Error en la petición AJAX:", error);
+                });
         }
     
-        // Obtener el elemento select de municipios
+        // 2. Obtener el elemento select de municipios
         var municipioSelect = document.getElementById('municipioSelect');
         if (municipioSelect) {
-            // Al cargar la página, se toma el valor seleccionado (por defecto el primero)
+            // Al cargar la página, tomamos el valor seleccionado y llamamos a fetchMunicipioData
             fetchMunicipioData(municipioSelect.value);
     
-            // Al cambiar de opción, se hace la petición AJAX para el nuevo municipio seleccionado
+            // Al cambiar de opción, se hace la petición para el nuevo municipio seleccionado
             municipioSelect.addEventListener('change', function() {
                 fetchMunicipioData(this.value);
             });
         }
+
+        // 3. Lógica existente para cambiar los colores al mover los inputs
+        //    (Se mantendrán estos eventListeners funcionando normalmente)
+        
+        // Color Primario
+        document.getElementById('primaryColor').addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--primary-color', e.target.value);
+        });
+
+        // Color Secundario
+        document.getElementById('secondaryColor').addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--secondary-color', e.target.value);
+        });
+
+        // Color Terciario (si lo usas o planeas usarlo)
+        document.getElementById('tertiaryColor').addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--tertiary-color', e.target.value);
+        });
+
+        // Tipografías
+        document.getElementById('fontPrimary').addEventListener('change', (e) => {
+            document.documentElement.style.setProperty('--font-primary', e.target.value);
+        });
+        document.getElementById('fontSecondary').addEventListener('change', (e) => {
+            document.documentElement.style.setProperty('--font-secondary', e.target.value);
+        });
+        document.getElementById('fontTertiary').addEventListener('change', (e) => {
+            document.documentElement.style.setProperty('--font-tertiary', e.target.value);
+        });
+
+        // Reset Styles
+        function resetStyles() {
+            const root = document.documentElement.style;
+            root.removeProperty('--primary-color');
+            root.removeProperty('--secondary-color');
+            root.removeProperty('--tertiary-color');
+            root.removeProperty('--font-primary');
+            root.removeProperty('--font-secondary');
+            root.removeProperty('--font-tertiary');
+
+            document.getElementById('primaryColor').value   = '#2196F3';
+            document.getElementById('secondaryColor').value = '#FF9800';
+            document.getElementById('tertiaryColor').value  = '#4CAF50';
+            document.getElementById('fontPrimary').value    = 'Arial';
+            document.getElementById('fontSecondary').value  = 'Georgia';
+            document.getElementById('fontTertiary').value   = 'Courier New';
+        }
+
+        // (Si quieres exponer la función resetStyles para un botón, hazlo aquí)
+        // document.getElementById('btnReset').addEventListener('click', resetStyles);
+
     });
-    </script>
+</script>
+
 
     
 
