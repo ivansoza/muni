@@ -1,1 +1,145 @@
 {% extends "baseTemplate.html" %}
+
+{% block content %}
+{% block header %}
+    {{ form.media }} # Required for styling/js to make ckeditor5 work
+{% endblock %}
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .container {
+        margin-top: 30px;
+    }
+    .card {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+    .btn-primary {
+        background-color: #6c5ce7;
+        border: none;
+        border-radius: 10px;
+        padding: 12px;
+    }
+    .btn-primary:hover {
+        background-color: #4834d4;
+    }
+    .btn-add {
+        display: block;
+        margin: 20px auto;
+        background-color: #28a745;
+        color: white;
+        border-radius: 10px;
+        padding: 12px 20px;
+        font-size: 16px;
+        border: none;
+    }
+    .btn-add:hover {
+        background-color: #218838;
+    }
+    .table th {
+        background-color: #2d3436;
+        color: white;
+        text-align: center;
+        padding: 12px;
+    }
+    .table td {
+        text-align: center;
+        vertical-align: middle;
+        padding: 10px;
+    }
+    .btn-view {
+        background-color: #a29bfe;
+        color: white;
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: 14px;
+    }
+    .btn-view:hover {
+        background-color: #6c5ce7;
+    }
+    #formularioNoticia {
+        display: none;
+    }
+</style>
+
+<div class="container">
+    <button id="toggleFormulario" class="btn btn-add">➕ Agregar Noticia</button>
+
+    <!-- FORMULARIO (Oculto por defecto) -->
+    <div id="formularioNoticia" class="card mt-3">
+        <h4 class="mb-3 text-center">Nueva Noticia</h4>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Título:</label>
+                {{ form.titulo }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Contenido:</label>
+                {{ form.contenido }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Autor:</label>
+                {{ form.autor }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Categoría:</label>
+                {{ form.categoria }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Imagen:</label>
+                {{ form.imagen }}
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Publicar Noticia</button>
+        </form>
+    </div>
+
+    <!-- TABLA DE NOTICIAS -->
+    <div class="card mt-3">
+        <h4 class="mb-3 text-center">Noticias Publicadas</h4>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Autor</th>
+                        <th>Fecha</th>
+                        <th>Ver</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for noticia in noticias %}
+                    <tr>
+                        <td>#{{ noticia.id }}</td>
+                        <td class="text-start">{{ noticia.titulo }}</td>
+                        <td>{{ noticia.autor }}</td>
+                        <td>{{ noticia.fecha|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <a href="{% url 'detalle_noticia' noticia.id %}" class="btn btn-sm btn-view">Ver</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No hay noticias publicadas</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $("#toggleFormulario").click(function(){
+            $("#formularioNoticia").slideToggle(400);
+        });
+    });
+</script>
+
+{% endblock content %}

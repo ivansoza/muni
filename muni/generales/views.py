@@ -12,6 +12,16 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from informacion_municipal.models import Municipio
 from .forms import CustomAuthenticationForm
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
+from noticias.models import Noticia
+from noticias.forms import NoticiaForm
+import os
+import uuid
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 # Create your views here.
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
@@ -121,7 +131,7 @@ class SocialMediaView(LoginRequiredMixin, TemplateView):
 
 
 class NewsView(LoginRequiredMixin, TemplateView):
-    template_name = "noticias.html"  
+    template_name = "noticias.html"
     login_url = reverse_lazy('login')  # Redirigir si no está autenticado
 
     def get_context_data(self, **kwargs):
@@ -131,9 +141,39 @@ class NewsView(LoginRequiredMixin, TemplateView):
             'parent': {'name': 'Dashboard', 'url': url_configuracion},
             'child': {'name': 'Noticias', 'url': ''}
         }
-        context['sidebar'] = 'noticias'  # Asegura que el sidebar resalte la sección de Noticias
+        context['sidebar'] = 'noticias'  # Resalta la sección de Noticias en el sidebar
+        
+        # Agregar formulario y lista de noticias al contexto
+        context['form'] = NoticiaForm()
+        context['noticias'] = Noticia.objects.all().order_by('-fecha')
 
         return context
+
+    @method_decorator(csrf_protect)
+    def post(self, request, *args, **kwargs):
+        form = NoticiaForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('noticias_view')  # Redirigir a la misma vista después de guardar
+        return self.get(request, *args, **kwargs)  # Volver a renderizar la vista con errores en el formulario
+    
+
+@csrf_exempt  # Permitir peticiones sin CSRF para subida de archivos
+def custom_upload_function(request):
+    if request.method == "POST" and request.FILES.get("upload"):
+        upload = request.FILES["upload"]
+        filename = f"{uuid.uuid4().hex}_{upload.name}"  # Genera un nombre único para el archivo
+        file_path = os.path.join("media/uploads/", filename)  # Define la ruta donde se guardará el archivo
+        
+        # Guardar el archivo en la carpeta de "media/uploads/"
+        saved_path = default_storage.save(file_path, ContentFile(upload.read()))
+
+        # Construir la URL pública del archivo
+        file_url = f"/media/{saved_path}"
+
+        return JsonResponse({"url": file_url})
+    
+    return JsonResponse({"error": "Invalid request"}, status=400)
 
 
 class ServicesView(LoginRequiredMixin, TemplateView):

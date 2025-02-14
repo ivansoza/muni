@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-
 urlpatterns = [
     path('administrador/', admin.site.urls),
     path('', include('home.urls')), 
@@ -17,6 +16,8 @@ urlpatterns = [
     path('tramites/', include('tramites.urls')), 
     path('transparencia/', include('transparencia.urls')), 
     path('admin/', include('generales.urls')), 
+    path('ckeditor5/', include('django_ckeditor_5.urls')), 
+
 
 ]
 

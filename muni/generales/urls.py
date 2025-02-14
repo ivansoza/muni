@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import CustomLoginView, DashboardView, NewsView, PersonalizacionView,SocialMediaView,ServicesView
+from .views import CustomLoginView, DashboardView, NewsView, PersonalizacionView,SocialMediaView,ServicesView, custom_upload_function
 from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
@@ -10,6 +10,7 @@ urlpatterns = [
     path('social-media/', SocialMediaView.as_view(), name='social_view'),
     path('noticias/', NewsView.as_view(), name='noticias_view'),
     path('servicios/', ServicesView.as_view(), name='servicios_view'),
+    path("upload/", custom_upload_function, name="custom_upload_file"),
 
 
 
