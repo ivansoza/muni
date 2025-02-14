@@ -120,6 +120,8 @@ class MisionVision(models.Model):
 
 
 
+from django.core.exceptions import ValidationError
+
 class SeccionInicio(models.Model):
     OPCIONES_SECCIONES = [
         ('servicios', 'Servicios'),
@@ -128,6 +130,7 @@ class SeccionInicio(models.Model):
         ('redes_sociales', 'Redes Sociales'),
         ('contactos', 'Contactos'),
         ('informacion_presidente', 'Información del Presidente'),
+        ('dinamica', 'Dinámica'),
     ]
     
     municipio = models.ForeignKey(
@@ -135,7 +138,7 @@ class SeccionInicio(models.Model):
         on_delete=models.CASCADE,
         verbose_name="Municipio",
         help_text="Selecciona el municipio al que pertenece esta configuración",
-        related_name='secciones'  # Esto permite acceder a las secciones desde Municipio: municipio.secciones.all()
+        related_name='secciones'
     )
     nombre = models.CharField(
         "Nombre de la sección",
@@ -148,13 +151,32 @@ class SeccionInicio(models.Model):
         default=0,
         help_text="Número que indica la posición en la página (menor es primero)"
     )
-
+    
+    # Campos para secciones dinámicas
+    template_dynamic = models.CharField(
+         "Template dinámico",
+         max_length=255,
+         blank=True,
+         null=True,
+         help_text="Especifica el template a incluir para esta sección dinámica (ej. 'home/components/dinamica.html')"
+    )
+    contenido_dinamico = models.TextField(
+         "Contenido dinámico",
+         blank=True,
+         null=True,
+         help_text="Introduce aquí el HTML completo para la sección dinámica"
+    )
+    
     class Meta:
-        ordering = ['orden']  # Ordena automáticamente por el campo 'orden'
+        ordering = ['orden']
         verbose_name = "Sección de Inicio"
         verbose_name_plural = "Secciones de Inicio"
-        unique_together = ('municipio', 'nombre')  # Evita secciones duplicadas para un mismo municipio
-
+    
     def __str__(self):
         return f"{self.get_nombre_display()} (Orden: {self.orden})"
     
+    def clean(self):
+        """Valida que para secciones estáticas no se repita el mismo tipo para un mismo municipio."""
+        if self.nombre != 'dinamica':
+            if SeccionInicio.objects.filter(municipio=self.municipio, nombre=self.nombre).exclude(pk=self.pk).exists():
+                raise ValidationError(f"Ya existe una sección '{self.get_nombre_display()}' para este municipio.")
