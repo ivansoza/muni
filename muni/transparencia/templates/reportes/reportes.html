@@ -1,99 +1,248 @@
 {% extends "base.html" %}
-
-
-
+{% load static %}
 
 {% block content %}
-
 <style>
+    :root {
+        --primary-color: #2A2E8D;
+        --secondary-color: #4CAF50;
+        --accent-color: #FFC107;
+        --text-dark: #2D3748;
+        --text-light: #718096;
+        --transition-duration: 0.4s;
+    }
+    
+    /* Contenedor que usaremos para distribuir las cards */
+    .cards-container {
+        display: grid;
+        grid-template-columns: 1fr; /* Por defecto, 1 columna */
+        gap: 2rem; /* Espacio entre las cards */
+        max-width: 1400px;
+        margin: 0 auto; /* Centrar el contenedor */
+        padding: 2rem;
+    }
 
-    /* Contenedor de la tarjeta */
+    /* A partir de 576px, mostramos 2 columnas */
+    @media (min-width: 576px) {
+        .cards-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    /* A partir de 768px, mostramos 3 columnas */
+    @media (min-width: 768px) {
+        .cards-container {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
     .card {
-      background-color: white;
-      border-radius: 16px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-      max-width: 350px;
-      width: 100%;
-      margin: 20px;
-      display: flex;
-      flex-direction: column;
+        background: #FFFFFF;
+        border-radius: 30px 10px 30px 10px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform var(--transition-duration) cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                    box-shadow var(--transition-duration) ease;
+        position: relative;
+        perspective: 1000px;
     }
 
-    /* Sección de imagen */
+    .card:hover {
+        transform: translateY(-10px) rotateX(5deg) rotateY(-5deg);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+    }
+
     .card-image {
-      width: 100%;
-      height: 200px;
-      background-image: url('https://via.placeholder.com/350x200');
-      background-size: cover;
-      background-position: center;
+        height: 260px;
+        background: linear-gradient(15deg, rgba(42, 46, 141, 0.1), rgba(76, 175, 80, 0.1)),
+                    url('{% static "img/reports/vache.png" %}') center/cover;
+        position: relative;
+        clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%);
     }
 
-    /* Contenido de la tarjeta */
     .card-content {
-      padding: 20px;
-      text-align: center;
+        padding: 2rem 2rem 2.5rem;
+        text-align: center;
+        position: relative;
     }
 
-    .card-content h2 {
-      margin: 0 0 10px;
-      font-size: 1.5rem;
-      color: #4a148c; /* tono morado suave */
+    .card-title {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-bottom: 1.2rem;
+        line-height: 1.2;
+        font-family: 'Poppins', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: -0.5px;
     }
 
-    .card-content p {
-      margin: 0;
-      color: #2e7d32; /* tono verde suave */
-      font-size: 1rem;
-      line-height: 1.5;
+    .card-description {
+        color: var(--text-light);
+        font-size: 1.05rem;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+        position: relative;
+        padding: 0 1rem;
     }
 
-    /* Botón de llamado a la acción */
     .card-button {
-      display: block;
-      text-align: center;
-      text-decoration: none;
-      background-color: navy;
-      color: white;
-      padding: 15px;
-      margin: 20px;
-      border-radius: 8px;
-      font-weight: bold;
-      transition: background-color 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        color: white !important;
+        padding: 15px 35px;
+        border-radius: 15px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: all 0.4s ease;
+        border: none;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(42, 46, 141, 0.2);
+    }
+
+    .card-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(120deg, 
+                    transparent, 
+                    rgba(255, 255, 255, 0.3), 
+                    transparent);
+        transition: 0.6s;
+    }
+
+    .card-button:hover::before {
+        left: 100%;
     }
 
     .card-button:hover {
-      background-color: #000080cc;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
     }
 
-    /* Diseño responsivo */
-    @media (max-width: 480px) {
-      .card {
-        margin: 10px;
-      }
-
-      .card-content h2 {
-        font-size: 1.3rem;
-      }
-
-      .card-content p {
+    .card-badge {
+        position: absolute;
+        top: 20px;
+        left: -30px;
+        background: var(--accent-color);
+        color: var(--text-dark);
+        padding: 10px 35px;
+        transform: rotate(-45deg);
         font-size: 0.9rem;
-      }
+        font-weight: 800;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
-  </style>
 
-<div class="card">
-    <!-- Imagen superior -->
-    <div class="card-image"></div>
-    
-    <!-- Contenido: Título y descripción -->
-    <div class="card-content">
-      <h2>Título de la Tarjeta</h2>
-      <p>Esta es una descripción breve y concisa que explica el contenido o la función de la tarjeta de manera profesional y moderna.</p>
+    .card-deco {
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        background: rgba(76, 175, 80, 0.05);
+        border-radius: 50%;
+        bottom: -30px;
+        right: -30px;
+        z-index: 0;
+    }
+
+    @media (max-width: 480px) {
+        .card {
+            margin: 0 auto;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+        }
+        
+        .card-image {
+            height: 220px;
+        }
+    }
+</style>
+
+<div class="cards-container">
+
+    <!-- Card 1 -->
+    <div class="card">
+        <div class="card-badge">¡Nuevo!</div>
+        <div class="card-image"></div>
+        <div class="card-content">
+            <div class="card-deco"></div>
+            <h2 class="card-title">Reporta un Bache</h2>
+            <p class="card-description">
+                Tu reporte hace la diferencia. Ayuda a mejorar la seguridad vial en tu ciudad.
+            </p>
+            <a href="#" class="card-button">
+                Reportar Ahora
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                     class="icon icon-tabler icon-tabler-arrow-badge-right" 
+                     width="24" height="24" viewBox="0 0 24 24" 
+                     stroke-width="2" stroke="currentColor" fill="none" 
+                     stroke-linecap="round" stroke-linejoin="round" 
+                     style="margin-left: 12px;">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M13 7h-6l4 5l-4 5h6l4 -5z"/>
+                </svg>
+            </a>
+        </div>
     </div>
-    
-    <!-- Botón de llamado a la acción -->
-    <a href="#" class="card-button">Saber Más</a>
-  </div>
 
+    <!-- Card 2 -->
+    <div class="card">
+        <div class="card-badge">¡Nuevo!</div>
+        <div class="card-image"></div>
+        <div class="card-content">
+            <div class="card-deco"></div>
+            <h2 class="card-title">Reporte de Iluminación</h2>
+            <p class="card-description">
+                Contribuye a una mejor visibilidad en las calles reportando fallas de iluminación.
+            </p>
+            <a href="#" class="card-button">
+                Reportar Ahora
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                     class="icon icon-tabler icon-tabler-arrow-badge-right" 
+                     width="24" height="24" viewBox="0 0 24 24" 
+                     stroke-width="2" stroke="currentColor" fill="none" 
+                     stroke-linecap="round" stroke-linejoin="round" 
+                     style="margin-left: 12px;">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M13 7h-6l4 5l-4 5h6l4 -5z"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="card">
+        <div class="card-badge">¡Nuevo!</div>
+        <div class="card-image"></div>
+        <div class="card-content">
+            <div class="card-deco"></div>
+            <h2 class="card-title">Objetos en la Vía</h2>
+            <p class="card-description">
+                Mantén las calles libres de obstáculos que puedan causar accidentes.
+            </p>
+            <a href="#" class="card-button">
+                Reportar Ahora
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                     class="icon icon-tabler icon-tabler-arrow-badge-right" 
+                     width="24" height="24" viewBox="0 0 24 24" 
+                     stroke-width="2" stroke="currentColor" fill="none" 
+                     stroke-linecap="round" stroke-linejoin="round" 
+                     style="margin-left: 12px;">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M13 7h-6l4 5l-4 5h6l4 -5z"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+</div> <!-- Fin .cards-container -->
 {% endblock content %}
