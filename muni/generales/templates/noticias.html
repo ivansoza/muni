@@ -1,145 +1,770 @@
 {% extends "baseTemplate.html" %}
+{% load static %}
+{% load sass_tags %}
 
 {% block content %}
 {% block header %}
-    {{ form.media }} # Required for styling/js to make ckeditor5 work
+{{ form.media }}
 {% endblock %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.1/dist/sweetalert2.min.css" rel="stylesheet">
+
+
 <style>
     body {
         background-color: #f8f9fa;
     }
-    .container {
-        margin-top: 30px;
+
+    /* Contenedor principal ocupa el 90% del ancho */
+    .container-fluid {
+        width: 100%;
+        margin: 30px auto;
     }
+
+    /* Columnas con tamaño dinámico */
+    .col-full {
+        width: 100%;
+        transition: width 0.4s ease-in-out;
+    }
+
+    .col-half {
+        width: 50%;
+        transition: width 0.4s ease-in-out;
+    }
+
     .card {
         border-radius: 12px;
         border: none;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         padding: 20px;
+        height: 100%;
     }
-    .btn-primary {
-        background-color: #6c5ce7;
-        border: none;
-        border-radius: 10px;
-        padding: 12px;
-    }
-    .btn-primary:hover {
-        background-color: #4834d4;
-    }
+
+
+
     .btn-add {
         display: block;
-        margin: 20px auto;
-        background-color: #28a745;
+        margin-bottom: 20px;
+        background-color: #3E688C;
         color: white;
         border-radius: 10px;
         padding: 12px 20px;
         font-size: 16px;
         border: none;
+        width: 25%;
     }
+
     .btn-add:hover {
-        background-color: #218838;
-    }
-    .table th {
-        background-color: #2d3436;
+        background-color: rgb(20, 102, 149);
         color: white;
-        text-align: center;
-        padding: 12px;
     }
-    .table td {
-        text-align: center;
-        vertical-align: middle;
-        padding: 10px;
+
+
+
+    /* Formulario oculto por defecto */
+    #colFormulario,
+    #colTabla {
+        transition: all 0.5s ease-in-out;
     }
-    .btn-view {
-        background-color: #a29bfe;
-        color: white;
-        border-radius: 8px;
-        padding: 8px 14px;
-        font-size: 14px;
+
+    /* Animación de escala y opacidad para hacer el cambio más fluido */
+    @keyframes fadeInScale {
+        0% {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
     }
-    .btn-view:hover {
-        background-color: #6c5ce7;
+
+    @keyframes fadeOutScale {
+        0% {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        100% {
+            opacity: 0;
+            transform: scale(0.9);
+        }
     }
-    #formularioNoticia {
+
+    /* Asegurar que el formulario ocupa toda la pantalla al activarse */
+    #colFormulario {
         display: none;
+        width: 100%;
+        max-width: 100%;
+        opacity: 0;
     }
+
+    #colTabla {
+        opacity: 1;
+    }
+    .dashboard {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+    gap: 3rem !important;
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin-bottom: 60px;
+}
+
+.cardash {
+    background: white !important;
+    border-radius: 1rem !important;
+    padding: 1.5rem !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px -20px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(241, 245, 249, 0.8) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.cardash:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 25px 50px -12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.cardash::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 4px !important;
+    background: linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #ec4899 100%) !important;
+}
+
+.cardash-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.cardash-title {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+}
+
+.cardash-icon {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 0.75rem !important;
+    background: #f1f5f9 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.3s ease !important;
+    font-size: 1.5rem !important;
+}
+
+.cardash-content {
+    max-height: 100px; /* Ajusta la altura según lo que necesites */
+    overflow-y: auto; /* Activa el scroll si el contenido excede la altura */
+    padding-right: 8px; /* Espacio para evitar que el scroll tape el contenido */
+    padding-top: 4px; /* Añadir un pequeño padding superior */
+    scroll-padding-top: 10px; /* Ayuda a que el primer elemento no quede oculto */
+}
+
+
+@keyframes fadeIn {
+    from { opacity: 0 !important; transform: translateY(10px) !important; }
+    to { opacity: 1 !important; transform: translateY(0) !important; }
+}
+
+.cardash {
+    animation: fadeIn 0.6s ease forwards !important;
+}
+
+.emoji-transition {
+    transition: opacity 0.3s ease, transform 0.3s ease !important;
+}
+.category-list {
+    padding: 0;
+    margin: 0;
+}
+
+.category-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #f8fafc; /* Fondo más suave */
+    margin-bottom: 6px;
+    transition: background 0.3s ease;
+}
+
+.category-list li:hover {
+    background: #e2e8f0; /* Cambio de color al pasar el mouse */
+}
+
+.category-name {
+    font-weight: 600;
+}
+
+.category-count {
+    background: #6366f1;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+.category-list li:first-child {
+    margin-top: 4px; /* Asegura que el primer elemento no quede pegado al borde */
+}
+
+.cardash-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.cardash-content::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1; /* Color del scroll */
+    border-radius: 6px;
+}
+
+.cardash-content::-webkit-scrollbar-thumb:hover {
+    background-color: #94a3b8; /* Color al pasar el mouse */
+}
+@media (max-width: 640px) {
+    body {
+        padding: 1rem !important;
+    }
+    
+    .cardash {
+        padding: 1.25rem !important;
+    }
+    
+    .cardash-content {
+        font-size: 1.875rem !important;
+    }
+    .category-name {
+        font-size: 15px !important;
+    }
+}
+.titulo2{
+    display: none;
+}
+#contenidoTemporal{
+    position: absolute;
+    z-index: -1; /* Lo envía al fondo */
+}
+.btn-copiar {
+            background-color: #3E688C;
+            color: white;
+            padding: 10px 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-bottom: 4px;
+        }
+
+        .btn-copiar:hover {
+            background-color: #0056b3;
+        }
+        .ocultar_boton{
+            display: none;
+        }
 </style>
 
-<div class="container">
-    <button id="toggleFormulario" class="btn btn-add">➕ Agregar Noticia</button>
-
-    <!-- FORMULARIO (Oculto por defecto) -->
-    <div id="formularioNoticia" class="card mt-3">
-        <h4 class="mb-3 text-center">Nueva Noticia</h4>
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label class="form-label">Título:</label>
-                {{ form.titulo }}
+<!-- Contenedor principal -->
+<div class="container-fluid">
+    <div class="dashboard">
+        <!-- Tarjeta: Total de Noticias -->
+        <div class="cardash">
+            <div class="cardash-header">
+                <span class="cardash-title">Total de Noticias</span>
+                <div class="cardash-icon">
+                    <span class="emoji-transition">📰</span>
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Contenido:</label>
-                {{ form.contenido }}
+            <div class="cardash-content" style="font-size: 30px;">{{ total_noticias }}</div>
+            <h3 style="color: #64748b;">Noticias vigentes al momento</h3>
+        </div>
+    
+        <!-- Tarjeta: Última Noticia -->
+        <div class="cardash">
+            <div class="cardash-header">
+                <span class="cardash-title">Última Noticia</span>
+                <div class="cardash-icon">
+                    <span class="emoji-transition">📅</span>
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Autor:</label>
-                {{ form.autor }}
+            <div class="cardash-content" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                <span style="font-size: 14px; font-weight: 600; color: #64748b;">{{ ultima_noticia.titulo }}</span>
+                <span class="time-subtext" style="font-size: 12px; color: #94a3b8; margin-top: 4px;">{{ ultima_noticia.fecha|date:"d/m/Y" }}</span>
+            </div>            
+        </div>
+    
+        <!-- Tarjeta: Noticias por Categoría -->
+        <div class="cardash">
+            <div class="cardash-header">
+                <span class="cardash-title">Noticias por Categoría</span>
+                <div class="cardash-icon">
+                    <span class="emoji-transition">📂</span>
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Categoría:</label>
-                {{ form.categoria }}
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Imagen:</label>
-                {{ form.imagen }}
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Publicar Noticia</button>
-        </form>
-    </div>
-
-    <!-- TABLA DE NOTICIAS -->
-    <div class="card mt-3">
-        <h4 class="mb-3 text-center">Noticias Publicadas</h4>
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Título</th>
-                        <th>Autor</th>
-                        <th>Fecha</th>
-                        <th>Ver</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for noticia in noticias %}
-                    <tr>
-                        <td>#{{ noticia.id }}</td>
-                        <td class="text-start">{{ noticia.titulo }}</td>
-                        <td>{{ noticia.autor }}</td>
-                        <td>{{ noticia.fecha|date:"d/m/Y H:i" }}</td>
-                        <td>
-                            <a href="{% url 'detalle_noticia' noticia.id %}" class="btn btn-sm btn-view">Ver</a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center">No hay noticias publicadas</td>
-                    </tr>
+            <div class="cardash-content">
+                <ul class="category-list">
+                    {% for categoria in categorias %}
+                        <li>
+                            <span class="category-name">{{ categoria.nombre }}</span> 
+                            <span class="category-count">{{ categoria.noticias_count }}</span>
+                        </li>
                     {% endfor %}
-                </tbody>
-            </table>
+                </ul>
+            </div>
+        </div>
+
+    
+    </div>
+    
+    
+    <button id="toggleFormulario" class="btn btn-add" style="width: auto; margin-bottom: 20px; border-radius: 10px; padding: 12px 20px; font-size: 16px;">
+        <i class="fa-solid fa-newspaper"></i> Agregar Noticia
+    </button>
+
+    <div class="row">
+        <!-- FORMULARIO - Lado Izquierdo (Oculto por defecto) -->
+        <div id="colFormulario" class="col-half col-sm-12">
+            <div id="formularioNoticia" class="card">
+                <h2 class="mb-3 text-start">Nueva Noticia</h2>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="is_editing" id="is_editing" value="false"> <!-- Campo oculto para el estado -->
+                    <input type="hidden" id="id_noticia_id" name="noticia_id">
+
+                    <div class="mb-3">
+                        <label class="form-label">Título:</label>
+                        {{ form.titulo }}
+                    </div>
+                    <div id="contenidoTemporal"></div>
+                    <button class="btn-copiar ocultar_boton" id="ocultar_boton1" type="button" onclick="copiarContenido()">Recuperar Versión de Noticia</button>
+
+                    <div class="mb-3">
+                        <label class="form-label">Contenido de la Nota:</label>
+                        {{ form.contenido }}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">Autor:</label>
+                            {{ form.autor }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Categoría:</label>
+                            <div class="input-group">
+                                {{ form.categoria }}
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoriaModal">
+                                    +
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Imagen de Portada:</label>
+                        {{ form.imagen }}
+                        <div class="preview-container">
+                            <img id="imagenPrincipalPreview" class="preview-image"
+                                style="display: none; width: 50%; max-height: 200px; margin-top: 10px;">
+                        </div>
+                    </div>
+
+                    <!-- Formulario de imágenes -->
+                    <div class="mb-3">
+                        <label class="form-label">Galería de Imágenes (para la galería se permiten un máximo de 4 imágenes):</label>
+                        {{ imagenes_formset.management_form }}
+                        <div class="row">
+
+                            {% for form in imagenes_formset %}
+                            <div class="col-md-6 mb-2 text-center">
+                                {{ form.imagen }}
+                                <div class="preview-container">
+                                    <img id="preview_{{ forloop.counter }}" class="preview-image"
+                                        style="display: none; width: 200px; height: 100px; object-fit: cover; margin-top: 5px;">
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+                    <input type="hidden" name="imagenes_previas" id="imagenes_previas" value="{% for img in imagenes_formset.queryset %}{{ img.imagen.url }},{% endfor %}">
+
+
+                    <button type="submit" class="btn btn-primary w-100">Publicar Noticia</button>
+                </form>
+            </div>
+        </div>
+        
+
+
+        <!-- TABLA DE NOTICIAS - Lado Derecho -->
+        <div class="col-sm-12" id='colTabla'>
+            <div class="card">
+                <div class="card-header pb-0 card-no-border">
+                    <h3 class="mb-3">Lista de Cobros Online</h3>
+                </div>
+                <div class="card-body">
+                    <div class="dt-ext table-responsive theme-scrollbar">
+
+                    <table class="display" id="basic-2">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Categoría</th>
+                                <th>Autor</th>
+                                <th>Fecha</th>
+                                <th style="width: 110px;">Opciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for noticia in noticias %}
+                            <tr>
+                                <td class="text-start">{{ noticia.titulo }}</td>
+                                <td>{{ noticia.categoria }}</td>
+                                <td>{{ noticia.autor }}</td>
+                                <td>{{ noticia.fecha|date:"d/m/Y H:i" }}</td>
+                                <td>
+                                    <a href="{% url 'detalle_noticia' noticia.id %}"
+                                        class="btn btn-sm btn-primary rounded-circle p-2" title="Ver">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-sm btn-warning rounded-circle p-2 btn-editar"
+                                        data-id="{{ noticia.id }}"
+                                        title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-sm btn-danger rounded-circle p-2 btn-eliminar"
+                                        data-id="{{ noticia.id }}"
+                                        data-titulo="{{ noticia.titulo }}"
+                                        data-autor="{{ noticia.autor }}"
+                                        data-fecha="{{ noticia.fecha|date:'d/m/Y H:i' }}"
+                                        data-imagen="{{ noticia.imagen.url }}"
+                                        title="Eliminar">
+                                            <i class="fas fa-trash-alt"></i>
+                                    </a>
+
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No hay noticias publicadas</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="categoriaModal" tabindex="-1" aria-labelledby="categoriaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="categoriaModalLabel">Agregar Nueva Categoría</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="categoriaForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="categoriaNombre" class="form-label">Nombre de la Categoría</label>
+                            <input type="text" class="form-control" id="categoriaNombre" name="nombre" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
 <script>
-    $(document).ready(function(){
-        $("#toggleFormulario").click(function(){
-            $("#formularioNoticia").slideToggle(400);
+    $(document).ready(function () {
+        $("#toggleFormulario").click(function () {
+            if ($("#colFormulario").is(":visible")) {
+                // Ocultar el formulario con animación y mostrar la tabla después
+                $("#colFormulario").css("animation", "fadeOutScale 0.5s ease-in-out").fadeOut(400, function () {
+                    $("#colTabla").fadeIn(400).css("animation", "fadeInScale 0.5s ease-in-out");
+                    $("#toggleFormulario").removeClass("btn-danger").addClass("btn-add").html('<i class="fa-solid fa-newspaper"></i> Agregar Noticia');
+                    $("#formularioNoticia form")[0].reset();
+                    $("#ocultar_boton1").addClass('ocultar_boton');
+
+                    // Ocultar previsualización de imagen si se ha mostrado
+                    $(".preview-image").hide();
+                });
+            } else {
+                // Ocultar la tabla con fade-out y expandir el formulario correctamente
+                $("#colTabla").fadeOut(200, function () {
+                    $("#colFormulario").css({ "display": "block", "width": "100%", "opacity": "0" });
+
+                    // Esperamos 50ms para aplicar la animación y evitar parpadeos
+                    setTimeout(function () {
+                        $("#colFormulario").css("animation", "fadeInScale 0.5s ease-in-out").fadeIn(400).css("opacity", "1");
+                        $("#toggleFormulario").removeClass("btn-add").addClass("btn-danger").html('<i class="fa-solid fa-times"></i> Cerrar Formulario');
+                    }, 5);
+                });
+            }
         });
     });
 </script>
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Vista previa de la imagen principal
+        document.querySelector("#id_imagen").addEventListener("change", function (event) {
+            let file = event.target.files[0];
+            let preview = document.querySelector("#imagenPrincipalPreview");
+
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = "none";
+            }
+        });
+
+        // Vista previa de las imágenes de la galería
+        document.querySelectorAll("[id^='id_form-'][id$='-imagen']").forEach(function (input, index) {
+            input.addEventListener("change", function (event) {
+                let file = event.target.files[0]; // Obtener la imagen seleccionada
+                let preview = document.querySelector("#preview_" + (index + 1)); // Obtener la vista previa específica
+
+                if (file) {
+                    let reader = new FileReader();
+                    reader.onload = function (e) {
+                        preview.src = e.target.result;
+                        preview.style.display = "block";
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.style.display = "none";
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("categoriaForm").addEventListener("submit", function(event) {
+        event.preventDefault();  // Evita recargar la página
+        
+        let formData = new FormData(this);
+
+        fetch("{% url 'agregar_categoria' %}", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                let select = document.getElementById("id_categoria");
+                let nuevaOpcion = document.createElement("option");
+                nuevaOpcion.value = data.id;
+                nuevaOpcion.textContent = data.nombre;
+                nuevaOpcion.selected = true;
+                select.appendChild(nuevaOpcion);
+
+                // Cerrar modal
+                let modal = bootstrap.Modal.getInstance(document.getElementById("categoriaModal"));
+                modal.hide();
+
+                // Limpiar campo del formulario
+                document.getElementById("categoriaNombre").value = "";
+            } else {
+                alert(data.error);
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
+});
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.1/dist/sweetalert2.min.js"></script>
+
+<script>
+    function attachDeleteEvent() {
+        $(".btn-eliminar").click(function (e) {
+            e.preventDefault();
+
+            let noticiaId = $(this).data("id");
+            let titulo = $(this).data("titulo");
+            let autor = $(this).data("autor");
+            let fecha = $(this).data("fecha");
+            let imagen = $(this).data("imagen");
+
+            Swal.fire({
+                title: "¿Eliminar noticia?",
+                html: `
+                    <strong>${titulo}</strong><br>
+                    <small>Autor: ${autor} - Fecha: ${fecha}</small><br>
+                    <img src="${imagen}" class="img-fluid mt-2" style="max-height:150px;">
+                `,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/admin/eliminar-noticia/${noticiaId}/`,
+                        type: "POST",
+                        headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire("Eliminado", "La noticia ha sido eliminada.", "success")
+                                    .then(() => location.reload());
+                            }
+                        },
+                        error: function () {
+                            Swal.fire("Error", "No se pudo eliminar la noticia.", "error");
+                        }
+                    });
+                }
+            });
+        });
+    }
+     // Inicializar el evento al cargar la página
+     attachDeleteEvent();
+
+// Volver a asociar el evento de eliminar cada vez que la tabla se redibuje (cambio de página, filtrado, etc.)
+table.on('draw', function () {
+    attachDeleteEvent();
+    
+});
+</script>
+<script src="https://cdn.ckeditor.com/ckeditor4/4.16.2/ckeditor.js"></script>
+
+<script>
+$(document).ready(function () {
+    $(".btn-editar").click(function (e) {
+        e.preventDefault();
+        $("#tituloEdicion").removeClass('titulo2');
+        $("#ocultar_boton1").removeClass('ocultar_boton');
+
+        let noticiaId = $(this).data("id");
+
+        // Establecer el valor del campo oculto is_editing a true
+        $("#is_editing").val("true"); 
+        $("#noticia_id").val(noticiaId);  
+
+        // Mostrar el formulario de edición
+        $("#toggleFormulario").click();  
+
+        // Realizar la petición AJAX para obtener los datos de la noticia
+        $.ajax({
+            url: `/admin/editar-noticia/${noticiaId}/`,
+            type: "GET",
+            success: function (response) {
+                // Rellenar el formulario con los datos obtenidos
+                $("#id_titulo").val(response.titulo);
+                $("#id_autor").val(response.autor);
+                $("#id_categoria").val(response.categoria);
+                $("#imagenPrincipalPreview").attr("src", response.imagen).show();
+
+                // Almacenar imágenes de la galería en el campo oculto
+                let imagenesPrevias = [];
+                response.imagenes_galeria.forEach(function (imagen, index) {
+                    $("#preview_" + (index + 1)).attr("src", imagen).show();
+                    imagenesPrevias.push(imagen); // Guardar URLs de imágenes
+                });
+
+                let imagenesPrevias2 = [];
+                response.imagenes_galeria2.forEach(function (imagen, index) {
+                    imagenesPrevias2.push(imagen); // Guardar los ID de las imágenes
+                });
+
+                // Pasar los ID de las imágenes previas al input oculto
+                $("#imagenes_previas").val(imagenesPrevias2.join(',')); 
+
+                // Almacenar contenido
+                $("#contenidoTemporal").html(response.contenido);
+                $("#id_noticia_id").val(response.id);  
+
+            },
+            error: function () {
+                Swal.fire("Error", "No se pudo cargar la noticia para editar.", "error");
+            }
+        });
+    });
+});
+
+
+  </script>
+  
+  <script>
+    function copiarContenido() {
+        let contenido = document.getElementById("contenidoTemporal");
+
+        // Crear un nuevo elemento para copiar con estilos
+        let rango = document.createRange();
+        rango.selectNode(contenido);
+        
+        let seleccion = window.getSelection();
+        seleccion.removeAllRanges();
+        seleccion.addRange(rango);
+
+        // Copiar al portapapeles
+        document.execCommand("copy");
+
+        // Limpiar selección
+        seleccion.removeAllRanges();
+
+        // Mostrar alerta con SweetAlert
+        Swal.fire({
+            icon: 'success',
+            title: 'Versión Recuperada',
+            text: 'Debe pegarla en el área de edición.',
+            timer: 2000, // Se cierra automáticamente en 3 segundos
+            showConfirmButton: false
+        });
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelector("form").addEventListener("submit", function (e) {
+            let editorInstance = CKEDITOR.instances.id_contenido; // Obtiene la instancia del editor
+            let contenido = editorInstance.getData().trim(); // Obtiene el contenido limpio
+
+            let contenidoField = document.querySelector("#id_contenido"); // Campo original oculto
+
+            if (contenido === "" || contenido === "<p><br></p>") {
+                contenidoField.setCustomValidity("Este campo es obligatorio.");
+            } else {
+                contenidoField.setCustomValidity(""); // Limpia el error si el campo está lleno
+            }
+        });
+    });
+</script>
+
+
 
 {% endblock content %}

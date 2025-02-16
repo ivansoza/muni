@@ -14,14 +14,17 @@ from informacion_municipal.models import Municipio
 from .forms import CustomAuthenticationForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
-from noticias.models import Noticia
-from noticias.forms import NoticiaForm
+from noticias.models import Noticia, ImagenGaleria, Categoria
+from noticias.forms import NoticiaForm, ImagenGaleriaFormSet
 import os
 import uuid
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.db.models import Count
+from django.shortcuts import get_object_or_404, redirect
+
 # Create your views here.
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
@@ -130,33 +133,152 @@ class SocialMediaView(LoginRequiredMixin, TemplateView):
         return context
 
 
+from django.utils.timezone import localtime
+
 class NewsView(LoginRequiredMixin, TemplateView):
     template_name = "noticias.html"
-    login_url = reverse_lazy('login')  # Redirigir si no está autenticado
+    login_url = reverse_lazy('login')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['form'] = NoticiaForm()
+        context['imagenes_formset'] = ImagenGaleriaFormSet(queryset=ImagenGaleria.objects.none())
+
+        noticias = Noticia.objects.all().order_by('-fecha')
+        for noticia in noticias:
+            noticia.fecha = localtime(noticia.fecha)
+
+        context['noticias'] = noticias
+        context['total_noticias'] = Noticia.objects.count()
+        
+        ultima_noticia = Noticia.objects.order_by('-fecha').first()
+        if ultima_noticia:
+            ultima_noticia.fecha = localtime(ultima_noticia.fecha)
+
+        categorias = Categoria.objects.annotate(noticias_count=Count('noticias'))
+        autor_destacado = Noticia.objects.values('autor').annotate(total=Count('autor')).order_by('-total').first()
+
+        context['ultima_noticia'] = ultima_noticia
+        context['categorias'] = categorias
+        context['autor_destacado'] = autor_destacado
+
+        noticia_id = self.request.GET.get('noticia_id')
+        noticia = Noticia.objects.filter(id=noticia_id).first()
+
+        if noticia:
+            context['form'] = NoticiaForm(instance=noticia)
+            context['imagenes_formset'] = ImagenGaleriaFormSet(queryset=noticia.imagenes_galeria.all())
+        else:
+            context['form'] = NoticiaForm()
+            context['imagenes_formset'] = ImagenGaleriaFormSet(queryset=ImagenGaleria.objects.none())  
+
         url_configuracion = reverse('dashboard')
         context["breadcrumb"] = {
             'parent': {'name': 'Dashboard', 'url': url_configuracion},
             'child': {'name': 'Noticias', 'url': ''}
         }
-        context['sidebar'] = 'noticias'  # Resalta la sección de Noticias en el sidebar
-        
-        # Agregar formulario y lista de noticias al contexto
-        context['form'] = NoticiaForm()
-        context['noticias'] = Noticia.objects.all().order_by('-fecha')
+        context['sidebar'] = 'noticias'  
 
         return context
 
-    @method_decorator(csrf_protect)
     def post(self, request, *args, **kwargs):
-        form = NoticiaForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('noticias_view')  # Redirigir a la misma vista después de guardar
-        return self.get(request, *args, **kwargs)  # Volver a renderizar la vista con errores en el formulario
+        is_editing = request.POST.get('is_editing') == 'true'
+        noticia_id = request.POST.get('noticia_id')
+
+        noticia = get_object_or_404(Noticia, id=noticia_id) if is_editing and noticia_id else None
+
+        # Si es edición, mantener la imagen principal si no se sube una nueva
+        if noticia:
+            form = NoticiaForm(request.POST, request.FILES, instance=noticia)
+            if not request.FILES.get('imagen'):
+                form.instance.imagen = noticia.imagen  
+        else:
+            form = NoticiaForm(request.POST, request.FILES)
+
+        # Obtener imágenes previas asociadas a la noticia
+        imagenes_previas = list(noticia.imagenes_galeria.all()) if noticia else []
+
+        # Formset para manejar imágenes nuevas
+        formset = ImagenGaleriaFormSet(request.POST, request.FILES, queryset=noticia.imagenes_galeria.all() if noticia else ImagenGaleria.objects.none())
+
+        if form.is_valid() and formset.is_valid():
+            noticia = form.save()
+
+            imagenes_actualizadas = imagenes_previas.copy()  # Mantener todas las imágenes previas
+
+            for i, imagen_form in enumerate(formset):
+                if imagen_form.cleaned_data.get('imagen'):
+                    if i < len(imagenes_previas):
+                        # 🔹 Reemplazar la imagen en la misma posición
+                        imagenes_actualizadas[i].imagen = imagen_form.cleaned_data['imagen']
+                        imagenes_actualizadas[i].save()
+                    else:
+                        # 🔹 Si hay espacio, agregar la nueva imagen
+                        if len(imagenes_actualizadas) < 4:
+                            imagen = imagen_form.save(commit=False)
+                            imagen.noticia = noticia
+                            imagen.save()
+                            imagenes_actualizadas.append(imagen)
+
+            # 🔹 Asegurar que solo se mantengan las primeras 4 imágenes
+            noticia.imagenes_galeria.set(imagenes_actualizadas[:4])
+
+            return redirect('noticias_view')
+
+        return self.get(request, *args, **kwargs)
+
+
     
+def eliminar_noticia(request, noticia_id):
+    if request.method == "POST":
+        noticia = get_object_or_404(Noticia, id=noticia_id)
+
+        # Eliminar imágenes asociadas en `ImagenGaleria`
+        for imagen in noticia.imagenes_galeria.all():
+            if imagen.imagen:
+                default_storage.delete(imagen.imagen.path)  # Eliminar el archivo
+            imagen.delete()  # Eliminar el registro
+
+        # Eliminar la imagen principal de la noticia
+        if noticia.imagen:
+            default_storage.delete(noticia.imagen.path)
+
+        # Eliminar la noticia
+        noticia.delete()
+
+        return JsonResponse({"success": True})
+
+    return JsonResponse({"success": False}, status=400)
+
+def editar_noticia(request, noticia_id):
+    noticia = get_object_or_404(Noticia, id=noticia_id)
+    
+    # Responder con los datos de la noticia para pre-poblar el formulario
+    return JsonResponse({
+        'id': noticia.id,
+        'titulo': noticia.titulo,
+        'contenido': noticia.contenido,
+        'autor': noticia.autor,
+        'categoria': noticia.categoria.id,  # Si usas un campo de relación
+        'imagen': noticia.imagen.url if noticia.imagen else '',
+        'imagenes_galeria': [imagen.imagen.url for imagen in noticia.imagenes_galeria.all()],
+        'imagenes_galeria2': [imagen.id for imagen in noticia.imagenes_galeria.all()]
+
+    })
+
+
+
+@csrf_exempt
+def agregar_categoria(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        if nombre:
+            categoria, created = Categoria.objects.get_or_create(nombre=nombre)
+            if created:
+                return JsonResponse({'success': True, 'id': categoria.id, 'nombre': categoria.nombre})
+            else:
+                return JsonResponse({'success': False, 'error': 'La categoría ya existe.'})
+    return JsonResponse({'success': False, 'error': 'Solicitud inválida'})
 
 @csrf_exempt  # Permitir peticiones sin CSRF para subida de archivos
 def custom_upload_function(request):
