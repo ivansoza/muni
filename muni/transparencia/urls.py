@@ -4,7 +4,7 @@ from .views import HomeReportesView, HomeTransparenciaView
 urlpatterns = [
     path('', HomeTransparenciaView.as_view(), name='homeTransferencia'), 
 
-    path('/reportes', HomeReportesView.as_view(), name='homeReportes'), 
+    path('reportes/', HomeReportesView.as_view(), name='homeReportes'), 
 
 
     

@@ -57,7 +57,6 @@ INSTALLED_APPS = [
     'django_ckeditor_5',  # Asegúrate de incluirlo aquí
 
 ]
-
 CKEDITOR_5_CONFIGS = {
     "extends": {
         "toolbar": [
@@ -69,7 +68,7 @@ CKEDITOR_5_CONFIGS = {
                 "url": "/upload/",  # URL donde se subirán las imágenes
             }
         },
-        "height": 400,
+        "height": 300,
         "width": "100%",
     }
 }
