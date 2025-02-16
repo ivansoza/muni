@@ -28,13 +28,15 @@
                 --color-primario:{{ municipio.colores.first.color_primario_dark }};
                 --color-secundario:{{ municipio.colores.first.color_primario }};
                 --color-iconos:{{municipio.colores.first.color_secundario}} ;
+                --color-acento: {{municipio.colores.first.color_secundario}};
+
                 --color-primario-rgb: {{municipio.colores.first.color_primario_dark_rgb}}; 
                 --color-secundario-rgb: {{municipio.colores.first.color_primario_rgb}};
             {% else %}
                 --color-primario: #1e4765;
                 --color-secundario: #295E84;
                 --color-iconos:rgb(109, 109, 109);
-
+                --color-acento: :rgb(109, 109, 109);
                 --color-primario-rgb: 30, 71, 101;  
                 --color-secundario-rgb: 41, 94, 132;
             {% endif %}
@@ -271,7 +273,12 @@
 <!-- CSS -->
 <style>
 
-
+    .card-reporte-avanzada:focus,
+    .boton-avanzado:focus {
+        outline: 3px solid var(--color-acento);
+        outline-offset: 5px;
+    }
+    
 .reporte-seccion {
     padding: 6rem 1rem;
     background: #f8fafc;
@@ -390,7 +397,7 @@
 }
 
 .card-reporte-avanzada:hover .titulo-flotante span:last-child {
-    transform: translateY(3px);
+    transform: translateY(-3px);
 }
 
 .descripcion-interactiva {
@@ -462,6 +469,25 @@
         padding: 0 1rem;
     }
 }
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+    }
+}
+@keyframes morphIcon {
+    0% {
+        clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    }
+    100% {
+        clip-path: polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%);
+    }
+}
+
+.card-reporte-avanzada:hover .icono-base {
+    animation: morphIcon 0.4s forwards;
+}
+
 </style>
 
     <!-- Footer -->
