@@ -17,14 +17,103 @@
 </head>
 <body>
 
+    <style>
+        :root {
+            {% if municipio.colores.exists %}
+                --color-primario:{{ municipio.colores.first.color_primario_dark }};
+                --color-secundario:{{ municipio.colores.first.color_primario }};
+                --color-iconos:{{municipio.colores.first.color_secundario}} ;
+                --color-primario-rgb: {{municipio.colores.first.color_primario_dark_rgb}}; 
+                --color-secundario-rgb: {{municipio.colores.first.color_primario_rgb}};
+            {% else %}
+                --color-primario: #1e4765;
+                --color-secundario: #295E84;
+                --color-iconos:rgb(109, 109, 109);
+
+                --color-primario-rgb: 30, 71, 101;  
+                --color-secundario-rgb: 41, 94, 132;
+            {% endif %}
+            
+            --color-gradiente: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+
+           
+            /* Gradiente */
+        }
+
+        .navbar {
+            background-color: var(--color-primario);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-section {
+            background: linear-gradient(
+                rgba(var(--color-primario-rgb), 0.8), 
+                rgba(var(--color-secundario-rgb), 0.8)
+            ),
+            url(
+                {% if municipio.banner %}
+                    '{{ municipio.banner.url }}'
+                {% else %}
+                    'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'
+                {% endif %}
+            );
+        
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 120px 0;
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+            margin-bottom: 80px;
+        }
+        
+
+        .card-elegante:hover .card-icon {
+            color: var(--color-secundario);
+        }
+
+        .news-link {
+            font-size: 0.9rem;
+            color: var(--color-iconos);
+            text-decoration: none;
+        }
+        .news-link i {
+            color: var(--color-iconos);
+        }
+
+        .contact-info-container {
+            background: rgba(var(--color-primario-rgb),0.8); /* Fondo semitransparente */
+            border-radius: 20px;
+            padding: 40px;
+            color: white;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            text-align: left;
+        
+            /* Ajuste para desplazar a la derecha */
+            margin-right: 5%;
+            transform: translateX(50%); /* Desplaza hacia la derecha */
+        }
+           
+        .social-icons-float a:hover {
+            background-color: var(--color-secundario);
+            transform: translateX(-5px);
+        }
+
+    </style>
+
+
 
     <div id="preloader">
         <div class="preloader-content">
-            <img src="{% static 'logo.png' %}" alt="Imagen representativa" class="preloader-logo mb-4 img-fluid" style="width: 250px; height: 250px;">
-    
+            {% if  municipio.logotipo %}
+                <img src="{{municipio.logotipo.url}}" alt="Imagen representativa" class="preloader-logo mb-4 img-fluid" style="width: 250px; ">
+            {% else %}
+                <img src="{% static 'assets/images/logo/logo-new.png' %}"alt="Imagen representativa" class="preloader-logo mb-4 img-fluid" style="width: 250px; height: 250px;">
+            {% endif %}
         </div>
     </div>
-
 
     <nav class="navbar navbar-expand-lg text-white navbar-no-transparent fixed-top">
         <div class="container">
@@ -42,7 +131,7 @@
                         <a class="nav-link" href="{% url 'homeServicios' %}">Servicios</a>
                     </li>
                                
-                    <li class="nav-item"><a class="nav-link" href="#">Noticias</a></li>
+                    <li class="nav-item {% if sidebar == 'noticias' %}active{% endif %}"><a class="nav-link" href="{% url "homeNoticias" %}">Noticias</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Transparencia</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
                 </ul>
@@ -61,10 +150,18 @@
     </div>
     <!-- Bloque de contenido principal -->
 
+
+
+    <section>
+        <div style="padding-top: 150px;">
+
+
+        {% block content %}
     
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+        {% endblock %}
+        </div>
+
+    </section>
 
     <!-- Footer -->
     <footer class="footer">
@@ -102,7 +199,6 @@
 
     <!-- Scripts base -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'js/base.js' %}"></script>
     
     <script>
 
