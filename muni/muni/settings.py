@@ -69,7 +69,7 @@ CKEDITOR_5_CONFIGS = {
                 "url": "/upload/",  # URL donde se subirán las imágenes
             }
         },
-        "height": 400,
+        "height": 300,
         "width": "100%",
     }
 }
@@ -258,7 +258,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'es-es'
 
-TIME_ZONE = 'UTC'
+TIMEZONE = 'America/Mexico_City'
 
 USE_I18N = True
 
