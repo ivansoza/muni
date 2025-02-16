@@ -11,9 +11,12 @@ class HomeNoticiasView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['sidebar'] = 'noticias'  # Define qué opción está activa
-        
-        # Obtener todas las noticias ordenadas por fecha
+
+        # Obtener todas las noticias ordenadas por fecha (de la más reciente a la más antigua)
         noticias = Noticia.objects.all().order_by('-fecha')
+
+        # Obtener las últimas 6 noticias para la sección "Noticias de la Semana"
+        noticias_recientes = noticias[:6]
 
         # Filtrado por fecha y categoría (si existen parámetros)
         fecha = self.request.GET.get('fecha', None)
@@ -34,9 +37,11 @@ class HomeNoticiasView(TemplateView):
         }
 
         context['noticias'] = noticias
+        context['noticias_recientes'] = noticias_recientes  # Agregamos las noticias recientes al contexto
         context['noticias_por_categoria'] = noticias_por_categoria
         context['categorias'] = categorias  # Pasamos solo las categorías con noticias
         return context
+
     
 
 class DetalleNoticiaView(DetailView):
