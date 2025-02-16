@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+
+
+
+{% block content %}
+
+<style>
+
+    /* Contenedor de la tarjeta */
+    .card {
+      background-color: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      max-width: 350px;
+      width: 100%;
+      margin: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Sección de imagen */
+    .card-image {
+      width: 100%;
+      height: 200px;
+      background-image: url('https://via.placeholder.com/350x200');
+      background-size: cover;
+      background-position: center;
+    }
+
+    /* Contenido de la tarjeta */
+    .card-content {
+      padding: 20px;
+      text-align: center;
+    }
+
+    .card-content h2 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      color: #4a148c; /* tono morado suave */
+    }
+
+    .card-content p {
+      margin: 0;
+      color: #2e7d32; /* tono verde suave */
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    /* Botón de llamado a la acción */
+    .card-button {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      background-color: navy;
+      color: white;
+      padding: 15px;
+      margin: 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .card-button:hover {
+      background-color: #000080cc;
+    }
+
+    /* Diseño responsivo */
+    @media (max-width: 480px) {
+      .card {
+        margin: 10px;
+      }
+
+      .card-content h2 {
+        font-size: 1.3rem;
+      }
+
+      .card-content p {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+
+<div class="card">
+    <!-- Imagen superior -->
+    <div class="card-image"></div>
+    
+    <!-- Contenido: Título y descripción -->
+    <div class="card-content">
+      <h2>Título de la Tarjeta</h2>
+      <p>Esta es una descripción breve y concisa que explica el contenido o la función de la tarjeta de manera profesional y moderna.</p>
+    </div>
+    
+    <!-- Botón de llamado a la acción -->
+    <a href="#" class="card-button">Saber Más</a>
+  </div>
+
+{% endblock content %}

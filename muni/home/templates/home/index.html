@@ -241,7 +241,7 @@
 <!-- HTML -->
 <section class="reporte-seccion">
     <div class="contenedor-3d">
-        <a href="formulario.html" class="card-reporte-avanzada">
+        <a href="{% url "homeReportes" %}" class="card-reporte-avanzada">
             <div class="card-hover-layer"></div>
             <svg class="border-path" viewBox="0 0 500 200" preserveAspectRatio="none">
                 <path d="M20,10 L480,10 Q490,10 490,20 L490,180 Q490,190 480,190 L20,190 Q10,190 10,180 L10,20 Q10,10 20,10"></path>
@@ -371,9 +371,7 @@
     transition: all 0.4s ease;
 }
 
-.card-reporte-avanzada:hover .icono-base {
-    clip-path: polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%);
-}
+
 
 .card-reporte-avanzada:hover .icono-morph {
     transform: rotate(15deg) scale(1.1);
@@ -475,18 +473,8 @@
         transition: none !important;
     }
 }
-@keyframes morphIcon {
-    0% {
-        clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    }
-    100% {
-        clip-path: polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%);
-    }
-}
 
-.card-reporte-avanzada:hover .icono-base {
-    animation: morphIcon 0.4s forwards;
-}
+
 
 </style>
 
