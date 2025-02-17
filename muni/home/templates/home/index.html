@@ -485,10 +485,23 @@
         <div class="container">
             <div class="row g-4">
                 <div class="col-md-2 footer-logo">
-                    <img src="{% static 'logo.png' %}" alt="Imagen representativa" class="mb-4 img-fluid" style="width: 160px; height: 160px;">
+
+                    {% if  municipio.logotipo %}
+                        <img src="{{municipio.logotipo.url}}" style="width: 160px;"  alt="Logo Municipal">
+
+                    {% else %}
+                        <img src="{% static 'assets/images/logo/logo-new.png' %}" style="width: 160px; " alt="Logo Municipal">
+                    {% endif %}
                 </div>
                 <div class="col-md-4">
-                    <h5>Gobierno Municipal</h5>
+                    <h5>
+                        {% if municipio.nombre %}
+                            {{municipio.nombre}}
+                        {% else %}
+                            Introducir el Nombre de tu Municipio
+                        {% endif %}
+
+                    </h5>
                     <p class="text-white-50">Comprometidos con el desarrollo sostenible y la transparencia institucional.</p>
                 </div>
                 <div class="col-md-4">
