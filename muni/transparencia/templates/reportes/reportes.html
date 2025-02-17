@@ -105,7 +105,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-secundario) 100%);
         color: white !important;
         padding: 15px 35px;
         border-radius: 15px;
@@ -138,7 +138,7 @@
 
     .card-button:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
     }
 
     .card-deco {
@@ -163,9 +163,132 @@
             height: 220px;
         }
     }
+
+
+    .container {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 10px;
+    }
+
+        .news-header {
+            background: linear-gradient(45deg, var(--color-primario), var(--color-secundario));
+            padding: 50px 20px;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+    
+        .news-header:hover {
+            transform: translateY(-5px);
+        }
+    
+        .news-header h2 {
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    
+        .news-header h2::before {
+            font-size: 48px;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
+        }
+    
+        .news-header h2::after {
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #fff, transparent);
+            margin: 15px auto;
+            opacity: 0.8;
+        }
+    
+        .news-header h5 {
+            font-size: 18px;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.7;
+            opacity: 0.95;
+            position: relative;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            backdrop-filter: blur(2px);
+        }
+    
+        .cta-button {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 35px;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--color-primario);
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+    
+        .cta-button:hover {
+            background: transparent;
+            color: #fff;
+            border-color: #fff;
+            transform: scale(1.05);
+        }
+    
+        @media (max-width: 768px) {
+            .news-header {
+                padding: 35px 15px;
+                border-radius: 12px;
+            }
+    
+            .news-header h2 {
+                font-size: 32px;
+                flex-direction: column;
+                gap: 10px;
+            }
+    
+            .news-header h2::before {
+                font-size: 40px;
+            }
+    
+            .news-header h5 {
+                font-size: 15px;
+                padding: 12px;
+            }
+    
+            .cta-button {
+                padding: 10px 25px;
+                font-size: 14px;
+            }
+        }
+    
+    
 </style>
 
+
+<div class="container">
+    <!-- Sección de Noticias Destacadas -->
+    <div class="news-header">
+        <h2>Reportes</h2>
+        <h5>En esta sección puedes generar reportes sobre incidencias municipales.</h5>
+    </div>
+</div>
+
+
 <div class="cards-container">
+
     <!-- Card 1 -->
     <div class="card">
         <div class="card-image card-image-1"></div>
