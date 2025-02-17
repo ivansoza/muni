@@ -523,7 +523,11 @@
                 </div>
             </div>
             <div class="copyright text-center text-white-50">
-                <p class="mb-0">&copy; 2024 - 2027 Gobierno Municipal de Apizaco. Todos los derechos reservados.</p>
+                <p class="mb-0">&copy; 2024 - 2027              {% if municipio.nombre %}
+                    {{municipio.nombre}}.
+                {% else %}
+                    Introducir el Nombre de tu Municipio.
+                {% endif %} Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>
