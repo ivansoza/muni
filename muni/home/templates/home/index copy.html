@@ -333,198 +333,172 @@
         }
     </style>
     
+
     <div id="encuesta-container" data-municipio-id="{{ municipio.id }}"></div>
 
+
+
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const encuestaContainer = document.getElementById('encuesta-container');
-        const municipioId = encuestaContainer.getAttribute('data-municipio-id');
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Tomamos el municipioId del atributo data-
+            const encuestaContainer = document.getElementById('encuesta-container');
+            const municipioId = encuestaContainer.getAttribute('data-municipio-id');
     
-        // 1. Obtener todas las encuestas activas del municipio
-        fetch(`/transparencia/api/encuesta/activas/${municipioId}/`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('No hay encuestas activas disponibles');
-                }
-                return response.json(); 
-            })
-            .then(encuestas => {
-                // encuestas es un array: [ {id, titulo, descripcion, preguntas: [...]}, {...} ]
-                if (!encuestas.length) {
-                    encuestaContainer.innerHTML = `<p>No hay encuestas activas para este municipio.</p>`;
-                    return;
-                }
-    
-                // 2. Construimos una sección <section> por cada encuesta
-                let html = '';
-                encuestas.forEach(encuesta => {
-                    html += crearEncuestaHTML(encuesta);
-                });
-                encuestaContainer.innerHTML = html;
-    
-                // 3. Por cada encuesta, registramos el listener de "submit" y "change"
-                encuestas.forEach(encuesta => {
-                    const formId = `encuesta-form-${encuesta.id}`;
-                    const form = document.getElementById(formId);
-                    
-                    if (form) {
-                        // Al cambiar un radio, habilitar el botón de envío
-                        form.addEventListener('change', function() {
-                            const submitButton = form.querySelector('.btn-submit');
-                            if (submitButton) {
-                                submitButton.disabled = false;
-                            }
-                        });
-    
-                        // Al hacer submit, enviamos todas las respuestas de UN golpe
-                        form.addEventListener('submit', function(event) {
-                            event.preventDefault();
-                            enviarRespuestas(encuesta.id, formId);
-                        });
+            // 2. Hacemos fetch a la nueva URL que devuelve TODAS las encuestas activas
+            fetch(`/transparencia/api/encuesta/activa/${municipioId}/`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('No hay encuestas activas disponibles');
                     }
+                    return response.json(); // data será una lista de encuestas
+                })
+                .then(encuestas => {
+                    // encuestas es un array: [ {id, titulo, descripcion, preguntas: [...]}, {...} ]
+    
+                    if (!encuestas.length) {
+                        encuestaContainer.innerHTML = `<p>No hay encuestas activas para este municipio.</p>`;
+                        return;
+                    }
+    
+                    // Por cada encuesta, construimos una tarjeta con su formulario
+                    let html = '';
+                    encuestas.forEach(encuesta => {
+                        html += crearTarjetaEncuesta(encuesta);
+                    });
+    
+                    encuestaContainer.innerHTML = html;
+    
+                    // Agregamos eventListeners a cada formulario
+                    encuestas.forEach(encuesta => {
+                        const formId = `encuesta-form-${encuesta.id}`;
+                        const form = document.getElementById(formId);
+                        
+                        if (form) {
+                            // Escucha el "submit" para enviar respuestas
+                            form.addEventListener('submit', function(event) {
+                                event.preventDefault();
+                                enviarRespuestas(encuesta.id, formId);
+                            });
+    
+                            // Escucha cualquier cambio para habilitar botón "Enviar"
+                            form.addEventListener('change', function() {
+                                const submitButton = form.querySelector('.btn-submit');
+                                if (submitButton) {
+                                    submitButton.disabled = false;
+                                }
+                            });
+                        }
+                    });
+                })
+                .catch(error => {
+                    encuestaContainer.innerHTML = `<p>${error.message}</p>`;
                 });
     
-            })
-            .catch(error => {
-                encuestaContainer.innerHTML = `<p>${error.message}</p>`;
-            });
-    
-        /**
-         * Crea el HTML de UNA encuesta, conservando tus clases y estructura originales.
-         * Cada encuesta se representa con su propio <section> y un <form>.
-         */
-        function crearEncuestaHTML(encuestaData) {
-            /*
-              Estructura de ejemplo:
-    
-              <section class="encuesta" id="encuesta-tarjeta-1">
-                  <h2 class="encuesta-titulo">Encuesta Municipal</h2>
-                  <p class="encuesta-pregunta">Descripción...</p>
-                  <form id="encuesta-form-1">
-                      <!-- Repetir para cada pregunta -->
-                      <div class="pregunta">
-                          <p class="encuesta-pregunta">Texto de la pregunta</p>
-                          <div class="opciones-container">
-                              <!-- Repetir para cada opción -->
-                              <div class="opcion">
-                                  <input type="radio" id="opcion-10-4" name="pregunta_10" value="4" required>
-                                  <label for="opcion-10-4">
-                                      <span class="custom-radio"></span>
-                                      <span class="opcion-texto">Texto de la opción</span>
-                                  </label>
-                              </div>
-                          </div>
-                      </div>
-                      <button type="submit" class="btn-submit" disabled>Enviar Respuesta</button>
-                  </form>
-              </section>
-            */
-    
-            let sectionHtml = `
-                <section class="encuesta" id="encuesta-tarjeta-${encuestaData.id}">
-                    <h2 class="encuesta-titulo">${encuestaData.titulo}</h2>
-                    <p class="encuesta-pregunta">${encuestaData.descripcion || ''}</p>
-                    <form id="encuesta-form-${encuestaData.id}">
-            `;
-            
-            // Para cada pregunta, generamos un bloque con sus opciones
-            encuestaData.preguntas.forEach(pregunta => {
-                sectionHtml += `
-                    <div class="pregunta">
-                        <p class="encuesta-pregunta">${pregunta.texto}</p>
-                        <div class="opciones-container">
+            // Función para construir el HTML de UNA encuesta
+            function crearTarjetaEncuesta(encuestaData) {
+                let formHtml = `
+                    <section class="encuesta" id="encuesta-tarjeta-${encuestaData.id}" style="border: 1px solid #ddd; margin-bottom: 20px; padding: 10px;">
+                        <h2 class="encuesta-titulo">${encuestaData.titulo}</h2>
+                        <p class="encuesta-descripcion">${encuestaData.descripcion || ''}</p>
+                        <form id="encuesta-form-${encuestaData.id}">
                 `;
-                pregunta.opciones.forEach(opcion => {
-                    sectionHtml += `
+    
+                encuestaData.preguntas.forEach(pregunta => {
+                    formHtml += `
+                        <div class="pregunta">
+                            <p class="pregunta-texto">${pregunta.texto}</p>
+                            <div class="opciones-container">
+                    `;
+                    pregunta.opciones.forEach(opcion => {
+                        formHtml += `
                             <div class="opcion">
-                                <input 
-                                    type="radio"
-                                    id="opcion-${pregunta.id}-${opcion.id}"
-                                    name="pregunta_${pregunta.id}"
-                                    value="${opcion.id}"
-                                    required
-                                >
+                                <input type="radio" 
+                                       id="opcion-${pregunta.id}-${opcion.id}" 
+                                       name="pregunta_${pregunta.id}" 
+                                       value="${opcion.id}" 
+                                       required>
                                 <label for="opcion-${pregunta.id}-${opcion.id}">
-                                    <span class="custom-radio"></span>
                                     <span class="opcion-texto">${opcion.texto}</span>
                                 </label>
                             </div>
-                    `;
+                        `;
+                    });
+                    formHtml += `</div></div>`; // Cierra opciones y pregunta
                 });
-                sectionHtml += `</div></div>`; // Cerrar opciones-container y la pregunta
-            });
     
-            // Botón final
-            sectionHtml += `
-                        <button type="submit" class="btn-submit" disabled>Enviar Respuesta</button>
-                    </form>
-                </section>
-            `;
+                formHtml += `
+                            <button type="submit" class="btn-submit" disabled>Enviar Respuesta</button>
+                        </form>
+                    </section>
+                `;
+                return formHtml;
+            }
     
-            return sectionHtml;
-        }
+            // Función para enviar las respuestas vía POST a /api/encuesta/enviar/
+            function enviarRespuestas(encuestaId, formId) {
+                const formElement = document.getElementById(formId);
+                if (!formElement) return;
     
-        /**
-         * Envía un solo formulario (una encuesta completa) al servidor.
-         * Recolectamos los radios de todas las preguntas en un único POST.
-         */
-        function enviarRespuestas(encuestaId, formId) {
-            const formElement = document.getElementById(formId);
-            if (!formElement) return;
+                // Recolectar los valores seleccionados
+                const formData = new FormData(formElement);
+                let respuestas = [];
     
-            const formData = new FormData(formElement);
-            let respuestas = [];
+                for (let pair of formData.entries()) {
+                    // pair = ["pregunta_XXX", "YYY (opcion_id)"]
+                    const name = pair[0];  // p.ej. "pregunta_12"
+                    const opcionId = pair[1];
+                    const preguntaId = name.split('_')[1];
     
-            // Cada "pregunta_XX" => "opcion_id"
-            for (let [fieldName, opcionId] of formData.entries()) {
-                // fieldName = "pregunta_10", por ejemplo
-                const preguntaId = fieldName.split('_')[1];
-                respuestas.push({
-                    pregunta_id: preguntaId,
-                    opcion_id: opcionId
+                    respuestas.push({
+                        pregunta_id: preguntaId,
+                        opcion_id: opcionId
+                    });
+                }
+    
+                const payload = {
+                    encuesta_id: encuestaId,
+                    respuestas: respuestas
+                };
+    
+                fetch('/transparencia/api/encuesta/enviar/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al guardar las respuestas');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 1. Mostrar un mensaje de “Gracias” en la misma tarjeta
+                    const encuestaTarjeta = document.getElementById(`encuesta-tarjeta-${encuestaId}`);
+                    if (encuestaTarjeta) {
+                        encuestaTarjeta.innerHTML = `
+                            <p style="color: green; font-weight: bold;">
+                                ¡Gracias por responder la encuesta!
+                            </p>
+                        `;
+                    }
+    
+                    // 2. (Opcional) Podrías ocultar por completo la tarjeta:
+                    // encuestaTarjeta.style.display = 'none';
+    
+                    // 3. (Opcional) Almacenar en localStorage para que si el usuario refresca
+                    //    no vuelva a ver la misma encuesta (si así lo deseas).
+                    localStorage.setItem(`encuestaRespondida-${encuestaId}`, 'true');
+    
+                })
+                .catch(error => {
+                    alert(error.message);
                 });
             }
     
-            const payload = {
-                encuesta_id: encuestaId,
-                respuestas: respuestas
-            };
-    
-            fetch('/transparencia/api/encuesta/enviar/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error al guardar las respuestas');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // 1. Mostramos un mensaje de éxito
-                const encuestaTarjeta = document.getElementById(`encuesta-tarjeta-${encuestaId}`);
-                if (encuestaTarjeta) {
-                    encuestaTarjeta.innerHTML = `
-                        <p style="color: green; font-weight: bold;">
-                            ¡Gracias por responder la encuesta!
-                        </p>
-                    `;
-                }
-    
-                // 2. (Opcional) Almacenar un flag en localStorage para evitar que la vea si refresca
-                localStorage.setItem(`encuestaRespondida-${encuestaId}`, 'true');
-            })
-            .catch(error => {
-                alert(error.message);
-            });
-        }
-    
-    });
-    </script>
-   
+        });
+        </script>
     {% if municipio %}
         {% with secciones=municipio.secciones.all %}
             {% if secciones %}
