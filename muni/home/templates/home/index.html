@@ -195,11 +195,32 @@
 
 
     <style>
+        :root {
 
-    
+            --color-hover: #f5faff;
+        }
+
+        .encuestas-wrap {
+            display: grid;
+            /* Por defecto (móvil): 1 columna */
+            grid-template-columns: 1fr;
+            gap: 2rem; /* Espacio entre las tarjetas */
+            justify-items: center; /* Centra horizontalmente cada tarjeta */
+            margin: 2rem 0;
+            padding: 4rem;
+        }
+
+        /* A partir de 768px -> 2 columnas */
+        @media (min-width: 768px) {
+            .encuestas-wrap {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Tarjeta de encuesta */
         .encuesta {
             max-width: 600px;
-            margin: 2rem auto;
+            margin: 0 auto; /* centrado extra en pantallas chicas */
             padding: 2rem;
             background: #fff;
             border-radius: 12px;
@@ -317,6 +338,7 @@
             background: #f8fff8;
         }
     
+        /* Ajustes en pantallas muy pequeñas */
         @media (max-width: 640px) {
             .encuesta {
                 margin: 1rem;
@@ -333,7 +355,7 @@
         }
     </style>
     
-    <div id="encuesta-container" data-municipio-id="{{ municipio.id }}"></div>
+    <div class="encuestas-wrap" id="encuesta-container" data-municipio-id="{{ municipio.id }}"></div>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -344,25 +366,27 @@
         fetch(`/transparencia/api/encuesta/activas/${municipioId}/`)
             .then(response => {
                 if (!response.ok) {
+                    // Si la respuesta no es 2xx, arrojamos error.
                     throw new Error('No hay encuestas activas disponibles');
                 }
-                return response.json(); 
+                return response.json();
             })
             .then(encuestas => {
                 // encuestas es un array: [ {id, titulo, descripcion, preguntas: [...]}, {...} ]
                 if (!encuestas.length) {
-                    encuestaContainer.innerHTML = `<p>No hay encuestas activas para este municipio.</p>`;
+                    // Si está vacío, no mostramos nada (ni siquiera el texto "No hay encuestas")
+                    encuestaContainer.innerHTML = '';
                     return;
                 }
     
-                // 2. Construimos una sección <section> por cada encuesta
+                // 2. Construimos una <section> por cada encuesta
                 let html = '';
                 encuestas.forEach(encuesta => {
                     html += crearEncuestaHTML(encuesta);
                 });
                 encuestaContainer.innerHTML = html;
     
-                // 3. Por cada encuesta, registramos el listener de "submit" y "change"
+                // 3. Por cada encuesta, registramos los listeners
                 encuestas.forEach(encuesta => {
                     const formId = `encuesta-form-${encuesta.id}`;
                     const form = document.getElementById(formId);
@@ -376,50 +400,36 @@
                             }
                         });
     
-                        // Al hacer submit, enviamos todas las respuestas de UN golpe
+                        // Al hacer submit, enviamos las respuestas
                         form.addEventListener('submit', function(event) {
                             event.preventDefault();
                             enviarRespuestas(encuesta.id, formId);
                         });
                     }
                 });
-    
             })
             .catch(error => {
-                encuestaContainer.innerHTML = `<p>${error.message}</p>`;
+                // Si no hay encuestas o hay otro error,
+                // no mostramos nada.
+                encuestaContainer.innerHTML = '';
             });
     
         /**
-         * Crea el HTML de UNA encuesta, conservando tus clases y estructura originales.
-         * Cada encuesta se representa con su propio <section> y un <form>.
+         * Crea el HTML de UNA encuesta, con tus clases y estructura originales.
+         * Cada encuesta tendrá su propio <section> + <form>.
          */
         function crearEncuestaHTML(encuestaData) {
             /*
-              Estructura de ejemplo:
-    
+              Ejemplo de estructura final:
               <section class="encuesta" id="encuesta-tarjeta-1">
-                  <h2 class="encuesta-titulo">Encuesta Municipal</h2>
-                  <p class="encuesta-pregunta">Descripción...</p>
+                  <h2 class="encuesta-titulo">...</h2>
+                  <p class="encuesta-pregunta">...</p>
                   <form id="encuesta-form-1">
-                      <!-- Repetir para cada pregunta -->
-                      <div class="pregunta">
-                          <p class="encuesta-pregunta">Texto de la pregunta</p>
-                          <div class="opciones-container">
-                              <!-- Repetir para cada opción -->
-                              <div class="opcion">
-                                  <input type="radio" id="opcion-10-4" name="pregunta_10" value="4" required>
-                                  <label for="opcion-10-4">
-                                      <span class="custom-radio"></span>
-                                      <span class="opcion-texto">Texto de la opción</span>
-                                  </label>
-                              </div>
-                          </div>
-                      </div>
+                      <!-- varias preguntas -->
                       <button type="submit" class="btn-submit" disabled>Enviar Respuesta</button>
                   </form>
               </section>
             */
-    
             let sectionHtml = `
                 <section class="encuesta" id="encuesta-tarjeta-${encuestaData.id}">
                     <h2 class="encuesta-titulo">${encuestaData.titulo}</h2>
@@ -427,17 +437,18 @@
                     <form id="encuesta-form-${encuestaData.id}">
             `;
             
-            // Para cada pregunta, generamos un bloque con sus opciones
+            // Generar las preguntas
             encuestaData.preguntas.forEach(pregunta => {
                 sectionHtml += `
                     <div class="pregunta">
                         <p class="encuesta-pregunta">${pregunta.texto}</p>
                         <div class="opciones-container">
                 `;
+                // Generar las opciones
                 pregunta.opciones.forEach(opcion => {
                     sectionHtml += `
                             <div class="opcion">
-                                <input 
+                                <input
                                     type="radio"
                                     id="opcion-${pregunta.id}-${opcion.id}"
                                     name="pregunta_${pregunta.id}"
@@ -451,7 +462,7 @@
                             </div>
                     `;
                 });
-                sectionHtml += `</div></div>`; // Cerrar opciones-container y la pregunta
+                sectionHtml += `</div></div>`; // Cerrar opciones-container y pregunta
             });
     
             // Botón final
@@ -460,13 +471,11 @@
                     </form>
                 </section>
             `;
-    
             return sectionHtml;
         }
     
         /**
-         * Envía un solo formulario (una encuesta completa) al servidor.
-         * Recolectamos los radios de todas las preguntas en un único POST.
+         * Envía un solo formulario (toda una encuesta) en un POST.
          */
         function enviarRespuestas(encuestaId, formId) {
             const formElement = document.getElementById(formId);
@@ -477,7 +486,6 @@
     
             // Cada "pregunta_XX" => "opcion_id"
             for (let [fieldName, opcionId] of formData.entries()) {
-                // fieldName = "pregunta_10", por ejemplo
                 const preguntaId = fieldName.split('_')[1];
                 respuestas.push({
                     pregunta_id: preguntaId,
@@ -504,7 +512,7 @@
                 return response.json();
             })
             .then(data => {
-                // 1. Mostramos un mensaje de éxito
+                // Reemplaza la tarjeta de la encuesta con el mensaje de agradecimiento
                 const encuestaTarjeta = document.getElementById(`encuesta-tarjeta-${encuestaId}`);
                 if (encuestaTarjeta) {
                     encuestaTarjeta.innerHTML = `
@@ -513,18 +521,13 @@
                         </p>
                     `;
                 }
-    
-                // 2. (Opcional) Almacenar un flag en localStorage para evitar que la vea si refresca
-                localStorage.setItem(`encuestaRespondida-${encuestaId}`, 'true');
             })
             .catch(error => {
                 alert(error.message);
             });
         }
-    
     });
     </script>
-   
     {% if municipio %}
         {% with secciones=municipio.secciones.all %}
             {% if secciones %}
