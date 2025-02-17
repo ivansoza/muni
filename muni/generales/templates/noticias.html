@@ -664,58 +664,61 @@ table.on('draw', function () {
 <script src="https://cdn.ckeditor.com/ckeditor4/4.16.2/ckeditor.js"></script>
 
 <script>
-$(document).ready(function () {
-    $(".btn-editar").click(function (e) {
-        e.preventDefault();
-        $("#tituloEdicion").removeClass('titulo2');
-        $("#ocultar_boton1").removeClass('ocultar_boton');
-
-        let noticiaId = $(this).data("id");
-
-        // Establecer el valor del campo oculto is_editing a true
-        $("#is_editing").val("true"); 
-        $("#noticia_id").val(noticiaId);  
-
-        // Mostrar el formulario de edición
-        $("#toggleFormulario").click();  
-
-        // Realizar la petición AJAX para obtener los datos de la noticia
-        $.ajax({
-            url: `/admin/editar-noticia/${noticiaId}/`,
-            type: "GET",
-            success: function (response) {
-                // Rellenar el formulario con los datos obtenidos
-                $("#id_titulo").val(response.titulo);
-                $("#id_autor").val(response.autor);
-                $("#id_categoria").val(response.categoria);
-                $("#imagenPrincipalPreview").attr("src", response.imagen).show();
-
-                // Almacenar imágenes de la galería en el campo oculto
-                let imagenesPrevias = [];
-                response.imagenes_galeria.forEach(function (imagen, index) {
-                    $("#preview_" + (index + 1)).attr("src", imagen).show();
-                    imagenesPrevias.push(imagen); // Guardar URLs de imágenes
-                });
-
-                let imagenesPrevias2 = [];
-                response.imagenes_galeria2.forEach(function (imagen, index) {
-                    imagenesPrevias2.push(imagen); // Guardar los ID de las imágenes
-                });
-
-                // Pasar los ID de las imágenes previas al input oculto
-                $("#imagenes_previas").val(imagenesPrevias2.join(',')); 
-
-                // Almacenar contenido
-                $("#contenidoTemporal").html(response.contenido);
-                $("#id_noticia_id").val(response.id);  
-
-            },
-            error: function () {
-                Swal.fire("Error", "No se pudo cargar la noticia para editar.", "error");
-            }
+    $(document).ready(function () {
+        // Delegar el evento click al contenedor de la tabla
+        $("table").on("click", ".btn-editar", function (e) {
+            e.preventDefault();
+            
+            $("#tituloEdicion").removeClass('titulo2');
+            $("#ocultar_boton1").removeClass('ocultar_boton');
+    
+            let noticiaId = $(this).data("id");
+    
+            // Establecer el valor del campo oculto is_editing a true
+            $("#is_editing").val("true"); 
+            $("#noticia_id").val(noticiaId);  
+    
+            // Mostrar el formulario de edición
+            $("#toggleFormulario").click();  
+    
+            // Realizar la petición AJAX para obtener los datos de la noticia
+            $.ajax({
+                url: `/admin/editar-noticia/${noticiaId}/`,
+                type: "GET",
+                success: function (response) {
+                    // Rellenar el formulario con los datos obtenidos
+                    $("#id_titulo").val(response.titulo);
+                    $("#id_autor").val(response.autor);
+                    $("#id_categoria").val(response.categoria);
+                    $("#imagenPrincipalPreview").attr("src", response.imagen).show();
+    
+                    // Almacenar imágenes de la galería en el campo oculto
+                    let imagenesPrevias = [];
+                    response.imagenes_galeria.forEach(function (imagen, index) {
+                        $("#preview_" + (index + 1)).attr("src", imagen).show();
+                        imagenesPrevias.push(imagen); // Guardar URLs de imágenes
+                    });
+    
+                    let imagenesPrevias2 = [];
+                    response.imagenes_galeria2.forEach(function (imagen, index) {
+                        imagenesPrevias2.push(imagen); // Guardar los ID de las imágenes
+                    });
+    
+                    // Pasar los ID de las imágenes previas al input oculto
+                    $("#imagenes_previas").val(imagenesPrevias2.join(',')); 
+    
+                    // Almacenar contenido
+                    $("#contenidoTemporal").html(response.contenido);
+                    $("#id_noticia_id").val(response.id);  
+    
+                },
+                error: function () {
+                    Swal.fire("Error", "No se pudo cargar la noticia para editar.", "error");
+                }
+            });
         });
     });
-});
+    
 
 
   </script>

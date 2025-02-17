@@ -9,7 +9,6 @@ class Categoria(models.Model):
 class Noticia(models.Model):
     titulo = models.CharField(max_length=200)
     contenido = CKEditor5Field('Contenido', config_name='extends', blank=False, null=False)  # Ahora usa CKEditor 5    contenido = CKEditor5Field(blank=False, null=False)  # 🔹 Hace que el campo sea requerido
-
     fecha = models.DateTimeField(auto_now_add=True)
     autor = models.CharField(max_length=100)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, related_name="noticias")

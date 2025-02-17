@@ -2,392 +2,689 @@
 
 {% block content %}
 <style>
-    /* Estilos generales */
-    .container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        align-items: flex-start;
-    }
-    
-    .main-content {
-        flex: 2;
-    }
-    
-    .sidebar2 {
-    flex: 1.5;
-    max-width: 350px;
-    position: sticky;
-    top: 100px;
-    background: white;
-    padding: 0;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    height: 85vh; /* Mantiene toda la sidebar dentro de la vista */
-}
-
-/* Sección fija para el buscador y el título */
-.sidebar-header {
-    padding: 15px;
-    background: white;
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.05);
-}
-
-/* Contenedor de las noticias con scroll */
-.sidebar-content {
-    flex-grow: 1;
-    overflow-y: auto;
-    padding: 15px;
-}
-
-    /* Estilos del buscador */
-    .search-box {
-        width: 100%;
-        padding: 8px 12px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 1rem;
-    }
-/* Sección de categorías */
-.category-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #222;
-    display: flex;
-    align-items: center;
-    justify-content: start;
-    gap: 10px;
-    padding: 10px 15px;
-    border-radius: 8px;
-    width: fit-content;
-}
-
-/* Icono de la categoría */
-.category-title::before {
-    content: "\f02d"; /* Ícono de FontAwesome, por ejemplo, "fas fa-newspaper" */
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-    font-size: 1.2rem;
-    color: var(--color-iconos);
-    background: var(--color-secundario);
+/* Estilos generales */
+.container {
+    max-width: 1300px;
+    margin: 0 auto;
     padding: 10px;
-    border-radius: 6px;
+}
+
+/* Contenedor principal de contenido */
+.main-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+/* Sección de noticias destacadas */
+/* Estilos para la sección de noticias destacadas */
+.featured-news {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Tres columnas en pantallas grandes */
+    gap: 20px; /* Espaciado entre las tarjetas */
+    padding: 20px;
+}
+
+.featured-news-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    position: relative; /* Necesario para posicionar el contenido en la parte inferior */
+    overflow: hidden; /* Para que el contenido no sobresalga */
+    flex-direction: column; /* Organiza el contenido en columnas */
+    display: flex;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transición suave para transformación y sombra */
+}
+
+.featured-news-image {
+    height: 280px;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+}
+
+.featured-news-image img {
+    width: 100%;
+    height: 280px;
+    border-radius: 8px;
+}
+
+.featured-news-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    text-align: start;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+/* Estilo para la fecha con ícono de calendario */
+.featured-news-date-star {
+    display: flex;
+    align-items: center; /* Centra los elementos verticalmente */
+    gap: 10px; /* Espacio entre la fecha y la estrella */
+    color: #ddd;
+}
+
+/* Estilo para la fecha con ícono de calendario */
+.featured-news-date {
+    font-size: 14px;
+    color: #ddd;
+}
+
+.featured-news-date i {
+    font-size: 16px;
+    color: #ffffff; /* Color dorado para el ícono de calendario */
+}
+
+/* Estilo para la estrella dorada */
+.featured-news-star {
+    color: #ffcc00;
+    font-size: 18px;
+}
+
+
+.category-section {
+    margin-bottom: 20px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.page-link {
+    text-decoration: none;
+    padding: 5px 12px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-size: 16px;
+    color: #333;
+    transition: background-color 0.3s;
+}
+
+.page-link:hover {
+    background-color: #ddd;
+}
+
+.page-link.active {
+    background-color: var(--color-primario);
+    color: white;
+    font-weight: bold;
+}
+
+
+/* Sidebar flotante dentro de su contenedor */
+.sidebar2 {
+    width: 300px; /* Ajustamos el tamaño del sidebar */
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Efecto flotante */
+    position: sticky; /* Hace que el sidebar se quede en su lugar al hacer scroll */
+    top: 100px; /* Ajustamos para que no se pegue al top */
+    height: 800px; /* Altura fija del sidebar */
+    overflow: hidden; /* Evitar scroll en todo el sidebar */
+}
+
+/* Encabezado del sidebar con color */
+.sidebar-header {
+    text-align: center;
+    margin-bottom: 20px;
+    background-color: var(--color-secundario); /* Color de fondo */
+    padding: 10px;
+    border-radius: 5px;
+    color: white; /* Color de texto */
+}
+
+.sidebar-header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+/* Caja de búsqueda */
+.search-box {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+/* Sección de noticias (con scroll) */
+.sidebar-news {
+    max-height: 400px; /* Máxima altura para que haga scroll solo la sección de noticias */
+    overflow-y: auto; /* Scroll solo en las noticias */
+    margin-bottom: 20px; /* Espacio entre las secciones */
+}
+
+/* Estilos para los artículos del sidebar */
+.sidebar-news-card {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.sidebar-news-card img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.sidebar-news-content h3 {
+    font-size: 16px;
+    margin: 0;
+    font-weight: bold;
+}
+
+.sidebar-news-content .news-lin2 {
+    font-size: 14px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.sidebar-news-content .news-link:hover {
+    text-decoration: underline;
+}
+
+.sidebar-news-content .news-link i {
+    margin-left: 5px; /* Espacio entre el texto y el ícono */
+}
+
+/* Sección de información adicional (sin scroll) */
+
+
+/* Tarjeta de información */
+.info-card {
+    background-color: #fff;
+    padding: 20px;  /* Más espacio para el contenido */
+    margin-bottom: 20px;  /* Más separación entre tarjetas */
+    border-radius: 12px;  /* Bordes más redondeados */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);  /* Sombra más suave */
+    transition: all 0.3s ease;  /* Animación para transiciones suaves */
+}
+
+.info-card:hover {
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);  /* Sombra más fuerte al pasar el ratón */
+    transform: translateY(-5px);  /* Eleva ligeramente la tarjeta */
+}
+
+/* Título de la tarjeta */
+.info-card h3 {
+    font-size: 20px;
+    font-weight: 600;  /* Peso de fuente más moderado */
+    margin-bottom: 15px;
+    color: #333;  /* Color de texto más oscuro para el título */
+}
+
+/* Estilos para los párrafos y listas dentro de la tarjeta */
+.info-card p, .info-card ul {
+    font-size: 15px;  /* Aumento del tamaño del texto para mayor legibilidad */
+    color: #555;
+    line-height: 1.6;  /* Mejor espaciado entre líneas */
+    margin: 0;
+}
+
+/* Estilos para las listas sin viñetas */
+.info-card ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+/* Estilos para los elementos de lista */
+.info-card li {
+    margin-bottom: 12px;  /* Mayor espacio entre elementos de la lista */
+    display: flex;
+    align-items: center;
+    font-size: 14px;  /* Ajuste fino de tamaño de fuente */
+}
+
+/* Estilos para los íconos dentro de la lista */
+.info-card li i {
+    margin-right: 12px;  /* Mayor espacio entre el ícono y el texto */
+    color: var(--color-primario);  /* Color azul para los íconos */
+    transition: color 0.3s ease;  /* Animación suave para cambios de color */
+}
+
+.info-card li i:hover {
+    color: var(--color-iconos);  /* Color más oscuro cuando se pasa el ratón */
+}
+
+/* Mejora visual del contorno y bordes de las tarjetas */
+.info-card {
+    border-left: 5px solid var(--color-primario);  /* Línea decorativa en la izquierda */
+    background-color: #f9f9f9;  /* Color de fondo ligeramente más claro */
+}
+
+/* Añadir una ligera separación entre las tarjetas y el fondo */
+.info-card + .info-card {
+    margin-top: 20px;  /* Más espacio entre tarjetas adyacentes */
 }
 
 
 
+
+
+
+
+.news-link {
+    display: inline-block;
+    padding: 10px 10px;
+    background-color: var(--color-primario);
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 13px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.news-link:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px); /* Efecto de elevación al pasar el cursor */
+}
+
+.featured-news-card:hover {
+    transform: translateY(-10px); /* Aumenta el efecto de elevación */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada para resaltar */
+}
+
+.news-link:active {
+    background-color: #003d7a; /* Color de fondo cuando se hace clic */
+    transform: translateY(0); /* Elimina el efecto de elevación */
+}
+
+/* Estilo para los títulos con ícono */
+.nuevoTitulo {
+    font-size: 30px;
+    font-weight: bold;
+    color: #444444;
+    text-align: center;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 5px;
+    cursor: pointer;
+}
+
+.nuevoTitulo:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 3px;
+    background-color:var(--color-primario);
+    bottom: 0;
+    left: 0;
+    transition: width 0.3s ease;
+}
+
+.nuevoTitulo:hover:after {
+    width: 100%;
+}
+/* Estilo para el grid de noticias */
+/* Estilo para el grid de noticias */
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Tres columnas */
+    gap: 20px;
+}
+
+/* Estilo de cada tarjeta */
+.news-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+.news-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilo de la imagen */
+.news-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 4px solid var(--color-secundario);
+}
+
+/* Estilo para el contenido de la tarjeta */
+.news-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Estilo para la fecha */
+.news-date {
+    font-size: 14px;
+    color: #999;
+    display: flex;
+    align-items: center;
+}
+
+.news-date i {
+    margin-right: 8px;
+    color:  var(--color-iconos);
+}
+
+/* Estilo para la categoría */
+.news-category {
+    font-size: 14px;
+    color: #555;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.news-category i {
+    margin-right: 8px;
+    color: var(--color-iconos); /* Ícono de categoría con color naranja */
+}
+
+/* Estilo para el título */
+.news-card h5 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin: 15px 0;
+    line-height: 1.4;
+    height: 70px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Estilo para el enlace de "Ver más" */
+.news-link {
+    font-size: 14px;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.news-link:hover {
+    color: white;
+}
+
+.news-link i {
+    margin-left: 8px;
+}
+/* Estilo para los botones de categoría */
+.categoria-filtro {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.categoria-btn {
+    background-color: #f4f4f4;
+    color: #333;
+    padding: 10px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.categoria-btn:hover {
+    background-color: var(--color-secundario);
+    color: white;
+}
+
+.categoria-btn.active {
+    background-color: var(--color-primario);
+    color: white;
+    pointer-events: none;
+}
+
+
+/* Estilo para pantallas pequeñas */
+@media (max-width: 768px) {
     .news-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
+        grid-template-columns: repeat(1, 1fr); /* Para pantallas pequeñas, solo una columna */
     }
 
-    .news-card {
-        background: #fff;
-        overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border-radius: 15px;
-        margin-bottom: 20px;
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-    }
 
-    .news-image {
-        height: 200px;
-        background-color: #f1f1f1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-top-left-radius: 15px;
-        border-top-right-radius: 15px;
-        overflow: hidden;
-    }
-
-    .news-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .news-content {
-        padding: 20px;
-        background-color: #f9f9f9;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-
-    .news-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    }
-
-    .news-date {
-        font-size: 0.9rem;
-        color: #6c757d;
-        margin-bottom: 10px;
-    }
-
-    .news-heading {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #2c3e50;
-        margin-bottom: 15px;
-    }
-
-    .news-link {
-        font-size: 1rem;
-        color: var(--color-secundario);
-        text-decoration: none;
-        display: inline-block;
-    }
-
-    .news-link:hover {
-        text-decoration: underline;
-    }
-
-    /* Sidebar */
-    .sidebar-title {
-        font-size: 1rem;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-    
-    .sidebar-news-card {
-        display: flex;
-        align-items: center;
-        background: #fff;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-        margin-bottom: 15px;
-        overflow: hidden;
-    }
-    
-    .sidebar-news-card img {
-        width: 100px;
-        height: 80px;
-        object-fit: cover;
-    }
-    
-    .sidebar-news-content {
-        padding: 10px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        height: 100%;
-    }
-
-    .sidebar-news-content .news-title {
-        margin-bottom: 5px;
-    }
-
-    .sidebar-news-content .news-link {
-        margin-top: auto;
-    }
-    .week-news-section {
-        margin-bottom: 30px;
-        padding: 20px;
-        background: #f8f9fa;
-        border-radius: 8px;
-    }
-
-    .section-title {
-        font-size: 1.5em;
-        margin-bottom: 15px;
-    }
-    .category-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-color: #F8F9FA;
-        margin-bottom:4px ;
-        border-radius: 3px;
-    }
-
-    .toggle-btn {
-        background: none;
-        border: none;
-        font-size: 1.2em;
-        cursor: pointer;
-        transition: transform 0.3s ease;
-        margin-right: 5%;
-    }
-
-    .news-grid.collapse {
+    .sidebar2{
         display: none;
     }
-
-    @media (max-width: 768px) {
-        .news-grid {
-            grid-template-columns: repeat(1, 1fr);
-        }
-
-        .category-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            cursor: pointer;
-        }
-        /* Sidebar en móviles: Se coloca después del contenido */
-    .sidebar2 {
-        width: 100%;
-        max-width: none;
-        position: relative; /* Ya no es fijo */
-        height: auto; /* Se ajusta al contenido */
-        padding: 15px;
-        box-shadow: none;
-        margin-top: 20px; /* Espaciado para separarlo de las noticias */
-    }
-
-    .sidebar-header {
-        padding: 15px;
-        background: white;
-        position: sticky;
-        top: 0;
-        z-index: 2;
-        box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.05);
-    }
-
-    /* Contenido con scroll */
-    .sidebar-content {
-        max-height: 300px; /* Define una altura máxima para el scroll */
-        overflow-y: auto;
-        padding: 15px;
-    }
-
-    /* Estilos del buscador */
-    .search-box {
-        width: 100%;
-        padding: 8px 12px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 1rem;
+}
+@media (max-width: 1024px) {
+    .featured-news {
+        grid-template-columns: repeat(2, 1fr); /* Dos columnas en pantallas medianas */
     }
 }
 
-    
+@media (max-width: 768px) {
+    .featured-news {
+        grid-template-columns: 1fr; /* Una columna en pantallas pequeñas */
+    }
+
+    /* Estilos adicionales para hacer que las tarjetas se vean bien en móviles */
+    .featured-news-card {
+        margin: 10px 0; /* Agregar separación entre las tarjetas */
+        height: 200px; /* Ajustar la altura de la imagen en pantallas pequeñas */
+    }
+
+    .featured-news-image img {
+        height: 200px; /* Ajustar la altura de la imagen en pantallas pequeñas */
+    }
+
+    .featured-news-content h5 {
+        font-size: 13px; /* Reducir el tamaño del título */
+    }
+}
+.news-header {
+    background: linear-gradient(45deg, var(--color-primario),  var(--color-secundario)); /* Degradado de colores llamativos */
+    padding: 40px 20px; /* Espaciado adecuado */
+    text-align: center; /* Centrar los textos */
+    border-radius: 10px; /* Bordes redondeados */
+    margin-bottom: 40px; /* Separación con la siguiente sección */
+    color: #fff; /* Color blanco para el texto */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+.news-header h2 {
+    font-size: 38px; /* Título más grande */
+    font-weight: bold;
+    letter-spacing: 1px; /* Un poco de espacio entre las letras */
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.news-header h2::after {
+    content: ''; /* Línea decorativa debajo del título */
+    display: block;
+    width: 60px; /* Ancho de la línea */
+    height: 3px; /* Grosor de la línea */
+    background-color: #fff; /* Color blanco */
+    margin: 10px auto; /* Centrado de la línea */
+}
+
+.news-header h5 {
+    font-size: 16px; /* Texto más pequeño */
+    max-width: 800px; /* Limitar el ancho del texto */
+    margin: 0 auto; /* Centrar el texto */
+    line-height: 1.6; /* Espaciado entre las líneas */
+    opacity: 0.9; /* Opacidad más baja para dar un toque elegante */
+}
+
+@media (max-width: 768px) {
+    .news-header {
+        padding: 30px 15px; /* Ajustar el espaciado en pantallas más pequeñas */
+    }
+
+    .news-header h2 {
+        font-size: 28px; /* Reducir tamaño del título en dispositivos pequeños */
+    }
+
+    .news-header h5 {
+        font-size: 14px; /* Reducir tamaño del texto en móviles */
+    }
+}
+
+
 </style>
 
 <div class="container">
-    <div class="main-content">
+    <!-- Sección de Noticias Destacadas -->
+    <div class="news-header">
         <h2>Noticias</h2>
-        <p>Bienvenido a nuestra sección de noticias, donde encontrarás la información más reciente sobre eventos, programas y avisos importantes en nuestro municipio.</p>
-        <div class="week-news-section">
-            <h3 class="section-title">Noticias de la Semana</h3>
-            <div class="news-grid">
-                {% for noticia in noticias_recientes|slice:":6" %}
-                <div class="news-card">
-                    <div class="news-image">
-                        <img src="{{ noticia.imagen.url }}" alt="Imagen de noticia">
-                    </div>
-                    <div class="news-content">
-                        <p class="news-date"><i class="fas fa-calendar-alt"></i> Publicado el {{ noticia.fecha|date:"d/m/Y" }}</p>
-                        <h3 class="news-heading">{{ noticia.titulo }}</h3>
-                        <a href="{% url 'detalle_noticia' noticia.id %}" class="news-link"><i class="fas fa-arrow-right" style="color: var(--color-secundario);"></i> Más información</a>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        <h3 class="section-title">Categorías</h3>
+        <h5>Bienvenido a nuestra sección de noticias, donde encontrarás la información más reciente sobre eventos, programas y avisos importantes en nuestro municipio.</h5>
+    </div>
+    
+    
+    <!-- Noticias Destacadas -->
+    <h3 class="nuevoTitulo">Noticias Destacadas</h3>
 
-        {% for categoria, noticias_categoria in noticias_por_categoria.items %}
-        <div class="category-section">
-            <br>
-            <div class="category-header">
-                <h3 class="category-title">{{ categoria }}</h3>
-                <button class="toggle-btn" onclick="toggleNoticias('{{ categoria|slugify }}')">
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-            </div>
-            <div class="news-grid collapse" id="noticias-{{ categoria|slugify }}">
-                {% for noticia in noticias_categoria|slice:":3" %}
-                <div class="news-card">
-                    <div class="news-image">
-                        <img src="{{ noticia.imagen.url }}" alt="Imagen de noticia">
-                    </div>
-                    <div class="news-content">
-                        <p class="news-date"><i class="fas fa-calendar-alt"></i> Publicado el {{ noticia.fecha|date:"d/m/Y" }}</p>
-                        <h3 class="news-heading">{{ noticia.titulo }}</h3>
-                        <a href="{% url 'detalle_noticia' noticia.id %}" class="news-link"><i class="fas fa-arrow-right" style="color: var(--color-secundario);"></i> Más información</a>
-                    </div>
+    <div class="featured-news">
+        {% for noticia in noticias_destacadas %}
+            <div class="featured-news-card">
+                <div class="featured-news-image">
+                    <img src="{{ noticia.imagen.url }}" alt="Imagen de noticia">
                 </div>
-                {% endfor %}
+                <div class="featured-news-content">
+                    <h5 style="font-size:18px;">{{ noticia.titulo }}</h5>
+                    <!-- Icono de fecha y la fecha de la noticia -->
+                    <div class="featured-news-date-star">
+                        <div class="featured-news-date">
+                            <i class="fas fa-calendar-alt"></i> {{ noticia.fecha|date:"d/m/Y" }}
+                        </div>
+                        <!-- Estrella dorada -->
+                        <div class="featured-news-star">
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <!-- Botón de "Ver más" con ícono de flecha -->
+                    <a href="{% url 'detalle_noticia' noticia.id %}" class="news-link">
+                        <i class="fas fa-arrow-right" style="color: white;"></i> Ver más
+                    </a>
+                </div>
             </div>
-        </div>
         {% endfor %}
     </div>
     
     
-    <div class="sidebar2">
-        <!-- Header Fijo -->
-        <div class="sidebar-header">
-            <h2 class="sidebar-title">Otras Noticias</h2>
-            <input type="text" class="search-box" id="searchBox" placeholder="Buscar noticias...">
+    <!-- Contenedor principal con noticias y sidebar -->
+    <div class="main-container">
+        <!-- Noticias -->
+        <div class="main-content" style="flex: 1 1 70%;"> <!-- Esto hace que las noticias ocupen el 70% -->
+            <h3 class="nuevoTitulo">Noticias Recientes</h3>
+            <!-- Filtro por Categoría -->
+            <div class="categoria-filtro">
+                <a href="{% url 'homeNoticias' %}?{% if request.GET.page %}page={{ request.GET.page }}&{% endif %}categoria=" class="categoria-btn {% if request.GET.categoria == None or request.GET.categoria == '' %}active{% endif %}">Todas</a>
+                {% for categoria in categorias %}
+                    <a href="?categoria={{ categoria.id }}{% if request.GET.page %}&page={{ request.GET.page }}{% endif %}" class="categoria-btn {% if request.GET.categoria == categoria.id|stringformat:"s" %}active{% endif %}">
+                        {{ categoria.nombre }}
+                    </a>
+                {% endfor %}
+            </div>
+            <div class="news-grid">
+                {% for noticia in noticias %}
+                <div class="news-card">
+                    <img src="{{ noticia.imagen.url }}" alt="Imagen de noticia">
+                    <div class="news-content">
+                        <p class="news-date"><i class="fas fa-calendar-alt"></i>{{ noticia.fecha|date:"d/m/Y" }}</p>
+                        <div class="news-category">
+                            <i class="fas fa-tag"></i> {{ noticia.categoria }} <!-- Icono de categoría -->
+                        </div>
+                        <h5>{{ noticia.titulo }}</h5>
+                        <a href="{% url 'detalle_noticia' noticia.id %}" class="news-link"><i class="fas fa-arrow-right" style="color: white;"></i>Ver más</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+
+            <!-- Paginación -->
+            <div class="pagination">
+                {% if noticias.has_previous %}
+                    <a href="?page=1{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}" class="page-link">&laquo; Primero</a>
+                    <a href="?page={{ noticias.previous_page_number }}{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}" class="page-link">Anterior</a>
+                {% endif %}
+        
+                <!-- Paginación numérica -->
+                {% for i in noticias.paginator.page_range %}
+                    <a href="?page={{ i }}{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}" class="page-link {% if i == noticias.number %}active{% endif %}">{{ i }}</a>
+                {% endfor %}
+        
+                {% if noticias.has_next %}
+                    <a href="?page={{ noticias.next_page_number }}{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}" class="page-link">Siguiente</a>
+                    <a href="?page={{ noticias.paginator.num_pages }}{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}" class="page-link">Último &raquo;</a>
+                {% endif %}
+            </div>
+
         </div>
 
-        <!-- Contenido con Scroll -->
-        <div class="sidebar-content">
-            {% for noticia in noticias %}
-            <div class="sidebar-news-card">
-                <img src="{{ noticia.imagen.url }}" alt="Imagen noticia">
-                <div class="sidebar-news-content">
-                    <p class="news-date"><i class="fas fa-calendar-alt"></i> Publicado el {{ noticia.fecha|date:"d/m/Y" }}</p>
-                    <h3 class="news-title" style="font-size: 13px; color: black;">{{ noticia.titulo }}</h3>
-                    <a href="{% url 'detalle_noticia' noticia.id %}" class="news-link"><i class="fas fa-arrow-right" style="color: var(--color-secundario);"></i> Más información</a>
+        <!-- Sidebar -->
+        <div class="sidebar2">
+            <!-- Sección de Noticias -->
+            <div class="sidebar-header">
+                <h2>Otras Noticias</h2>
+                <form method="get" action="{% url 'homeNoticias' %}">
+                    <input type="text" name="buscar" class="search-box" placeholder="Buscar noticias..."
+                        value="{{ request.GET.buscar }}">
+                    <button type="submit" style="display: none;"></button> <!-- Botón oculto -->
+                </form>
+            </div>
+            <div class="sidebar-news">
+                {% for noticia in noticias_sidebar %}
+                <div class="sidebar-news-card">
+                    <img src="{{ noticia.imagen.url }}" alt="Imagen de noticia">
+                    <div class="sidebar-news-content">
+                        <h3>{{ noticia.titulo }}</h3>
+                        <a href="{% url 'detalle_noticia' noticia.id %}" class="news-link2">
+                            Ver más <i class="fas fa-arrow-right"></i> <!-- Ícono para "Ver más" -->
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        
+            <!-- Sección de Información Adicional -->
+            <div class="sidebar-info">
+                <div class="info-card">
+                    <h3>Contactos</h3>
+                    <ul>
+                        <li><i class="fas fa-phone-alt"></i> Noticias: (123) 456-7890</li>
+                        <li><i class="fas fa-headset"></i> Soporte: (987) 654-3210</li>
+                    </ul>
                 </div>
             </div>
-            {% endfor %}
+            
         </div>
+        
+
     </div>
 </div>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const searchBox = document.getElementById("searchBox");
+    // Implementación de búsqueda en el sidebar
+    document.getElementById("searchBox").addEventListener("input", function () {
+        const searchTerm = this.value.toLowerCase();
         const newsCards = document.querySelectorAll(".sidebar-news-card");
-
-        searchBox.addEventListener("input", function () {
-            const query = searchBox.value.toLowerCase();
-
-            newsCards.forEach(card => {
-                const title = card.querySelector(".news-title").textContent.toLowerCase();
-                if (title.includes(query)) {
-                    card.style.display = "flex"; // Mostrar si coincide
-                } else {
-                    card.style.display = "none"; // Ocultar si no coincide
-                }
-            });
+        
+        newsCards.forEach(card => {
+            const title = card.querySelector(".news-title").textContent.toLowerCase();
+            card.style.display = title.includes(searchTerm) ? 'block' : 'none';
         });
     });
-</script>
-<script>
-    function toggleNoticias(categoria) {
-        let section = document.getElementById("noticias-" + categoria);
-        let btn = section.previousElementSibling.querySelector(".toggle-btn i");
-
-        if (section.style.display === "none" || section.style.display === "") {
-            section.style.display = "grid";
-            btn.classList.remove("fa-chevron-down");
-            btn.classList.add("fa-chevron-up");
-        } else {
-            section.style.display = "none";
-            btn.classList.remove("fa-chevron-up");
-            btn.classList.add("fa-chevron-down");
-        }
-    }
 </script>
 {% endblock %}
