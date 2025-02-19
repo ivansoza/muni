@@ -53,9 +53,14 @@
             {% endif %}
         </div>
 
-        <!-- Botón -->
-        <div class="text-center mt-4">
-            <a href="{% url 'homeNoticias' %}" class="btn-news">Continuar leyendo noticias</a>
-        </div>
+
+        {% if  ultimas_noticias %}
+            <div class="text-center mt-4">
+                <a href="{% url 'homeNoticias' %}" class="btn-news">Continuar leyendo noticias</a>
+            </div>  
+        {% endif %}
+
+
+
     </div>
 </div>
