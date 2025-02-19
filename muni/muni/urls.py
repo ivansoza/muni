@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+
+from home.views import mi_custom_error_400, mi_custom_error_403, mi_custom_error_404, mi_custom_error_500
 urlpatterns = [
     path('administrador/', admin.site.urls),
     path('', include('home.urls')), 
@@ -23,3 +25,11 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+
+# Manejo de errores
+handler400 = mi_custom_error_400
+handler403 = mi_custom_error_403
+handler404 = mi_custom_error_404
+handler500 = mi_custom_error_500

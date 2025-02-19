@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-l^5%h$u@00lz7ex$ac5c9dk(4#&ly+sjh($!#xw+f9)qi0^p+&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # ⚠️ Solo para pruebas. Desactívalo después.
+DEBUG = False  # ⚠️ Solo para pruebas. Desactívalo después.
 
 ALLOWED_HOSTS = ["3.13.43.49",'tumunicipiodigital.site','www.tumunicipiodigital.site']
 
