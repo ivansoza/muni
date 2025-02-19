@@ -6,7 +6,15 @@ class Municipio(models.Model):
         ('activo', 'Activo'),
         ('inactivo', 'Inactivo'),
     ]
+    nombre_municipio = models.CharField(
+        "Nombre Municipio", 
+        max_length=120, 
+        blank=True, 
+        null=True,
+        help_text="Nombre Municipio"
+    )
     nombre = models.CharField("Nombre oficial", max_length=120, unique=True)
+
     logotipo = models.ImageField("Logotipo", upload_to='municipio/')
     banner = models.ImageField(
         "Banner/Portada", 

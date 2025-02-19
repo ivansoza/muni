@@ -12,7 +12,7 @@ class MunicipioAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('Información Básica', {
-            'fields': ('nombre', 'descripcion','status')
+            'fields': ('nombre_municipio','nombre', 'descripcion','status')
         }),
         ('Elementos Visuales', {
             'fields': (
