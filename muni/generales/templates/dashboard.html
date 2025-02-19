@@ -267,7 +267,7 @@
 
  <div class="apps-grid mt-4">
             <!-- Calendario -->
-            <a class="app-item" href="#">
+            <a class="app-item" href="{% url "noticias_view" %}">
                 <div class="app-card" style="background-image: url('{% static 'img/apps/news.png' %}');">
                 </div>
                 <div class="app-name">Noticias</div>
@@ -293,18 +293,19 @@
                 </div>
                 <div class="app-name">Personalizar</div>
             </a>
-            <a class="app-item" href="#">
+            <a class="app-item" href="{% url "transparencia_view" %}">
                 <div class="app-card" style="background-image: url('{% static 'img/apps/trans.png' %}');">
                 </div>
                 <div class="app-name">Transparencia</div>
             </a>
 
-            <a class="app-item" href="#">
-                <div class="app-card" style="background-image: url('{% static 'img/apps/SEVAC.png' %}');">
+            <a class="app-item" href="">
+                <div class="app-card" style="background-image: url('{% static 'img/apps/convocatoria.png' %}');">
                 </div>
-                <div class="app-name">SEVAC</div>
+                <div class="app-name">Convocatorias</div>
             </a>
 
+            
         </div>
 
 </div>
