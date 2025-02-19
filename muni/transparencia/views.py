@@ -29,6 +29,10 @@ class HomeReportesView(TemplateView):
     template_name = 'reportes/reportes.html' 
 
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['secciones'] = SeccionTransparencia.objects.all()  # Obtener todas las secciones
+        return context
 
 def get_encuestas_activas(request, municipio_id):
     """
@@ -111,12 +115,7 @@ def guardar_respuestas(request):
 
     return JsonResponse({"detail": "Método no permitido."}, status=405)
 
-    template_name = 'homeTransparencia.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['secciones'] = SeccionTransparencia.objects.all()  # Obtener todas las secciones
-        return context
     
 from collections import defaultdict
 from django.shortcuts import get_object_or_404
