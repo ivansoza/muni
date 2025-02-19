@@ -36,7 +36,7 @@
                                 <h3 class="news-heading">
                                     {{ noticia.titulo }}
                                 </h3>
-                                <a href="#" class="news-link">
+                                <a href="{% url "detalle_noticia" noticia.id%}" class="news-link">
                                     <i class="fas fa-arrow-right"></i> Más información
                                 </a>
                             </div>
