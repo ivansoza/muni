@@ -1,1 +1,345 @@
 {% extends "base.html" %}
+{% load static %}
+{% block content %}
+<style>
+    .perfil-gobierno {
+        max-width: 1600px;
+        margin: 4rem auto;
+        padding: 2rem;
+    }
+
+    .gobernadora-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 3rem;
+        margin-bottom: 4rem;
+        position: relative;
+    }
+
+
+
+    .perfil-principal {
+        flex: 1;
+        min-width: 300px;
+        text-align: center;
+        position: relative;
+        padding: 2rem;
+        background: var(--blanco);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    .foto-gobernadora {
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        margin: 0 auto 2rem;
+        border: 5px solid var(--blanco);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        overflow: hidden;
+        position: relative;
+        background: var(--color-gradiente);
+    }
+
+    .foto-gobernadora::after {
+        content: '';
+        position: absolute;
+        inset: -5px;
+        border-radius: 50%;
+        border: 2px solid var(--color-secundario);
+        opacity: 0.3;
+    }
+
+    .foto-gobernadora img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: relative;
+        z-index: 1;
+    }
+
+    .info-gobernadora {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .info-gobernadora h1 {
+        color: var(--color-primario);
+        margin-bottom: 0.75rem;
+        font-size: 2.25rem;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+    }
+
+    .info-gobernadora p {
+        color: #555;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+        line-height: 1.4;
+    }
+
+    .periodo-gobierno {
+        display: inline-block;
+        background: var(--color-iconos);
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        margin: 1rem 0;
+    }
+
+    .biografia {
+        flex: 2;
+        min-width: 300px;
+        background: var(--blanco);
+        padding: 2.5rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        position: relative;
+        border-left: 5px solid var(--color-iconos);
+    }
+
+    .biografia::before {
+        content: '“';
+        position: absolute;
+        top: -10px;
+        left: 2rem;
+        font-size: 5rem;
+        color: var(--color-iconos);
+        opacity: 0.1;
+        font-family: serif;
+    }
+
+    .biografia h2 {
+        color: var(--color-primario);
+        margin-bottom: 1.5rem;
+        font-size: 1.75rem;
+        border-bottom: 2px solid var(--color-iconos);
+        padding-bottom: 0.5rem;
+        display: inline-block;
+    }
+
+    .biografia p {
+        color: #444;
+        line-height: 1.8;
+        font-size: 1.05rem;
+        text-align: justify;
+    }
+
+    .boton-semblanza {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--color-gradiente);
+        color: white;
+        padding: 1rem 2.5rem;
+        text-decoration: none;
+        border-radius: 30px;
+        font-weight: 600;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 5px 15px rgba(41, 94, 132, 0.2);
+        margin-top: 1rem;
+    }
+    
+    .boton-semblanza:hover {
+        background: var(--color-gradiente);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(30, 71, 101, 0.3);
+    }
+    .gabinete {
+        margin-top: 5rem;
+        padding-top: 3rem;
+        border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .gabinete h2 {
+        color: var(--color-primario);
+        text-align: center;
+        margin-bottom: 3rem;
+        font-size: 2rem;
+        position: relative;
+        padding-bottom: 1rem;
+    }
+
+    .gabinete h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 3px;
+        background: var(--color-iconos);
+    }
+
+    .miembros-gabinete {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 3rem;
+        justify-content: center;
+        padding: 0 2rem;
+    }
+
+    .miembro {
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .miembro:hover {
+        transform: translateY(-5px);
+    }
+
+    .foto-miembro {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        margin: 0 auto 1.5rem;
+        border: 3px solid var(--blanco);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        overflow: hidden;
+        position: relative;
+        background: var(--color-iconos);
+    }
+
+    .foto-miembro::after {
+        content: '';
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        border: 6px solid var(--color-iconos);
+        opacity: 0.3;
+    }
+
+    .foto-miembro img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: relative;
+        z-index: 1;
+    }
+
+    .miembro h3 {
+        color: var(--color-primario);
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .miembro p {
+        color: #666;
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+
+    @media (max-width: 768px) {
+        .gobernadora-container {
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .perfil-principal {
+            order: 2;
+            padding: 1.5rem;
+        }
+        .biografia {
+            display: none;
+        }
+
+        .foto-gobernadora {
+            width: 220px;
+            height: 220px;
+        }
+
+        .miembros-gabinete {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+    }
+</style>
+
+<!-- tu_template.html -->
+<section class="perfil-gobierno">
+    {% if municipio %}
+        {% if miembros %}
+            {# Tomamos el primer miembro como "principal" #}
+            {% with principal=miembros.0 %}
+            <div class="gobernadora-container">
+                <div class="perfil-principal">
+                    <div class="foto-gobernadora">
+                      
+                        {% if principal.imagen %}
+                            <img src="{{ principal.imagen.url }}" 
+                                 alt="{{ principal.nombre }}"
+                                 style="width:280px; height:auto;">
+                        {% else %}
+                            <img src="{{ municipio.logotipo.url }}" 
+                                 alt="{{ principal.nombre }}"
+                                 style="width:280px; height:auto;">
+                        {% endif %}
+                    </div>
+                    <div class="info-gobernadora">
+                        <h1>{{ principal.nombre }}</h1>
+                        <p class="cargo">{{ principal.cargo }}</p>
+                        <!-- Aquí mantengo tu texto "2023 - 2027" como ejemplo estático -->
+                        <div class="periodo-gobierno">2023 - 2027</div>
+                        <a href="#" class="boton-semblanza">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                            </svg>
+                            Ver Semblanza
+                        </a>
+                    </div>
+                </div>
+
+                <div class="biografia">
+                    <h2>Trayectoria Profesional</h2>
+                    <!-- Mostramos la semblanza proveniente de CKEditor -->
+                    <p>{{ principal.semblanza|safe }}</p>
+                </div>
+            </div>
+            {% endwith %} {# Fin del principal #}
+
+            <!-- Mostramos el resto del gabinete si hay más de un miembro -->
+            {% if miembros|length > 1 %}
+            <div class="gabinete">
+                <h2>Equipo de Gobierno</h2>
+                <div class="miembros-gabinete">
+                    {% for miembro in miembros|slice:"1:" %}
+                    <div class="miembro">
+                        <div class="foto-miembro">
+                            {# Si tiene imagen, la mostramos; si no, usamos municipio.logotipo #}
+                            {% if miembro.imagen %}
+                                <img style="margin-top:1rem; width:130px; height:auto;"
+                                     src="{{ miembro.imagen.url }}"
+                                     alt="{{ miembro.nombre }}">
+                            {% else %}
+                                <img style="margin-top:1rem; width:130px; height:auto;"
+                                     src="{{ municipio.logotipo.url }}"
+                                     alt="{{ miembro.nombre }}">
+                            {% endif %}
+                        </div>
+                        <h3>{{ miembro.nombre }}</h3>
+                        <p>{{ miembro.cargo }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        {% else %}
+            <!-- Caso: No hay miembros activos -->
+            <p>No hay miembros del gabinete registrados.</p>
+        {% endif %}
+    {% else %}
+        <!-- Caso: No hay municipio activo encontrado en la vista -->
+        <p>No se encontró información del municipio.</p>
+    {% endif %}
+</section>
+
+
+{% endblock content %}
