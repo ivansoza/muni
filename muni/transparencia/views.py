@@ -21,6 +21,7 @@ class HomeTransparenciaView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         context['sidebar'] = 'transparecnia'
+        context['secciones'] = SeccionTransparencia.objects.all()  # Obtener todas las secciones
 
         return context
 
@@ -31,7 +32,7 @@ class HomeReportesView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['secciones'] = SeccionTransparencia.objects.all()  # Obtener todas las secciones
+        context['sidebar'] = 'transparecnia'
         return context
 
 def get_encuestas_activas(request, municipio_id):
