@@ -1,0 +1,188 @@
+{% extends "baseTemplate.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+    .dashboard {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+        gap: 3rem !important;
+        width: 100% !important;
+        max-width: 1200px !important;
+        margin-bottom: 60px;
+    }
+    
+    .cardash {
+        background: white !important;
+        border-radius: 1rem !important;
+        padding: 1.5rem !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px -20px rgba(0, 0, 0, 0.1) !important;
+        border: 1px solid rgba(241, 245, 249, 0.8) !important;
+        transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+    
+    .cardash:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 25px 50px -12px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .cardash::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 4px !important;
+        background: linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #ec4899 100%) !important;
+    }
+    
+    .cardash-header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        margin-bottom: 1.5rem !important;
+    }
+    
+    .cardash-title {
+        font-size: 1.5rem !important;
+        font-weight: 600 !important;
+        color: #64748b !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+    }
+    
+    .cardash-icon {
+        width: 48px !important;
+        height: 48px !important;
+        border-radius: 0.75rem !important;
+        background: #f1f5f9 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all 0.3s ease !important;
+        font-size: 1.5rem !important;
+    }
+    
+    .cardash-content {
+        max-height: 100px; /* Ajusta la altura según lo que necesites */
+        overflow-y: auto; /* Activa el scroll si el contenido excede la altura */
+        padding-right: 8px; /* Espacio para evitar que el scroll tape el contenido */
+        padding-top: 4px; /* Añadir un pequeño padding superior */
+        scroll-padding-top: 10px; /* Ayuda a que el primer elemento no quede oculto */
+    }
+    .btn-add {
+        display: block;
+        margin-bottom: 20px;
+        background-color: #3E688C;
+        color: white;
+        border-radius: 10px;
+        padding: 12px 20px;
+        font-size: 16px;
+        border: none;
+        width: 17%;
+    }
+
+    .btn-add:hover {
+        background-color: rgb(20, 102, 149);
+        color: white;
+    }
+
+</style>
+
+<div class="container-fluid">
+    <div class="dashboard">
+        <!-- Tarjeta: Total de Noticias -->
+        <div class="cardash">
+            <div class="cardash-header">
+                <span class="cardash-title">Ejercicios fiscales de la sección:<strong>{{ seccion.nombre }}</strong></span>
+                <div class="cardash-icon">
+                    <span class="emoji-transition">📂</span>
+                </div>
+            </div>
+            <h3 style="color: #64748b;">Total de ejercicios fiscales:</strong> {{ total_ejercicios }}</h3>
+        </div>
+    
+    </div>
+
+    <a href="{% url 'ejercicio_create' seccion_id=seccion.id %}" class="btn btn-add" style="margin-bottom: 20px; border-radius: 10px; padding: 12px 20px; font-size: 16px;"><i class="fa-solid fa-clipboard"></i> Agregar Ejercicio</a>
+
+    <div class="col-sm-12" id='colTabla'>
+        <div class="card">
+            <div class="card-header pb-0 card-no-border">
+                <h3 class="mb-3">Ejercicios Registrados en la Sección</h3>
+            </div>
+            <div class="card-body">
+                <div class="dt-ext table-responsive theme-scrollbar">
+                    <table class="display" id="basic-2">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th style="width: 120px;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ejercicio in ejercicios %}
+                            <tr>
+                                <td>{{ ejercicio.id }}</td>
+
+                                <td>{{ ejercicio.nombre }}</td>
+                                <td>{{ ejercicio.descripcion }}</td>
+                                <td style="text-align: center;">
+                                    <a href="{% url "documento_list" seccion_id=seccion.id  ejercicio_id=ejercicio.id%}" class="btn btn-primary btn-sm rounded-circle p-2" title="Registrar documentación">
+                                        <i class="fa-solid fa-file-circle-plus"></i>
+                                    </a>
+                                    <a href="{% url "editar_ejercicio" ejercicio.id %}" class="btn btn-warning btn-sm rounded-circle p-2" title="Editar">
+                                        <i class="fa-solid fa-file-pen"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-danger btn-sm rounded-circle p-2" title="Eliminar"
+                                        onclick="confirmarEliminacionEjercicio({{ ejercicio.pk }})">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                    </a>
+                                </td>
+                                
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function confirmarEliminacionEjercicio(pk) {
+    Swal.fire({
+        title: "¿Estás seguro?",
+        text: "Esta acción eliminará el ejercicio fiscal permanentemente.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/admin/eliminar_ejercicio/${pk}/`, {
+                method: "POST",
+                headers: { "X-CSRFToken": "{{ csrf_token }}" }
+            })
+            .then(response => {
+                if (response.ok) {
+                    Swal.fire("¡Eliminado!", "El ejercicio fiscal ha sido eliminado.", "success")
+                    .then(() => location.reload());
+                } else {
+                    Swal.fire("Error", "No se pudo eliminar el ejercicio fiscal.", "error");
+                }
+            });
+        }
+    });
+}
+</script>
+
+{% endblock %}

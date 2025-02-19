@@ -1,0 +1,30 @@
+{% extends "baseTemplate.html" %}
+{% load crispy_forms_tags %}  <!-- Cargar el tag crispy_forms -->
+
+{% block content %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<div>
+    <!-- Card con el formulario -->
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h2 class="mb-0">📄Crear Sección de Transparencia</h2>
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">  <!-- Asegúrate de agregar enctype -->
+                {% csrf_token %}
+                <!-- Usar crispy_forms para un mejor estilo del formulario -->
+                {{ form|crispy }}
+                <div class="form-group text-center">
+                    <!-- Botón Guardar más grande y centrado -->
+                    <button type="submit" class="btn btn-primary btn-lg me-3">
+                         💾 Guardar
+                    </button>
+                    <a href="{% url 'transparencia_view' %}" class="btn btn-secondary btn-lg">
+                         ❌ Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

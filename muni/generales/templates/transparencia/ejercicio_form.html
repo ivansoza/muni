@@ -1,0 +1,30 @@
+{% extends "baseTemplate.html" %}
+{% load crispy_forms_tags %}  <!-- Cargar el tag crispy_forms -->
+
+{% block content %}
+<div>
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h2 class="mb-0">📄 Crear Nuevo Ejercicio Fiscal</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+
+                {{ form|crispy }}
+
+                <div class="d-flex justify-content-center mt-2">
+                    <button type="submit" class="btn btn-primary btn-lg me-3">
+                        💾 Guardar
+                    </button>
+                    
+                    <a href="{% url 'ejercicio_list' seccion_id=seccion.id %}" class="btn btn-secondary btn-lg">
+                        ❌ Cancelar
+                    </a>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

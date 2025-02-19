@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Contenedor principal */
+    .section-header {
+        display: flex;
+        flex-direction: column; /* Disposición en columna */
+        padding: 10px 20px; /* Menos padding para subir el contenido */
+        background-color: transparent; /* Fondo transparente */
+        position: relative;
+        margin-left: 30px; /* Deja suficiente espacio */
+    }
+    
+    /* Línea vertical roja a la izquierda */
+    .section-header::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 8px; /* Ancho de la línea */
+        background-color: var(--color-primario); /* Rojo */
+        border-radius: 5px;
+    }
+    
+    /* Contenedor para el título y la descripción */
+    /* Contenedor para el título y la descripción */
+    .header-left {
+        background-color: transparent; /* Fondo transparente */
+        color: #333; /* Color oscuro para el texto */
+        padding: 40px 40px;
+        border-radius: 12px;
+        box-shadow: none; /* Eliminar la sombra */
+        position: relative; /* Para poder posicionar el logo */
+    }
+
+    .header-left .logo {
+        position: absolute; /* Posiciona el logo dentro del contenedor */
+        top: 0;
+        left: 0;
+        width: 20%; /* Ajusta el tamaño del logo */
+        height: auto; /* Mantiene la proporción del logo */
+        margin-left: 70%; /* Ajusta el margen izquierdo */
+        margin-top: 20px; /* Ajusta el margen superior */
+    }
+
+    .header-title1 {
+        font-size: 45px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--color-primario);
+    }
+
+    .header-title {
+        font-size: 35px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--color-primario);
+    }
+
+    .header-description {
+        font-size: 18px;
+        font-weight: 400;
+        color: #6b7280; /* Gris suave */
+        line-height: 1.6;
+    }
+
+    
+    /* Card para la sección de archivos */
+    .card-accordion {
+        background-color: white; /* Fondo blanco para la card */
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidad */
+    }
+    
+    /* Estilo de los botones del acordeón */
+    .accordion-button {
+        font-size: 16px;
+        color: #4a5568;
+        background-color: transparent; /* Fondo transparente */
+        border-radius: 5px;
+        padding: 12px 20px;
+        border: 1px solid #ddd; /* Agregar borde sutil */
+    }
+    
+    .accordion-button:not(.collapsed) {
+        background-color: #f1f5f9; /* Color suave cuando se expande */
+    }
+    
+    /* Ajustes en pantallas pequeñas */
+    @media (max-width: 768px) {
+        .section-header {
+            padding: 30px 15px;
+            margin-left: 0; /* Eliminar margen en pantallas pequeñas */
+        }
+    
+        .header-left {
+            padding: 30px 20px;
+        }
+        .header-title1 {
+            font-size: 36px;
+            text-align: center;
+        }
+        .header-title {
+            font-size: 26px;
+            text-align: center;
+        }
+        .header-left .logo {
+        position: relative; /* Hace que el logo esté encima de los títulos */
+        margin-left: 70px;
+        margin-top: 0;
+        width: 180px; /* Puedes ajustar el tamaño del logo */
+    }
+    
+        .header-description {
+            font-size: 16px;
+            text-align: center;
+        }
+    
+        .card-accordion {
+            padding: 15px;
+        }
+    }
+    /* Estilo para los íconos del acordeón (flechas) */
+    .accordion-button i.fas.fa-chevron-down,
+    .accordion-button i.fas.fa-chevron-up {
+        color: var(--color-primario) !important; /* Cambia a tu color deseado */
+    }
+    
+    /* Estilo para los íconos de las flechas cuando el acordeón está expandido (flecha hacia arriba) */
+    .accordion-button:not(.collapsed) i.fas.fa-chevron-up {
+        color: var(--color-primario) !important; /* Cambia a tu color deseado cuando está abierto */
+    }
+    
+    /* Estilo para los íconos de las flechas cuando el acordeón está cerrado (flecha hacia abajo) */
+    .accordion-button.collapsed i.fas.fa-chevron-down {
+        color: var(--color-primario) !important; /* Cambia a tu color deseado cuando está cerrado */
+    }
+    
+    /* Crear un grid para los íconos y títulos de los archivos */
+    .files-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr); /* Fijar 6 columnas en pantallas grandes */
+        gap: 20px; /* Espacio entre los cuadros */
+        margin-top: 20px;
+    }
+    
+    /* Ajuste de la cuadrícula para pantallas más pequeñas */
+    @media (max-width: 1200px) {
+        .files-grid {
+            grid-template-columns: repeat(4, 1fr); /* Para pantallas medianas, 4 columnas */
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .files-grid {
+            grid-template-columns: repeat(2, 1fr); /* Para pantallas pequeñas, 2 columnas */
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .files-grid {
+            grid-template-columns: 1fr; /* Para pantallas muy pequeñas, 1 columna */
+        }
+    }
+    
+    /* Estilo para cada archivo (ícono y título) */
+    .file-item {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        transition: transform 0.3s ease;
+    }
+    
+    /* Estilo al pasar el mouse sobre un archivo */
+    .file-item:hover {
+        transform: translateY(-5px); /* Eleva el archivo ligeramente */
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1); /* Agrega sombra al pasar el ratón */
+    }
+    
+    /* Tamaño del ícono */
+    .file-item i {
+        font-size: 40px;
+        margin-bottom: 10px;
+    }
+    
+    /* Título debajo del ícono */
+    .file-item a {
+        font-size: 14px;
+        color: #333;
+        text-decoration: none;
+    }
+    </style>
+
+<div class="container mt-4">
+    <div class="section-header">
+        <!-- Título y descripción -->
+        <div class="header-left">
+            <img src="{{municipio.logotipo.url}}" alt="Logo" class="logo"> <!-- Agrega la imagen del logo -->
+            <h1 class="header-title1">Transparencia</h1>
+            <h2 class="header-title">{{ seccion.nombre }}</h2>
+            <p class="header-description">{{ seccion.descripcion }}</p>
+        </div>
+
+        <!-- Card para los archivos -->
+        <div class="card-accordion">
+            <div class="accordion shadow" id="ejerciciosAccordion">
+                {% for ejercicio in documentos_organizados %}
+                <div class="accordion-item border-0">
+                    <h2 class="accordion-header" id="heading{{ ejercicio.ejercicio_id }}">
+                        <button class="accordion-button fw-bold text-dark bg-light" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapse{{ ejercicio.ejercicio_id }}" aria-expanded="true"
+                            aria-controls="collapse{{ ejercicio.ejercicio_id }}">
+                            <i class="fas fa-folder text-warning me-2"></i> {{ ejercicio.ejercicio_nombre }}
+                        </button>
+                    </h2>
+                    <div id="collapse{{ ejercicio.ejercicio_id }}" class="accordion-collapse collapse"
+                        aria-labelledby="heading{{ ejercicio.ejercicio_id }}" data-bs-parent="#ejerciciosAccordion">
+                        <div class="accordion-body bg-white rounded">
+                            <!-- Mostrar los documentos SIN AÑO NI MES dentro del ejercicio -->
+                            <div class="files-grid">
+                                {% if ejercicio.directos %}
+                                {% for doc in ejercicio.directos %}
+                                <div class="file-item">
+                                    <!-- Icono del archivo -->
+                                    <i class="fas 
+                                        {% if doc.archivo.url|lower|slice:'-4:' == '.pdf' %}
+                                            fa-file-pdf text-danger
+                                        {% elif doc.archivo.url|lower|slice:'-5:' == '.docx' or doc.archivo.url|lower|slice:'-4:' == '.doc' %}
+                                            fa-file-word text-primary
+                                        {% elif doc.archivo.url|lower|slice:'-5:' == '.xlsx' or doc.archivo.url|lower|slice:'-4:' == '.xls' %}
+                                            fa-file-excel text-success
+                                        {% elif doc.archivo.url|lower|slice:'-5:' == '.pptx' or doc.archivo.url|lower|slice:'-4:' == '.ppt' %}
+                                            fa-file-powerpoint text-warning
+                                        {% else %}
+                                            fa-file-alt text-secondary
+                                        {% endif %}
+                                    "></i>
+                                    <!-- Título del archivo -->
+                                    <a href="{{ doc.archivo.url }}" class="text-dark text-decoration-none" target="_blank">
+                                        {{ doc.titulo }}
+                                    </a>
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                            </div>
+                            <!-- Iteración por años -->
+                            {% for año, datos in ejercicio.años.items %}
+                            <div class="accordion mt-2" id="anioAccordion{{ ejercicio.ejercicio_id }}{{ año }}">
+                                <div class="accordion-item border-0">
+                                    <h2 class="accordion-header" id="headingAnio{{ ejercicio.ejercicio_id }}{{ año }}">
+                                        <button class="accordion-button fw-bold text-dark bg-light" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapseAnio{{ ejercicio.ejercicio_id }}{{ año }}" aria-expanded="true"
+                                            aria-controls="collapseAnio{{ ejercicio.ejercicio_id }}{{ año }}">
+                                            <i class="fas fa-folder text-primary me-2"></i> {{ año }}
+                                        </button>
+                                    </h2>
+                                    <div id="collapseAnio{{ ejercicio.ejercicio_id }}{{ año }}" class="accordion-collapse collapse"
+                                        aria-labelledby="headingAnio{{ ejercicio.ejercicio_id }}{{ año }}"
+                                        data-bs-parent="#anioAccordion{{ ejercicio.ejercicio_id }}{{ año }}">
+                                        <div class="accordion-body">
+                                            <!-- Documentos directos dentro del año -->
+                                        <div class="files-grid">
+
+                                            {% if datos.directos %}
+                                                {% for doc in datos.directos %}
+                                                <div class="file-item">
+
+                                                    <i class="fas 
+                                                        {% if doc.archivo.url|lower|slice:'-4:' == '.pdf' %}
+                                                            fa-file-pdf text-danger
+                                                        {% elif doc.archivo.url|lower|slice:'-5:' == '.docx' or doc.archivo.url|lower|slice:'-4:' == '.doc' %}
+                                                            fa-file-word text-primary
+                                                        {% elif doc.archivo.url|lower|slice:'-5:' == '.xlsx' or doc.archivo.url|lower|slice:'-4:' == '.xls' %}
+                                                            fa-file-excel text-success
+                                                        {% elif doc.archivo.url|lower|slice:'-5:' == '.pptx' or doc.archivo.url|lower|slice:'-4:' == '.ppt' %}
+                                                            fa-file-powerpoint text-warning
+                                                        {% else %}
+                                                            fa-file-alt text-secondary
+                                                        {% endif %}
+                                                    me-2"></i> 
+                                                    <a href="{{ doc.archivo.url }}" class="text-dark text-decoration-none" target="_blank">
+                                                        {{ doc.titulo }}
+                                                    </a>
+                                                </div>
+
+                                                {% endfor %}
+                                                {% endif %}
+                                            </div>
+
+                                            <!-- Iteración sobre los meses dentro del año -->
+                                            {% for mes, documentos in datos.meses.items %}
+                                            <div class="accordion mt-2">
+                                                <div class="accordion-item border-0">
+                                                    <h2 class="accordion-header">
+                                                        <button class="accordion-button fw-bold text-dark bg-light" type="button" data-bs-toggle="collapse"
+                                                            data-bs-target="#collapseMes{{ ejercicio.ejercicio_id }}{{ año }}{{ mes }}">
+                                                            <i class="fas fa-folder text-success me-2"></i> {{ mes }}
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapseMes{{ ejercicio.ejercicio_id }}{{ año }}{{ mes }}" class="accordion-collapse collapse">
+                                                        <div class="accordion-body">
+                                                            <div class="files-grid">
+                                                                {% for doc in documentos %}
+                                                                <div class="file-item">
+                                                                    <i class="fas 
+                                                                        {% if doc.archivo.url|lower|slice:'-4:' == '.pdf' %}
+                                                                            fa-file-pdf text-danger
+                                                                        {% elif doc.archivo.url|lower|slice:'-5:' == '.docx' or doc.archivo.url|lower|slice:'-4:' == '.doc' %}
+                                                                            fa-file-word text-primary
+                                                                        {% elif doc.archivo.url|lower|slice:'-5:' == '.xlsx' or doc.archivo.url|lower|slice:'-4:' == '.xls' %}
+                                                                            fa-file-excel text-success
+                                                                        {% elif doc.archivo.url|lower|slice:'-5:' == '.pptx' or doc.archivo.url|lower|slice:'-4:' == '.ppt' %}
+                                                                            fa-file-powerpoint text-warning
+                                                                        {% else %}
+                                                                            fa-file-alt text-secondary
+                                                                        {% endif %}
+                                                                    me-2"></i> 
+                                                                    <a href="{{ doc.archivo.url }}" class="text-dark text-decoration-none" target="_blank">
+                                                                        {{ doc.titulo }}
+                                                                    </a>
+                                                                </div>
+                                                                {% endfor %}
+                                                        </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

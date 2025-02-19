@@ -7,7 +7,7 @@ from django.http import JsonResponse
 
 from django.urls import reverse_lazy
 
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from informacion_municipal.models import Municipio
@@ -24,8 +24,11 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
-
+from transparencia.forms import SeccionTransparenciaForm, EjercicioFiscalForm, DocumentoTransparenciaForm
+from transparencia.models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia
 # Create your views here.
+from django.db.models import Count
+
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
     authentication_form = CustomAuthenticationForm
@@ -312,3 +315,275 @@ class ServicesView(LoginRequiredMixin, TemplateView):
         context['sidebar'] = 'servicios'  # Asegura que el sidebar resalte la sección de Servicios
 
         return context
+
+class TransparenciaView(LoginRequiredMixin, TemplateView):
+    template_name = "transparencia/transparencia.html"  
+    login_url = reverse_lazy('login')  # Redirigir si no está autenticado
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        url_configuracion = reverse('dashboard')
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': url_configuracion},
+            'child': {'name': 'Transparencia', 'url': ''}
+        }
+        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+
+        # Obtener todas las secciones y pasarlas al contexto
+        secciones = SeccionTransparencia.objects.all()
+        context['secciones'] = secciones  # Agrega las secciones al contexto
+        total_secciones = SeccionTransparencia.objects.count()
+        total_documentos = DocumentoTransparencia.objects.count()
+        ultima_documento = DocumentoTransparencia.objects.order_by('-fecha_publicacion').first()
+        documentos_por_seccion = SeccionTransparencia.objects.annotate(total_docs=Count('documentos'))
+
+        context['total_secciones'] = total_secciones
+        context['total_documentos'] = total_documentos
+        context['ultima_documento'] = ultima_documento
+        context['documentos_por_seccion'] = documentos_por_seccion
+        return context
+
+    
+def crear_seccion(request):
+    # Configuración del breadcrumb y sidebar
+    url_configuracion = reverse('dashboard')
+
+    context = {
+        "breadcrumb": {
+            'parent': {'name': 'Dashboard', 'url': url_configuracion},
+            'child': {'name': 'Registro Sección', 'url': ''}
+        },
+        'sidebar': 'transparencia'
+    }
+
+    if request.method == "POST":
+        form = SeccionTransparenciaForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Sección creada correctamente.")
+            return redirect("transparencia_view")  # Redirige a la vista de administración
+        else:
+            messages.error(request, "Error al crear la sección.")
+    else:
+        form = SeccionTransparenciaForm()
+
+    # Agrega el formulario al contexto
+    context['form'] = form
+
+    return render(request, "transparencia/crear_seccion.html", context)
+
+class SeccionTransparenciaUpdateView(UpdateView):
+    model = SeccionTransparencia
+    form_class = SeccionTransparenciaForm
+    template_name = 'transparencia/seccion_transparencia_edit.html'
+    success_url = reverse_lazy('transparencia_view')  # Redirigir a la lista tras edición
+
+    def get_context_data(self, **kwargs):
+        # Obtener el contexto base de la vista
+        context = super().get_context_data(**kwargs)
+        url_configuracion = reverse('transparencia_view')
+
+        context["breadcrumb"] = {
+            'parent': {'name': 'Transparencia', 'url': url_configuracion},
+            'child': {'name': 'Edición de sección', 'url': ''}
+        }
+        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+
+        return context
+def eliminar_seccion(request, pk):
+    seccion = get_object_or_404(SeccionTransparencia, pk=pk)
+    if request.method == "POST":
+        seccion.delete()
+        messages.success(request, "Sección eliminada exitosamente.")
+        return redirect('transparencia_view')
+    
+class EjercicioFiscalListView(ListView):
+    model = EjercicioFiscal
+    template_name = 'transparencia/ejercicio_list.html'
+    context_object_name = 'ejercicios'
+
+    def get_queryset(self):
+        # Obtenemos la sección mediante la URL
+        seccion_id = self.kwargs['seccion_id']
+        self.seccion = get_object_or_404(SeccionTransparencia, id=seccion_id)
+        # Filtramos los ejercicios fiscales de esa sección
+        return EjercicioFiscal.objects.filter(seccion=self.seccion)
+
+    def get_context_data(self, **kwargs):
+        # Obtener el contexto base de la vista
+        context = super().get_context_data(**kwargs)
+        # Añadir más contexto adicional
+        context['seccion'] = self.seccion
+        context['total_ejercicios'] = self.get_queryset().count()  # Contar el número total de ejercicios
+        # Puedes añadir más información si es necesario
+        url_configuracion = reverse('transparencia_view')
+
+        context["breadcrumb"] = {
+            'parent': {'name': 'Transparencia', 'url': url_configuracion},
+            'child': {'name': 'Ejercicios de sección', 'url': ''}
+        }
+        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+
+        return context
+
+class EjercicioFiscalUpdateView(UpdateView):
+    model = EjercicioFiscal
+    form_class = EjercicioFiscalForm
+    template_name = 'transparencia/ejercicio_fiscal_edit.html'
+    
+    def get_success_url(self):
+        return reverse_lazy('ejercicio_list', kwargs={'seccion_id': self.object.seccion.id})
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['seccion'] = self.object.seccion
+        url_configuracion = reverse('ejercicio_list', kwargs={'seccion_id': self.object.seccion.id})
+        
+        context["breadcrumb"] = {
+            'parent': {'name': 'Ejercicios de sección', 'url': url_configuracion},
+            'child': {'name': 'Editar Ejercicio', 'url': ''}
+        }
+        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+        
+        return context
+
+def eliminar_ejercicio_fiscal(request, pk):
+    ejercicio = get_object_or_404(EjercicioFiscal, pk=pk)
+    seccion_id = ejercicio.seccion.id
+    if request.method == "POST":
+        ejercicio.delete()
+        messages.success(request, "Ejercicio fiscal eliminado exitosamente.")
+        return redirect('ejercicio_list', seccion_id=seccion_id)
+
+class EjercicioFiscalCreateView(CreateView):
+    model = EjercicioFiscal
+    form_class = EjercicioFiscalForm
+    template_name = 'transparencia/ejercicio_form.html'
+    
+    def form_valid(self, form):
+        seccion = get_object_or_404(SeccionTransparencia, id=self.kwargs['seccion_id'])
+        form.instance.seccion = seccion
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('ejercicio_list', kwargs={'seccion_id': self.kwargs['seccion_id']})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['seccion'] = get_object_or_404(SeccionTransparencia, id=self.kwargs['seccion_id'])  # 🔹 Agregamos la sección
+        url_configuracion = reverse('ejercicio_list', kwargs={'seccion_id': self.kwargs['seccion_id']})
+
+        context["breadcrumb"] = {
+            'parent': {'name': 'Ejercicios de sección', 'url': url_configuracion},
+            'child': {'name': 'Crear Ejercicio', 'url': ''}
+        }
+        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+
+        return context
+
+class DocumentoTransparenciaListView(ListView):
+    model = DocumentoTransparencia
+    template_name = "transparencia/documento_list.html"
+    context_object_name = "documentos"
+
+    def get_queryset(self):
+        # Obtener la sección y el ejercicio fiscal desde la URL
+        seccion = get_object_or_404(SeccionTransparencia, id=self.kwargs['seccion_id'])
+        ejercicio = get_object_or_404(EjercicioFiscal, id=self.kwargs['ejercicio_id'])
+
+        # Obtener el año correctamente (si existe el campo 'año' en el modelo EjercicioFiscal)
+        ejercicio_año = getattr(ejercicio, 'año', None)  # Acceder directamente al campo si existe
+
+        # Filtrar los documentos que pertenecen a la sección y al ejercicio fiscal
+        queryset = DocumentoTransparencia.objects.filter(seccion=seccion, ejercicio_fiscal=ejercicio)
+
+        # Si hay un año en el modelo EjercicioFiscal, filtrar también por año
+        if ejercicio_año:
+            queryset = queryset.filter(año=ejercicio_año)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["seccion"] = get_object_or_404(SeccionTransparencia, id=self.kwargs['seccion_id'])
+        context["ejercicio"] = get_object_or_404(EjercicioFiscal, id=self.kwargs['ejercicio_id'])
+        url_configuracion = reverse('ejercicio_list', kwargs={'seccion_id': self.kwargs['seccion_id']})
+
+        context["breadcrumb"] = {
+            'parent': {'name': 'Ejercicios de sección', 'url': url_configuracion},
+            'child': {'name': 'Lista de Documentos', 'url': ''}
+        }
+        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+
+        return context
+
+    
+
+def registrar_documento(request, seccion_id, ejercicio_id):
+    """Vista para registrar un nuevo documento en una sección y ejercicio fiscal específicos"""
+    seccion = get_object_or_404(SeccionTransparencia, id=seccion_id)
+    ejercicio = get_object_or_404(EjercicioFiscal, id=ejercicio_id, seccion=seccion)  # Siempre obtenemos un ejercicio
+
+    form = DocumentoTransparenciaForm(seccion=seccion)
+    if request.method == "POST":
+        form = DocumentoTransparenciaForm(request.POST, request.FILES, seccion=seccion)
+
+        if form.is_valid():
+            documento = form.save(commit=False)
+            documento.seccion = seccion  # Se asigna la sección automáticamente
+            documento.ejercicio_fiscal = ejercicio  # Se asigna el ejercicio fiscal
+            documento.save()
+            return redirect('documento_list', seccion_id=seccion.id, ejercicio_id=ejercicio.id)
+
+    # Definir el contexto con el breadcrumb y sidebar
+    context = {
+        'form': form,
+        'seccion': seccion,
+        'ejercicio': ejercicio,
+        'breadcrumb': {
+            'parent': {
+                'name': 'Lista de Documentos', 
+                'url': reverse('documento_list', kwargs={'seccion_id': seccion.id, 'ejercicio_id': ejercicio.id})
+            },
+            'child': {'name': 'Registro Sección', 'url': ''}
+        },
+        'sidebar': 'transparencia'
+    }
+
+    return render(request, 'transparencia/documento_form.html', context)
+
+
+class DocumentoTransparenciaUpdateView(UpdateView):
+    model = DocumentoTransparencia
+    form_class = DocumentoTransparenciaForm
+    template_name = 'transparencia/documento_transparencia_edit.html'
+
+    def get_success_url(self):
+        return reverse_lazy('documento_list', kwargs={
+            'seccion_id': self.object.seccion.id,
+            'ejercicio_id': self.object.ejercicio_fiscal.id if self.object.ejercicio_fiscal else 0
+        })
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['seccion'] = self.object.seccion
+        context['ejercicio_fiscal'] = self.object.ejercicio_fiscal
+        url_configuracion = reverse('documento_list', kwargs={
+            'seccion_id': self.object.seccion.id,
+            'ejercicio_id': self.object.ejercicio_fiscal.id if self.object.ejercicio_fiscal else 0
+        })
+        context["breadcrumb"] = {
+            'parent': {'name': 'Documentos de sección', 'url': url_configuracion},
+            'child': {'name': 'Editar Documento', 'url': ''}
+        }
+        context['sidebar'] = 'transparencia'
+        return context
+    
+def eliminar_documento_transparencia(request, pk):
+    documento = get_object_or_404(DocumentoTransparencia, pk=pk)
+    seccion_id = documento.seccion.id
+    ejercicio_id = documento.ejercicio_fiscal.id if documento.ejercicio_fiscal else 0
+    if request.method == "POST":
+        documento.delete()
+        messages.success(request, "Documento eliminado exitosamente.")
+        return redirect('documento_list', seccion_id=seccion_id, ejercicio_id=ejercicio_id)

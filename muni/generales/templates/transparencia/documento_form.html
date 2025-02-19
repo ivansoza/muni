@@ -1,0 +1,57 @@
+{% extends "baseTemplate.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div>
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h2 class="mb-0">📄 Formulario para Registrar Documento</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Campos ocultos para sección y ejercicio fiscal -->
+                <input type="hidden" name="seccion" value="{{ seccion.id }}">
+                <input type="hidden" name="ejercicio_fiscal" value="{{ ejercicio.id }}">
+
+                <!-- Campo de título -->
+                {{ form.titulo|as_crispy_field }}
+
+                <!-- Campo de descripción -->
+                {{ form.descripcion|as_crispy_field }}
+
+                <!-- Campo de archivo -->
+                {{ form.archivo|as_crispy_field }}
+
+                <!-- Distribuir Año y Mes en la misma fila si aplican -->
+                {% if seccion.usa_ejercicios or seccion.usa_meses %}
+                <div class="row">
+                    {% if seccion.usa_ejercicios %}
+                        <div class="col-md-6">
+                            {{ form.año|as_crispy_field }}
+                        </div>
+                    {% endif %}
+
+                    {% if seccion.usa_meses %}
+                        <div class="col-md-6">
+                            {{ form.mes|as_crispy_field }}
+                        </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Botones -->
+                <div class="d-flex justify-content-center mt-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        💾 Guardar
+                    </button>
+                    <a href="{% url 'documento_list' seccion_id=seccion.id ejercicio_id=ejercicio.id %}" class="btn btn-secondary btn-lg ms-3">
+                        ❌ Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
