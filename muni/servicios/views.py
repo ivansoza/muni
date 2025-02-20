@@ -11,32 +11,32 @@ class HomeServiciosView(TemplateView):
 
         servicios = [
             {
-                "titulo": "Revalidación de placas para el ejercicio 2025",
-                "descripcion": "El perro (Canis familiaris o Canis lupus familiaris, dependiendo de si se lo considera una especie o una subespecie del lobo),1​2​3​ llamado perro doméstico o can,4​ y en algunos lugares coloquialmente llamado chucho,5​ tuso,6​ choco,7​ entre otros; es un mamífero carnívoro de la familia de los cánidos, que constituye una especie del género Canis.8​9​ En el 2013, la población mundial estimada de perros estaba entre setecientos millones y novecientos ochenta y siete millones.10​11​",
+                "titulo": "Pago de Predial",
+                "descripcion": "Mantente al día con el pago de tu impuesto predial sin salir de casa. Realiza tu trámite en línea de manera ágil, segura y sencilla. Solo necesitas ingresar la clave catastral para consultar tu adeudo y efectuar el pago.​",
                 "icono": "https://oficialiamayor.sonora.gob.mx/api/icons/inscripcion-registro.svg",
                 "url_info": "#",
                 "url_tramite": "#",
                 "estado": 1
             },
             {
-                "titulo": "Expedición de copia certificada de actas",
-                "descripcion": "Registro Civil del Estado",
+                "titulo": "Pago de Agua Potable",
+                "descripcion": "Realiza el pago de tu servicio de agua potable sin complicaciones y desde la comodidad de tu hogar. Solo ingresa tu número de contrato para consultar tu saldo y realiza el pago en unos cuantos pasos.",
                 "icono": "https://oficialiamayor.sonora.gob.mx/api/icons/inscripcion-registro.svg",
                 "url_info": "#",
                 "url_tramite": "#",
                 "estado": 2
             },
             {
-                "titulo": "Revalidación de placas para el ejercicio 2025",
-                "descripcion": "El perro (Canis familiaris o Canis lupus familiaris, dependiendo de si se lo considera una especie o una subespecie del lobo),1​2​3​ llamado perro doméstico o can,4​ y en algunos lugares coloquialmente llamado chucho,5​ tuso,6​ choco,7​ entre otros; es un mamífero carnívoro de la familia de los cánidos, que constituye una especie del género Canis.8​9​ En el 2013, la población mundial estimada de perros estaba entre setecientos millones y novecientos ochenta y siete millones.10​11​",
+                "titulo": "Pago de Licencia de Funcionamiento",
+                "descripcion": "Facilita el proceso de renovación de tu licencia de funcionamiento sin necesidad de acudir a las oficinas. Consulta el monto correspondiente ingresando los datos de tu negocio y realiza el pago en unos cuantos pasos.​",
                 "icono": "https://oficialiamayor.sonora.gob.mx/api/icons/inscripcion-registro.svg",
                 "url_info": "#",
                 "url_tramite": "#",
                 "estado": 3
             },
             {
-                "titulo": "Expedición de copia certificada de actas",
-                "descripcion": "Registro Civil del Estado",
+                "titulo": "Ordenes de pago",
+                "descripcion": "Realiza el pago de las órdenes emitidas por el municipio sin complicaciones. Solo necesitas ingresar el número de orden y código de verificación para consultar el importe y efectuar el pago de manera ágil y confiable.",
                 "icono": "https://oficialiamayor.sonora.gob.mx/api/icons/inscripcion-registro.svg",
                 "url_info": "#",
                 "url_tramite": "#",
