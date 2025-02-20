@@ -204,9 +204,8 @@
         background: white;
         transition: all 0.3s ease;
         cursor: pointer;
-
     }
-    .foto-miembro:hover {
+        .foto-miembro:hover {
         transform: scale(1.05);
         box-shadow: 0 8px 20px rgba(0,0,0,0.15);
     }
@@ -214,6 +213,23 @@
         opacity: 0.6;
         border-color: var(--color-secundario);
     }
+    /* Nuevo: estilo para el texto overlay */
+    .foto-miembro .overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 3;
+    }
+
+    .foto-miembro:hover .overlay {
+    opacity: 1;
+}
 
 
     .foto-miembro::before {
@@ -223,7 +239,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: var(--color-iconos);
+        background-color: var(--color-secundario);
         opacity: 0;
         transition: opacity 0.3s ease;
         z-index: 2;
@@ -231,7 +247,7 @@
     }
 
     .foto-miembro:hover::before {
-        opacity: 0.2;
+        opacity: 0.5;
     }
 
     .foto-miembro img {
@@ -349,18 +365,21 @@
                 <div class="miembros-gabinete">
                     {% for miembro in miembros|slice:"1:" %}
                     <div class="miembro">
-                        <div class="foto-miembro">
-                            {# Si tiene imagen, la mostramos; si no, usamos municipio.logotipo #}
-                            {% if miembro.imagen %}
-                                <img style="margin-top:1rem; width:130px; height:auto;"
-                                     src="{{ miembro.imagen.url }}"
-                                     alt="{{ miembro.nombre }}">
-                            {% else %}
-                                <img style="margin-top:1rem; width:130px; height:auto;"
-                                     src="{{ municipio.logotipo.url }}"
-                                     alt="{{ miembro.nombre }}">
-                            {% endif %}
-                        </div>
+                        <a href="tu-destino-aqui">
+                            <div class="foto-miembro">
+                                {# Si tiene imagen, la mostramos; si no, usamos municipio.logotipo #}
+                                {% if miembro.imagen %}
+                                    <img style="margin-top:1rem; width:130px; height:auto;"
+                                         src="{{ miembro.imagen.url }}"
+                                         alt="{{ miembro.nombre }}">
+                                {% else %}
+                                    <img style="margin-top:1rem; width:130px; height:auto;"
+                                         src="{{ municipio.logotipo.url }}"
+                                         alt="{{ miembro.nombre }}">
+                                {% endif %}
+                                <div class="overlay">Ver</div>
+                            </div>
+                          </a>
                         <h3>{{ miembro.nombre }}</h3>
                         <p>{{ miembro.cargo }}</p>
                     </div>
