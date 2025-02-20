@@ -3,7 +3,14 @@
 
 {% block content %}
 <style>
-
+        :root {
+        --primary-color: #2A2E8D;
+        --secondary-color: #4CAF50;
+        --accent-color: #FFC107;
+        --text-dark: #2D3748;
+        --text-light: #718096;
+        --transition-duration: 0.4s;
+    }
     
     /* Contenedor que usaremos para distribuir las cards */
     .cards-container {
@@ -92,7 +99,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-secundario) 100%);
         color: white !important;
         padding: 15px 35px;
         border-radius: 15px;
@@ -104,7 +111,6 @@
         overflow: hidden;
         box-shadow: 0 5px 20px rgba(42, 46, 141, 0.2);
     }
-
     .card-button::before {
         content: '';
         position: absolute;
