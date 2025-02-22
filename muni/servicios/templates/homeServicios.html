@@ -7,13 +7,13 @@
 
 {% block content %}
 <div class="search-container">
-    <form method="GET" action="{% url 'home' %}">
+    <form method="GET" action="{% url 'home_servicios' %}">
         <div class="input-group">
-            <input type="text" class="form-control search-input" name="q" placeholder="¿Qué servicio o trámite buscas?" value="{{ request.GET.q }}">
+            <input type="text" class="form-control search-input" name="q" placeholder="¿Qué servicio o trámite buscas?" value="{{ query }}">
             <button type="submit" class="btn search-btn">
                 <i class="fas fa-search"></i> Buscar
             </button>
-            <a href="{% url 'home' %}" class="btn reset-btn">
+            <a href="{% url 'home_servicios' %}" class="btn reset-btn">
                 <i class="fas fa-sync-alt"></i> Restablecer
             </a>
         </div>
@@ -24,8 +24,9 @@
                 <label for="clasificacion">Seleccionar<br><strong>Clasificación</strong></label>
                 <select id="clasificacion" name="clasificacion" class="form-select">
                     <option value="">Todas</option>
-                    <option value="categoria1">Categoría 1</option>
-                    <option value="categoria2">Categoría 2</option>
+                    {% for cat in categorias %}
+                    <option value="{{ cat.id }}" {% if clasificacion == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.nombre }}</option>
+                    {% endfor %}
                 </select>
             </div>
 
@@ -33,8 +34,9 @@
                 <label for="sector">Seleccionar<br><strong>Sector</strong></label>
                 <select id="sector" name="sector" class="form-select">
                     <option value="">Todos</option>
-                    <option value="publico">Público</option>
-                    <option value="privado">Privado</option>
+                    {% for sec in sectores %}
+                    <option value="{{ sec.id }}" {% if sector == sec.id|stringformat:"s" %}selected{% endif %}>{{ sec.nombre }}</option>
+                    {% endfor %}
                 </select>
             </div>
 
@@ -42,8 +44,9 @@
                 <label for="organismo">Seleccionar<br><strong>Dependencia, Entidad u Organismo</strong></label>
                 <select id="organismo" name="organismo" class="form-select">
                     <option value="">Todos</option>
-                    <option value="hacienda">Secretaría de Hacienda</option>
-                    <option value="registro">Registro Civil</option>
+                    {% for org in dependencias %}
+                    <option value="{{ org.id }}" {% if organismo == org.id|stringformat:"s" %}selected{% endif %}>{{ org.nombre }}</option>
+                    {% endfor %}
                 </select>
             </div>
 
@@ -75,7 +78,7 @@
                 
                 <!-- Ícono en la esquina superior izquierda -->
                 <div class="icon-box position-absolute">
-                    <img class="icon" src="{{ servicio.icono }}">
+                    <img class="icon" src="https://oficialiamayor.sonora.gob.mx/api/icons/inscripcion-registro.svg">
                 </div>
 
                 <!-- Sección de etiquetas de estado y "Pago en línea" -->
@@ -104,19 +107,23 @@
                 <!-- Botones de acción -->
                 <div class="buttons row g-1 justify-content-center mt-3">
                     <div class="col-6">
-                        <a class="btn btn-outline-warning d-block rounded-pill" href="{{ servicio.url_info }}">
+                        <a class="btn btn-outline-warning d-block rounded-pill" href="{% url 'detalle_servicio' servicio.id %}">
                             Ver más
                         </a>
                     </div>
+                    {% if servicio.url_tramite %}
                     <div class="col-6">
                         <a class="btn btn-primary rounded-pill d-block" href="{{ servicio.url_tramite }}">
                             <img class="icono-llave" src="https://www.sonora.gob.mx/templates/shaper_helixultimate/images/logo-llave-sonora-icono-white.svg"> 
                             Iniciar trámite
                         </a>
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
+        {% empty %}
+        <p class="text-center text-muted">No se encontraron servicios.</p>
         {% endfor %}
     </div>
 
@@ -159,5 +166,3 @@
     
 </div>
 {% endblock content %}
-
-
