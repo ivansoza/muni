@@ -49,6 +49,10 @@ class Servicio(models.Model):
     organismo = models.ForeignKey(Dependencia, on_delete=models.PROTECT)
     creado_en = models.DateTimeField(auto_now_add=True)
 
+    # Nuevos campos para activar/desactivar las opciones
+    pago_en_linea = models.BooleanField(default=False)  # Activar o desactivar "Pago en Línea"
+    ahora_en_linea = models.BooleanField(default=False)  # Activar o desactivar "Ahora en Línea"
+
     def __str__(self):
         return self.titulo
     

@@ -7,13 +7,13 @@
 
 {% block content %}
 <div class="search-container">
-    <form method="GET" action="{% url 'home_servicios' %}">
+    <form method="GET" action="{% url 'homeServicios' %}">
         <div class="input-group">
             <input type="text" class="form-control search-input" name="q" placeholder="¿Qué servicio o trámite buscas?" value="{{ query }}">
             <button type="submit" class="btn search-btn">
                 <i class="fas fa-search"></i> Buscar
             </button>
-            <a href="{% url 'home_servicios' %}" class="btn reset-btn">
+            <a href="{% url 'homeServicios' %}" class="btn reset-btn">
                 <i class="fas fa-sync-alt"></i> Restablecer
             </a>
         </div>
@@ -88,13 +88,21 @@
                         +{{ servicio.estado }}
                     </div>
                     {% endif %}
+                    {% if servicio.pago_en_linea %}
                     <div class="col-4">
                         <div class="payment">Pago en <br><strong>línea</strong></div>
                     </div>
+                    {% endif %}
                     <div class="col-4">
+                    {% if servicio.ahora_en_linea %}
                         <div class="online">Ahora en <br><strong>línea</strong></div>
+                    {% endif %}
                     </div>
                 </div>
+
+                {% if not servicio.pago_en_linea and not servicio.ahora_en_linea %}
+                <div style="margin-bottom: 3em;"></div>
+                {% endif %}
 
                 <!-- Título y Descripción -->
                 <h4 class="fw-700 text-dark title">
