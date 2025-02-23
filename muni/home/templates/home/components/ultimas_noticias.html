@@ -1,63 +1,66 @@
 {% load static %}
 <div class="news-section">
     <div class="container">
-        <h2 class="news-title">Últimas noticias <span>| ¡Entérate de las últimas noticias de Apizaco!</span></h2>
+        <h2 class="news-title">Últimas noticias 
+            <span>| ¡Entérate de las últimas noticias de 
+                
+                {% if municipio.nombre_municipio %}
+                {{municipio.nombre_municipio}}
+
+                {% else %}
+                "Nombre de tu Municipio"
+                {% endif %}
+                
+                
+                !</span>
+        </h2>
+
         <div class="row g-4">
-            <!-- Tarjeta de noticia 1 -->
-            <div class="col-md-4">
-                <div class="news-card">
-                    <div class="news-image">
-                        <img src="https://www.mexicodesconocido.com.mx/wp-content/uploads/2021/06/basilica-de-apizaco-tlaxcala-wp-900x1258.jpeg" alt="Evento" class="img-fluid">
+            {% if ultimas_noticias %}
+                {% for noticia in ultimas_noticias %}
+                    <div class="col-md-4">
+                        <div class="news-card">
+                            <div class="news-image">
+                                <!-- Si la noticia tiene imagen, la muestra; en caso contrario una imagen por defecto -->
+                                {% if noticia.imagen %}
+                                    <img src="{{ noticia.imagen.url }}" alt="{{ noticia.titulo }}" class="img-fluid">
+                                {% else %}
+                                    <img src="{% static 'images/placeholder.jpg' %}" alt="Imagen no disponible" class="img-fluid">
+                                {% endif %}
+                            </div>
+                            <div class="news-content">
+                                <p class="news-date">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    Publicado el {{ noticia.fecha|date:"d/m/Y" }}
+                                </p>
+                                <h3 class="news-heading">
+                                    {{ noticia.titulo }}
+                                </h3>
+                                <a href="{% url "detalle_noticia" noticia.id%}" class="news-link">
+                                    <i class="fas fa-arrow-right"></i> Más información
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="news-content">
-                        <p class="news-date">
-                            <i class="fas fa-calendar-alt"></i> Publicado el 28/01/2025
-                        </p>
-                        <h3 class="news-heading">Busca Secretaría del Trabajo obtener el Distintivo APAM</h3>
-                        <a href="#" class="news-link">
-                            <i class="fas fa-arrow-right"></i> Más información
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <!-- Tarjeta de noticia 2 -->
-            <div class="col-md-4">
-                <div class="news-card">
-                    <div class="news-image">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/MainSquareApizaco.JPG/1920px-MainSquareApizaco.JPG" alt="Evento" class="img-fluid">
-                    </div>
-                    <div class="news-content">
-                        <p class="news-date">
-                            <i class="fas fa-calendar-alt"></i> Publicado el 28/01/2025
-                        </p>
-                        <h3 class="news-heading">Busca Secretaría del Trabajo obtener el Distintivo APAM</h3>
-                        <a href="#" class="news-link">
-                            <i class="fas fa-arrow-right"></i> Más información
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <!-- Tarjeta de noticia 3 -->
-            <div class="col-md-4">
-                <div class="news-card">
-                    <div class="news-image">
-                        <img src="https://despertadortlax.com/wp-content/uploads/2024/08/WhatsApp-Image-2024-08-27-at-10.19.01.jpeg" alt="Protección Civil" class="img-fluid">
-                    </div>
-                    <div class="news-content">
-                        <p class="news-date">
-                            <i class="fas fa-calendar-alt"></i> Publicado el 28/01/2025
-                        </p>
-                        <h3 class="news-heading">Reporta Protección Civil de NL saldo blanco durante frente frío número 24</h3>
-                        <a href="#" class="news-link">
-                            <i class="fas fa-arrow-right"></i> Más información
-                        </a>
+                {% endfor %}
+            {% else %}
+                <!-- Si no hay noticias, muestra un mensaje o tarjeta de 'no hay noticias' -->
+                <div class="col-12">
+                    <div class="alert alert-info text-center" role="alert">
+                        <strong>No hay noticias disponibles por el momento.</strong>
                     </div>
                 </div>
-            </div>
+            {% endif %}
         </div>
-        <!-- Botón -->
-        <div class="text-center mt-4">
-            <a href="#" class="btn-news">Continuar leyendo noticias</a>
-        </div>
+
+
+        {% if  ultimas_noticias %}
+            <div class="text-center mt-4">
+                <a href="{% url 'homeNoticias' %}" class="btn-news">Continuar leyendo noticias</a>
+            </div>  
+        {% endif %}
+
+
+
     </div>
 </div>

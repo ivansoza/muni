@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error 403 - Acceso denegado</title>
+    <style>
+        :root {
+            {% if municipio.colores.exists %}
+                --color-primario: {{ municipio.colores.first.color_primario_dark }};
+                --color-secundario: {{ municipio.colores.first.color_primario }};
+                --color-iconos: {{ municipio.colores.first.color_secundario }};
+                --color-primario-rgb: {{ municipio.colores.first.color_primario_dark_rgb }};
+                --color-secundario-rgb: {{ municipio.colores.first.color_primario_rgb }};
+            {% else %}
+                --color-primario: #1e4765;
+                --color-secundario: #295E84;
+                --color-iconos: rgb(109, 109, 109);
+                --color-primario-rgb: 30, 71, 101;
+                --color-secundario-rgb: 41, 94, 132;
+            {% endif %}
+            
+            --color-gradiente: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-gradiente);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .error-container {
+            max-width: 800px;
+            color: white;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .error-icon {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 2rem;
+            fill: var(--color-iconos);
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #fff 30%, var(--color-iconos));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .home-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: rgba(var(--color-primario-rgb), 0.9);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .home-link:hover {
+            background-color: rgba(var(--color-secundario-rgb), 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .error-icon { width: 100px; height: 100px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <svg class="error-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M12 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6-8h-1V7a5 5 0 0 0-10 0v2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2zm-8-2a3 3 0 0 1 6 0v2H10V7z"/>
+        </svg>
+        <h1>403</h1>
+        <p>¡Lo sentimos! No tienes permiso para acceder a este recurso. Si crees que esto es un error, por favor contacta al administrador.</p>
+        <a href="/" class="home-link">
+            <span>Volver al inicio</span>
+        </a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error 500 - Error Interno del Servidor</title>
+    <style>
+        :root {
+            {% if municipio.colores.exists %}
+                --color-primario: {{ municipio.colores.first.color_primario_dark }};
+                --color-secundario: {{ municipio.colores.first.color_primario }};
+                --color-iconos: {{ municipio.colores.first.color_secundario }};
+                --color-primario-rgb: {{ municipio.colores.first.color_primario_dark_rgb }};
+                --color-secundario-rgb: {{ municipio.colores.first.color_primario_rgb }};
+            {% else %}
+                --color-primario: #1e4765;
+                --color-secundario: #295E84;
+                --color-iconos: rgb(109, 109, 109);
+                --color-primario-rgb: 30, 71, 101;
+                --color-secundario-rgb: 41, 94, 132;
+            {% endif %}
+            
+            --color-gradiente: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-gradiente);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .error-container {
+            max-width: 800px;
+            color: white;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .error-icon {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 2rem;
+            fill: var(--color-iconos);
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #fff 30%, var(--color-iconos));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .home-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: rgba(var(--color-primario-rgb), 0.9);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .home-link:hover {
+            background-color: rgba(var(--color-secundario-rgb), 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .error-icon { width: 100px; height: 100px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <svg class="error-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M19.43 12.98c.04-.32.07-.65.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46a.5.5 0 0 0-.61-.22l-2.49 1a7.003 7.003 0 0 0-1.69-.98L14.5 2.5a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 0-.5.5l-.38 2.58a7.003 7.003 0 0 0-1.69.98l-2.49-1a.5.5 0 0 0-.61.22l-2 3.46a.5.5 0 0 0 .12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98L2.57 14.63a.5.5 0 0 0-.12.64l2 3.46a.5.5 0 0 0 .61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.58a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5l.38-2.58c.61-.25 1.17-.58 1.69-.98l2.49 1a.5.5 0 0 0 .61-.22l2-3.46a.5.5 0 0 0-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5S10.07 8.5 12 8.5s3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
+        </svg>
+        <h1>500</h1>
+        <p>¡Lo sentimos! Ha ocurrido un error interno en el servidor. Por favor, inténtalo de nuevo más tarde o contacta al soporte si el problema persiste.</p>
+        <a href="/" class="home-link">
+            <span>Volver al inicio</span>
+        </a>
+    </div>
+</body>
+</html>

@@ -33,7 +33,8 @@
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/prism.css' %}">
     <!-- Plugins css Ends-->
-
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatable-extension.css' %}">
     {% block css %}  {% endblock %}
 
     <!-- Bootstrap css-->
@@ -135,6 +136,38 @@
     <div class="loader-wrapper">
       <div class="loader"></div>
     </div>
+
+
+
+    <style>
+      .loader2 {
+        width: 40px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: #f03355;
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        animation: l1 2s infinite cubic-bezier(0.3, 1, 0, 1);
+        position: fixed;      /* para que permanezca en pantalla */
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+      }
+      @keyframes l1 {
+        33%  {
+          border-radius: 0;
+          background: #514b82;
+          clip-path: polygon(0 0,100% 0,100% 100%,0 100%);
+        }
+        66%  {
+          border-radius: 0;
+          background: #ffa516;
+          clip-path: polygon(50% 0,50% 0,100% 100%,0 100%);
+        }
+      }
+      
+    </style>
+    <div id="loader2" class="loader2" style="display:none;"></div>
+
     <!-- Loader ends-->
     <!-- tap on top starts-->
     <div class="tap-top"><i data-feather="chevrons-up"></i></div>
@@ -189,11 +222,82 @@
     <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
     <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
     <!-- Plugins JS Ends-->
-
+    <script src="{% static 'assets/js/datatable/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatable-extension/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatable-extension/jszip.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatable-extension/buttons.colVis.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatable-extension/pdfmake.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatable-extension/vfs_fonts.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatable-extension/dataTables.autoFill.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatable-extension/dataTables.select.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatable-extension/buttons.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatable-extension/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatable-extension/buttons.print.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatable-extension/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatable-extension/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatable-extension/responsive.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatable-extension/dataTables.keyTable.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatable-extension/dataTables.colReorder.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatable-extension/dataTables.fixedHeader.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatable-extension/dataTables.rowReorder.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatable-extension/dataTables.scroller.min.js' %}"></script>
+    <script src="{% static 'assets/js/datatable/datatable-extension/custom.js' %}"></script>
     {% block scriptcontent %} {% endblock  %}
 
     <!-- Theme js-->
     <script src="{% static 'assets/js/script.js' %}"></script>
-
+    <script>
+      $("#basic-2").DataTable({
+        paging: true,
+        lengthMenu: [5, 10, 25, 50, 100],
+        pageLength: 10,
+        lengthChange: true,
+        autoWidth: false,
+        searching: true,
+        bInfo: true,
+        bSort: true,
+        order: [[3, 'desc']], // Ordenar por la primera columna (índice 0) de forma descendente ('desc')
+        dom: 'Bfrltip',
+        buttons: [
+            {
+                extend: 'print',
+                text: '<i class="icofont icofont-printer"></i>',
+                titleAttr: 'Imprimir'
+            },
+            {
+                extend: 'excelHtml5',
+                text: '<i class="icofont icofont-file-excel"></i>',
+                titleAttr: 'Exportar a Excel'
+            },
+            {
+                extend: 'pdfHtml5',
+                text: '<i class="icofont icofont-file-pdf"></i>',
+                titleAttr: 'Exportar a PDF'
+            }
+        ],
+        language: {
+            sProcessing: "Procesando...",
+            sLengthMenu: "Mostrar _MENU_ registros",
+            sZeroRecords: "No se encontraron resultados",
+            sEmptyTable: "Ningún dato disponible en esta tabla",
+            sInfo: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            sInfoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
+            sInfoFiltered: "(filtrado de un total de _MAX_ registros)",
+            sSearch: "Buscar:",
+            sInfoThousands: ",",
+            sLoadingRecords: "Cargando...",
+            oPaginate: {
+                sFirst: "Primero",
+                sLast: "Último",
+                sNext: "Siguiente",
+                sPrevious: "Anterior"
+            },
+            oAria: {
+                sSortAscending: ": Activar para ordenar la columna de manera ascendente",
+                sSortDescending: ": Activar para ordenar la columna de manera descendente"
+            }
+        }
+    });
+    </script>
   </body>
 </html>

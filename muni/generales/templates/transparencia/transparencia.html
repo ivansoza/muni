@@ -1,0 +1,245 @@
+{% extends "baseTemplate.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.1/dist/sweetalert2.min.css" rel="stylesheet">
+
+<style>
+    .dashboard {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+        gap: 3rem !important;
+        width: 100% !important;
+        max-width: 1200px !important;
+        margin-bottom: 60px;
+    }
+    
+    .cardash {
+        background: white !important;
+        border-radius: 1rem !important;
+        padding: 1.5rem !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px -20px rgba(0, 0, 0, 0.1) !important;
+        border: 1px solid rgba(241, 245, 249, 0.8) !important;
+        transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+    
+    .cardash:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 25px 50px -12px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .cardash::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 4px !important;
+        background: linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #ec4899 100%) !important;
+    }
+    
+    .cardash-header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        margin-bottom: 1.5rem !important;
+    }
+    
+    .cardash-title {
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        color: #64748b !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+    }
+    
+    .cardash-icon {
+        width: 48px !important;
+        height: 48px !important;
+        border-radius: 0.75rem !important;
+        background: #f1f5f9 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all 0.3s ease !important;
+        font-size: 1.5rem !important;
+    }
+    
+    .cardash-content {
+        max-height: 100px; /* Ajusta la altura según lo que necesites */
+        overflow-y: auto; /* Activa el scroll si el contenido excede la altura */
+        padding-right: 8px; /* Espacio para evitar que el scroll tape el contenido */
+        padding-top: 4px; /* Añadir un pequeño padding superior */
+        scroll-padding-top: 10px; /* Ayuda a que el primer elemento no quede oculto */
+    }
+
+    /* Fondo verde o rojo para los campos Ejercicios y Meses */
+    .status-yes {
+        background-color: #4CAF50; /* Verde */
+        color: white;
+        border-radius: 10px;
+        padding: 5px 10px;
+    }
+
+    .status-no {
+        background-color: #F44336; /* Rojo */
+        color: white;
+        border-radius: 10px;
+        padding: 5px 10px;
+    }
+    .btn-add {
+        display: block;
+        margin-bottom: 20px;
+        background-color: #3E688C;
+        color: white;
+        border-radius: 10px;
+        padding: 12px 20px;
+        font-size: 16px;
+        border: none;
+        width: 17%;
+    }
+
+    .btn-add:hover {
+        background-color: rgb(20, 102, 149);
+        color: white;
+    }
+
+</style>
+
+<div class="container-fluid">
+    <div class="dashboard">
+        <!-- Tarjeta: Total de Secciones -->
+        <div class="cardash">
+            <div class="cardash-header">
+                <span class="cardash-title">Total de Secciones</span>
+                <div class="cardash-icon">
+                    <span class="emoji-transition">📁</span>
+                </div>
+            </div>
+            <div class="cardash-content" style="font-size: 30px;">{{ total_secciones }}</div>
+            <h3 style="color: #64748b;">Secciones creadas en el sistema</h3>
+        </div>
+    
+        <!-- Tarjeta: Total de Documentos -->
+        <div class="cardash">
+            <div class="cardash-header">
+                <span class="cardash-title">Total de Documentos</span>
+                <div class="cardash-icon">
+                    <span class="emoji-transition">📄</span>
+                </div>
+            </div>
+            <div class="cardash-content" style="font-size: 30px;">{{ total_documentos }}</div>
+            <h3 style="color: #64748b;">Documentos registrados hasta la fecha</h3>
+        </div>
+    
+        <!-- Tarjeta: Último Documento -->
+        <div class="cardash">
+            <div class="cardash-header">
+                <span class="cardash-title">Último Documento Registrado</span>
+                <div class="cardash-icon">
+                    <span class="emoji-transition">🕒</span>
+                </div>
+            </div>
+            <div class="cardash-content" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                <span style="font-size: 14px; font-weight: 600; color: #64748b;">{{ ultima_documento.titulo }}</span>
+                <span class="time-subtext" style="font-size: 12px; color: #94a3b8; margin-top: 4px;">
+                    {{ ultima_documento.fecha_publicacion|date:"d/m/Y" }}
+                </span>
+            </div>
+        </div>
+    
+        <!-- Tarjeta: Documentos por Sección -->
+        
+    </div>
+
+    <a href="{% url 'crear_seccion' %}" class="btn btn-add" style="margin-bottom: 20px; border-radius: 10px; padding: 12px 20px; font-size: 16px;"><i class="fa-solid fa-laptop-file"></i> Agregar Sección</a>
+
+    <div class="col-sm-12" id='colTabla'>
+        <div class="card">
+            <div class="card-header pb-0 card-no-border">
+                <h3 class="mb-3">Administración de Transparencia</h3>
+            </div>
+            <div class="card-body">
+                <div class="dt-ext table-responsive theme-scrollbar">
+                    <table class="display" id="basic-2">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Ejercicios</th>
+                                <th>Meses</th>
+                                <th style="width: 110px;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for seccion in secciones %}
+                            <tr>
+                                <td>{{ seccion.nombre }}</td>
+                                <td>{{ seccion.descripcion }}</td>
+                                <td style="text-align: center;">
+                                    <span class="{% if seccion.usa_ejercicios %}status-yes{% else %}status-no{% endif %}">
+                                        {% if seccion.usa_ejercicios %}Sí{% else %}No{% endif %}
+                                    </span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <span class="{% if seccion.usa_meses %}status-yes{% else %}status-no{% endif %}">
+                                        {% if seccion.usa_meses %}Sí{% else %}No{% endif %}
+                                    </span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <a href="{% url "ejercicio_list" seccion.id %}" class="btn btn-sm btn-primary rounded-circle p-2" title="Gestionar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url "editar_seccion" seccion.id %}" class="btn btn-warning btn-sm rounded-circle p-2" title="Editar">
+                                        <i class="fa-solid fa-file-pen"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-danger btn-sm rounded-circle p-2" title="Eliminar" onclick="confirmarEliminacion({{ seccion.pk }})">
+                                        <i class="fa-solid fa-trash-can"></i>                                    
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function confirmarEliminacion(seccionId) {
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: "Esta acción no se puede deshacer.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/admin/eliminar_seccion/${seccionId}/`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        Swal.fire("Eliminado", "La sección ha sido eliminada.", "success")
+                        .then(() => location.reload());
+                    } else {
+                        Swal.fire("Error", "No se pudo eliminar la sección.", "error");
+                    }
+                });
+            }
+        });
+    }
+    </script>
+    
+{% endblock %}

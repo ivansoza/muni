@@ -1,1 +1,250 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+        :root {
+        --primary-color: #2A2E8D;
+        --secondary-color: #4CAF50;
+        --accent-color: #FFC107;
+        --text-dark: #2D3748;
+        --text-light: #718096;
+        --transition-duration: 0.4s;
+    }
+    
+    /* Contenedor que usaremos para distribuir las cards */
+    .cards-container {
+        display: grid;
+        grid-template-columns: 1fr; /* Por defecto, 1 columna */
+        gap: 2rem; /* Espacio entre las cards */
+        max-width: 1400px;
+        margin: 0 auto; /* Centrar el contenedor */
+        padding: 2rem;
+    }
+
+    /* A partir de 576px, mostramos 2 columnas */
+    @media (min-width: 576px) {
+        .cards-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    /* A partir de 768px, mostramos 3 columnas */
+    @media (min-width: 768px) {
+        .cards-container {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    /* A partir de 992px, mostramos 4 columnas */
+    @media (min-width: 992px) {
+        .cards-container {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    .card {
+        background: #FFFFFF;
+        border-radius: 30px 10px 30px 10px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform var(--transition-duration) cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                    box-shadow var(--transition-duration) ease;
+        position: relative;
+        perspective: 1000px;
+    }
+
+    .card:hover {
+        transform: translateY(-10px) rotateX(5deg) rotateY(-5deg);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Definimos dimensiones fijas para la imagen de fondo */
+    .card-image {
+        width: 100%;
+        height: 260px; /* Altura fija */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        position: relative;
+        clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%);
+    }
+
+    .card-content {
+        padding: 2rem 2rem 2.5rem;
+        text-align: center;
+        position: relative;
+    }
+
+    .card-title {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-bottom: 1.2rem;
+        line-height: 1.2;
+        font-family: 'Poppins', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: -0.5px;
+    }
+
+    .card-description {
+        color: var(--text-light);
+        font-size: 1.05rem;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+        padding: 0 1rem;
+    }
+
+    .card-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-secundario) 100%);
+        color: white !important;
+        padding: 15px 35px;
+        border-radius: 15px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: all 0.4s ease;
+        border: none;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(42, 46, 141, 0.2);
+    }
+    .card-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(120deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.3),
+                    transparent);
+        transition: 0.6s;
+    }
+
+    .card-button:hover::before {
+        left: 100%;
+    }
+
+    .card-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-deco {
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        background: rgba(76, 175, 80, 0.05);
+        border-radius: 50%;
+        bottom: -30px;
+        right: -30px;
+        z-index: 0;
+    }
+
+    @media (max-width: 480px) {
+        .card {
+            margin: 0 auto;
+        }
+        .card-title {
+            font-size: 1.5rem;
+        }
+        .card-image {
+            height: 220px;
+        }
+    }
+
+
+    .container {
+        max-width: 1300px;
+        margin: 0 auto;
+    }
+    .headers {
+        background: linear-gradient(45deg, var(--color-primario),  var(--color-secundario)); /* Degradado de colores llamativos */
+        padding: 40px 20px; /* Espaciado adecuado */
+        text-align: center; /* Centrar los textos */
+        border-radius: 10px; /* Bordes redondeados */
+        margin-bottom: 40px; /* Separación con la siguiente sección */
+        color: #fff; /* Color blanco para el texto */
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    }
+    
+    .headers h2 {
+        font-size: 38px; /* Título más grande */
+        font-weight: bold;
+        letter-spacing: 1px; /* Un poco de espacio entre las letras */
+        margin-bottom: 15px;
+        position: relative;
+    }
+    
+    .headers h2::after {
+        content: ''; /* Línea decorativa debajo del título */
+        display: block;
+        width: 60px; /* Ancho de la línea */
+        height: 3px; /* Grosor de la línea */
+        background-color: #fff; /* Color blanco */
+        margin: 10px auto; /* Centrado de la línea */
+    }
+    
+    .headers h5 {
+        font-size: 16px; /* Texto más pequeño */
+        max-width: 800px; /* Limitar el ancho del texto */
+        margin: 0 auto; /* Centrar el texto */
+        line-height: 1.6; /* Espaciado entre las líneas */
+        opacity: 0.9; /* Opacidad más baja para dar un toque elegante */
+    }
+    @media (max-width: 768px) {
+        .headers {
+            padding: 30px 15px; /* Ajustar el espaciado en pantallas más pequeñas */
+        }
+    
+        .headers h2 {
+            font-size: 28px; /* Reducir tamaño del título en dispositivos pequeños */
+        }
+    
+        .headers h5 {
+            font-size: 14px; /* Reducir tamaño del texto en móviles */
+        }
+    }
+</style>
+
+<div class="container">
+    <!-- Sección de Noticias Destacadas -->
+    <div class="headers">
+        <h2>Transparencia</h2>
+        <h5>Accede a los reportes y documentos relacionados con la gestión pública de nuestro municipio. Aquí podrás conocer más sobre el uso de los recursos, proyectos en curso y los avances en el cumplimiento de nuestras obligaciones.</h5>
+    </div>
+    <div class="cards-container">
+        {% for seccion in secciones %}
+        <div class="card mb-4 shadow-sm">
+            {% if seccion.imagen %}
+            <div class="card-image" style="background-image: url('{{ seccion.imagen.url }}');"></div>
+            {% else %}
+            <div class="card-image" style="background-image: url('ruta_a_imagen_predeterminada.jpg');"></div>
+            {% endif %}
+            
+            <div class="card-content">
+                <div class="card-deco"></div>
+                <h2 class="card-title">{{ seccion.nombre }}</h2>
+                <a href="{% url 'lista_ejercicios' seccion.id %}" class="card-button">
+                Documentación
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-badge-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 12px;">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M13 7h-6l4 5l-4 5h6l4 -5z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <p>No hay secciones disponibles.</p>
+        {% endfor %}
+    </div>
+
+</div>
+
+
+
+{% endblock %}

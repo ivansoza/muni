@@ -1,0 +1,475 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2-beta3/css/all.min.css" rel="stylesheet">
+
+<style>
+    /* Diseño general */
+    .contenedor-detalle-noticia {
+        display: flex;
+        justify-content: space-between;
+        margin: 10px auto;
+        max-width: 90%;
+        padding: 30px;
+        flex-wrap: wrap;
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Columna de imagen */
+    .columna-izquierda {
+        width: 100%;
+        max-width: 40%;
+        margin-right: 20px;
+        text-align: start;
+        position: relative;
+        /* Necesario para posicionar la etiqueta */
+    }
+
+    .imagen-noticia {
+        width: 100%;
+        height: auto;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Etiqueta de fecha (burbuja) */
+    .fecha-noticia {
+        position: absolute;
+        top: 10px;
+        right: -40px;
+        background: var(--color-secundario);
+        ;
+        /* Color verde agua */
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: bold;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        transform: translateY(-10px);
+        /* Sutil desplazamiento hacia arriba */
+    }
+
+    .informacion-noticia {
+        margin-top: 15px;
+        font-size: 16px;
+        color: #777;
+
+    }
+
+    .informacion-noticia p {
+        margin: 5px 0;
+    }
+
+    .informacion-noticia i {
+        margin-right: 8px;
+        /* Espaciado entre el icono y el texto */
+    }
+
+    /* Columna de texto */
+    .columna-derecha {
+        width: 100%;
+        max-width: 55%;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+    }
+
+    .columna-derecha h1 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #2e2e2e;
+        margin-bottom: 20px;
+    }
+
+    .columna-derecha p {
+        font-size: 15px;
+        line-height: 1.8;
+        color: #555;
+        margin-bottom: 30px;
+        text-align: justify;
+    }
+
+    /* Galería de imágenes */
+    /* Galería de imágenes */
+    .galeria-noticia {
+        margin-top: 40px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin-left: 30px;
+        /* Añadir margen en el lado izquierdo */
+        margin-right: 30px;
+        /* Añadir margen en el lado derecho */
+        padding-left: 40px;
+        /* Alinear con el contenido de la noticia */
+        padding-right: 40px;
+        /* Alinear con el contenido de la noticia */
+    }
+
+    .galeria-noticia h2 {
+        font-size: 24px;
+        color: #2e2e2e;
+        margin-bottom: 20px;
+        font-weight: 700;
+    }
+
+    .imagenes-galeria {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        /* Espaciado entre imágenes */
+        justify-content: space-between;
+    }
+
+    .item-galeria {
+        width: 23%;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        position: relative;
+        transition: all 0.3s ease-in-out;
+        margin-bottom: 20px;
+    }
+
+    .item-galeria:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .item-galeria img {
+        width: 100%;
+        height: 250px;
+        /* Mantener una altura uniforme para todas las imágenes */
+        object-fit: cover;
+        /* Asegura que las imágenes cubran el área sin perder su proporción */
+        border-radius: 12px;
+    }
+
+    .item-galeria .icon-plus {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 40px;
+        color: white;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .item-galeria:hover .icon-plus {
+        opacity: 1;
+    }
+
+    .item-galeria:hover {
+        background-color: rgba(0, 0, 0, 0.7);
+        /* Fondo oscuro */
+    }
+
+    /* Modal */
+    .modal {
+        display: none;
+        /* Inicialmente oculto */
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.7);
+        /* Fondo oscuro */
+        padding-top: 50px;
+        transition: all 0.3s ease-in-out;
+        /* Aceleramos la apertura */
+    }
+
+    /* Eliminar el fondo blanco, mostrar solo la imagen */
+    .modal-content {
+        margin: auto;
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        /* Se aumenta el tamaño de la imagen */
+        border: none;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    /* Eliminar bordes y fondo en la imagen */
+    .modal-body {
+        text-align: center;
+    }
+
+    .modal-body img {
+        width: 100%;
+        max-height: 100vh;
+        /* Ajuste para no hacer la imagen demasiado grande */
+        margin: 0 auto;
+        object-fit: contain;
+        /* Mantener las proporciones de la imagen */
+    }
+
+    /* Estilo del botón de cierre */
+    .close {
+        position: absolute;
+        top: 15px;
+        /* Ajustamos la posición */
+        right: 35px;
+        font-size: 25px;
+        font-weight: bold;
+        color: white;
+        transition: 0.3s;
+        z-index: 10000;
+        /* Para asegurarnos de que la 'X' esté por encima de la imagen */
+    }
+
+    /* Asegurarse de que el botón 'X' se vea en blanco */
+    .btn-close {
+
+        color: white;
+    }
+
+    /* Cambiar el color cuando se pasa el mouse por encima */
+    .close:hover,
+    .close:focus,
+    .btn-close:hover,
+    .btn-close:focus {
+        color: #bbb;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+
+    /* Diseño responsivo */
+    @media (max-width: 768px) {
+        .contenedor-detalle-noticia {
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .columna-izquierda,
+        .columna-derecha {
+            max-width: 100%;
+            width: 100%;
+        }
+
+        .imagenes-galeria {
+            flex-direction: column;
+            width: 90%;
+            /* Establecemos el ancho al 90% en pantallas pequeñas */
+            margin: 0 auto;
+        }
+
+        .item-galeria {
+            width: 90%;
+            /* Hacemos que las imágenes sean más grandes en pantallas pequeñas */
+            margin: 10px auto;
+        }
+
+        .modal-body img {
+            max-height: 80vh;
+            /* Para evitar que la imagen se haga demasiado grande en pantallas pequeñas */
+        }
+    }
+    .compartir-redes {
+    margin-top: 30px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 13px;
+    color: #7d7d7d;
+}
+
+.compartir-redes a {
+    margin-right: 15px;
+    text-decoration: none;
+    font-size: 25px;  /* Ajusta el tamaño del icono */
+    transition: color 0.3s ease;
+}
+
+/* Colores para los iconos según la red social */
+.compartir-redes a:nth-child(1) i {
+    color: #3b5998; /* Facebook color */
+}
+
+.compartir-redes a:nth-child(3) i {
+    color: #25d366; /* X (anteriormente Twitter) color */
+}
+
+.compartir-redes a:nth-child(2) i {
+    color: #00aced; /* WhatsApp color */
+}
+
+/* Efecto hover */
+.compartir-redes a:hover i {
+    color: #333; /* Cambia a un color oscuro cuando se pasa el ratón */
+}
+/* Asegura que el contenido de CKEditor se vea bien */
+.contenido-noticia {
+    font-size: 6px;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Estilos para las tablas generadas por CKEditor */
+.contenido-noticia table {
+    width: 100%;  /* Hace que las tablas ocupen el ancho disponible */
+    border-collapse: collapse; /* Elimina espacios entre bordes */
+    margin: 20px 0;  /* Espaciado arriba y abajo */
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+.contenido-noticia th, 
+.contenido-noticia td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+/* Encabezados de tabla */
+.contenido-noticia th {
+    background-color: #f4f4f4;
+}
+
+/* Estilos para citas */
+.contenido-noticia blockquote {
+    border-left: 4px solid var(--color-secundario);
+    padding: 10px 20px;
+    margin: 20px 0;
+    background: #f8f9fa;
+    font-style: italic;
+}
+
+/* Listas dentro del contenido */
+.contenido-noticia ul, 
+.contenido-noticia ol {
+    margin: 15px 0;
+    padding-left: 20px;
+}
+
+/* Imágenes dentro del contenido */
+.contenido-noticia img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 10px auto;
+}
+.no-imagenes-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px dashed #ccc;
+    color: #666;
+    font-size: 16px;
+    text-align: center;
+    width: 100%;
+    min-height: 150px;
+}
+.no-imagenes-card i {
+    margin-right: 8px;
+    color: #aaa;
+}
+
+
+
+</style>
+
+<div class="contenedor-detalle-noticia">
+    <div class="columna-izquierda">
+        <img src="{{ noticia.imagen.url }}" alt="Imagen de portada" class="imagen-noticia">
+        <span class="fecha-noticia">{{ noticia.fecha }}</span> <!-- Etiqueta de fecha -->
+        <div class="informacion-noticia">
+            <p class="autor-noticia">
+                <strong style="color: var(--color-primario);">
+                    <i class="fas fa-user"></i> <!-- Icono de usuario -->
+                    Autor:
+                </strong>
+                {{ noticia.autor }}
+            </p>
+            <p class="categoria-noticia">
+                <strong style="color: var(--color-primario);">
+                    <i class="fas fa-tags"></i> <!-- Icono de etiqueta -->
+                    Categoría:
+                </strong>
+                {{ noticia.categoria }}
+            </p>
+        </div>
+    
+        
+    </div>
+    <div class="columna-derecha">
+        <h1>{{ noticia.titulo }}</h1>
+        <div class="contenido-noticia">
+            {{ noticia.contenido|safe }}  
+        </div>
+        <div class="compartir-redes">
+            <h5>Comparte esta noticia:</h5>
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank">
+                <i class="fab fa-facebook-square"></i>
+            </a>
+            <a href="https://api.whatsapp.com/send?text={{ request.build_absolute_uri }}" target="_blank">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+            <a href="https://x.com/intent/tweet?url={{ request.build_absolute_uri }}" target="_blank">
+                <i class="fab fa-twitter"></i>            
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+
+<!-- Galería de imágenes -->
+<div class="galeria-noticia">
+    <h2><strong style="color: var(--color-primario);">Galería |</strong> Imágenes relacionadas con la publicación</h2>
+    <div class="imagenes-galeria">
+        {% if noticia.imagenes_galeria.all %}
+            {% for imagen in noticia.imagenes_galeria.all %}
+            <div class="item-galeria" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                onclick="setModalImage('{{ imagen.imagen.url }}')">
+                <img src="{{ imagen.imagen.url }}" alt="Imagen de la noticia">
+                <i class="fas fa-plus icon-plus"></i> <!-- Icono de + -->
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-imagenes-card">
+                <p><i class="fas fa-image"></i> No hay imágenes disponibles para esta noticia.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+
+
+<!-- Modal de Bootstrap -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="close">
+                <button type="button" class="btn-close ll" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <br>
+            <div class="modal-body">
+                <img id="modalImage" src="" alt="Imagen en grande" class="w-100">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Carga de Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+{% endblock %}
+{% block extra_js %}
+<script>
+    // Función para cargar la imagen en el modal
+    function setModalImage(imageUrl) {
+        var modalImage = document.getElementById('modalImage');
+        modalImage.src = imageUrl;
+    }
+</script>
+{% endblock %}

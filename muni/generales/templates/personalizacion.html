@@ -167,6 +167,29 @@
     box-shadow: 0 5px 15px rgba(255, 68, 68, 0.3);
 }
 
+.save-btn {
+    background: linear-gradient(135deg, #9add96 0%, #5aa256 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(89, 144, 74, 0.3);
+}
+
 /* Iconos (requiere Font Awesome) */
 .fas {
     font-size: 1.1rem;
@@ -243,7 +266,7 @@
         justify-content: center;
         width: 50px;
         height: 50px;
-        background-color: var(--primary-color, #2196F3); /* Usamos el color primario */
+        background-color: var(--secondary-color, #2196F3); /* Usamos el color primario */
         color: white;
         border-radius: 25px 0 0 25px;
         text-decoration: none;
@@ -357,6 +380,105 @@
     }
 
 
+    /* Ajustes Responsivos para móviles (max-width: 768px) */
+@media (max-width: 768px) {
+
+/* 1. Para que los paneles se apilen en lugar de ir lado a lado */
+.container-control {
+    grid-template-columns: 1fr; 
+    /* Con esto .controls y .preview se colocan uno encima del otro */
+}
+
+/* 2. Para que cada bloque de la sección de controles se vea en fila separada
+   (si deseas dejar cada .control-group completo en una sola columna) */
+.control-group {
+    margin-bottom: 2rem; 
+    /* Ajuste de margen si lo deseas */
+}
+
+/* 3. Para que en la sección de colores, cada 'color-item' se muestre en una fila */
+.color-grid {
+    grid-template-columns: 1fr;
+}
+
+/* 4. Para la sección de tipografías, si quieres que cada font-card
+   se muestre uno debajo de otro también en una sola columna */
+.font-grid {
+    grid-template-columns: 1fr;
+}
+
+/* Opcionalmente, podrías agregar algo de espacio entre .controls y .preview */
+.controls {
+    margin-bottom: 2rem;
+}
+}
+
+/* Estilos para el selector de municipio */
+.municipio-selector {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    max-width: 300px;
+}
+
+.municipio-selector h2 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.custom-dropdown {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fff;
+    appearance: none;
+    font-size: 1rem;
+    color: #444;
+    transition: all 0.3s ease;
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+}
+
+.custom-dropdown:hover {
+    border-color: #2196F3;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+}
+
+.custom-dropdown:focus {
+    outline: none;
+    border-color: #2196F3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.select-wrapper {
+    position: relative;
+}
+
+/* Estilo para las opciones */
+.custom-dropdown option {
+    padding: 12px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    transition: background 0.3s ease;
+}
+
+.custom-dropdown option:hover {
+    background: #f5f5f5 !important;
+}
+
+.custom-dropdown option:checked {
+    background: #2196F3 linear-gradient(0deg, #2196F3 0%, #2196F3 100%);
+    color: #fff;
+}
 </style>
 {% endblock css %}
 
@@ -364,193 +486,343 @@
 
 <div class="container-fluid">
 
-<div class="container-control">
-    <!-- PANEL DE CONTROLES -->
-    <div class="controls">
-        <!-- Control de Colores -->
-        <div class="control-group">
-            <h2><i class="fa fa-paint-brush"></i> Esquema de Color</h2>
-            <div class="color-grid">
-                <div class="color-item">
-                    <input type="color" id="primaryColor" value="#2196F3">
-                    <label for="primaryColor">Primario</label>
-                    <div class="color-preview"></div>
-                </div>
-                <div class="color-item">
-                    <input type="color" id="secondaryColor" value="#FF9800">
-                    <label for="secondaryColor">Secundario</label>
-                    <div class="color-preview"></div>
-                </div>
-                <div class="color-item">
-                    <input type="color" id="tertiaryColor" value="#4CAF50">
-                    <label for="tertiaryColor">Terciario</label>
-                    <div class="color-preview"></div>
-                </div>
-            </div>
+
+    <div class="control-group municipio-selector">
+        <h2><i class="fa fa-map-marker"></i> Seleccionar Municipio</h2>
+        <div class="select-wrapper">
+            <select id="municipioSelect" class="custom-dropdown">
+                {% for municipio in municipios %}
+                    <option value="{{ municipio.id }}">{{ municipio.nombre }}</option>
+                {% endfor %}
+            </select>
         </div>
-    
-        <!-- Control de Tipografías -->
-        <div class="control-group">
-            <h2><i class="fa fa-font"></i> Sistema Tipográfico</h2>
-            <div class="font-grid">
-                <div class="font-card">
-                    <label for="fontPrimary">Títulos</label>
-                    <div class="select-wrapper">
-                        <select id="fontPrimary" class="font-dropdown">
-                            <option value="Arial">Arial</option>
-                            <option value="Roboto">Roboto</option>
-                            <option value="Montserrat">Montserrat</option>
-                            <option value="Poppins">Poppins</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="font-card">
-                    <label for="fontSecondary">Subtítulos</label>
-                    <div class="select-wrapper">
-                        <select id="fontSecondary" class="font-dropdown">
-                            <option value="Georgia">Georgia</option>
-                            <option value="Merriweather">Merriweather</option>
-                            <option value="Playfair Display">Playfair Display</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="font-card">
-                    <label for="fontTertiary">Cuerpo</label>
-                    <div class="select-wrapper">
-                        <select id="fontTertiary" class="font-dropdown">
-                            <option value="Courier New">Courier New</option>
-                            <option value="Open Sans">Open Sans</option>
-                            <option value="Lato">Lato</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-    
-        <!-- Botón para Resetear Estilos -->
-        <button class="reset-btn" onclick="resetStyles()">
-            <i class="fa fa-undo"></i> Restablecer Valores
-        </button>
     </div>
 
-    <!-- VISTA PREVIA -->
-    <div class="preview">
-        <!-- Iconos Flotantes - Redes Sociales -->
-        <div class="social-icons-float">
-            <a href="#"><i class="fa fa-facebook-f"></i></a>
-            <a href="#" ><i class="fa fa-twitter"></i></a>
-            <a href="#" ><i class="fa fa-instagram"></i></a>
-            <a href="#" ><i class="fa fa-youtube"></i></a>
-        </div>
-
-        <!-- NAVBAR -->
-        <div class="navbar-preview">
-            <div class="logo">Logo Municipal</div>
-            <div class="nav-links">
-                <a href="">Inicio</a>
-                <a href="">Servicio</a>
-                <a href="">Noticias</a>
+    <div class="container-control">
+        <!-- PANEL DE CONTROLES -->
+        <div class="controls">
+            <!-- Control de Colores -->
+            <div class="control-group">
+                <h2><i class="fa fa-paint-brush"></i> Esquema de Color</h2>
+                <div class="color-grid">
+                    <div class="color-item">
+                        <input type="color" id="primaryColor" value="#2196F3">
+                        <label for="primaryColor">Primario</label>
+                        <div class="color-preview"></div>
+                    </div>
+                    <div class="color-item">
+                        <input type="color" id="secondaryColor" value="#FF9800">
+                        <label for="secondaryColor">Secundario</label>
+                        <div class="color-preview"></div>
+                    </div>
+                    <!-- Se elimina el color terciario -->
+                </div>
             </div>
-        </div>
-
-
-        <!-- CONTENIDO PRINCIPAL -->
-        <div class="content-area">
-            <section class="alcalde-section ">
-                <div class="content-container">
-                    <div class="row align-items-center">
-                        <!-- Texto e información -->
-                        <div class="col-md-8">
-                            <div class="mb-3">
-                                <span class="section-subtitle">Por amor a Apizaco</span>
-                            </div>
-                            <h2 class="display-4 fw-bold">Alcalde de Apizaco Tlaxcala</h2>
-                                <p class="lead text-muted">
-                                    <i class="fa fa-quote-left me-2"></i>Apizaco, Ciudad Heroica y en Crecimiento. Tierra Brava y Ferrocarrilera.<i class="fa fa-quote-right ms-2"></i>
-                                </p> 
-                                
-                                <div class="info-box mt-4 p-4 border rounded-3 shadow-sm position-relative">
-                                    <h5 class="fw-bold">Apizaco, el corazón industrial de Tlaxcala, México.</h5>
-                                    <ul class="list-unstyled mt-3">
-                                        <li><i class="fa fa-check-circle me-2" style='color:#AD9065'></i>Es una ciudad dinámica que combina desarrollo, historia y tradición.</li>
-                                        <li><i class="fa fa-check-circle me-2" style='color:#AD9065'></i>Reconocida por su destacada actividad ferroviaria y su contribución al progreso regional.</li>
-                                        <li><i class="fa fa-check-circle me-2" style='color:#AD9065'></i>Un crisol de cultura que se refleja en su gente trabajadora, su gastronomía y sus eventos emblemáticos.</li>
-                                        <li><i class="fa fa-check-circle me-2" style='color:#AD9065'></i>Apizaco narra un capítulo de esfuerzo y crecimiento que inspira a todos sus visitantes.</li>
-                                    </ul>
-                                
-                                </div>
+        
+        
+        
+            <!-- Control de Tipografías -->
+            <div class="control-group">
+                <h2><i class="fa fa-font"></i> Sistema Tipográfico</h2>
+                <div class="font-grid">
+                    <div class="font-card">
+                        <label for="fontPrimary">Títulos</label>
+                        <div class="select-wrapper">
+                            <select id="fontPrimary" class="font-dropdown">
+                                <option value="Arial">Arial</option>
+                                <option value="Roboto">Roboto</option>
+                                <option value="Montserrat">Montserrat</option>
+                                <option value="Poppins">Poppins</option>
+                            </select>
                         </div>
-                        
-                        
-                        <!-- Imagen del alcalde y logo -->
-                        <div class="col-md-4 text-center position-relative">
-                            <div class="image-wrapper">
-                                <br>
-                                <img src="{% static 'img/alcalde.jpg' %}" alt="Imagen del Alcalde" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid var(--primary-color, #2196F3);">
-                                <div class="name-tag position-absolute text-center w-100" style="bottom: -22px;">
-                                    <h6 class="bg-light py-2 px-3 d-inline-block rounded-pill shadow-sm">Lic. Javier Rivera Bonilla</h6>
-                                </div>
-                            </div>
+                    </div>
+                    <div class="font-card">
+                        <label for="fontSecondary">Subtítulos</label>
+                        <div class="select-wrapper">
+                            <select id="fontSecondary" class="font-dropdown">
+                                <option value="Georgia">Georgia</option>
+                                <option value="Merriweather">Merriweather</option>
+                                <option value="Playfair Display">Playfair Display</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="font-card">
+                        <label for="fontTertiary">Cuerpo</label>
+                        <div class="select-wrapper">
+                            <select id="fontTertiary" class="font-dropdown">
+                                <option value="Courier New">Courier New</option>
+                                <option value="Open Sans">Open Sans</option>
+                                <option value="Lato">Lato</option>
+                            </select>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
+
+            <button id="btnSave" class="save-btn">
+                <i class="fa fa-save"></i> Guardar
+            </button>
+            
+        
+            <!-- Botón para Resetear Estilos -->
+            <button id="btnReset" class="reset-btn">
+                <i class="fa fa-undo"></i> Restablecer Valores
+            </button>
+            
         </div>
 
-        <!-- FOOTER -->
-        <div class="footer_preview">
-            © 2024 - 2027 Gobierno Municipal de Apizaco. Todos los derechos reservados.        
+        <!-- VISTA PREVIA -->
+        <div class="preview">
+            <!-- Iconos Flotantes - Redes Sociales -->
+            <div class="social-icons-float">
+                <a href="#"><i class="fa fa-facebook-f"></i></a>
+                <a href="#" ><i class="fa fa-twitter"></i></a>
+                <a href="#" ><i class="fa fa-instagram"></i></a>
+                <a href="#" ><i class="fa fa-youtube"></i></a>
+            </div>
+
+            <!-- NAVBAR -->
+            <div class="navbar-preview">
+                <div class="logo">Logo Municipal</div>
+                <div class="nav-links">
+                    <a href="">Inicio</a>
+                    <a href="">Servicio</a>
+                    <a href="">Noticias</a>
+                </div>
+            </div>
+
+
+            <!-- CONTENIDO PRINCIPAL -->
+            <div class="content-area">
+                <section class="alcalde-section ">
+                    <div class="content-container">
+                        <div class="row align-items-center">
+                            <!-- Texto e información -->
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <span class="section-subtitle">Por amor a Apizaco</span>
+                                </div>
+                                <h2 class="display-4 fw-bold">Alcalde de Apizaco Tlaxcala</h2>
+                                    <p class="lead text-muted">
+                                        <i class="fa fa-quote-left me-2"></i>Apizaco, Ciudad Heroica y en Crecimiento. Tierra Brava y Ferrocarrilera.<i class="fa fa-quote-right ms-2"></i>
+                                    </p> 
+                                    
+                                    <div class="info-box mt-4 p-4 border rounded-3 shadow-sm position-relative">
+                                        <h5 class="fw-bold">Apizaco, el corazón industrial de Tlaxcala, México.</h5>
+                                        <ul class="list-unstyled mt-3">
+                                            <li><i class="fa fa-check-circle me-2" style='color: var(--secondary-color)'></i>Es una ciudad dinámica que combina desarrollo, historia y tradición.</li>
+                                            <li><i class="fa fa-check-circle me-2" style='color:var(--secondary-color)'></i>Reconocida por su destacada actividad ferroviaria y su contribución al progreso regional.</li>
+                                            <li><i class="fa fa-check-circle me-2" style='color:var(--secondary-color)'></i>Un crisol de cultura que se refleja en su gente trabajadora, su gastronomía y sus eventos emblemáticos.</li>
+                                            <li><i class="fa fa-check-circle me-2" style='color:var(--secondary-color)'></i>Apizaco narra un capítulo de esfuerzo y crecimiento que inspira a todos sus visitantes.</li>
+                                        </ul>
+                                    
+                                    </div>
+                            </div>
+                            
+                            
+                            <!-- Imagen del alcalde y logo -->
+                            <div class="col-md-4 text-center position-relative">
+                                <div class="image-wrapper">
+                                    <br>
+                                    <img src="{% static 'img/alcalde.png' %}" alt="Imagen del Alcalde" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid var(--primary-color, #2196F3);">
+                                    <div class="name-tag position-absolute text-center w-100" style="bottom: -22px;">
+                                        <h6 class="bg-light py-2 px-3 d-inline-block rounded-pill shadow-sm">Lic. Javier Rivera Bonilla</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="footer_preview">
+                © 2024 - 2027 Gobierno Municipal de Apizaco. Todos los derechos reservados.        
+            </div>
+            <div id="loader" style="
+                display: none;
+                position: fixed;
+                top: 0; left: 0;
+                width: 100%; height: 100%;
+                background: rgba(0,0,0,0.3);
+                z-index: 9999;
+                color: #fff;
+                font-size: 1.5rem;
+                text-align: center;
+                padding-top: 20%;
+            ">
+                Cargando datos...
+            </div>
         </div>
     </div>
-</div>
+
+
+
 </div>
 
 {% endblock content %}
 
 {% block scriptcontent %}
+
+
+
 <script>
-    // Color Primario
-    document.getElementById('primaryColor').addEventListener('input', (e) => {
-        document.documentElement.style.setProperty('--primary-color', e.target.value);
+    document.addEventListener('DOMContentLoaded', function() {
+        // Variable para almacenar los colores originales
+        let originalColors = {
+            primary:   '#2196F3',
+            secondary: '#FF9800',
+            fontPrimary:   'Arial',
+            fontSecondary: 'Georgia',
+            fontTertiary:  'Courier New'
+        };
+    
+        // Función para mostrar/ocultar loader
+        function showLoader() {
+            const loader = document.getElementById('loader2');
+            if (loader) loader.style.display = 'block';
+        }
+        function hideLoader() {
+            const loader = document.getElementById('loader2');
+            if (loader) loader.style.display = 'none';
+        }
+    
+        // 1. Función para obtener datos del municipio (GET)
+        function fetchMunicipioData(id) {
+            showLoader();
+            fetch(`/informacion/ajax/municipio/?id=${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Datos del municipio:", data);
+                    
+                    if (data && data.colores) {
+                        const colorPrimario   = data.colores.color_primario   || '#2196F3';
+                        const colorSecundario = data.colores.color_secundario || '#FF9800';
+                        
+                        // Guardamos los colores originales para reset
+                        originalColors.primary   = colorPrimario;
+                        originalColors.secondary = colorSecundario;
+                        
+                        // Actualizar CSS
+                        document.documentElement.style.setProperty('--primary-color',   colorPrimario);
+                        document.documentElement.style.setProperty('--secondary-color', colorSecundario);
+                        
+                        // Actualizar inputs
+                        document.getElementById('primaryColor').value   = colorPrimario;
+                        document.getElementById('secondaryColor').value = colorSecundario;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error en la petición AJAX:", error);
+                })
+                .finally(() => {
+                    hideLoader();
+                });
+        }
+    
+        // Select de municipios
+        var municipioSelect = document.getElementById('municipioSelect');
+        if (municipioSelect) {
+            fetchMunicipioData(municipioSelect.value);
+            municipioSelect.addEventListener('change', function() {
+                fetchMunicipioData(this.value);
+            });
+        }
+    
+        // Event Listeners para los inputs de color
+        document.getElementById('primaryColor').addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--primary-color', e.target.value);
+        });
+        document.getElementById('secondaryColor').addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--secondary-color', e.target.value);
+        });
+    
+        // Event Listeners para las tipografías
+        document.getElementById('fontPrimary').addEventListener('change', (e) => {
+            document.documentElement.style.setProperty('--font-primary', e.target.value);
+        });
+        document.getElementById('fontSecondary').addEventListener('change', (e) => {
+            document.documentElement.style.setProperty('--font-secondary', e.target.value);
+        });
+        document.getElementById('fontTertiary').addEventListener('change', (e) => {
+            document.documentElement.style.setProperty('--font-tertiary', e.target.value);
+        });
+    
+        // Función de reset
+        function resetStyles() {
+            document.documentElement.style.setProperty('--primary-color',   originalColors.primary);
+            document.documentElement.style.setProperty('--secondary-color', originalColors.secondary);
+            
+            document.documentElement.style.setProperty('--font-primary',   originalColors.fontPrimary);
+            document.documentElement.style.setProperty('--font-secondary', originalColors.fontSecondary);
+            document.documentElement.style.setProperty('--font-tertiary',  originalColors.fontTertiary);
+    
+            document.getElementById('primaryColor').value   = originalColors.primary;
+            document.getElementById('secondaryColor').value = originalColors.secondary;
+            document.getElementById('fontPrimary').value    = originalColors.fontPrimary;
+            document.getElementById('fontSecondary').value  = originalColors.fontSecondary;
+            document.getElementById('fontTertiary').value   = originalColors.fontTertiary;
+        }
+    
+        // Botón de reset
+        const btnReset = document.getElementById('btnReset');
+        if (btnReset) {
+            btnReset.addEventListener('click', resetStyles);
+        }
+    
+        // 2. Función para GUARDAR los colores (POST)
+        function saveColors() {
+            const municipalityId = municipioSelect ? municipioSelect.value : null;
+            if (!municipalityId) {
+                console.error("No se encontró ID de municipio");
+                return;
+            }
+    
+            // Obtenemos los colores actuales
+            const colorPrimario   = document.getElementById('primaryColor').value;
+            const colorSecundario = document.getElementById('secondaryColor').value;
+    
+            showLoader();  // Mostrar loader antes de la petición
+            
+            fetch('/informacion/ajax/guardar-colores/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Si usas CSRF token:
+                    // 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    municipio_id: municipalityId,
+                    color_primario: colorPrimario,
+                    color_secundario: colorSecundario
+                })
+            })
+            .then(response => response.json())
+            .then(respData => {
+                console.log("Respuesta al guardar colores:", respData);
+                if (respData.success) {
+                    // 3. Si el guardado fue exitoso, volvemos a llamar fetchMunicipioData 
+                    //    para recargar con los nuevos valores
+                    fetchMunicipioData(municipalityId);
+                } else {
+                    console.error("Error en respData:", respData);
+                }
+            })
+            .catch(err => {
+                console.error("Error al guardar colores:", err);
+            })
+            .finally(() => {
+                hideLoader(); // Ocultamos loader al finalizar
+            });
+        }
+    
+        // Botón de GUARDAR
+        const btnSave = document.getElementById('btnSave');
+        if (btnSave) {
+            btnSave.addEventListener('click', saveColors);
+        }
     });
+    </script>
+    
 
-    // Color Secundario
-    document.getElementById('secondaryColor').addEventListener('input', (e) => {
-        document.documentElement.style.setProperty('--secondary-color', e.target.value);
-    });
-
-    // Color Terciario (si lo usas en otra parte, por ahora no está en la página)
-    document.getElementById('tertiaryColor').addEventListener('input', (e) => {
-        document.documentElement.style.setProperty('--tertiary-color', e.target.value);
-    });
-
-    // Tipografías
-    document.getElementById('fontPrimary').addEventListener('change', (e) => {
-        document.documentElement.style.setProperty('--font-primary', e.target.value);
-    });
-    document.getElementById('fontSecondary').addEventListener('change', (e) => {
-        document.documentElement.style.setProperty('--font-secondary', e.target.value);
-    });
-    document.getElementById('fontTertiary').addEventListener('change', (e) => {
-        document.documentElement.style.setProperty('--font-tertiary', e.target.value);
-    });
-
-    // Reset Styles
-    function resetStyles() {
-        const root = document.documentElement.style;
-        root.removeProperty('--primary-color');
-        root.removeProperty('--secondary-color');
-        root.removeProperty('--tertiary-color');
-        root.removeProperty('--font-primary');
-        root.removeProperty('--font-secondary');
-        root.removeProperty('--font-tertiary');
-
-        document.getElementById('primaryColor').value   = '#2196F3';
-        document.getElementById('secondaryColor').value = '#FF9800';
-        document.getElementById('tertiaryColor').value  = '#4CAF50';
-        document.getElementById('fontPrimary').value    = 'Arial';
-        document.getElementById('fontSecondary').value  = 'Georgia';
-        document.getElementById('fontTertiary').value   = 'Courier New';
-    }
-</script>
 {% endblock scriptcontent %}

@@ -1,0 +1,14 @@
+{% extends "baseTemplate.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+  <div class="card shadow p-4 mx-auto" style="max-width: 600px; border-radius: 12px;">
+    <h2 class="mb-4">📄 Editar Documento de Transparencia</h2>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <button type="submit" class="btn btn-primary mt-3">💾 Guardar cambios</button>
+      <a href="{% url 'documento_list' seccion.id ejercicio_fiscal.id %}" class="btn btn-danger mt-3">❌ Cancelar</a>
+    </form>
+  </div>
+{% endblock %}

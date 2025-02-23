@@ -100,7 +100,14 @@
                 <span>Servicios</span>
               </a>
             </li>
-            
+
+            <li class="sidebar-list {% if sidebar == 'transparencia' %}active{% endif %}">
+              <a class="sidebar-link sidebar-title" href="{% url "transparencia_view" %}">
+                <i class="fa fa-folder-open" style='color:white;'></i>                
+                <i class="fa fa-cogs fill-icon"></i>
+                <span>Transparencia</span>
+              </a>
+            </li>
 
 
           </ul>

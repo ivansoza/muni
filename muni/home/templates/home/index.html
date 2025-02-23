@@ -18,6 +18,8 @@
      <link rel="stylesheet" href="{% static "css/stylos.css" %}?v1.13">
      <link rel="stylesheet" href="{% static "css/stylos.css" %}">
      <script async defer src="https://connect.facebook.net/es_LA/sdk.js#xfbml=1&version=v15.0"></script>
+     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatable-extension.css' %}">    
 
 </head>
 <body>
@@ -28,18 +30,21 @@
                 --color-primario:{{ municipio.colores.first.color_primario_dark }};
                 --color-secundario:{{ municipio.colores.first.color_primario }};
                 --color-iconos:{{municipio.colores.first.color_secundario}} ;
+                --color-acento: {{municipio.colores.first.color_secundario}};
+
                 --color-primario-rgb: {{municipio.colores.first.color_primario_dark_rgb}}; 
                 --color-secundario-rgb: {{municipio.colores.first.color_primario_rgb}};
             {% else %}
                 --color-primario: #1e4765;
                 --color-secundario: #295E84;
                 --color-iconos:rgb(109, 109, 109);
-
+                --color-acento: :rgb(109, 109, 109);
                 --color-primario-rgb: 30, 71, 101;  
                 --color-secundario-rgb: 41, 94, 132;
             {% endif %}
             
             --color-gradiente: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+            --degradado: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
 
            
             /* Gradiente */
@@ -121,36 +126,60 @@
         </div>
     </div>
 
+
+
+    <style>
+        .brand-text {
+          font-size: 1.2rem;  /* Ajusta el tamaño según tu preferencia */
+          font-weight: 500;   /* Opcional, para dar énfasis */
+        }
+        
+        /* Cuando la pantalla sea menor a 768px, reduce el tamaño */
+        @media (max-width: 768px) {
+          .brand-text {
+            font-size: 0.8rem;
+          }
+        }
+        
+
+    </style>
             <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-transparent fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="{% url "home_servicios" %}">
+            <a class="navbar-brand" href="{% url "home" %}">
 
                 {% if  municipio.logotipo %}
-                    <img src="{{municipio.logotipo.url}}" alt="Logo Municipal">
+                    <img src="{{municipio.logotipo.url}}" alt="Logo Municipal"  class="d-none d-md-inline-block">
 
                 {% else %}
-                    <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Logo Municipal">
+                    <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Logo Municipal"
+                        class="d-none d-md-inline-block">
                 {% endif %}
-
-                {% if municipio.nombre %}
-                    {{municipio.nombre}}
-                {% else %}
-                    Introducir el Nombre de tu Municipio
-                {% endif %}
+            
+                <!-- Aquí está la parte que queremos que responda a diferentes tamaños de pantalla -->
+                <span class="brand-text">
+                    {% if municipio.nombre %}
+                        {{ municipio.nombre }}
+                    {% else %}
+                        Introducir el Nombre de tu Municipio
+                    {% endif %}
+                </span>
             </a>
+            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item {% if sidebar == 'home' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'home_servicios' %}">Inicio</a>
+                        <a class="nav-link" href="{% url 'home' %}">Inicio</a>
                     </li>
-                    
+                    <li class="nav-item {% if sidebar == 'gobierno' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'homeGobierno' %}">Gobierno</a>
+                    </li>
                     <li class="nav-item"><a class="nav-link" href="{% url "homeServicios" %}">Servicios</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url "homeNoticias" %}">Noticias</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Transparencia</a></li>
+                    <li class="nav-item {% if sidebar == 'transparecnia' %}active{% endif %}"><a class="nav-link" href="{% url "homeTransferencia" %}">Transparencia</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
                 </ul>
             </div>
@@ -188,6 +217,7 @@
     </section>
 
 
+
     {% if municipio %}
         {% with secciones=municipio.secciones.all %}
             {% if secciones %}
@@ -204,6 +234,8 @@
                         {# Aquí tus condiciones para las secciones estáticas, por ejemplo: #}
                         {% if seccion.nombre == 'servicios' %}
                             {% include "home/components/nuestros_servicios.html" %}
+                            {% include "home/components/encuestas.html" %}
+
                         {% elif seccion.nombre == 'ultimas_noticias' %}
                             {% include "home/components/ultimas_noticias.html" %}
                         {% elif seccion.nombre == 'convocatorias' %}
@@ -220,6 +252,8 @@
             {% else %}
                 {# Orden predeterminado si no hay secciones definidas #}
                 {% include "home/components/nuestros_servicios.html" %}
+                {% include "home/components/encuestas.html" %}
+
                 {% include "home/components/ultimas_noticias.html" %}
                 {% include "home/components/ultimas_convocatorias.html" %}
                 {% include "home/components/nuestras_redes.html" %}
@@ -233,15 +267,475 @@
 
 
 
+    <!-- Asegúrate de incluir FontAwesome para los íconos -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnH/PRhA+1mTnugG+O+X3i5lYtQ9MZ4QzW/IkRvLZ1PO5MQC1+2Tk9m+Jvz/2Tz0L9O1eYI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+
+
+<!-- HTML -->
+<section class="reporte-seccion">
+    <div class="container">
+        <h2 class="news-title" style="text-align: left;">
+            <i class="fas fa-exclamation-triangle icono-encuesta"></i>
+            Reporta <span>| Ayúdanos a mejorar informando incidentes</span>
+        </h2>
+        <br>
+        
+
+    </div>
+
+    <div class="contenedor-3d">
+        <a href="{% url "homeReportes" %}" class="card-reporte-avanzada">
+            <div class="card-hover-layer"></div>
+            <svg class="border-path" viewBox="0 0 500 200" preserveAspectRatio="none">
+                <path d="M20,10 L480,10 Q490,10 490,20 L490,180 Q490,190 480,190 L20,190 Q10,190 10,180 L10,20 Q10,10 20,10"></path>
+            </svg>
+            
+            <div class="card-content">
+                <div class="icono-dinamico">
+                    <div class="icono-base"></div>
+                    <div class="icono-morph"></div>
+                </div>
+                
+                <h2 class="titulo-flotante">
+                    <span>Reporta</span>
+                </h2>
+                
+                <p class="descripcion-interactiva">¡Tu reporte mejora la comunidad!<br>Informa sobre baches, alumbrado, fugas y más.</p>
+                
+                <div class="boton-avanzado">
+                    <span>Realizar Reporte</span>
+                    <div class="hover-progress"></div>
+                </div>
+            </div>
+        </a>
+    </div>
+</section>
+
+
+<!-- CSS -->
+<style>
+
+    .card-reporte-avanzada:focus,
+    .boton-avanzado:focus {
+        outline: 3px solid var(--color-acento);
+        outline-offset: 5px;
+    }
+    
+.reporte-seccion {
+    padding: 6rem 1rem;
+    background: #f8fafc;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+.contenedor-3d {
+    max-width: 800px;
+    margin: 0 auto;
+    perspective: 1000px;
+}
+
+.card-reporte-avanzada {
+    display: block;
+    position: relative;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2px;
+    text-decoration: none;
+    color: #1e293b;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.card-reporte-avanzada:hover {
+    transform: translateY(-5px) rotateX(2deg) rotateY(-1deg);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+}
+
+.border-path {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: var(--color-primario);
+    stroke-width: 2px;
+    stroke-dasharray: 1200;
+    stroke-dashoffset: 1200;
+    transition: stroke-dashoffset 1.2s ease-in-out;
+}
+
+.card-reporte-avanzada:hover .border-path {
+    stroke-dashoffset: 0;
+}
+
+.card-hover-layer {
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    background: var(--degradado);
+    opacity: 0;
+    transform: rotate(15deg) translate(-50%, -50%);
+    transition: all 0.6s ease;
+    top: 50%;
+    left: 50%;
+    mix-blend-mode: soft-light;
+}
+
+.card-reporte-avanzada:hover .card-hover-layer {
+    opacity: 0.15;
+    width: 100%;
+    height: 100%;
+    transform: rotate(0deg) translate(-50%, -50%);
+}
+
+.icono-dinamico {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 2rem;
+}
+
+.icono-base {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: var(--degradado);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    transition: all 0.4s ease;
+}
+
+.icono-morph {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>') no-repeat center;
+    opacity: 0.9;
+    transition: all 0.4s ease;
+}
+
+
+
+.card-reporte-avanzada:hover .icono-morph {
+    transform: rotate(15deg) scale(1.1);
+    opacity: 1;
+}
+
+.titulo-flotante {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.titulo-flotante span {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.card-reporte-avanzada:hover .titulo-flotante span:first-child {
+    transform: translateY(-3px);
+}
+
+.card-reporte-avanzada:hover .titulo-flotante span:last-child {
+    transform: translateY(-3px);
+}
+
+.descripcion-interactiva {
+    text-align: center;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 3rem;
+    padding: 0 2rem;
+    position: relative;
+}
+
+.descripcion-interactiva::after {
+    content: "";
+    position: absolute;
+    bottom: -1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 2px;
+    background: var(--color-acento);
+    transition: width 0.3s ease;
+}
+
+.card-reporte-avanzada:hover .descripcion-interactiva::after {
+    width: 80px;
+}
+
+.boton-avanzado {
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: var(--degradado);
+    color: white;
+    border-radius: 50px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    margin: 0 auto;
+    border: none;
+    cursor: pointer;
+}
+
+.hover-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: var(--color-acento);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.boton-avanzado:hover .hover-progress {
+    width: 100%;
+}
+
+.boton-avanzado:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+}
+
+@media (max-width: 768px) {
+    .titulo-flotante {
+        font-size: 2rem;
+    }
+    
+    .descripcion-interactiva {
+        padding: 0 1rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+    }
+}
+
+
+
+</style>
+
+
+<div class="floating-button-container">
+    <button class="floating-button" id="backToTop" aria-label="Volver al inicio">
+        <i class="fas fa-chevron-up"></i>
+        <span class="tooltip">Volver arriba</span>
+    </button>
+</div>
+
+<style>
+.floating-button-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 999;
+    transition: all 0.3s ease-in-out;
+    opacity: 0;
+    transform: translateY(100%);
+}
+
+.floating-button-container.mostrar {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.floating-button {
+    position: relative;
+    width: 3.5rem;
+    height: 3.5rem;
+    border: none;
+    border-radius: 50%;
+    background: var(--degradado);
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(var(--color-primario-rgb), 0.3);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.floating-button i {
+    color: var(--color-iconos);
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.floating-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 25px rgba(var(--color-primario-rgb), 0.4);
+    background: var(--color-primario);
+}
+
+.floating-button:hover .tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.floating-button:active {
+    transform: scale(0.95);
+}
+
+.tooltip {
+    position: absolute;
+    left: 50%;
+    top: -2.5rem;
+    transform: translateX(-50%) translateY(10px);
+    background: rgba(var(--color-primario-rgb), 0.9);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px 5px 0 5px;
+    border-style: solid;
+    border-color: rgba(var(--color-primario-rgb), 0.9) transparent transparent transparent;
+}
+
+@keyframes flotar {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0); }
+}
+
+.floating-button:hover i {
+    animation: flotar 1.5s ease-in-out infinite;
+}
+</style>
+
+
+<section class="video-section">
+    <div class="video-container">
+        <h2 class="section-title">Explora Nuestro Municipio</h2>
+        <div class="video-wrapper">
+            <div class="video-overlay" style="background: var(--degradado);"></div>
+            <iframe class="youtube-video" 
+                    src="https://www.youtube.com/embed/Z9pvymfIq8E" 
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+            </iframe>
+        </div>
+    </div>
+</section>
+
+<style>
+.video-section {
+    padding: 4rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.video-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.section-title {
+    color: var(--color-primario);
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: var(--color-gradiente);
+}
+
+.video-wrapper {
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(var(--color-primario-rgb), 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    aspect-ratio: 16/9;
+}
+
+.video-wrapper:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px rgba(var(--color-primario-rgb), 0.3);
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.1;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.youtube-video {
+    width: 100%;
+    height: 100%;
+    border: none;
+    position: relative;
+    z-index: 2;
+    background: #000;
+}
+
+@media (max-width: 768px) {
+    .video-container {
+        padding: 0 1rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+    }
+}
+</style>
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="row g-4">
                 <div class="col-md-2 footer-logo">
-                    <img src="{% static 'logo.png' %}" alt="Imagen representativa" class="mb-4 img-fluid" style="width: 160px; height: 160px;">
+
+                    {% if  municipio.logotipo %}
+                        <img src="{{municipio.logotipo.url}}" style="width: 160px;"  alt="Logo Municipal">
+
+                    {% else %}
+                        <img src="{% static 'assets/images/logo/logo-new.png' %}" style="width: 160px; " alt="Logo Municipal">
+                    {% endif %}
                 </div>
                 <div class="col-md-4">
-                    <h5>Gobierno Municipal</h5>
+                    <h5>
+                        {% if municipio.nombre %}
+                            {{municipio.nombre}}
+                        {% else %}
+                            Introducir el Nombre de tu Municipio
+                        {% endif %}
+
+                    </h5>
                     <p class="text-white-50">Comprometidos con el desarrollo sostenible y la transparencia institucional.</p>
                 </div>
                 <div class="col-md-4">
@@ -263,7 +757,11 @@
                 </div>
             </div>
             <div class="copyright text-center text-white-50">
-                <p class="mb-0">&copy; 2024 - 2027 Gobierno Municipal de Apizaco. Todos los derechos reservados.</p>
+                <p class="mb-0">&copy; 2024 - 2027              {% if municipio.nombre %}
+                    {{municipio.nombre}}.
+                {% else %}
+                    Introducir el Nombre de tu Municipio.
+                {% endif %} Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>
@@ -433,5 +931,188 @@
 });
 
     </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const encuestaContainer = document.getElementById('encuesta-container');
+            const municipioId = encuestaContainer.getAttribute('data-municipio-id');
+        
+            // 1. Obtener todas las encuestas activas del municipio
+            fetch(`/transparencia/api/encuesta/activas/${municipioId}/`)
+                .then(response => {
+                    if (!response.ok) {
+                        // Si la respuesta no es 2xx, arrojamos error.
+                        throw new Error('No hay encuestas activas disponibles');
+                    }
+                    return response.json();
+                })
+                .then(encuestas => {
+                    // encuestas es un array: [ {id, titulo, descripcion, preguntas: [...]}, {...} ]
+                    if (!encuestas.length) {
+                        // Si está vacío, no mostramos nada (ni siquiera el texto "No hay encuestas")
+                        encuestaContainer.innerHTML = '';
+                        return;
+                    }
+        
+                    // 2. Construimos una <section> por cada encuesta
+                    let html = '';
+                    encuestas.forEach(encuesta => {
+                        html += crearEncuestaHTML(encuesta);
+                    });
+                    encuestaContainer.innerHTML = html;
+        
+                    // 3. Por cada encuesta, registramos los listeners
+                    encuestas.forEach(encuesta => {
+                        const formId = `encuesta-form-${encuesta.id}`;
+                        const form = document.getElementById(formId);
+                        
+                        if (form) {
+                            // Al cambiar un radio, habilitar el botón de envío
+                            form.addEventListener('change', function() {
+                                const submitButton = form.querySelector('.btn-submit');
+                                if (submitButton) {
+                                    submitButton.disabled = false;
+                                }
+                            });
+        
+                            // Al hacer submit, enviamos las respuestas
+                            form.addEventListener('submit', function(event) {
+                                event.preventDefault();
+                                enviarRespuestas(encuesta.id, formId);
+                            });
+                        }
+                    });
+                })
+                .catch(error => {
+                    // Si no hay encuestas o hay otro error,
+                    // no mostramos nada.
+                    encuestaContainer.innerHTML = '';
+                });
+        
+            /**
+             * Crea el HTML de UNA encuesta, con tus clases y estructura originales.
+             * Cada encuesta tendrá su propio <section> + <form>.
+             */
+             function crearEncuestaHTML(encuestaData) {
+                let sectionHtml = `
+                    <section class="encuesta" id="encuesta-tarjeta-${encuestaData.id}">
+                        <h2 class="encuesta-titulo">${encuestaData.titulo}</h2>
+                        <p class="encuesta-pregunta">${encuestaData.descripcion || ''}</p>
+                        <form id="encuesta-form-${encuestaData.id}">
+                `;
+                
+                // Generar las preguntas
+                encuestaData.preguntas.forEach(pregunta => {
+                    sectionHtml += `
+                        <div class="pregunta">
+                            <p class="encuesta-pregunta">${pregunta.texto}</p>
+                            <div class="opciones-container">
+                    `;
+                    // Generar las opciones
+                    pregunta.opciones.forEach(opcion => {
+                        sectionHtml += `
+                                <div class="opcion">
+                                    <input
+                                        type="radio"
+                                        id="opcion-${pregunta.id}-${opcion.id}"
+                                        name="pregunta_${pregunta.id}"
+                                        value="${opcion.id}"
+                                        required
+                                    >
+                                    <label for="opcion-${pregunta.id}-${opcion.id}">
+                                        <span class="custom-radio"></span>
+                                        <span class="opcion-texto">${opcion.texto}</span>
+                                    </label>
+                                </div>
+                        `;
+                    });
+                    sectionHtml += `</div></div>`;
+                });
+        
+                // Botón final de envío
+                sectionHtml += `
+                            <button type="submit" class="btn-submit" disabled>Enviar Respuesta</button>
+                        </form>
+                    </section>
+                `;
+                return sectionHtml;
+            }
+        
+            /**
+             * Envía un solo formulario (toda una encuesta) en un POST.
+             */
+            function enviarRespuestas(encuestaId, formId) {
+                const formElement = document.getElementById(formId);
+                if (!formElement) return;
+        
+                const formData = new FormData(formElement);
+                let respuestas = [];
+        
+                // Cada "pregunta_XX" => "opcion_id"
+                for (let [fieldName, opcionId] of formData.entries()) {
+                    const preguntaId = fieldName.split('_')[1];
+                    respuestas.push({
+                        pregunta_id: preguntaId,
+                        opcion_id: opcionId
+                    });
+                }
+        
+                const payload = {
+                    encuesta_id: encuestaId,
+                    respuestas: respuestas
+                };
+        
+                fetch('/transparencia/api/encuesta/enviar/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al guardar las respuestas');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Reemplaza la tarjeta de la encuesta con el mensaje de agradecimiento
+                    const encuestaTarjeta = document.getElementById(`encuesta-tarjeta-${encuestaId}`);
+                    if (encuestaTarjeta) {
+                        encuestaTarjeta.innerHTML = `
+                            <p style="color: green; font-weight: bold;">
+                                ¡Gracias por responder la encuesta!
+                            </p>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
+            }
+        });
+        </script>
+
+        <script>
+            // JavaScript para mostrar/ocultar el botón
+            window.addEventListener('scroll', function() {
+                const boton = document.querySelector('.floating-button-container');
+                if (window.scrollY > 200) {
+                    boton.classList.add('mostrar');
+                } else {
+                    boton.classList.remove('mostrar');
+                }
+            });
+            
+            // Función para scroll suave
+            document.getElementById('backToTop').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+            </script>
 </body>
 </html>

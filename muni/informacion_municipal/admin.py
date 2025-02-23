@@ -5,14 +5,14 @@ from .models import Municipio, ColoresMunicipio, GobiernoActual, MisionVision,Se
 # Registro de Municipio
 @admin.register(Municipio)
 class MunicipioAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'ultima_actualizacion', 'preview_logotipo', 'preview_banner')
+    list_display = ('nombre', 'ultima_actualizacion', 'preview_logotipo', 'preview_banner','status')
     search_fields = ('nombre', 'descripcion')
     list_filter = ('ultima_actualizacion',)
     readonly_fields = ('preview_logotipo', 'preview_banner', 'ultima_actualizacion')
 
     fieldsets = (
         ('Información Básica', {
-            'fields': ('nombre', 'descripcion')
+            'fields': ('nombre_municipio','nombre', 'descripcion','status')
         }),
         ('Elementos Visuales', {
             'fields': (

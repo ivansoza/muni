@@ -2,10 +2,313 @@
 {% load static %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static "css/servicios/styles.css" %}">
+    <link rel="stylesheet" href="{% static "css/servicios/styles.css" %}?v1.1">
 {% endblock %}
 
 {% block content %}
+
+
+<style>
+
+
+    .container {
+        width: 90vw; /* Coincide con el cuadro de búsqueda y los filtros */
+        margin: 0 auto; /* Centra el contenido */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center; /* Asegura que las tarjetas estén bien distribuidas */
+    }
+    
+    /* Ajustar la tarjeta para que se expanda sin afectar a las demás */
+    .item-box {
+        background-color: white;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        padding: 20px;
+        position: relative;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        overflow: hidden; /* Asegura que los elementos internos no se desborden */
+    }
+    
+    /* Cuando pasas el mouse, la tarjeta se expande sin afectar las demás */
+    .item-box:hover {
+        transform: scale(1.05); /* Hace zoom solo en la tarjeta activa */
+        z-index: 10; /* Asegura que se ponga encima de las demás */
+        position: relative;
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2); /* Efecto de sombra más fuerte */
+    }
+    
+    /* Ícono en la esquina superior izquierda */
+    .icon-box {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+    }
+    
+    .icon {
+        width: 80px;
+        height: auto;
+    }
+    
+    /* Estado Badge - Círculo */
+    .estado-badge {
+        position: absolute;
+        top: 55px;
+        right: 120px; /* Ajuste para pantallas grandes */
+        background-color: #8B1E64;
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+        width: 35px;  /* Hacerlo circular asegurando mismo ancho y alto */
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%; /* Convierte el badge en círculo */
+    }
+    
+    /* Ajustar la posición en pantallas más pequeñas */
+    @media (max-width: 992px) { /* Tablets y pantallas medianas */
+        .estado-badge {
+            top: 60px;
+            right: 100px;
+        }
+    }
+    
+    @media (max-width: 768px) { /* Dispositivos móviles */
+        .estado-badge {
+            top: 55px;
+            right: 190px;
+        }
+    }
+    
+    @media (max-width: 576px) { /* Teléfonos más pequeños */
+        .estado-badge {
+            right: 150px; /* Lo dejamos pegado al borde para móviles pequeños */
+        }
+    }
+    
+    /* Pago en línea */
+    .payment {
+        color: #2E7D32;
+        font-weight: bold;
+        text-align: center;
+    }
+    
+    .online {
+        color: #8B1E64;
+        font-weight: bold;
+        text-align: center;
+    }
+    
+    /* Títulos */
+    .title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        text-align: left;
+        margin-top: 35px; /* Para evitar que el ícono tape el texto */
+    }
+    
+    /* Ocultar la descripción por defecto */
+    .organismo {
+        opacity: 0;
+        transform: scale(0.95); /* Se mantiene pequeña */
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        
+        /* Limitar la descripción a 5 líneas */
+        display: -webkit-box;
+        -webkit-line-clamp: 4; /* Limita a 5 líneas */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis; /* Agrega los "..." cuando se excede */
+    
+        text-align: justify;
+    }
+    
+    /* Mostrar la descripción cuando pasas el mouse */
+    .item-box:hover .organismo {
+        opacity: 1;
+        transform: scale(1);
+    }
+    
+    /* Botones */
+    .btn-outline-warning {
+        border-color: #fbc02d;
+        color: #fbc02d;
+    }
+    
+    .btn-outline-warning:hover {
+        background-color: #fbc02d;
+        color: white;
+    }
+    
+    .btn-primary {
+        background-color: #1976d2;
+        border: none;
+    }
+    
+    .icono-llave {
+        height: 16px;
+        width: auto;
+        margin-right: 5px;
+    }
+    
+    /* Ocultar los botones por defecto */
+    .buttons {
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+    }
+    
+    /* Mostrar los botones cuando el usuario pase el mouse sobre la tarjeta */
+    .item-box:hover .buttons {
+        opacity: 1;
+    }
+    
+    /* Contenedor principal del cuadro de búsqueda */
+    .search-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 90vw; /* Se reduce un 5% de cada lado */
+        margin: 0 auto 20px auto;
+        padding: 0 20px; /* Margen interno para evitar que tope con los bordes */
+    }
+    
+    /* Cuadro de búsqueda ocupa todo el ancho */
+    .input-group {
+        display: flex;
+        align-items: center;
+        border: 2px solid #80004D;
+        border-radius: 25px;
+        overflow: hidden;
+        width: 100%;
+        max-width: none; /* No restringir el ancho */
+    }
+    
+    /* Ajuste del input */
+    .search-input {
+        flex: 1;
+        padding: 15px 20px;
+        border: none;
+        font-size: 18px;
+        outline: none;
+    }
+    
+    .search-btn {
+        padding: 15px 25px;
+        font-size: 18px;
+    }
+    
+    .search-btn i {
+        margin-right: 5px;
+    }
+    
+    .reset-btn {
+        padding: 15px 25px;
+        font-size: 18px;
+    }
+    
+    .reset-btn i {
+        margin-right: 5px;
+    }
+    
+    .search-btn:hover, .reset-btn:hover {
+        opacity: 0.8;
+    }
+    
+    /* Contenedor de los filtros ahora ocupa todo el ancho */
+    .filters-container {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        width: 90vw; /* Se reduce un 5% de cada lado */
+        gap: 20px;
+        margin-top: 20px;
+    }
+    
+    /* Ajuste de cada filtro para distribuirlos correctamente */
+    .filter {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        flex-grow: 1;
+        min-width: 200px;
+    }
+    
+    .filter label {
+        font-size: 16px;
+        color: #555;
+        font-weight: normal;
+    }
+    
+    .filter select {
+        padding: 12px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 100%;
+    }
+    
+    /* Responsive: Ajustar filtros en móviles */
+    @media (max-width: 992px) {
+        .filters-container {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+    /* Paginacion y mostrar  */
+    .pagination-container {
+        display: flex;
+        justify-content: space-between; /* Paginación a la izquierda, selección a la derecha */
+        align-items: center;
+        margin-top: 20px;
+        width: 100%;
+        padding: 10px 0;
+    }
+    
+    /* Estilos de la paginación */
+    .pagination {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .page-link {
+        padding: 8px 12px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+    
+    .page-link:hover {
+        background-color: #0056b3;
+    }
+    
+    .current-page {
+        padding: 8px 12px;
+        background-color: #0056b3;
+        color: white;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+    
+    /* Estilos del selector de registros por página */
+    .records-per-page {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .records-dropdown {
+        padding: 6px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    
+</style>
 <div class="search-container">
     <form method="GET" action="{% url 'homeServicios' %}">
         <div class="input-group">

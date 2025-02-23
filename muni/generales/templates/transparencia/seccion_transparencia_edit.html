@@ -1,0 +1,29 @@
+{% extends "baseTemplate.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div>
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h2 class="mb-0">✏️ Editar Sección</h2>
+        </div>
+        <div class="card-body">
+
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form|crispy }}  <!-- Crispy Forms para mejor diseño -->
+          <div class="form-group text-center">
+            <button type="submit" class="btn btn-primary btn-lg me-3">
+                💾 Guardar cambios
+              </button>
+              <a href="{% url 'transparencia_view' %}" class="btn btn-secondary btn-lg">
+                ❌ Cancelar
+              </a>
+        </div>
+        </form>
+    </div>
+
+      </div>
+</div>
+
+{% endblock %}
