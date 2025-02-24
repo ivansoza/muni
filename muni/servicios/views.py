@@ -1,7 +1,9 @@
 from django.shortcuts import render
-from django.views.generic.base import TemplateView
+from django.views.generic import TemplateView, DetailView
+from django.core.paginator import Paginator
 
-# Create your views here.
+from servicios.models import Servicio
+
 class HomeServiciosView(TemplateView):
     template_name = 'homeServicios.html'  # Ruta del template
 
@@ -9,45 +11,45 @@ class HomeServiciosView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['sidebar'] = 'servicios'  # Define qué opción está activa
 
-        servicios = [
-            {
-                "titulo": "Revalidación de placas para el ejercicio 2025",
-                "descripcion": "El perro (Canis familiaris o Canis lupus familiaris, dependiendo de si se lo considera una especie o una subespecie del lobo),1​2​3​ llamado perro doméstico o can,4​ y en algunos lugares coloquialmente llamado chucho,5​ tuso,6​ choco,7​ entre otros; es un mamífero carnívoro de la familia de los cánidos, que constituye una especie del género Canis.8​9​ En el 2013, la población mundial estimada de perros estaba entre setecientos millones y novecientos ochenta y siete millones.10​11​",
-                "icono": "https://oficialiamayor.sonora.gob.mx/api/icons/inscripcion-registro.svg",
-                "url_info": "#",
-                "url_tramite": "#",
-                "estado": 1
-            },
-            {
-                "titulo": "Expedición de copia certificada de actas",
-                "descripcion": "Registro Civil del Estado",
-                "icono": "https://oficialiamayor.sonora.gob.mx/api/icons/inscripcion-registro.svg",
-                "url_info": "#",
-                "url_tramite": "#",
-                "estado": 2
-            },
-            {
-                "titulo": "Revalidación de placas para el ejercicio 2025",
-                "descripcion": "El perro (Canis familiaris o Canis lupus familiaris, dependiendo de si se lo considera una especie o una subespecie del lobo),1​2​3​ llamado perro doméstico o can,4​ y en algunos lugares coloquialmente llamado chucho,5​ tuso,6​ choco,7​ entre otros; es un mamífero carnívoro de la familia de los cánidos, que constituye una especie del género Canis.8​9​ En el 2013, la población mundial estimada de perros estaba entre setecientos millones y novecientos ochenta y siete millones.10​11​",
-                "icono": "https://oficialiamayor.sonora.gob.mx/api/icons/inscripcion-registro.svg",
-                "url_info": "#",
-                "url_tramite": "#",
-                "estado": 3
-            },
-            {
-                "titulo": "Expedición de copia certificada de actas",
-                "descripcion": "Registro Civil del Estado",
-                "icono": "https://oficialiamayor.sonora.gob.mx/api/icons/inscripcion-registro.svg",
-                "url_info": "#",
-                "url_tramite": "#",
-                "estado": 4
-            },
-        ]
+        servicios = Servicio.objects.all()
 
         # Filtrar por búsqueda
         query = self.request.GET.get('q', '')
-        if query:
-            servicios = [s for s in servicios if query.lower() in s['titulo'].lower()]
+        clasificacion = self.request.GET.get('clasificacion', '')
+        sector = self.request.GET.get('sector', '')
+        organismo = self.request.GET.get('organismo', '')
+        per_page = self.request.GET.get('per_page', '12')
 
-        context['servicios'] = servicios
+        # Aplicar búsqueda por título
+        if query:
+            servicios = servicios.filter(titulo__icontains=query)
+
+        # Aplicar filtros según categoría, sector y organismo
+        if clasificacion:
+            servicios = servicios.filter(clasificacion__id=clasificacion)
+        if sector:
+            servicios = servicios.filter(sector__id=sector)
+        if organismo:
+            servicios = servicios.filter(organismo__id=organismo)
+
+        # Configurar paginación
+        paginator = Paginator(servicios, int(per_page))
+        page = self.request.GET.get('page', 1)
+        servicios_paginados = paginator.get_page(page)
+
+        # Pasar datos al template
+        context.update({
+            'servicios': servicios_paginados,
+            'query': query,
+            'clasificacion': clasificacion,
+            'sector': sector,
+            'organismo': organismo,
+            'per_page': per_page,
+        })
+        
         return context
+
+class ServicioDetailView(DetailView):
+    model = Servicio
+    template_name = "detalle_servicio.html"
+    context_object_name = "servicio"
