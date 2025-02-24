@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'transparencia',
     'generales',
     'informacion_municipal',
+    'convocatorias',
+    'privacidad',
     "crispy_forms",
     "crispy_bootstrap5",
     'sass_processor',

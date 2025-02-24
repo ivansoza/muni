@@ -1,7 +1,9 @@
 from django.shortcuts import render
-from django.views.generic.base import TemplateView
+from django.views.generic import TemplateView, DetailView
+from django.core.paginator import Paginator
 
-# Create your views here.
+from servicios.models import Servicio
+
 class HomeServiciosView(TemplateView):
     template_name = 'homeServicios.html'  # Ruta del template
 
@@ -46,8 +48,41 @@ class HomeServiciosView(TemplateView):
 
         # Filtrar por búsqueda
         query = self.request.GET.get('q', '')
-        if query:
-            servicios = [s for s in servicios if query.lower() in s['titulo'].lower()]
+        clasificacion = self.request.GET.get('clasificacion', '')
+        sector = self.request.GET.get('sector', '')
+        organismo = self.request.GET.get('organismo', '')
+        per_page = self.request.GET.get('per_page', '12')
 
-        context['servicios'] = servicios
+        # Aplicar búsqueda por título
+        if query:
+            servicios = servicios.filter(titulo__icontains=query)
+
+        # Aplicar filtros según categoría, sector y organismo
+        if clasificacion:
+            servicios = servicios.filter(clasificacion__id=clasificacion)
+        if sector:
+            servicios = servicios.filter(sector__id=sector)
+        if organismo:
+            servicios = servicios.filter(organismo__id=organismo)
+
+        # Configurar paginación
+        paginator = Paginator(servicios, int(per_page))
+        page = self.request.GET.get('page', 1)
+        servicios_paginados = paginator.get_page(page)
+
+        # Pasar datos al template
+        context.update({
+            'servicios': servicios_paginados,
+            'query': query,
+            'clasificacion': clasificacion,
+            'sector': sector,
+            'organismo': organismo,
+            'per_page': per_page,
+        })
+        
         return context
+
+class ServicioDetailView(DetailView):
+    model = Servicio
+    template_name = "detalle_servicio.html"
+    context_object_name = "servicio"

@@ -15,8 +15,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- Estilos personalizados -->
-     <link rel="stylesheet" href="{% static "css/stylos.css" %}?v1.13">
-     <link rel="stylesheet" href="{% static "css/stylos.css" %}">
+     <link rel="stylesheet" href="{% static "css/stylos.css" %}?v1.132">
      <script async defer src="https://connect.facebook.net/es_LA/sdk.js#xfbml=1&version=v15.0"></script>
      <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatable-extension.css' %}">    
@@ -142,6 +141,95 @@
         }
         
 
+        /* Elimina la flecha por defecto de Bootstrap (si quieres usar solo el ícono) */
+        .dropdown-toggle::after {
+            display: none !important; 
+        }
+        
+        /* Anima la flecha de Bootstrap Icons */
+        .arrow-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        /* Cuando el menú esté abierto, rotamos la flecha 180° */
+        .nav-item.dropdown.show .arrow-icon {
+            transform: rotate(-180deg);
+        }
+        
+        /* Dropdown personalizado */
+        .dropdown-menu {
+            background-color: var(--color-primario);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            margin-top: 0.5rem;
+        
+            max-width: 250px;               /* Ajusta a tu preferencia */
+            width: auto;                    /* Para no forzar un ancho fijo */
+            white-space: normal;            /* Permite saltos de línea */
+            word-wrap: break-word;          /* En caso de palabras muy largas */
+            overflow-wrap: break-word;      /* Equivalente moderno */
+            word-break: break-word;         /* Rompe las palabras cuando sea necesario */
+        }
+        
+        .dropdown-item {
+
+            color: #fff !important;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            white-space: normal;            /* También en el enlace */
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding-left: 2rem;
+        }
+        
+        .dropdown-item::before {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: #fff;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .dropdown-item:hover::before {
+            opacity: 1;
+        }
+        
+        .dropdown-divider {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Alineación del dropdown en pantallas grandes */
+        @media (min-width: 992px) {
+            .dropdown-menu {
+                margin-top: 0.75rem;
+            }
+        }
+        
+
+
+        /* Transición del ícono */
+        .dropdown-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        /* Cuando aria-expanded está en true, giramos el ícono 180° */
+        .nav-link.dropdown-toggle[aria-expanded="true"] .dropdown-icon {
+            transform: rotate(-180deg);
+        }
     </style>
             <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-transparent fixed-top">
@@ -180,6 +268,29 @@
                     <li class="nav-item"><a class="nav-link" href="{% url "homeServicios" %}">Servicios</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url "homeNoticias" %}">Noticias</a></li>
                     <li class="nav-item {% if sidebar == 'transparecnia' %}active{% endif %}"><a class="nav-link" href="{% url "homeTransferencia" %}">Transparencia</a></li>
+                    <li class="nav-item {% if sidebar == 'sevac' %}active{% endif %}"><a class="nav-link" href="{% url "homeSevac" %}">SEVAC</a></li>
+                    <li class="nav-item {% if sidebar == 'reportes' %}active{% endif %}"><a class="nav-link" href="{% url "homeReportes" %}">Reportes</a></li>
+                    <!-- En tu navbar -->
+                    <li class="nav-item dropdown {% if sidebar == 'mas' %}active{% endif %}">
+                        <a 
+                            class="nav-link dropdown-toggle d-flex align-items-center" 
+                            href="#" 
+                            role="button" 
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false"
+                        >
+                            Más
+                            <!-- Icono de flecha hacia abajo de Bootstrap Icons -->
+                            <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url "HomeConvocatoriasView" %}">Convocatorias</a></li>
+    
+                            <li><a class="dropdown-item" href="{% url "homeHabla" %}">Habla con tus hijos</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url "HomePrivacidad" %}">Aviso de privacidad de datos personales</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -617,6 +728,13 @@
 .floating-button:hover i {
     animation: flotar 1.5s ease-in-out infinite;
 }
+
+
+
+
+
+
+
 </style>
 
 
@@ -714,57 +832,8 @@
 }
 </style>
     <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-md-2 footer-logo">
 
-                    {% if  municipio.logotipo %}
-                        <img src="{{municipio.logotipo.url}}" style="width: 160px;"  alt="Logo Municipal">
-
-                    {% else %}
-                        <img src="{% static 'assets/images/logo/logo-new.png' %}" style="width: 160px; " alt="Logo Municipal">
-                    {% endif %}
-                </div>
-                <div class="col-md-4">
-                    <h5>
-                        {% if municipio.nombre %}
-                            {{municipio.nombre}}
-                        {% else %}
-                            Introducir el Nombre de tu Municipio
-                        {% endif %}
-
-                    </h5>
-                    <p class="text-white-50">Comprometidos con el desarrollo sostenible y la transparencia institucional.</p>
-                </div>
-                <div class="col-md-4">
-                    <h5>Enlaces Rápidos</h5>
-                    <div class="footer-links">
-                        <a href="#"><i class="fas fa-chevron-right me-2"></i>Portal de Transparencia</a>
-                        <a href="#"><i class="fas fa-chevron-right me-2"></i>Trámites en Línea</a>
-                        <a href="#"><i class="fas fa-chevron-right me-2"></i>Convocatorias</a>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <h5>Conéctate</h5>
-                    <div class="social-icons">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="copyright text-center text-white-50">
-                <p class="mb-0">&copy; 2024 - 2027              {% if municipio.nombre %}
-                    {{municipio.nombre}}.
-                {% else %}
-                    Introducir el Nombre de tu Municipio.
-                {% endif %} Todos los derechos reservados.</p>
-            </div>
-        </div>
-    </footer>
-
+    {% include "layout/footerPrincipal.html" %}
     <!-- Bootstrap JS -->
      
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
