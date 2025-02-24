@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'tramites',
     'transparencia',
     'generales',
+    'privacidad',
     'informacion_municipal',
     'convocatorias',
     "crispy_forms",

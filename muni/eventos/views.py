@@ -8,3 +8,7 @@ class HomeEventosView(TemplateView):
 
 class HomeHablaView(TemplateView):
     template_name = 'homeHabla.html' 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sidebar'] = 'mas'  
+        return context
