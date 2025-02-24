@@ -115,9 +115,14 @@
                 <!-- Botones de acción -->
                 <div class="buttons row g-1 justify-content-center mt-3">
                     <div class="col-6">
+                        {% if servicio.id %}
                         <a class="btn btn-outline-warning d-block rounded-pill" href="{% url 'detalle_servicio' servicio.id %}">
                             Ver más
                         </a>
+                    {% else %}
+                        <span>Servicio no disponible</span>
+                    {% endif %}
+                    
                     </div>
                     {% if servicio.url_tramite %}
                     <div class="col-6">
