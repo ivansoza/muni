@@ -164,13 +164,26 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             border-radius: 8px;
             margin-top: 0.5rem;
+        
+            max-width: 250px;               /* Ajusta a tu preferencia */
+            width: auto;                    /* Para no forzar un ancho fijo */
+            white-space: normal;            /* Permite saltos de línea */
+            word-wrap: break-word;          /* En caso de palabras muy largas */
+            overflow-wrap: break-word;      /* Equivalente moderno */
+            word-break: break-word;         /* Rompe las palabras cuando sea necesario */
         }
         
         .dropdown-item {
+
             color: #fff !important;
             padding: 0.75rem 1.5rem;
             transition: all 0.3s ease;
             position: relative;
+            white-space: normal;            /* También en el enlace */
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            
         }
         
         .dropdown-item:hover {
@@ -272,10 +285,10 @@
                             <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Subsección 1</a></li>
-                            <li><a class="dropdown-item" href="#">Subsección 2</a></li>
+                            <li><a class="dropdown-item" href="#">Convocatorias</a></li>
+                            <li><a class="dropdown-item" href="#">Habla con tus hijos</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">Otra sección</a></li>
+                            <li><a class="dropdown-item" href="#">Aviso de privacidad de datos personales</a></li>
                         </ul>
                     </li>
                 </ul>
