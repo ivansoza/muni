@@ -24,15 +24,23 @@ class HomeTransparenciaView(TemplateView):
         context['secciones'] = SeccionTransparencia.objects.all()  # Obtener todas las secciones
 
         return context
+    
 
 
+class HomeSevacView(TemplateView):
+    template_name = 'mantenimiento.html' 
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sidebar'] = 'sevac'
+        return context
 class HomeReportesView(TemplateView):
     template_name = 'reportes/reportes.html' 
 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['sidebar'] = 'transparecnia'
+        context['sidebar'] = 'reportes'
         return context
 
 def get_encuestas_activas(request, municipio_id):
