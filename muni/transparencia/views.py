@@ -28,7 +28,7 @@ class HomeTransparenciaView(TemplateView):
 
 
 class HomeSevacView(TemplateView):
-    template_name = 'mantenimiento.html' 
+    template_name = 'homeSevac.html' 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
