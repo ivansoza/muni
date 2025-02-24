@@ -1,0 +1,77 @@
+{% load static %}
+
+{% load static %}
+
+<footer class="footer">
+    <div class=" container">
+        <div class="row g-5 pb-4">
+            <!-- Logo y nombre -->
+            <div class="col-md-3 d-flex flex-column align-items-start">
+                <div class="mb-3">
+                    {% if municipio.logotipo %}
+                        <img src="{{ municipio.logotipo.url }}" class="footer-logo" alt="Logo Municipal">
+                    {% else %}
+                        <img src="{% static 'assets/images/logo/logo-new.png' %}" class="footer-logo" alt="Logo Municipal">
+                    {% endif %}
+                </div>
+                <h4 class="h5 text-white mb-0">
+                    {% if municipio.nombre %}
+                        {{ municipio.nombre }}
+                    {% else %}
+                        Nombre del Municipio
+                    {% endif %}
+                </h4>
+            </div>
+
+            <!-- Enlaces principales -->
+            <div class="col-md-3">
+                <h5 class="footer-title">Acceso Rápido</h5>
+                <ul class="footer-nav list-unstyled">
+                    <li><a href="{% url 'home' %}" class="footer-link"><i class="fas fa-home me-2"></i>Inicio</a></li>
+                    <li><a href="{% url 'homeGobierno' %}" class="footer-link"><i class="fas fa-university me-2"></i>Gobierno</a></li>
+                    <li><a href="{% url 'homeServicios' %}" class="footer-link"><i class="fas fa-concierge-bell me-2"></i>Servicios</a></li>
+                    <li><a href="{% url 'homeNoticias' %}" class="footer-link"><i class="fas fa-newspaper me-2"></i>Noticias</a></li>
+                </ul>
+            </div>
+
+            <!-- Enlaces secundarios -->
+            <div class="col-md-3">
+                <h5 class="footer-title">Más Información</h5>
+                <ul class="footer-nav list-unstyled">
+                    <li><a href="{% url 'homeTransferencia' %}" class="footer-link">Transparencia</a></li>
+                    <li><a href="{% url 'homeSevac' %}" class="footer-link">SEVAC</a></li>
+                    <li><a href="{% url 'homeReportes' %}" class="footer-link">Reportes Ciudadanos</a></li>
+                    <li><a href="{% url 'HomeConvocatoriasView' %}" class="footer-link">Convocatorias</a></li>
+                    <li><a href="{% url 'homeHabla' %}" class="footer-link">Programa Familia</a></li>
+                    <li><a href="{% url 'HomePrivacidad' %}" class="footer-link">Privacidad</a></li>
+                </ul>
+            </div>
+
+            <!-- Redes sociales -->
+            <div class="col-md-3">
+                <h5 class="footer-title">Conecta con Nosotros</h5>
+                <div class="social-wrapper mt-3">
+                    <a href="#" class="social-link" aria-label="Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="YouTube">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Copyright -->
+        <div class="footer-copyright text-center pt-4 mt-4 border-top border-white-10">
+            <p class="small mb-0 opacity-75">
+                &copy; 2024-2027 {% if municipio.nombre %}{{ municipio.nombre }}{% else %}Municipio{% endif %}.<br class="d-md-none"> Todos los derechos reservados.
+            </p>
+        </div>
+    </div>
+</footer>
