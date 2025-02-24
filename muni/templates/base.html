@@ -133,6 +133,83 @@
             font-size: 0.8rem;
           }
         }
+
+        /* Elimina la flecha por defecto de Bootstrap (si quieres usar solo el ícono) */
+        .dropdown-toggle::after {
+            display: none !important; 
+        }
+        
+        /* Anima la flecha de Bootstrap Icons */
+        .arrow-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        /* Cuando el menú esté abierto, rotamos la flecha 180° */
+        .nav-item.dropdown.show .arrow-icon {
+            transform: rotate(-180deg);
+        }
+        
+        /* Dropdown personalizado */
+        .dropdown-menu {
+            background-color: var(--color-primario);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            margin-top: 0.5rem;
+        }
+        
+        .dropdown-item {
+            color: #fff !important;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding-left: 2rem;
+        }
+        
+        .dropdown-item::before {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: #fff;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .dropdown-item:hover::before {
+            opacity: 1;
+        }
+        
+        .dropdown-divider {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Alineación del dropdown en pantallas grandes */
+        @media (min-width: 992px) {
+            .dropdown-menu {
+                margin-top: 0.75rem;
+            }
+        }
+        
+
+
+        /* Transición del ícono */
+        .dropdown-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        /* Cuando aria-expanded está en true, giramos el ícono 180° */
+        .nav-link.dropdown-toggle[aria-expanded="true"] .dropdown-icon {
+            transform: rotate(-180deg);
+        }
         
 
     </style>
@@ -173,7 +250,28 @@
                                
                     <li class="nav-item {% if sidebar == 'noticias' %}active{% endif %}"><a class="nav-link" href="{% url "homeNoticias" %}">Noticias</a></li>
                     <li class="nav-item {% if sidebar == 'transparecnia' %}active{% endif %}"><a class="nav-link" href="{% url "homeTransferencia" %}">Transparencia</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">SEVAC</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Reportes</a></li>
+                    <!-- En tu navbar -->
+                    <li class="nav-item dropdown {% if sidebar == 'mas' %}active{% endif %}">
+                        <a 
+                            class="nav-link dropdown-toggle d-flex align-items-center" 
+                            href="#" 
+                            role="button" 
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false"
+                        >
+                            Más
+                            <!-- Icono de flecha hacia abajo de Bootstrap Icons -->
+                            <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Subsección 1</a></li>
+                            <li><a class="dropdown-item" href="#">Subsección 2</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">Otra sección</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
