@@ -234,7 +234,11 @@
 
         /* ---------------------------------------------------------------------------------------------------- */
 
-
+        .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+          }
+          
         /* Footer mejorado */
         /* Estilos mejorados para el footer */
         .footer {
