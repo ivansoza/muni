@@ -1,58 +1,368 @@
 {% load static %}
 
+<style>
+    /* Variables mejoradas */
+    :root {
+        --contact-spacing: 2.5rem;
+        --contact-icon-size: 2.5rem;
+        --contact-border-radius: 1.25rem;
+    }
 
+    /* Estructura premium */
+    .contact-container {
+        position: relative;
+        min-height: 85vh;
+        margin: 4rem 0;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+    }
 
-<div class="contact-section-full">
-    <!-- Imagen de fondo -->
-    <div class="background-image">
-        <img src="{% static 'img/presidencia.jpg' %}" alt="Contacto" class="w-100 h-100">
+    .contact-hero {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+    }
+
+    .contact-bg {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.8) blur(2px);
+        transform: scale(1.02);
+        transition: filter 0.4s ease;
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+            45deg,
+            rgba(var(--color-primario-rgb), 0.92) 0%,
+            rgba(var(--color-secundario-rgb), 0.88) 100%
+        );
+    }
+
+    /* Tarjeta de contacto premium */
+    .contact-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 4rem 2rem;
+    }
+
+    .contact-box {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: var(--contact-border-radius);
+        padding: 3.5rem;
+        width: 100%;
+        max-width: 600px;
+        box-shadow: 0 2rem 4rem rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        margin-left: auto;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .contact-box::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            45deg,
+            rgba(var(--color-primario-rgb), 0.03),
+            rgba(var(--color-secundario-rgb), 0.05)
+        );
+        z-index: -1;
+    }
+
+    .contact-header {
+        color: var(--color-primario);
+        font-size: 1.8rem;
+        margin-bottom: 2.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        position: relative;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+
+    .contact-header::after {
+        content: '';
+        position: absolute;
+        bottom: -1rem;
+        left: 0;
+        width: 4rem;
+        height: 3px;
+        background: var(--color-acento);
+        border-radius: 2px;
+    }
+
+    .contact-header i {
+        font-size: 2.2rem;
+        color: var(--color-acento);
+    }
+
+    /* Lista de contactos mejorada */
+    .contact-list {
+        display: grid;
+        gap: 2rem;
+    }
+
+    .contact-element {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: calc(var(--contact-border-radius) * 0.75);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        position: relative;
+    }
+
+    .contact-element:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.08);
+        border-color: rgba(var(--color-primario-rgb), 0.1);
+    }
+
+    .contact-badge {
+        width: var(--contact-icon-size);
+        height: var(--contact-icon-size);
+        border-radius: calc(var(--contact-border-radius) * 0.6);
+        background: var(--color-primario);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+        transition: transform 0.3s ease;
+    }
+
+    .contact-element:hover .contact-badge {
+        transform: scale(1.05) rotate(8deg);
+    }
+
+    .contact-badge.email { 
+        background: linear-gradient(45deg, var(--color-acento), #d32f2f);
+    }
+    
+    .contact-badge.location { 
+        background: linear-gradient(45deg, var(--color-acento), #388e3c);
+    }
+    
+    .contact-badge.schedule { 
+        background: linear-gradient(45deg, var(--color-acento), #f57c00);
+    }
+
+    .contact-info {
+        flex-grow: 1;
+    }
+
+    .contact-label {
+        color: #555;
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin-bottom: 0.4rem;
+        letter-spacing: 0.5px;
+    }
+
+    .contact-value {
+        color: var(--color-primario);
+        font-weight: 600;
+        font-size: 1.3rem;
+        margin: 0;
+        line-height: 1.3;
+    }
+
+    .link {
+        color: var(--color-secundario);
+        text-decoration: none;
+        position: relative;
+        display: inline-block;
+    }
+
+    .link::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: currentColor;
+        transition: width 0.3s ease;
+    }
+
+    .link:hover::after {
+        width: 100%;
+    }
+
+    /* Botón premium */
+    .map-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        background: var(--color-secundario);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.8rem;
+        border-radius: calc(var(--contact-border-radius) * 0.6);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        position: relative;
+        overflow: hidden;
+        margin-top: 1rem;
+    }
+
+    .map-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent
+        );
+        transition: left 0.6s ease;
+    }
+
+    .map-btn:hover::before {
+        left: 100%;
+    }
+
+    .map-btn:hover {
+        background: var(--color-primario);
+        box-shadow: 0 0.5rem 1.5rem rgba(var(--color-primario-rgb), 0.3);
+    }
+
+    /* Responsive avanzado */
+    @media (max-width: 1200px) {
+        .contact-box {
+            max-width: 500px;
+            padding: 3rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .contact-container {
+            min-height: auto;
+            margin: 2rem 0;
+        }
+
+        .contact-box {
+            margin: 1rem;
+            padding: 2rem;
+            backdrop-filter: blur(8px);
+        }
+
+        .contact-header {
+            font-size: 2rem;
+        }
+
+        .contact-value {
+            font-size: 1.1rem;
+        }
+
+        .contact-badge {
+            width: 3rem;
+            height: 3rem;
+            font-size: 1.2rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .contact-element {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 1.5rem;
+        }
+
+        .contact-badge {
+            margin-bottom: 1rem;
+        }
+
+        .map-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="contact-container">
+    <div class="contact-hero">
+        <img src="{% static 'img/presidencia.jpg' %}" alt="Edificio Municipal" class="contact-bg">
+        <div class="overlay"></div>
     </div>
 
-    <!-- Contenedor de la información -->
-    <div class="contact-info-container">
-        <h2 class="section-title2 mb-4">Contáctanos</h2>
-        <p class="section-description mb-4">Si tienes alguna consulta o necesitas ayuda, estamos aquí para ti. Puedes visitarnos en nuestras oficinas o comunicarte a través de los siguientes medios:</p>
+    <div class="contact-wrapper">
+        <div class="contact-box" id="atencion-ciudadana">
+            <h2 class="contact-header">
+                <i class="fas fa-comments"></i>
+                Atención Ciudadana
+            </h2>
+            
+            <div class="contact-list">
+                <div class="contact-element">
+                    <div class="contact-badge">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <div class="contact-info">
+                        <p class="contact-label">Teléfono Directo</p>
+                        <p class="contact-value">246 297 18 32</p>
+                        <small class="contact-hours">Disponible en horario de oficina</small>
+                    </div>
+                </div>
 
-        <div class="info-item d-flex align-items-center mb-4">
-            <div class="icon-circle me-3">
-                <i class="fas fa-phone-alt"></i>
-            </div>
-            <div>
-                <h4 class="mb-1">Teléfono</h4>
-                <p>(555) 123-4567</p>
-            </div>
-        </div>
+                <div class="contact-element">
+                    <div class="contact-badge ">
+                        <i class="fas fa-envelope-open-text"></i>
+                    </div>
+                    <div class="contact-info">
+                        <p class="contact-label">Correo Electrónico</p>
+                        <a href="mailto:presidencia@zacatelco.gob.mx" class="contact-value link">presidencia@zacatelco.gob.mx</a>
+                    </div>
+                </div>
 
-        <div class="info-item d-flex align-items-center mb-4">
-            <div class="icon-circle me-3">
-                <i class="fas fa-envelope"></i>
-            </div>
-            <div>
-                <h4 class="mb-1">Correo</h4>
-                <p>contacto@municipio.gob</p>
-            </div>
-        </div>
+                <div class="contact-element">
+                    <div class="contact-badge ">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <div class="contact-info">
+                        <p class="contact-label">Oficinas Centrales</p>
+                        <button class="map-btn" id="open-map-modal">
+                            <i class="fas fa-external-link-alt"></i>
+                            Ver en Mapa 
+                        </button>
+                    </div>
+                </div>
 
-        <div class="info-item d-flex align-items-center mb-4">
-            <div class="icon-circle me-3">
-                <i class="fas fa-map-marker-alt"></i>
-            </div>
-            <div>
-                <h4 class="mb-1">Ubicación</h4>
-                <button class="btn btn-link text-white p-0" id="open-map-modal">Ver mapa</button>
-            </div>
-        </div>
-
-        <!-- Horarios de atención -->
-        <div class="info-item d-flex align-items-center">
-            <div class="icon-circle me-3">
-                <i class="fas fa-clock"></i>
-            </div>
-            <div>
-                <h4 class="mb-1">Horarios de Atención</h4>
-                <p>Lunes a Viernes: 8:00 AM - 4:00 PM</p>
-                <p>Sábado: 9:00 AM - 1:00 PM</p>
-                <p>Domingo: Cerrado</p>
+                <div class="contact-element">
+                    <div class="contact-badge ">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="contact-info">
+                        <p class="contact-label">Horario de Servicio</p>
+                        <p class="contact-value">Lun-Vie: 9:00 AM - 4:00 PM</p>
+                        <p class="contact-value">Sábados: 9:00 AM - 1:00 PM</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
