@@ -1,1 +1,110 @@
 {% extends "baseTemplate.html" %}
+{% load static %}
+
+{% block css %} 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .btn-add {
+        display: block;
+        margin-bottom: 20px;
+        background-color: #3E688C;
+        color: white;
+        border-radius: 10px;
+        padding: 12px 20px;
+        font-size: 16px;
+        border: none;
+        width: 17%;
+    }
+
+    .btn-add:hover {
+        background-color: rgb(20, 102, 149);
+        color: white;
+    }
+</style>
+<div class="container-fluid">
+    <a href="{% url 'crear_servicio' %}" class="btn btn-add" style="margin-bottom: 20px; border-radius: 10px; padding: 12px 20px; font-size: 16px;"><i class="fa-solid fa-laptop-file"></i> Nuevo Servicio</a>
+
+    <div class="col-sm-12" id='colTabla'>
+        <div class="card">
+            <div class="card-body">
+                <div class="dt-ext table-responsive theme-scrollbar">
+                    <table class="display" id="basic-2">
+                        <thead>
+                            <tr>
+                                <th>Titulo</th>
+                                <th>Clasificación</th>
+                                <th>Sector</th>
+                                <th>Organismo</th>
+                                <th style="width: 110px;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for servicio in servicios %}
+                            <tr>
+                                <td>{{ servicio.titulo }}</td>
+                                <td>{{ servicio.clasificacion.nombre }}</td>
+                                <td>{{ servicio.sector.nombre }}</td>
+                                <td> {{ servicio.organismo.nombre }}</td>
+                                <td style="text-align: center;">
+                                    <a href="#" class="btn btn-sm btn-primary rounded-circle p-2" title="Gestionar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'editar_servicio' servicio.id %}" class="btn btn-warning btn-sm rounded-circle p-2" title="Editar">
+                                        <i class="fa-solid fa-file-pen"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-danger btn-sm rounded-circle p-2" title="Eliminar" onclick="confirmarEliminacion('{{ servicio.id|safe }}')">
+                                        <i class="fa-solid fa-trash-can"></i>                                    
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No hay servicios disponibles.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function confirmarEliminacion(servicioId) {
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: "Esta acción no se puede deshacer.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/admin/servicios/eliminar/${servicioId}/`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        Swal.fire("Eliminado", "El servicio ha sido eliminado.", "success")
+                        .then(() => location.reload());
+                    } else {
+                        Swal.fire("Error", "No se pudo eliminar el servicio.", "error");
+                    }
+                });
+            }
+        });
+    }
+</script>
+{% endblock content %}

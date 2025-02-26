@@ -1,0 +1,27 @@
+{% extends "baseTemplate.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div>
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h2 class="mb-0">📄 Complete los datos del servicio</h2>
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">  
+                {% csrf_token %}
+                {{ form|crispy }}
+                
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary btn-lg me-3">
+                        💾 Guardar
+                    </button>
+                    <a href="{% url 'servicios_view' %}" class="btn btn-secondary btn-lg">
+                        ❌ Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

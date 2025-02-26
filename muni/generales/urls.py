@@ -1,7 +1,9 @@
 from django.urls import path, include
-from .views import CustomLoginView, DashboardView, NewsView, PersonalizacionView,SocialMediaView,ServicesView, custom_upload_function, agregar_categoria, eliminar_noticia, editar_noticia
+from .views import CustomLoginView, DashboardView, NewsView, PersonalizacionView, ServicioCreateView, ServicioUpdateView,SocialMediaView,ServicesView, custom_upload_function, agregar_categoria, eliminar_noticia, editar_noticia
 from django.contrib.auth.views import LogoutView
 from .views import TransparenciaView, crear_seccion, EjercicioFiscalListView, EjercicioFiscalCreateView, DocumentoTransparenciaListView, registrar_documento, SeccionTransparenciaUpdateView, eliminar_seccion, EjercicioFiscalUpdateView, eliminar_ejercicio_fiscal, DocumentoTransparenciaUpdateView, eliminar_documento_transparencia
+from . import views
+
 urlpatterns = [
     path("", CustomLoginView.as_view(),name='login'),
     path('logout/', LogoutView.as_view(next_page='home'),  name='logout'),      
@@ -9,7 +11,6 @@ urlpatterns = [
     path('personalizacion/', PersonalizacionView.as_view(), name='personalizacion_view'),
     path('social-media/', SocialMediaView.as_view(), name='social_view'),
     path('noticias/', NewsView.as_view(), name='noticias_view'),
-    path('servicios/', ServicesView.as_view(), name='servicios_view'),
     path("upload/", custom_upload_function, name="custom_upload_file"),
     path('agregar-categoria/', agregar_categoria, name='agregar_categoria'),
     path('editar-noticia/<int:noticia_id>/', editar_noticia, name='editar_noticia'),
@@ -26,6 +27,9 @@ urlpatterns = [
     path('eliminar_ejercicio/<int:pk>/', eliminar_ejercicio_fiscal, name='eliminar_ejercicio'),
     path('editar_documento/<int:pk>/', DocumentoTransparenciaUpdateView.as_view(), name='editar_documento_transparencia'),
     path('eliminar_documento/<int:pk>/', eliminar_documento_transparencia, name='eliminar_documento_transparencia'),
-
-
+    
+    path('servicios/', ServicesView.as_view(), name='servicios_view'),
+    path('servicios/eliminar/<uuid:servicio_id>/', views.eliminar_servicio, name='eliminar_servicio'),
+    path('servicios/crear/', ServicioCreateView.as_view(), name='crear_servicio'),
+    path('servicios/editar/<uuid:pk>/', ServicioUpdateView.as_view(), name='editar_servicio'),
 ]

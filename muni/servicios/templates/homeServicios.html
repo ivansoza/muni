@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static "css/servicios/styles.css" %}">
+    <link rel="stylesheet" href="{% static 'css/servicios/styles.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -16,56 +16,6 @@
             <a href="{% url 'homeServicios' %}" class="btn reset-btn">
                 <i class="fas fa-sync-alt"></i> Restablecer
             </a>
-        </div>
-
-        <!-- Filtros debajo del cuadro de búsqueda -->
-        <div class="filters-container">
-            <div class="filter">
-                <label for="clasificacion">Seleccionar<br><strong>Clasificación</strong></label>
-                <select id="clasificacion" name="clasificacion" class="form-select">
-                    <option value="">Todas</option>
-                    {% for cat in categorias %}
-                    <option value="{{ cat.id }}" {% if clasificacion == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.nombre }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="filter">
-                <label for="sector">Seleccionar<br><strong>Sector</strong></label>
-                <select id="sector" name="sector" class="form-select">
-                    <option value="">Todos</option>
-                    {% for sec in sectores %}
-                    <option value="{{ sec.id }}" {% if sector == sec.id|stringformat:"s" %}selected{% endif %}>{{ sec.nombre }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="filter">
-                <label for="organismo">Seleccionar<br><strong>Dependencia, Entidad u Organismo</strong></label>
-                <select id="organismo" name="organismo" class="form-select">
-                    <option value="">Todos</option>
-                    {% for org in dependencias %}
-                    <option value="{{ org.id }}" {% if organismo == org.id|stringformat:"s" %}selected{% endif %}>{{ org.nombre }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="filter">
-                <label for="canal">Seleccionar<br><strong>Canal de Presentación</strong></label>
-                <select id="canal" name="canal" class="form-select">
-                    <option value="">Todos</option>
-                    <option value="en-linea">En línea</option>
-                    <option value="presencial">Presencial</option>
-                </select>
-            </div>
-
-            <div class="filter">
-                <label for="orden">Seleccionar<br><strong>Nombre ascendente</strong></label>
-                <select id="orden" name="orden" class="form-select">
-                    <option value="asc">Ascendente</option>
-                    <option value="desc">Descendente</option>
-                </select>
-            </div>
         </div>
     </form>
 </div>
@@ -115,7 +65,7 @@
                 <!-- Botones de acción -->
                 <div class="buttons row g-1 justify-content-center mt-3">
                     <div class="col-6">
-                        <a class="btn btn-outline-warning d-block rounded-pill" href="{% url 'detalle_servicio' servicio.id %}">
+                        <a class="btn btn-outline-warning d-block rounded-pill" href="#">
                             Ver más
                         </a>
                     </div>
