@@ -1,18 +1,21 @@
 {% load static %}
 
 <style>
-    /* Variables mejoradas */
+    /* Enhanced variables for better customization */
     :root {
         --contact-spacing: 2.5rem;
-        --contact-icon-size: 2.5rem;
+        --contact-icon-size: 2.8rem;
         --contact-border-radius: 1.25rem;
+        --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --box-shadow-soft: 0 1rem 2.5rem rgba(0, 0, 0, 0.12);
+        --box-shadow-hover: 0 1.5rem 3rem rgba(0, 0, 0, 0.15);
     }
 
-    /* Estructura premium */
+    /* Premium structure with better organization */
     .contact-container {
         position: relative;
         min-height: 85vh;
-        margin: 4rem 0;
+        margin: 5rem 0;
         display: flex;
         align-items: center;
         overflow: hidden;
@@ -29,9 +32,9 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        filter: brightness(0.8) blur(2px);
+        filter: brightness(0.85) blur(1.5px);
         transform: scale(1.02);
-        transition: filter 0.4s ease;
+        transition: filter 0.5s ease;
     }
 
     .overlay {
@@ -42,32 +45,38 @@
         height: 100%;
         background: linear-gradient(
             45deg,
-            rgba(var(--color-primario-rgb), 0.92) 0%,
-            rgba(var(--color-secundario-rgb), 0.88) 100%
+            rgba(var(--color-primario-rgb), 0.94) 0%,
+            rgba(var(--color-secundario-rgb), 0.90) 100%
         );
     }
 
-    /* Tarjeta de contacto premium */
+    /* Enhanced contact card with improved visuals */
     .contact-wrapper {
         position: relative;
         width: 100%;
         max-width: 1400px;
         margin: 0 auto;
         padding: 4rem 2rem;
+        z-index: 1;
     }
 
     .contact-box {
         background: rgba(255, 255, 255, 0.98);
         border-radius: var(--contact-border-radius);
-        padding: 3.5rem;
+        padding: 3.8rem;
         width: 100%;
-        max-width: 600px;
-        box-shadow: 0 2rem 4rem rgba(0, 0, 0, 0.25);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        max-width: 620px;
+        box-shadow: var(--box-shadow-soft);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
         margin-left: auto;
         position: relative;
         overflow: hidden;
+        transition: var(--transition-smooth);
+    }
+
+    .contact-box:hover {
+        box-shadow: var(--box-shadow-hover);
     }
 
     .contact-box::before {
@@ -79,16 +88,22 @@
         height: 200%;
         background: linear-gradient(
             45deg,
-            rgba(var(--color-primario-rgb), 0.03),
-            rgba(var(--color-secundario-rgb), 0.05)
+            rgba(var(--color-primario-rgb), 0.04),
+            rgba(var(--color-secundario-rgb), 0.06)
         );
         z-index: -1;
+        animation: subtle-move 15s infinite alternate ease-in-out;
+    }
+
+    @keyframes subtle-move {
+        0% { transform: translate(-2%, -2%); }
+        100% { transform: translate(2%, 2%); }
     }
 
     .contact-header {
         color: var(--color-primario);
-        font-size: 1.8rem;
-        margin-bottom: 2.5rem;
+        font-size: 2rem;
+        margin-bottom: 2.8rem;
         display: flex;
         align-items: center;
         gap: 1.5rem;
@@ -100,47 +115,70 @@
     .contact-header::after {
         content: '';
         position: absolute;
-        bottom: -1rem;
+        bottom: -1.2rem;
         left: 0;
-        width: 4rem;
-        height: 3px;
+        width: 5rem;
+        height: 4px;
         background: var(--color-acento);
-        border-radius: 2px;
+        border-radius: 4px;
+        transition: width 0.3s ease;
+    }
+
+    .contact-box:hover .contact-header::after {
+        width: 8rem;
     }
 
     .contact-header i {
-        font-size: 2.2rem;
+        font-size: 2.4rem;
         color: var(--color-acento);
     }
 
-    /* Lista de contactos mejorada */
+    /* Enhanced contact list with interactive elements */
     .contact-list {
         display: grid;
-        gap: 2rem;
+        gap: 2.2rem;
     }
 
     .contact-element {
         display: flex;
         align-items: center;
-        gap: 1.5rem;
-        padding: 1.5rem;
+        gap: 1.8rem;
+        padding: 1.8rem;
         background: rgba(255, 255, 255, 0.95);
         border-radius: calc(var(--contact-border-radius) * 0.75);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: var(--transition-smooth);
         border: 1px solid rgba(0, 0, 0, 0.05);
         position: relative;
+        overflow: hidden;
+    }
+
+    .contact-element::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 0.35rem;
+        background: var(--color-acento);
+        opacity: 0;
+        transition: var(--transition-smooth);
+        border-radius: 4px 0 0 4px;
     }
 
     .contact-element:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.08);
-        border-color: rgba(var(--color-primario-rgb), 0.1);
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.09);
+        border-color: rgba(var(--color-primario-rgb), 0.12);
+    }
+
+    .contact-element:hover::before {
+        opacity: 1;
     }
 
     .contact-badge {
         width: var(--contact-icon-size);
         height: var(--contact-icon-size);
-        border-radius: calc(var(--contact-border-radius) * 0.6);
+        border-radius: 50%;
         background: var(--color-primario);
         color: white;
         display: flex;
@@ -148,23 +186,29 @@
         justify-content: center;
         font-size: 1.4rem;
         flex-shrink: 0;
-        transition: transform 0.3s ease;
+        transition: transform 0.4s ease, box-shadow 0.3s ease;
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15);
     }
 
     .contact-element:hover .contact-badge {
-        transform: scale(1.05) rotate(8deg);
+        transform: scale(1.08) rotate(8deg);
+        box-shadow: 0 0.8rem 1.8rem rgba(var(--color-primario-rgb), 0.25);
     }
 
+    .contact-badge.phone { 
+        background: linear-gradient(135deg, #4a6bff, #2196f3);
+    }
+    
     .contact-badge.email { 
-        background: linear-gradient(45deg, var(--color-acento), #d32f2f);
+        background: linear-gradient(135deg, #ff5252, #d32f2f);
     }
     
     .contact-badge.location { 
-        background: linear-gradient(45deg, var(--color-acento), #388e3c);
+        background: linear-gradient(135deg, #43a047, #388e3c);
     }
     
     .contact-badge.schedule { 
-        background: linear-gradient(45deg, var(--color-acento), #f57c00);
+        background: linear-gradient(135deg, #ff9800, #f57c00);
     }
 
     .contact-info {
@@ -172,19 +216,32 @@
     }
 
     .contact-label {
-        color: #555;
-        font-size: 0.95rem;
-        font-weight: 500;
-        margin-bottom: 0.4rem;
+        color: #444;
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
         letter-spacing: 0.5px;
+        transition: var(--transition-smooth);
+    }
+
+    .contact-element:hover .contact-label {
+        color: var(--color-acento);
     }
 
     .contact-value {
         color: var(--color-primario);
-        font-weight: 600;
-        font-size: 1.3rem;
+        font-weight: 700;
+        font-size: 1.35rem;
         margin: 0;
         line-height: 1.3;
+    }
+
+    .contact-hours {
+        display: block;
+        color: #666;
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        font-style: italic;
     }
 
     .link {
@@ -192,24 +249,29 @@
         text-decoration: none;
         position: relative;
         display: inline-block;
+        transition: color 0.3s ease;
     }
 
     .link::after {
         content: '';
         position: absolute;
-        bottom: -2px;
+        bottom: -3px;
         left: 0;
         width: 0;
         height: 2px;
         background: currentColor;
-        transition: width 0.3s ease;
+        transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .link:hover {
+        color: var(--color-acento);
     }
 
     .link:hover::after {
         width: 100%;
     }
 
-    /* Botón premium */
+    /* Enhanced button with animations */
     .map-btn {
         display: inline-flex;
         align-items: center;
@@ -217,14 +279,16 @@
         background: var(--color-secundario);
         color: white;
         border: none;
-        padding: 0.8rem 1.8rem;
+        padding: 0.9rem 1.8rem;
         border-radius: calc(var(--contact-border-radius) * 0.6);
         cursor: pointer;
         transition: all 0.3s ease;
-        font-weight: 500;
+        font-weight: 600;
         position: relative;
         overflow: hidden;
         margin-top: 1rem;
+        letter-spacing: 0.5px;
+        box-shadow: 0 0.5rem 1rem rgba(var(--color-secundario-rgb), 0.25);
     }
 
     .map-btn::before {
@@ -237,70 +301,100 @@
         background: linear-gradient(
             90deg,
             transparent,
-            rgba(255, 255, 255, 0.2),
+            rgba(255, 255, 255, 0.3),
             transparent
         );
-        transition: left 0.6s ease;
+        transition: left 0.8s ease;
     }
 
     .map-btn:hover::before {
         left: 100%;
     }
 
-    .map-btn:hover {
-        background: var(--color-primario);
-        box-shadow: 0 0.5rem 1.5rem rgba(var(--color-primario-rgb), 0.3);
+    .map-btn i {
+        transition: transform 0.3s ease;
     }
 
-    /* Responsive avanzado */
+    .map-btn:hover i {
+        transform: translateX(3px);
+    }
+
+    .map-btn:hover {
+        background: var(--color-primario);
+        box-shadow: 0 0.8rem 1.8rem rgba(var(--color-primario-rgb), 0.3);
+        transform: translateY(-2px);
+    }
+
+    .map-btn:active {
+        transform: translateY(1px);
+    }
+
+    /* Enhanced responsive design */
     @media (max-width: 1200px) {
         .contact-box {
+            max-width: 550px;
+            padding: 3.2rem;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .contact-box {
             max-width: 500px;
-            padding: 3rem;
+            margin: 0 auto;
         }
     }
 
     @media (max-width: 768px) {
         .contact-container {
             min-height: auto;
-            margin: 2rem 0;
+            margin: 3rem 0;
         }
 
         .contact-box {
-            margin: 1rem;
-            padding: 2rem;
+            margin: 1rem auto;
+            padding: 2.5rem;
             backdrop-filter: blur(8px);
         }
 
         .contact-header {
-            font-size: 2rem;
+            font-size: 1.8rem;
         }
 
         .contact-value {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
         }
 
         .contact-badge {
-            width: 3rem;
-            height: 3rem;
-            font-size: 1.2rem;
+            width: 3.2rem;
+            height: 3.2rem;
+            font-size: 1.3rem;
         }
     }
 
     @media (max-width: 480px) {
+        .contact-wrapper {
+            padding: 2rem 1rem;
+        }
+        
+        .contact-box {
+            padding: 2rem 1.5rem;
+        }
+        
         .contact-element {
             flex-direction: column;
             align-items: flex-start;
             padding: 1.5rem;
+            gap: 1rem;
         }
 
         .contact-badge {
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
 
         .map-btn {
             width: 100%;
             justify-content: center;
+            margin-top: 0.8rem;
         }
     }
 </style>
@@ -320,7 +414,7 @@
             
             <div class="contact-list">
                 <div class="contact-element">
-                    <div class="contact-badge">
+                    <div class="contact-badge phone">
                         <i class="fas fa-phone-alt"></i>
                     </div>
                     <div class="contact-info">
@@ -331,7 +425,7 @@
                 </div>
 
                 <div class="contact-element">
-                    <div class="contact-badge ">
+                    <div class="contact-badge email">
                         <i class="fas fa-envelope-open-text"></i>
                     </div>
                     <div class="contact-info">
@@ -341,11 +435,12 @@
                 </div>
 
                 <div class="contact-element">
-                    <div class="contact-badge ">
+                    <div class="contact-badge location">
                         <i class="fas fa-map-marked-alt"></i>
                     </div>
                     <div class="contact-info">
                         <p class="contact-label">Oficinas Centrales</p>
+                        <p class="contact-value">Palacio Municipal, Centro, Zacatelco</p>
                         <button class="map-btn" id="open-map-modal">
                             <i class="fas fa-external-link-alt"></i>
                             Ver en Mapa 
@@ -354,7 +449,7 @@
                 </div>
 
                 <div class="contact-element">
-                    <div class="contact-badge ">
+                    <div class="contact-badge schedule">
                         <i class="fas fa-clock"></i>
                     </div>
                     <div class="contact-info">
@@ -367,3 +462,27 @@
         </div>
     </div>
 </div>
+
+<!-- Script for enhanced interaction -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add hover effect to contact elements
+        const contactElements = document.querySelectorAll('.contact-element');
+        
+        contactElements.forEach(element => {
+            element.addEventListener('mouseenter', function() {
+                this.style.transition = 'var(--transition-smooth)';
+            });
+        });
+
+        // Map button functionality
+        const mapBtn = document.getElementById('open-map-modal');
+        if (mapBtn) {
+            mapBtn.addEventListener('click', function() {
+                // Add your map modal opening functionality here
+                alert('Abriendo mapa de ubicación...');
+                // This would be replaced with actual map functionality
+            });
+        }
+    });
+</script>
