@@ -388,7 +388,6 @@
 <div class="floating-button-container">
     <button class="floating-button" id="backToTop" aria-label="Volver al inicio">
         <i class="fas fa-chevron-up"></i>
-        <span class="tooltip">Volver arriba</span>
     </button>
 </div>
 
@@ -397,7 +396,7 @@
 <style>
     .floating-button-sos {
         position: fixed;
-        right: 1rem;
+        right: -12px;
         bottom: 90px;
         width: 5.5rem;
         height: 5.5rem;
@@ -518,7 +517,7 @@
 .floating-button-container {
     position: fixed;
     bottom: 2rem;
-    right: 2rem;
+    right: 0.1rem;
     z-index: 999;
     transition: all 0.3s ease-in-out;
     opacity: 0;
