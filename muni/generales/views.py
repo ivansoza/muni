@@ -11,6 +11,8 @@ from django.views.generic import TemplateView, ListView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from informacion_municipal.models import Municipio
+from servicios.forms import ServicioForm
+from servicios.models import Servicio
 from .forms import CustomAuthenticationForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
@@ -300,7 +302,9 @@ def custom_upload_function(request):
     
     return JsonResponse({"error": "Invalid request"}, status=400)
 
-
+"""
+    Vistas de Servicios en el administrador
+"""
 class ServicesView(LoginRequiredMixin, TemplateView):
     template_name = "servicios.html"  
     login_url = reverse_lazy('login')  # Redirigir si no está autenticado
@@ -313,8 +317,50 @@ class ServicesView(LoginRequiredMixin, TemplateView):
             'child': {'name': 'Servicios', 'url': ''}
         }
         context['sidebar'] = 'servicios'  # Asegura que el sidebar resalte la sección de Servicios
+        context['servicios'] = Servicio.objects.all()
 
         return context
+    
+@csrf_exempt
+def eliminar_servicio(request, servicio_id):
+    if request.method == 'POST':
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        servicio.delete()
+        return JsonResponse({'message': 'Servicio eliminado'}, status=200)
+    return JsonResponse({'message': 'Método no permitido'}, status=405)
+
+class ServicioCreateView(LoginRequiredMixin, CreateView):
+    model = Servicio
+    form_class = ServicioForm
+    template_name = 'servicios/crear_servicio.html'
+    success_url = reverse_lazy('servicios_view')  # Redirige al listar servicios
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        url_conf = reverse('servicios_view')
+        context['breadcrumb'] = {
+            'parent': {'name': 'Servicios', 'url': url_conf},
+            'child': {'name': 'Nuevo Servicio', 'url': ''}
+        }
+        context['sidebar'] = 'servicios'
+        return context
+
+class ServicioUpdateView(LoginRequiredMixin, UpdateView):
+    model = Servicio
+    form_class = ServicioForm
+    template_name = 'servicios/editar_servicio.html'
+    success_url = reverse_lazy('servicios_view')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        url_conf = reverse('servicios_view')
+        context['breadcrumb'] = {
+            'parent': {'name': 'Servicios', 'url': url_conf},
+            'child': {'name': 'Editar Servicio', 'url': ''}
+        }
+        context['sidebar'] = 'servicios'
+        return context
+
 
 class TransparenciaView(LoginRequiredMixin, TemplateView):
     template_name = "transparencia/transparencia.html"  
