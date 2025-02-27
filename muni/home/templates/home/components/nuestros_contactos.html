@@ -463,26 +463,3 @@
     </div>
 </div>
 
-<!-- Script for enhanced interaction -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Add hover effect to contact elements
-        const contactElements = document.querySelectorAll('.contact-element');
-        
-        contactElements.forEach(element => {
-            element.addEventListener('mouseenter', function() {
-                this.style.transition = 'var(--transition-smooth)';
-            });
-        });
-
-        // Map button functionality
-        const mapBtn = document.getElementById('open-map-modal');
-        if (mapBtn) {
-            mapBtn.addEventListener('click', function() {
-                // Add your map modal opening functionality here
-                alert('Abriendo mapa de ubicación...');
-                // This would be replaced with actual map functionality
-            });
-        }
-    });
-</script>
