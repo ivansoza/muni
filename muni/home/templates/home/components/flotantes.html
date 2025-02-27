@@ -11,7 +11,7 @@
             position: fixed;
             bottom: 2rem;
             right: 0.1rem;
-            z-index: 999;
+            z-index: 1100; /* Sube este valor */
             transition: all 0.3s ease-in-out;
             opacity: 0;
             transform: translateY(100%);
@@ -392,3 +392,24 @@
         });
     </script>
     
+
+    <script>
+      // JavaScript para mostrar/ocultar el botón
+      window.addEventListener('scroll', function() {
+          const boton = document.querySelector('.floating-button-container');
+          if (window.scrollY > 200) {
+              boton.classList.add('mostrar');
+          } else {
+              boton.classList.remove('mostrar');
+          }
+      });
+      
+      // Función para scroll suave
+      document.getElementById('backToTop').addEventListener('click', function(e) {
+          e.preventDefault();
+          window.scrollTo({
+              top: 0,
+              behavior: 'smooth'
+          });
+      });
+      </script>

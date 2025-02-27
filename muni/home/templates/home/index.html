@@ -724,25 +724,6 @@
         });
         </script>
 
-        <script>
-            // JavaScript para mostrar/ocultar el botón
-            window.addEventListener('scroll', function() {
-                const boton = document.querySelector('.floating-button-container');
-                if (window.scrollY > 200) {
-                    boton.classList.add('mostrar');
-                } else {
-                    boton.classList.remove('mostrar');
-                }
-            });
-            
-            // Función para scroll suave
-            document.getElementById('backToTop').addEventListener('click', function(e) {
-                e.preventDefault();
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            });
-            </script>
+
 </body>
 </html>
