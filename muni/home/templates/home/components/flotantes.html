@@ -101,11 +101,19 @@
         ============================
     -->
     <style>
-        /* Botón "SOS" */
-        .floating-button-sos {
+        .sos-container {
             position: fixed;
+            right: 0;
+            bottom: -10px;
+            display: flex;
+            align-items: center;
+            z-index: 1000;
+        }
+
+
+        .floating-button-sos {
+            position: relative;
             right: -12px;
-            bottom: 90px;
             width: 5.5rem;
             height: 5.5rem;
             border-radius: 50%;
@@ -127,23 +135,18 @@
             will-change: transform, box-shadow;
         }
 
-        /* Hover en el botón "SOS" */
         .floating-button-sos:hover {
             transform: translateY(-5px) scale(1.05);
             box-shadow: 0 10px 40px rgba(var(--primary-color-rgb), 0.4),
                         0 15px 35px rgba(var(--secondary-color-rgb), 0.3),
                         inset 0 3px 6px rgba(255, 255, 255, 0.3);
         }
-
-        /* Efecto al presionar el botón "SOS" */
         .floating-button-sos:active {
             transform: translateY(2px) scale(0.98);
             box-shadow: 0 3px 15px rgba(var(--primary-color-rgb), 0.3),
                         0 5px 10px rgba(var(--secondary-color-rgb), 0.2),
                         inset 0 1px 3px rgba(255, 255, 255, 0.1);
         }
-
-        /* Imagen interna del botón "SOS" */
         .button-image {
             width: 55%;
             height: 55%;
@@ -151,19 +154,15 @@
             transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
-
-        /* Hover para la imagen del botón "SOS" */
         .floating-button-sos:hover .button-image {
             transform: scale(1.15) rotate(10deg);
         }
 
-        /* Animación de flotación (opcional) */
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-8px); }
         }
 
-        /* Animación para el efecto ripple */
         @keyframes ripple {
             to {
                 transform: scale(3);
@@ -171,13 +170,11 @@
             }
         }
 
-        /* Animación de pulsación continua */
         @keyframes pulse {
             0% { transform: scale(1); opacity: 1; }
             100% { transform: scale(1.8); opacity: 0; }
         }
 
-        /* Elemento para el efecto ripple en el botón "SOS" */
         .ripple {
             position: absolute;
             border-radius: 50%;
@@ -185,8 +182,6 @@
             transform: scale(0);
             animation: ripple 0.8s ease-out;
         }
-
-        /* Borde animado del botón "SOS" al hacer hover */
         .floating-button-sos::before {
             content: '';
             position: absolute;
@@ -199,14 +194,106 @@
             transition: border-color 0.3s ease;
         }
 
-        /* Cambio de borde en hover para el botón "SOS" */
         .floating-button-sos:hover::before {
             border-color: rgba(255, 255, 255, 0.4);
         }
-
-        /* Efecto extra cuando el botón "SOS" está activo */
         .floating-button-sos.active::after {
             opacity: 1;
+        }
+        .info-containers {
+            display: flex;
+            flex-direction: column;
+            margin-right: 20px;
+            opacity: 0;
+            transform: translateX(20px);
+            visibility: hidden;
+            transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s 0.4s;
+        }
+        .sos-container:hover .info-containers {
+            opacity: 1;
+            transform: translateX(0);
+            visibility: visible;
+            transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s;
+        }
+
+        .info-container {
+            background:rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            width: 260px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .sos-container:hover .info-container:nth-child(1) {
+            transform: translateY(0);
+            opacity: 1;
+            transition-delay: 0.1s;
+        }
+
+        .sos-container:hover .info-container:nth-child(2) {
+            transform: translateY(0);
+            opacity: 1;
+            transition-delay: 0.2s;
+        }
+        .info-container img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            margin-right: 15px;
+            border-radius: 8px;
+        }
+        .info-text {
+            flex: 1;
+        }
+
+        .info-text h3 {
+            margin: 0 0 5px 0;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .info-text p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        /* Efecto de pulsación para el botón */
+        .pulse-effect {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(var(--primary-color-rgb), 0.2);
+            animation: pulse 2s infinite;
+        }
+
+
+        @media (max-width: 768px) {
+
+            
+            .info-containers {
+                margin-right: 0;
+                margin-bottom: 15px;
+                transform: translateY(20px);
+            }
+            
+            .sos-container:hover .info-containers {
+                transform: translateY(0);
+            }
+            
+            .info-container {
+                width: 220px;
+                margin-bottom: 10px;
+            }
         }
     </style>
 
@@ -229,7 +316,27 @@
         Botón "SOS"
         =====================================
     -->
-    <div class="floating-button-sos" id="floatingButton">
-        <img src="{% static 'img/sos.png' %}" alt="Icono SOS" class="button-image">
+    <div class="sos-container">
+        <div class="info-containers">
+            <div class="info-container">
+                <img src="/api/placeholder/50/50" alt="Emergencia">
+                <div class="info-text">
+                    <h3>Emergencias</h3>
+                    <p>Mantén la calma y llama al número de emergencia nacional: 911</p>
+                </div>
+            </div>
+            <div class="info-container">
+                <img src="/api/placeholder/50/50" alt="Seguridad">
+                <div class="info-text">
+                    <h3>Protección Civil</h3>
+                    <p>Contacta a Protección Civil para situaciones de riesgo o desastres</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Botón SOS original -->
+        <div class="floating-button-sos" id="floatingButton">
+            <div class="pulse-effect"></div>
+            <img src="{% static "img/sos.png" %}" alt="Icono SOS" class="button-image">
+        </div>
     </div>
-
