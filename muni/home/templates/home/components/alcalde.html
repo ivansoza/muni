@@ -20,7 +20,7 @@
                             <li><i class="fas fa-check-circle me-2" style='color:var(--color-iconos)'></i>Reconocida por su destacada actividad ferroviaria y su contribución al progreso regional.</li>
                             <li><i class="fas fa-check-circle me-2" style='color:var(--color-iconos)'></i>Un crisol de cultura que se refleja en su gente trabajadora, su gastronomía y sus eventos emblemáticos.</li>
                             <li><i class="fas fa-check-circle me-2" style='color:var(--color-iconos)'></i>
-                            Zacatelco narra un capítulo de esfuerzo y crecimiento que inspira a todos sus visitantes.</li>
+                                {{municipio.nombre_municipio}} narra un capítulo de esfuerzo y crecimiento que inspira a todos sus visitantes.</li>
                         </ul>
                     
                     </div>
@@ -31,12 +31,21 @@
             <div class="col-md-4 text-center position-relative">
                 <div class="image-wrapper">
                     <br>
-                    <img src="{% static 'img/alcalde.png' %}" alt="Imagen del Alcalde" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid rgb(var(--color-primario-rgb));">
-                    <div class="name-tag position-absolute text-center w-100" style="bottom: -22px;">
-                        <h6 class="bg-light py-2 px-3 d-inline-block rounded-pill shadow-sm">Lic. José Miguel Acatzi Luna</h6>
-                    </div>
+                    {% with municipio.gabinete.first as primer_miembro %}
+                        {% if primer_miembro %}
+                            <img src="{{ primer_miembro.imagen.url }}" alt="{{ primer_miembro.nombre }}" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid rgb(var(--color-primario-rgb));">
+                            <div class="name-tag position-absolute text-center w-100" style="bottom: -22px;">
+                                <h6 class="bg-light py-2 px-3 d-inline-block rounded-pill shadow-sm">
+                                    {{ primer_miembro.nombre }}
+                                </h6>
+                            </div>
+                        {% else %}
+                            <p>No hay miembros del gabinete registrados.</p>
+                        {% endif %}
+                    {% endwith %}
                 </div>
             </div>
+            
         </div>
     </div>
 </section>
