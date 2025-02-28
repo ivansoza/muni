@@ -101,218 +101,283 @@
         ============================
     -->
     <style>
-            .sos-container {
-              position: fixed;
-              right: 0.1rem;
+.sos-container {
+    position: fixed;
+    right: 0.1rem;
+    bottom: 0.3rem;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    z-index: 1000;
+  }
 
-              bottom: 0.3rem;
-              display: flex;
-              flex-direction: row-reverse; /* invierte el orden del flujo */
-              align-items: center;
-              z-index: 1000;
-            }
+
+  .emergency-icon {
+    background: #e74c3c;
+  }
+
+  .security-icon {
+    background:  #3498db;
+  }
+  
 
         
-            .floating-button-sos {
-              position: relative;
-              right: -12px;
-              width: 5.5rem;
-              height: 5.5rem;
-              border-radius: 50%;
-              background: var(--gradient-color);
-              box-shadow: 0 4px 30px rgba(var(--primary-color-rgb), 0.3),
-                          0 8px 25px rgba(var(--secondary-color-rgb), 0.25),
-                          inset 0 2px 4px rgba(255, 255, 255, 0.2);
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              cursor: pointer;
-              transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
-                          box-shadow 0.3s ease,
-                          background 0.4s ease;
-              z-index: 1000;
-              overflow: hidden;
-              border: none;
-              outline: none;
-              will-change: transform, box-shadow;
-            }
-        
-            .floating-button-sos:hover {
-              transform: translateY(-5px) scale(1.05);
-              box-shadow: 0 10px 40px rgba(var(--primary-color-rgb), 0.4),
-                          0 15px 35px rgba(var(--secondary-color-rgb), 0.3),
-                          inset 0 3px 6px rgba(255, 255, 255, 0.3);
-            }
-        
-            .floating-button-sos:active {
-              transform: translateY(2px) scale(0.98);
-              box-shadow: 0 3px 15px rgba(var(--primary-color-rgb), 0.3),
-                          0 5px 10px rgba(var(--secondary-color-rgb), 0.2),
-                          inset 0 1px 3px rgba(255, 255, 255, 0.1);
-            }
-        
-            .button-image {
-              width: 55%;
-              height: 55%;
-              object-fit: contain;
-              transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-              filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-            }
-            .floating-button-sos:hover .button-image {
-              transform: scale(1.15) rotate(10deg);
-            }
-        
-            @keyframes float {
-              0%, 100% { transform: translateY(0px); }
-              50%      { transform: translateY(-8px); }
-            }
-        
-            @keyframes ripple {
-              to {
-                transform: scale(3);
-                opacity: 0;
-              }
-            }
-        
-            @keyframes pulse {
-              0%   { transform: scale(1);   opacity: 1; }
-              100% { transform: scale(1.8); opacity: 0; }
-            }
-        
-            .ripple {
-              position: absolute;
-              border-radius: 50%;
-              background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
-              transform: scale(0);
-              animation: ripple 0.8s ease-out;
-            }
-        
-            .floating-button-sos::before {
-              content: '';
-              position: absolute;
-              top: 0; left: 0; right: 0; bottom: 0;
-              border-radius: 50%;
-              border: 2px solid transparent;
-              transition: border-color 0.3s ease;
-            }
-            .floating-button-sos:hover::before {
-              border-color: rgba(255, 255, 255, 0.4);
-            }
-            .floating-button-sos.active::after {
-              opacity: 1;
-            }
-        
-            /* Contenedor de la información: oculto por defecto */
-            .info-containers {
-              display: flex;
-              flex-direction: column;
-              margin-right: 20px;
-              opacity: 0;
-              transform: translateX(20px);
-              visibility: hidden;
-              transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s 0.4s;
-            }
-        
-            /* Cada tarjeta */
-            .info-container {
-              background: rgba(255, 255, 255, 0.95);
-              border-radius: 12px;
-              padding: 15px;
-              margin-bottom: 15px;
-              width: 260px;
-              box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-              display: flex;
-              align-items: center;
-              transform: translateY(20px);
-              opacity: 0;
-              transition: transform 0.5s ease, opacity 0.5s ease;
-              backdrop-filter: blur(5px);
-            }
-        
-            .info-container img {
-              width: 50px;
-              height: 50px;
-              object-fit: contain;
-              margin-right: 15px;
-              border-radius: 8px;
-            }
-            .info-text {
-              flex: 1;
-            }
-            .info-text h3 {
-              margin: 0 0 5px 0;
-              font-size: 1rem;
-              color: #333;
-            }
-            .info-text p {
-              margin: 0;
-              font-size: 0.9rem;
-              color: #666;
-              line-height: 1.4;
-            }
-        
-            /* Efecto de pulsación para el botón */
-            .pulse-effect {
-              position: absolute;
-              width: 100%;
-              height: 100%;
-              border-radius: 50%;
-              background: rgba(var(--primary-color-rgb), 0.2);
-              animation: pulse 2s infinite;
-            }
-        
-            @media (max-width: 768px) {
-              .info-containers {
-                margin-right: 0;
-                margin-bottom: 15px;
-                transform: translateY(20px);
-              }
-              .info-container {
-                width: 220px;
-                margin-bottom: 10px;
-              }
-            }
-        
+  .floating-button-sos {
+    position: relative;
+    right: -12px;
+    width: 5.5rem;
+    height: 5.5rem;
+    border-radius: 50%;
+    background: var(--gradient-color);
+    box-shadow: 0 4px 30px rgba(var(--primary-color-rgb), 0.3),
+                0 8px 25px rgba(var(--secondary-color-rgb), 0.25),
+                inset 0 2px 4px rgba(255, 255, 255, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                box-shadow 0.3s ease,
+                background 0.4s ease;
+    z-index: 1000;
+    overflow: hidden;
+    border: none;
+    outline: none;
+    will-change: transform, box-shadow;
+  }
 
-            @media (hover: hover) and (pointer: fine) {
-              /* Al hacer hover SOLO sobre .floating-button-sos, 
-                 mostramos los .info-containers (hermano siguiente) */
-              .floating-button-sos:hover + .info-containers {
-                opacity: 1;
-                transform: translateX(0);
-                visibility: visible;
-                transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s;
-              }
-            
-              /* Tarjetas secuenciales */
-              .floating-button-sos:hover + .info-containers .info-container:nth-child(1) {
-                transform: translateY(0);
-                opacity: 1;
-                transition-delay: 0.1s;
-              }
-              .floating-button-sos:hover + .info-containers .info-container:nth-child(2) {
-                transform: translateY(0);
-                opacity: 1;
-                transition-delay: 0.2s;
-              }
-            }
+  .floating-button-sos:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 10px 40px rgba(var(--primary-color-rgb), 0.4),
+                0 15px 35px rgba(var(--secondary-color-rgb), 0.3),
+                inset 0 3px 6px rgba(255, 255, 255, 0.3);
+  }
 
-            .sos-container.show-info .info-containers {
-              opacity: 1;
-              transform: translateX(0);
-              visibility: visible;
-              transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s;
-            }
-            .sos-container.show-info .info-container:nth-child(1) {
-              transform: translateY(0);
-              opacity: 1;
-              transition-delay: 0.1s;
-            }
-            .sos-container.show-info .info-container:nth-child(2) {
-              transform: translateY(0);
-              opacity: 1;
-              transition-delay: 0.2s;
-            }
+  .floating-button-sos:active {
+    transform: translateY(2px) scale(0.98);
+    box-shadow: 0 3px 15px rgba(var(--primary-color-rgb), 0.3),
+                0 5px 10px rgba(var(--secondary-color-rgb), 0.2),
+                inset 0 1px 3px rgba(255, 255, 255, 0.1);
+  }
+
+  .button-image {
+    width: 55%;
+    height: 55%;
+    object-fit: contain;
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  }
+  
+  .floating-button-sos:hover .button-image {
+    transform: scale(1.15) rotate(10deg);
+  }
+
+  /* Contenedor de la información: oculto por defecto */
+  .info-containers {
+    display: flex;
+    flex-direction: column;
+    margin-right: 20px;
+    opacity: 0;
+    transform: translateX(20px);
+    visibility: hidden;
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s 0.4s;
+  }
+
+  /* Cada tarjeta */
+  .info-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    width: 280px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    backdrop-filter: blur(5px);
+    border-left: 4px solid var(--primary-color);
+  }
+
+  .info-container img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    margin-right: 15px;
+    border-radius: 8px;
+  }
+  
+  .info-text {
+    flex: 1;
+  }
+  
+  .info-text h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.1rem;
+    color: #333;
+    font-weight: 600;
+  }
+  
+  .info-text p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.5;
+  }
+  
+  /* Destacar los números de emergencia */
+  .emergency-number {
+    font-size: 1.3rem;
+    color: var(--primary-color);
+    font-weight: 700;
+    display: inline-block;
+    padding: 3px 8px;
+    background-color: rgba(var(--primary-color-rgb), 0.1);
+    border-radius: 6px;
+    margin-top: 5px;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+  }
+  
+  .emergency-number:hover {
+    transform: scale(1.05);
+    background-color: rgba(var(--primary-color-rgb), 0.15);
+  }
+
+  /* Efecto de pulsación para el botón */
+  .pulse-effect {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(var(--primary-color-rgb), 0.2);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50%      { transform: translateY(-8px); }
+  }
+
+  @keyframes ripple {
+    to {
+      transform: scale(3);
+      opacity: 0;
+    }
+  }
+
+  @keyframes pulse {
+    0%   { transform: scale(1);   opacity: 1; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
+    transform: scale(0);
+    animation: ripple 0.8s ease-out;
+  }
+
+  .floating-button-sos::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    transition: border-color 0.3s ease;
+  }
+  
+  .floating-button-sos:hover::before {
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  
+  .floating-button-sos.active::after {
+    opacity: 1;
+  }
+
+  /* Para dispositivos táctiles */
+  @media (hover: hover) and (pointer: fine) {
+    .floating-button-sos:hover + .info-containers {
+      opacity: 1;
+      transform: translateX(0);
+      visibility: visible;
+      transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s;
+    }
+  
+    /* Tarjetas secuenciales */
+    .floating-button-sos:hover + .info-containers .info-container:nth-child(1) {
+      transform: translateY(0);
+      opacity: 1;
+      transition-delay: 0.1s;
+    }
+    .floating-button-sos:hover + .info-containers .info-container:nth-child(2) {
+      transform: translateY(0);
+      opacity: 1;
+      transition-delay: 0.2s;
+    }
+  }
+
+  .sos-container.show-info .info-containers {
+    opacity: 1;
+    transform: translateX(0);
+    visibility: visible;
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s;
+  }
+  
+  .sos-container.show-info .info-container:nth-child(1) {
+    transform: translateY(0);
+    opacity: 1;
+    transition-delay: 0.1s;
+  }
+  
+  .sos-container.show-info .info-container:nth-child(2) {
+    transform: translateY(0);
+    opacity: 1;
+    transition-delay: 0.2s;
+  }
+
+  /* Responsive para móviles */
+  @media (max-width: 768px) {
+    .info-containers {
+      margin-right: 0;
+      margin-bottom: 15px;
+      transform: translateY(20px);
+    }
+    
+    .info-container {
+      width: 250px;
+      margin-bottom: 10px;
+    }
+    
+    .emergency-number {
+      font-size: 1.2rem;
+      display: block;
+      margin-top: 8px;
+      text-align: center;
+    }
+  }
+
+  .icon-wrapper {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    margin-right: 15px;
+    color: white;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .icon-wrapper:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  
     </style>
 
     <!-- 
@@ -334,32 +399,39 @@
         Botón "SOS"
         =====================================
     -->
+
     <div class="sos-container">
-        <div class="floating-button-sos" id="floatingButton">
-          <div class="pulse-effect"></div>
-          <img src="{% static 'img/sos.png' %}" alt="Icono SOS" class="button-image">
-        </div>
-
-
-        <div class="info-containers">
-          <div class="info-container">
-            <img src="/api/placeholder/50/50" alt="Emergencia">
-            <div class="info-text">
-              <h3>Emergencias</h3>
-              <p>Mantén la calma y llama al número de emergencia nacional: 911</p>
-            </div>
-          </div>
-          <div class="info-container">
-            <img src="/api/placeholder/50/50" alt="Seguridad">
-            <div class="info-text">
-              <h3>Protección Civil</h3>
-              <p>Contacta a Protección Civil para situaciones de riesgo o desastres</p>
-            </div>
-          </div>
-        </div>
-        
-
+      <div class="floating-button-sos" id="floatingButton">
+        <div class="pulse-effect"></div>
+        <img src="{% static 'img/sos.png' %}" alt="Icono SOS" class="button-image">
       </div>
+      <div class="info-containers">
+        <div class="info-container">
+          <div class="icon-wrapper emergency-icon">
+            <i class="fas fa-hospital-alt"></i>
+          </div>
+          <div class="info-text">
+            <h3>Emergencias</h3>
+            <p>Mantén la calma y llama al: <strong class="emergency-number">911</strong></p>
+          </div>
+        </div>
+        <div class="info-container">
+          <div class="icon-wrapper security-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <div class="info-text">
+            <h3>Denuncia Anónima</h3>
+            <p>Contacta a Protección Civil: <strong class="emergency-number">089</strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  
+
+    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
           const sosContainer = document.querySelector('.sos-container');
