@@ -1,0 +1,329 @@
+<!-- CSS para el Modal -->
+<style>
+    /* Estilo para el modal */
+    .map-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+        backdrop-filter: blur(5px);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+
+    .map-modal.active {
+        display: flex;
+        opacity: 1;
+    }
+
+    .map-modal-content {
+        position: relative;
+        background-color: #fff;
+        margin: auto;
+        width: 90%;
+        max-width: 900px;
+        border-radius: var(--contact-border-radius);
+        box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.25);
+        overflow: hidden;
+        transform: scale(0.8);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .map-modal.active .map-modal-content {
+        transform: scale(1);
+    }
+
+    .map-modal-header {
+        background: linear-gradient(
+            45deg,
+            var(--color-primario) 0%,
+            var(--color-secundario) 100%
+        );
+        color: white;
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .map-modal-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .map-modal-title i {
+        font-size: 1.8rem;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .map-modal-body {
+        padding: 0;
+        height: 500px;
+        width: 100%;
+        position: relative;
+    }
+
+    .map-modal-iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .map-modal-close {
+        background: white;
+        color: var(--color-primario);
+        border: none;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 0.3rem 0.8rem rgba(0, 0, 0, 0.2);
+    }
+
+    .map-modal-close:hover {
+        background: var(--color-acento);
+        color: white;
+        transform: rotate(90deg);
+    }
+
+    .map-modal-actions {
+        background-color: #f9f9f9;
+        padding: 1.2rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .map-action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        background: var(--color-secundario);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: calc(var(--contact-border-radius) * 0.6);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        box-shadow: 0 0.5rem 1rem rgba(var(--color-secundario-rgb), 0.2);
+    }
+
+    .map-action-btn:hover {
+        background: var(--color-primario);
+        transform: translateY(-2px);
+        box-shadow: 0 0.8rem 1.6rem rgba(var(--color-primario-rgb), 0.25);
+    }
+
+    .map-action-btn:active {
+        transform: translateY(0);
+    }
+
+    .map-action-btn.secondary {
+        background: #e0e0e0;
+        color: #333;
+    }
+
+    .map-action-btn.secondary:hover {
+        background: #d0d0d0;
+    }
+
+    /* Animación para el indicador de ubicación */
+    .map-location-pulse {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+        width: 50px;
+        height: 50px;
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .map-location-marker {
+        background-color: var(--color-acento);
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        box-shadow: 0 0 0 rgba(var(--color-acento-rgb), 0.4);
+        animation: pulse 2s infinite;
+        z-index: 2;
+    }
+
+    .map-location-ring {
+        position: absolute;
+        border: 3px solid var(--color-acento);
+        border-radius: 50%;
+        height: 100%;
+        width: 100%;
+        opacity: 0;
+        animation: wave 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(0.8);
+        }
+        70% {
+            transform: scale(1);
+            box-shadow: 0 0 0 15px rgba(var(--color-acento-rgb), 0);
+        }
+        100% {
+            transform: scale(0.8);
+        }
+    }
+
+    @keyframes wave {
+        0% {
+            transform: scale(0.5);
+            opacity: 0.8;
+        }
+        100% {
+            transform: scale(1.2);
+            opacity: 0;
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .map-modal-content {
+            width: 95%;
+        }
+        
+        .map-modal-body {
+            height: 400px;
+        }
+        
+        .map-modal-actions {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .map-action-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .map-modal-header {
+            padding: 1rem 1.5rem;
+        }
+        
+        .map-modal-title {
+            font-size: 1.2rem;
+        }
+        
+        .map-modal-body {
+            height: 300px;
+        }
+    }
+</style>
+
+<!-- HTML para el Modal -->
+<div id="locationMapModal" class="map-modal">
+    <div class="map-modal-content">
+        <div class="map-modal-header">
+            <h3 class="map-modal-title">
+                <i class="fas fa-map-marker-alt"></i>
+                Ubicación Presidencia Municipal Zacatelco
+            </h3>
+            <button id="closeMapModal" class="map-modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="map-modal-body">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3767.5208706243134!2d-98.24295602381788!3d19.216118382017633!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85cfdb41d3395679%3A0x3205f8ea5af06bdd!2sPresidencia%20Municipal%20Zacatelco!5e0!3m2!1ses!2smx!4v1740614178295!5m2!1ses!2smx" 
+                class="map-modal-iframe"
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+            <div class="map-location-pulse">
+                <div class="map-location-marker"></div>
+                <div class="map-location-ring"></div>
+            </div>
+        </div>
+        <div class="map-modal-actions">
+            <button class="map-action-btn secondary" id="closeMapBtn">
+                <i class="fas fa-times"></i>
+                Cerrar
+            </button>
+            <a href="https://www.google.com/maps/place/Presidencia+Municipal+Zacatelco/@19.216118382017633,-98.24295602381788,17z/" target="_blank" class="map-action-btn">
+                <i class="fas fa-external-link-alt"></i>
+                Abrir en Google Maps
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript para controlar el Modal -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elementos del DOM
+        const openMapBtn = document.getElementById('open-map-modal');
+        const mapModal = document.getElementById('locationMapModal');
+        const closeMapModal = document.getElementById('closeMapModal');
+        const closeMapBtn = document.getElementById('closeMapBtn');
+        
+        // Función para abrir el modal
+        function openModal() {
+            mapModal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevenir scroll
+        }
+        
+        // Función para cerrar el modal
+        function closeModal() {
+            mapModal.classList.remove('active');
+            setTimeout(() => {
+                document.body.style.overflow = 'auto'; // Restaurar scroll
+            }, 400);
+        }
+        
+        // Event listeners
+        if(openMapBtn) {
+            openMapBtn.addEventListener('click', openModal);
+        }
+        
+        if(closeMapModal) {
+            closeMapModal.addEventListener('click', closeModal);
+        }
+        
+        if(closeMapBtn) {
+            closeMapBtn.addEventListener('click', closeModal);
+        }
+        
+        // Cerrar modal al hacer clic fuera del contenido
+        window.addEventListener('click', function(event) {
+            if (event.target === mapModal) {
+                closeModal();
+            }
+        });
+        
+        // Cerrar modal con tecla ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && mapModal.classList.contains('active')) {
+                closeModal();
+            }
+        });
+    });
+</script>
