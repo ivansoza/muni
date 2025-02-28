@@ -103,12 +103,15 @@
     <style>
             .sos-container {
               position: fixed;
-              right: 0;
-              bottom: -10px;
+              right: 0.1rem;
+
+              bottom: 0.3rem;
               display: flex;
+              flex-direction: row-reverse; /* invierte el orden del flujo */
               align-items: center;
               z-index: 1000;
             }
+
         
             .floating-button-sos {
               position: relative;
@@ -270,40 +273,30 @@
               }
             }
         
-            /* 
-              ================================
-              PASO 1:
-              Aplicar el hover SÓLO en dispositivos con mouse (desktop).
-              Para móviles, usaremos JS con la clase .show-info.
-              ================================
-            */
+
             @media (hover: hover) and (pointer: fine) {
-              /* Al hacer hover en desktop, mostramos info */
-              .sos-container:hover .info-containers {
+              /* Al hacer hover SOLO sobre .floating-button-sos, 
+                 mostramos los .info-containers (hermano siguiente) */
+              .floating-button-sos:hover + .info-containers {
                 opacity: 1;
                 transform: translateX(0);
                 visibility: visible;
                 transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s;
               }
-              .sos-container:hover .info-container:nth-child(1) {
+            
+              /* Tarjetas secuenciales */
+              .floating-button-sos:hover + .info-containers .info-container:nth-child(1) {
                 transform: translateY(0);
                 opacity: 1;
                 transition-delay: 0.1s;
               }
-              .sos-container:hover .info-container:nth-child(2) {
+              .floating-button-sos:hover + .info-containers .info-container:nth-child(2) {
                 transform: translateY(0);
                 opacity: 1;
                 transition-delay: 0.2s;
               }
             }
-        
-            /*
-              ================================
-              PASO 2:
-              Clase .show-info: se activa en móviles con JS
-              para mostrar la info. Simula el mismo efecto que hover.
-              ================================
-            */
+
             .sos-container.show-info .info-containers {
               opacity: 1;
               transform: translateX(0);
@@ -342,6 +335,12 @@
         =====================================
     -->
     <div class="sos-container">
+        <div class="floating-button-sos" id="floatingButton">
+          <div class="pulse-effect"></div>
+          <img src="{% static 'img/sos.png' %}" alt="Icono SOS" class="button-image">
+        </div>
+
+
         <div class="info-containers">
           <div class="info-container">
             <img src="/api/placeholder/50/50" alt="Emergencia">
@@ -359,11 +358,7 @@
           </div>
         </div>
         
-        <!-- Botón SOS -->
-        <div class="floating-button-sos" id="floatingButton">
-          <div class="pulse-effect"></div>
-          <img src="{% static 'img/sos.png' %}" alt="Icono SOS" class="button-image">
-        </div>
+
       </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
