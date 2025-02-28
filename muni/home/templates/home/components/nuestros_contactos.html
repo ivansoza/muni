@@ -419,45 +419,71 @@
                     </div>
                     <div class="contact-info">
                         <p class="contact-label">Teléfono Directo</p>
-                        <p class="contact-value">246 297 18 32</p>
+                        <p class="contact-value">
+                            {% if municipio.contactos.all %}
+                                {% with municipio.contactos.all.0 as contacto %}
+                                    {% if contacto.telefono_directo %}
+                                        {{ contacto.telefono_directo }}
+                                    {% endif %}
+                                {% endwith %}
+                            {% endif %}
+                        </p>
+
                         <small class="contact-hours">Disponible en horario de oficina</small>
                     </div>
                 </div>
 
-                <div class="contact-element">
-                    <div class="contact-badge email">
-                        <i class="fas fa-envelope-open-text"></i>
-                    </div>
-                    <div class="contact-info">
-                        <p class="contact-label">Correo Electrónico</p>
-                        <a href="mailto:presidencia@zacatelco.gob.mx" class="contact-value link">presidencia@zacatelco.gob.mx</a>
-                    </div>
-                </div>
+                {% with municipio.contactos.all.0 as contacto %}
+                    {% if contacto and contacto.correo_electronico %}
+                        <div class="contact-element">
+                            <div class="contact-badge email">
+                                <i class="fas fa-envelope-open-text"></i>
+                            </div>
+                            <div class="contact-info">
+                                <p class="contact-label">Correo Electrónico</p>
+                                <a href="mailto:{{ contacto.correo_electronico }}" class="contact-value link">
+                                    {{ contacto.correo_electronico }}
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endwith %}
 
-                <div class="contact-element">
-                    <div class="contact-badge location">
-                        <i class="fas fa-map-marked-alt"></i>
-                    </div>
-                    <div class="contact-info">
-                        <p class="contact-label">Oficinas Centrales</p>
-                        <p class="contact-value">Palacio Municipal, Centro, Zacatelco</p>
-                        <button class="map-btn" id="open-map-modal">
-                            <i class="fas fa-external-link-alt"></i>
-                            Ver en Mapa 
-                        </button>
-                    </div>
-                </div>
 
-                <div class="contact-element">
-                    <div class="contact-badge schedule">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="contact-info">
-                        <p class="contact-label">Horario de Servicio</p>
-                        <p class="contact-value">Lun-Vie: 9:00 AM - 4:00 PM</p>
-                        <p class="contact-value">Sábados: 9:00 AM - 1:00 PM</p>
-                    </div>
-                </div>
+                {% with municipio.contactos.all.0 as contacto %}
+                    {% if contacto and contacto.ubicacion %}
+                        <div class="contact-element">
+                            <div class="contact-badge location">
+                                <i class="fas fa-map-marked-alt"></i>
+                            </div>
+                            <div class="contact-info">
+                                <p class="contact-label">Oficinas Centrales</p>
+                                <p class="contact-value">{{ contacto.ubicacion }}</p>
+                                <button class="map-btn" id="open-map-modal">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    Ver en Mapa 
+                                </button>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+
+
+                {% with municipio.contactos.all.0 as contacto %}
+                    {% if contacto and contacto.horario_servicio %}
+                        <div class="contact-element">
+                            <div class="contact-badge schedule">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="contact-info">
+                                <p class="contact-label">Horario de Servicio</p>
+                                <p class="contact-value">{{ contacto.horario_servicio }}</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            
             </div>
         </div>
     </div>
