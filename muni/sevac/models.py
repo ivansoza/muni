@@ -20,6 +20,7 @@ class Carpeta(models.Model):
     estatus = models.CharField(max_length=1, choices=ESTATUS_CHOICES, default='A')  # Campo de estatus
 
     class Meta:
+        app_label = 'sevac'  # ✅ Agregar esta línea
         unique_together = ('nombre', 'padre')
 
     def __str__(self):
@@ -45,6 +46,7 @@ class Archivo(models.Model):
     archivo = models.FileField(upload_to=archivo_upload_to)
     fecha_subida = models.DateTimeField(auto_now_add=True)
     estatus = models.CharField(max_length=1, choices=ESTATUS_CHOICES, default='A')  # Campo de estatus
-
+    class Meta:
+        app_label = 'sevac'  # ✅ Agregar esta línea
     def __str__(self):
         return self.nombre
