@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'privacidad',
     'informacion_municipal',
     'convocatorias',
+    'sevac',
     "crispy_forms",
     "crispy_bootstrap5",
     'sass_processor',

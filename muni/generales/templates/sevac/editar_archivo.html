@@ -1,0 +1,38 @@
+{% extends "baseTemplate.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+<div class="container-fluid">
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h2 class="mb-0">
+                ✏️ Editar Archivo: {{ archivo.nombre }}
+            </h2>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary btn-lg me-3">
+                        💾 Guardar Cambios
+                    </button>
+                    <!-- Botón cancelar, redirige a la URL correspondiente dependiendo del tipo de archivo -->
+                    {% if archivo.carpeta.padre %}
+                        <a href="{% url 'gestionar_carpetas' archivo.carpeta.padre.id %}" class="btn btn-secondary btn-lg">
+                            ❌ Cancelar
+                        </a>
+                    {% else %}
+                        <a href="{% url 'listar_carpetas' %}" class="btn btn-secondary btn-lg">
+                            ❌ Volver a Carpetas
+                        </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
