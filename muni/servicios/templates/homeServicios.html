@@ -28,7 +28,7 @@
                 
                 <!-- Ícono en la esquina superior izquierda -->
                 <div class="icon-box position-absolute">
-                    <img class="icon" src="https://oficialiamayor.sonora.gob.mx/api/icons/inscripcion-registro.svg">
+                    <img class="icon" src="{% static 'assets/svg/document.svg' %}">
                 </div>
 
                 <!-- Sección de etiquetas de estado y "Pago en línea" -->
@@ -65,19 +65,14 @@
                 <!-- Botones de acción -->
                 <div class="buttons row g-1 justify-content-center mt-3">
                     <div class="col-6">
-                        {% if servicio.id %}
                         <a class="btn btn-outline-warning d-block rounded-pill" href="{% url 'detalle_servicio' servicio.id %}">
                             Ver más
                         </a>
-                    {% else %}
-                        <span>Servicio no disponible</span>
-                    {% endif %}
-                    
                     </div>
                     {% if servicio.url_tramite %}
                     <div class="col-6">
                         <a class="btn btn-primary rounded-pill d-block" href="{{ servicio.url_tramite }}">
-                            <img class="icono-llave" src="https://www.sonora.gob.mx/templates/shaper_helixultimate/images/logo-llave-sonora-icono-white.svg"> 
+                            <img class="icono-llave" src="{% static 'assets/svg/money.svg' %}"> 
                             Iniciar trámite
                         </a>
                     </div>
