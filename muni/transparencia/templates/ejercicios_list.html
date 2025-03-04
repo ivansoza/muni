@@ -43,7 +43,7 @@
         width: 20%; /* Ajusta el tamaño del logo */
         height: auto; /* Mantiene la proporción del logo */
         margin-left: 70%; /* Ajusta el margen izquierdo */
-        margin-top: 20px; /* Ajusta el margen superior */
+        margin-top: -30px; /* Ajusta el margen superior */
     }
 
     .header-title1 {
@@ -203,6 +203,86 @@
         color: #333;
         text-decoration: none;
     }
+/* Estilos para el fondo gris claro que se ajusta al contenedor */
+.transparency-section {
+    background-color: #f5f5f5; /* Gris claro */
+    width: 100%; /* Ocupa el ancho del contenedor */
+    padding: 40px 0; /* Espacio arriba y abajo */
+    margin: 0; /* Elimina márgenes */
+    box-sizing: border-box; /* Asegura que el padding no aumente el ancho total */
+}
+/* Estilos para centrar el contenido dentro del fondo gris */
+.transparency-container {
+    max-width: 1200px; /* Limitar el ancho máximo */
+    margin: 0 auto; /* Centrar la sección */
+    padding: 0 20px; /* Padding interno para que no toque los bordes */
+}
+
+    
+/* Estilos de la nueva sección de accesos rápidos */
+.transparency-access {
+    padding: 20px;
+    display: flex;
+    justify-content: center; /* Centrar las imágenes */
+    flex-wrap: wrap;
+}
+    
+    .transparency-access .access-item {
+        text-align: center;
+        width: 350px;
+        margin: 10px;
+    }
+    
+    /* Estilos para las imágenes: mismo tamaño sin recorte */
+    .transparency-access .access-item img {
+        width: 300px; /* Ancho fijo para todas las imágenes */
+        height: 200px; /* Alto fijo para todas las imágenes */
+        object-fit: contain; /* Ajustar sin recortar */
+        background-color: #f5f5f5; /* Fondo blanco para los espacios vacíos */
+        border-radius: 10px;
+        transition: transform 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .transparency-access .access-item img:hover {
+        transform: scale(1.05);
+    }
+    
+    /* Estilo para el texto */
+    .transparency-access .access-item p {
+        margin-top: 10px;
+        color: var(--color-primario);
+        font-size: 14px;
+        font-weight: 600;
+    }
+    
+    
+    /* Definición de la animación de rebote */
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+    /* Estilos para el texto dual con barra vertical */
+    .dual-text {
+        text-align: center;
+        font-size: 22px;
+        margin-bottom: 20px;
+        color: #6b7280; /* Color gris suave para el texto claro */
+    }
+    
+    .bold-text {
+        font-weight: 700; /* Negrita para el primer texto */
+        color: var(--color-primario); /* Color primario para el texto en negrita */
+    }
+    
+    .light-text {
+        font-weight: 400; /* Normal para el segundo texto */
+        color: #6b7280; /* Color gris suave para el segundo texto */
+    }
     </style>
 
 <div class="container mt-4">
@@ -351,6 +431,32 @@
                 </div>
                 {% endfor %}
             </div>
+        </div>
+    </div>
+</div>
+<div class="transparency-section">
+    <div class="access-item">
+        <p class="dual-text">
+            <span class="bold-text">Realiza tus consultas</span> | 
+            <span class="light-text">Consulta los portales de transparencia</span>
+        </p>
+    </div>
+    
+    <div class="transparency-access">
+        <div class="access-item">
+            <a href="https://pruebas.iaiptlaxcala.org.mx/">
+                <img class="large-img" src="{% static 'img/aipi.png' %}" alt="Información Pública">
+            </a>
+        </div>
+        <div class="access-item">
+            <a href="https://www.plataformadetransparencia.org.mx/Inicio">
+                <img src="{% static 'img/Transparencia.png' %}" alt="Indicadores de Resultados">
+            </a>
+        </div>
+        <div class="access-item">
+            <a href="https://consultapublicamx.plataformadetransparencia.org.mx/vut-web/faces/view/consultaPublica.xhtml#obligaciones">
+                <img src="{% static 'img/ltaip.jpg' %}" alt="Directorio">
+            </a>
         </div>
     </div>
 </div>
