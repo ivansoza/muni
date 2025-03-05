@@ -5,18 +5,19 @@ from .models import Municipio, ColoresMunicipio, GobiernoActual, MisionVision,Se
 # Registro de Municipio
 @admin.register(Municipio)
 class MunicipioAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'ultima_actualizacion', 'preview_logotipo', 'preview_banner','status')
+    list_display = ('nombre', 'ultima_actualizacion', 'preview_logotipo', 'preview_logotipo_claro', 'preview_banner', 'status')
     search_fields = ('nombre', 'descripcion')
     list_filter = ('ultima_actualizacion',)
-    readonly_fields = ('preview_logotipo', 'preview_banner', 'ultima_actualizacion')
+    readonly_fields = ('preview_logotipo', 'preview_logotipo_claro', 'preview_banner', 'ultima_actualizacion')
 
     fieldsets = (
         ('Información Básica', {
-            'fields': ('nombre_municipio','nombre', 'descripcion','status')
+            'fields': ('nombre_municipio', 'nombre', 'descripcion', 'status')
         }),
         ('Elementos Visuales', {
             'fields': (
                 ('logotipo', 'preview_logotipo'),
+                ('logotipo_claro', 'preview_logotipo_claro'),
                 ('banner', 'preview_banner')
             ),
             'classes': ('collapse',),
@@ -28,7 +29,7 @@ class MunicipioAdmin(admin.ModelAdmin):
         })
     )
 
-    # Vista previa del logotipo
+    # Vista previa del logotipo principal
     def preview_logotipo(self, obj):
         if obj.logotipo:
             return format_html(
@@ -38,7 +39,19 @@ class MunicipioAdmin(admin.ModelAdmin):
                 obj.logotipo.url
             )
         return "-"
-    preview_logotipo.short_description = 'Logo Actual'
+    preview_logotipo.short_description = 'Logo Principal'
+
+    # Vista previa del logotipo para fondos claros
+    def preview_logotipo_claro(self, obj):
+        if obj.logotipo_claro:
+            return format_html(
+                '<div style="border: 1px solid #ddd; padding: 5px; display: inline-block; background: #f5f5f5">'
+                '<img src="{}" style="max-height: 60px; max-width: 120px; object-fit: contain"/>'
+                '</div>',
+                obj.logotipo_claro.url
+            )
+        return "-"
+    preview_logotipo_claro.short_description = 'Logo Fondos Claros'
 
     # Vista previa del banner
     def preview_banner(self, obj):
