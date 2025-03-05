@@ -273,7 +273,16 @@
 <div class="container mt-4">
     <div class="section-header">
         <div class="header-left">
-            <img src="{{municipio.logotipo.url}}" alt="Logo" class="logo">
+
+            {% if municipio.logotipo_claro %}
+                <img src="{{ municipio.logotipo_claro.url }}" alt="Logo" class="logo">
+            {% elif municipio.logotipo %}
+                <img src="{{ municipio.logotipo.url }}" alt="Logo" class="logo">
+            {% else %}
+                <img src="{% static 'assets/images/logo/logo-nuevo.png' %}" alt="Logo" class="logo">
+            {% endif %}
+        
+
             <h1 class="header-title1">SEVAC</h1>
             <h2 class="header-title">Carpetas y Archivos</h2>
             <p class="header-description">SEVAC es el sistema de gestión de carpetas y archivos que contiene información pública relacionada con las obras y proyectos del gobierno. A través de este sistema, podrás acceder a documentos, reportes, informes y otros archivos relevantes sobre la transparencia y gestión de los recursos públicos.</p>
