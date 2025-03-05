@@ -1,1 +1,12 @@
-{% extends "baseMantenimiento.html" %}
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/servicios/styles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut ullam numquam recusandae similique, saepe commodi, aliquam eos eum incidunt dignissimos assumenda, dolor vero repudiandae quia molestias aspernatur deleniti maxime ea.</h1>
+</div>
+{% endblock content %}
