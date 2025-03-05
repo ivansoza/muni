@@ -329,8 +329,8 @@
                                     {% endif %}
         
                                     <!-- Mostrar subcarpetas de esta carpeta -->
-                                    {% for subcarpeta in carpeta.subcarpetas.all %}
-                                        {% if subcarpeta.estatus == 'A' %}
+                                    {% for subcarpeta in carpeta.subcarpetas_ordenadas %}
+                                    {% if subcarpeta.estatus == 'A' %}
                                             <div class="accordion-item mt-3">
                                                 <h2 class="accordion-header" id="headingSubcarpeta{{ subcarpeta.id }}">
                                                     <button class="accordion-button" type="button" data-bs-toggle="collapse"
@@ -414,18 +414,20 @@
                                                         {% endfor %}
                                                     </div>
                                                 </div>
+                                            </div>
+
                                             {% endif %}
                                         {% endfor %}
                                     </div>
                                 </div>
-                            </div>
-                        </div>
                     </div>
                 {% endif %}
             {% endfor %}
         </div>
     </div>
-    
+</div>
+
+    </div>
     <div class="transparency-section">
         <div class="access-item">
             <p class="dual-text">
@@ -452,9 +454,6 @@
             </div>
         </div>
     </div>
-    
-    
-    
 </div>
 
 {% endblock %}
