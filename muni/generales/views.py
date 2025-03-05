@@ -707,6 +707,9 @@ class EditarCarpetaView(View):
         }
         context['sidebar'] = 'sevac'  # Resalta la sección de Transparencia en el sidebar
 
+        # Añadir la carpeta principal a los datos del contexto
+        context['carpeta_principal'] = self.get_carpeta_principal(carpeta)
+
         return context
 
     def get(self, request, carpeta_id):
@@ -718,16 +721,31 @@ class EditarCarpetaView(View):
         form = CarpetaForm(request.POST, instance=carpeta)
         if form.is_valid():
             form.save()
+            if carpeta.padre:  # Es una subcarpeta
+                # Buscar la carpeta principal (padre de todos los niveles)
+                while carpeta.padre:
+                    carpeta = carpeta.padre
+                # Redirigir a la carpeta principal
+                return redirect('gestionar_carpetas', carpeta_id=carpeta.id)
 
             # Redirigir según si es carpeta principal o subcarpeta
-            if carpeta.padre:  # Es una subcarpeta
-                return redirect('gestionar_carpetas', carpeta_id=carpeta.padre.id)  # Redirige a la carpeta padre
+           
             else:  # Es una carpeta principal
                 return redirect('listar_carpetas')  # Redirige a la lista de carpetas principales
 
         # Si el formulario no es válido, regresar el contexto con los errores
         context = self.get_context_data(carpeta_id, form=form)
         return render(request, self.template_name, context)
+
+    def get_carpeta_principal(self, carpeta):
+        """
+        Función que recursivamente busca la carpeta principal a partir de cualquier subcarpeta.
+        """
+        while carpeta.padre:
+            carpeta = carpeta.padre
+        return carpeta
+
+
     
 # Vista para subir archivos
 class SubirArchivoView(View):
@@ -807,15 +825,25 @@ class EditarArchivoView(View):
         if form.is_valid():
             form.save()
 
-            # Redirigir según si es archivo dentro de carpeta principal o subcarpeta
+            # Redirigir según si el archivo está en una subcarpeta dentro de una subcarpeta o no
             if archivo.carpeta.padre:  # Es un archivo dentro de subcarpeta
-                return redirect('gestionar_carpetas', carpeta_id=archivo.carpeta.padre.id)
+                carpeta_principal = self.get_carpeta_principal(archivo.carpeta)
+                return redirect('gestionar_carpetas', carpeta_id=carpeta_principal.id)
             else:  # Es un archivo dentro de carpeta principal
                 return redirect('listar_carpetas')  # Redirige a la lista de carpetas principales
 
         # Si el formulario no es válido, regresar el contexto con los errores
         context = self.get_context_data(archivo_id, form=form)
         return render(request, self.template_name, context)
+
+    def get_carpeta_principal(self, carpeta):
+        """
+        Función que recursivamente busca la carpeta principal a partir de cualquier subcarpeta.
+        """
+        while carpeta.padre:
+            carpeta = carpeta.padre
+        return carpeta
+
 
     
 class ListarCarpetasView(TemplateView):

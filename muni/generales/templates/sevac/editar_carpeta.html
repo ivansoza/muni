@@ -22,7 +22,7 @@
                 💾 Guardar Cambios
             </button>
                     {% if carpeta.padre %}
-                        <a href="{% url 'gestionar_carpetas' carpeta.padre.id %}" class="btn btn-secondary btn-lg">
+                        <a href="{% url 'gestionar_carpetas' carpeta_principal.id %}" class="btn btn-secondary btn-lg">
                             ❌ Cancelar
                         </a>
                     {% else %}
