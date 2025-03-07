@@ -117,6 +117,13 @@
               </a>
             </li>
 
+            <li class="sidebar-list {% if sidebar == 'gabinete' %}active{% endif %}">
+              <a class="sidebar-link sidebar-title" href="{% url "ListarGabineteView" %}">
+                <i class="fa fa-folder-open" style='color:white;'></i>                
+                <i class="fa fa-cogs fill-icon"></i>
+                <span>Gabinete</span>
+              </a>
+            </li>
 
           </ul>
         </div>

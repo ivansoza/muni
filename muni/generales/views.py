@@ -846,7 +846,7 @@ class EditarArchivoView(View):
 
 
     
-class ListarCarpetasView(TemplateView):
+class ListarCarpetasView(LoginRequiredMixin,TemplateView):
     template_name = 'sevac/lista_archivos.html'
 
     def get_context_data(self, **kwargs):

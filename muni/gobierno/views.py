@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views.generic.base import TemplateView
 
 from informacion_municipal.models import Municipio
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 class HomeGobiernoView(TemplateView):
@@ -31,3 +32,17 @@ class SemblanzaHomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+    
+class ListarGabineteView(LoginRequiredMixin,TemplateView):
+    template_name = 'admin/listGabinete.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+    
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': '/index'},
+            'child': {'name': 'Lista de Miembros del Gabinete Presidencial', 'url': ''}
+        }
+        context['sidebar'] = 'gabinete'  # Asegura que el sidebar resalte la sección de Transparencia
+        return context
+    
