@@ -3,7 +3,11 @@ from django.views.generic.base import TemplateView
 
 from informacion_municipal.models import Municipio
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
 
+from gobierno.models import MiembroGabinete
 # Create your views here.
 class HomeGobiernoView(TemplateView):
     template_name = 'homeGobierno.html'
@@ -46,3 +50,45 @@ class ListarGabineteView(LoginRequiredMixin,TemplateView):
         context['sidebar'] = 'gabinete'  # Asegura que el sidebar resalte la sección de Transparencia
         return context
     
+
+def gabinete_list_api(request):
+    """
+    Devuelve la lista de miembros del gabinete en formato JSON,
+    ordenados por el campo 'orden'.
+    """
+    if request.method == 'GET':
+        miembros = MiembroGabinete.objects.all().order_by('orden')
+        data = []
+        for m in miembros:
+            data.append({
+                'id': m.id,
+                'nombre': m.nombre,
+                'cargo': m.cargo,
+                'area': m.area if m.area else "",
+                'orden': m.orden,
+                'status': m.status,
+            })
+        return JsonResponse({'miembros': data}, safe=False)
+
+    # Si no es AJAX o no es método GET, responder con error
+    return JsonResponse({'error': 'Método no permitido o no es AJAX'}, status=400)
+
+
+@csrf_exempt  # Si manejas CSRF manualmente en AJAX, querrás usar esto o ajustar configuración
+def gabinete_update_order_api(request):
+    """
+    Actualiza el orden de los MiembroGabinete basado en
+    la lista enviada por AJAX.
+    """
+    if request.method == 'POST' :
+        # 'order[]' llegará como lista con IDs en el orden deseado
+        order_data = request.POST.getlist('order[]')
+
+        for index, miembro_id in enumerate(order_data, start=1):
+            miembro = get_object_or_404(MiembroGabinete, id=miembro_id)
+            miembro.orden = index
+            miembro.save()
+
+        return JsonResponse({'message': 'Orden actualizado exitosamente'})
+
+    return JsonResponse({'error': 'Método no permitido o no es AJAX'}, status=400)
