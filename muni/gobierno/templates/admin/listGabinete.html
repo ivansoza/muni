@@ -2,101 +2,201 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4">Miembros del Gabinete</h2>
-
-    <table class="table table-bordered table-striped" id="gabineteTable">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Cargo</th>
-                <th>Área</th>
-                <th>Estado</th>
-                <th>Posición</th>
-            </tr>
-        </thead>
-        <tbody id="gabineteTableBody">
-            <!--
-                Aquí se cargarán las filas dinámicamente mediante AJAX.
-            -->
-        </tbody>
-    </table>
+<div class="container-fluid mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">Miembros del Gabinete</h2>
+            <div class="drag-hint">
+                <i class="fa fa-info-circle me-2"></i>
+                <span>Arrastra las filas para reorganizar</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="gabineteTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="border-0">Nombre</th>
+                            <th class="border-0">Cargo</th>
+                            <th class="border-0">Área</th>
+                            <th class="border-0">Estado</th>
+                            <th class="border-0 text-center">Posición</th>
+                            <th class="border-0 text-center">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gabineteTableBody" class="sortable-table">
+                        <!-- Aquí se cargarán las filas dinámicamente mediante AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer text-muted">
+            <div id="statusMessage" class="text-center"></div>
+        </div>
+    </div>
 </div>
+
+<!-- CSS personalizado -->
+<style>
+    .sortable-table tr {
+        cursor: grab;
+        transition: background-color 0.2s;
+    }
+    
+    .sortable-table tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+    
+    .sortable-table tr.sortable-ghost {
+        background-color: #f8f9fa;
+        opacity: 0.8;
+    }
+    
+    .sortable-table tr.sortable-chosen {
+        background-color: #e9ecef;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    }
+    
+    .drag-handle {
+        cursor: grab;
+        color: #6c757d;
+    }
+    
+    .drag-handle:hover {
+        color: #0d6efd;
+    }
+    
+    .drag-hint {
+        font-size: 0.9rem;
+    }
+    
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+    
+    .fade-out {
+        animation: fadeOut 2s forwards;
+        animation-delay: 3s;
+    }
+</style>
+
+<!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-
-
-<!-- 2) Incluye jQuery UI después de jQuery -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<!-- 3) (Opcional) Incluye el CSS de jQuery UI para los estilos de arrastre/soltar -->
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/smoothness/jquery-ui.css"/>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-      // Carga inicial de datos
-      fetchData();
-  
-      function fetchData() {
-        fetch("{% url 'gabinete_list_api' %}", { method: "GET" })
-          .then(response => response.json())
-          .then(data => {
-            const tbody = document.getElementById("gabineteTableBody");
-            tbody.innerHTML = "";
-  
-            data.miembros.forEach(miembro => {
-              const row = document.createElement("tr");
-              row.setAttribute("data-id", miembro.id);
-              row.innerHTML = `
-                  <td>${miembro.nombre}</td>
-                  <td>${miembro.cargo}</td>
-                  <td>${miembro.area}</td>
-                  <td>${miembro.status}</td>
-                  <td>${miembro.orden}</td>
-              `;
-              tbody.appendChild(row);
+        // Carga inicial de datos
+        fetchData();
+        
+        function fetchData() {
+            fetch("{% url 'gabinete_list_api' %}", { method: "GET" })
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById("gabineteTableBody");
+                    tbody.innerHTML = "";
+                    
+                    data.miembros.forEach(miembro => {
+                        const row = document.createElement("tr");
+                        row.setAttribute("data-id", miembro.id);
+                        row.className = "position-relative";
+                        
+                        // Asignar clases para estilo según el estado
+                        let statusClass = "";
+                        if (miembro.status === "Activo") {
+                            statusClass = "text-success";
+                        } else if (miembro.status === "Inactivo") {
+                            statusClass = "text-danger";
+                        }
+                        
+                        row.innerHTML = `
+                            <td>${miembro.nombre}</td>
+                            <td>${miembro.cargo}</td>
+                            <td>${miembro.area}</td>
+                            <td><span class="${statusClass}">${miembro.status}</span></td>
+                            <td class="text-center">${miembro.orden}</td>
+                            <td class="text-center">
+                                <div class="drag-handle">
+<i class="fa fa-th"></i>
+                                </div>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                    
+                    initSortable();
+                })
+                .catch(error => {
+                    console.error("Error al cargar datos:", error);
+                    showStatusMessage("Error al cargar los datos", "danger");
+                });
+        }
+        
+        function showStatusMessage(message, type = "success") {
+            const statusDiv = document.getElementById("statusMessage");
+            statusDiv.innerHTML = `<div class="alert alert-${type} py-2 mb-0">${message}</div>`;
+            statusDiv.classList.add("fade-out");
+            
+            setTimeout(() => {
+                statusDiv.innerHTML = "";
+                statusDiv.classList.remove("fade-out");
+            }, 5000);
+        }
+        
+        function initSortable() {
+            let tbody = document.getElementById("gabineteTableBody");
+            
+            // Instancia Sortable
+            new Sortable(tbody, {
+                animation: 150,
+                handle: '.drag-handle',
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'sortable-chosen',
+                
+                // `onStart` se dispara cuando comienza el arrastre
+                onStart: function(evt) {
+                    document.body.style.cursor = 'grabbing';
+                },
+                
+                // `onEnd` se dispara cuando termina el arrastre
+                onEnd: function(evt) {
+                    document.body.style.cursor = 'default';
+                    
+                    let order = [];
+                    tbody.querySelectorAll("tr").forEach((tr) => {
+                        order.push(tr.getAttribute("data-id"));
+                    });
+                    
+                    // Mostrar un indicador visual de carga
+                    showStatusMessage("Actualizando posiciones...", "info");
+                    
+                    // Construir los parámetros correctamente
+                    const params = new URLSearchParams();
+                    order.forEach(id => {
+                        params.append('order[]', id);
+                    });
+                    
+                    fetch("{% url 'gabinete_update_order_api' %}", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRFToken": "{{ csrf_token }}",
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        body: params
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        showStatusMessage(data.message || "Posiciones actualizadas correctamente");
+                        fetchData(); // Recargar datos para mostrar el nuevo orden
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        showStatusMessage("Error al actualizar posiciones", "danger");
+                    });
+                }
             });
-  
-            initSortable();
-          })
-          .catch(error => console.error("Error al cargar datos:", error));
-      }
-  
-      function initSortable() {
-        let tbody = document.getElementById("gabineteTableBody");
-  
-        // Instancia Sortable
-        new Sortable(tbody, {
-          animation: 150,  // suavidad al arrastrar
-          // `onEnd` se dispara cuando termina el arrastre
-          onEnd: function (evt) {
-            // Obtenemos el nuevo orden de todas las filas
-            let order = [];
-            tbody.querySelectorAll("tr").forEach((tr) => {
-              order.push(tr.getAttribute("data-id"));
-            });
-  
-            // Se envía la nueva lista de IDs a tu vista para actualizar 'orden'
-            fetch("{% url 'gabinete_update_order_api' %}", {
-              method: "POST",
-              headers: {
-                "X-CSRFToken": "{{ csrf_token }}", // si usas CSRF en Django
-                "Content-Type": "application/x-www-form-urlencoded"
-              },
-              body: new URLSearchParams({
-                "order[]": order
-              })
-            })
-            .then(response => response.json())
-            .then(data => {
-              console.log(data.message);
-              // Recargamos la tabla
-              fetchData();
-            })
-            .catch(error => console.error("Error al actualizar el orden:", error));
-          }
-        });
-      }
+        }
     });
-  </script>
-  
-
-  {% endblock content %}
+</script>
+{% endblock content %}
