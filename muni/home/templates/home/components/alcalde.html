@@ -32,17 +32,24 @@
                 <div class="image-wrapper">
                     <br>
                     {% with municipio.gabinete.first as primer_miembro %}
-                        {% if primer_miembro %}
+                    {% if primer_miembro %}
+                        {% if primer_miembro.imagen %}
                             <img src="{{ primer_miembro.imagen.url }}" alt="{{ primer_miembro.nombre }}" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid rgb(var(--color-primario-rgb));">
-                            <div class="name-tag position-absolute text-center w-100" style="bottom: -22px;">
-                                <h6 class="bg-light py-2 px-3 d-inline-block rounded-pill shadow-sm">
-                                    {{ primer_miembro.nombre }}
-                                </h6>
-                            </div>
+                        {% elif municipio.logotipo_claro %}
+                            <img src="{{ municipio.logotipo_claro.url }}" alt="Logotipo del municipio" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid rgb(var(--color-primario-rgb));">
                         {% else %}
-                            <p>No hay miembros del gabinete registrados.</p>
+                            <img src="{{ logotipo.url }}" alt="Logotipo por defecto" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid rgb(var(--color-primario-rgb));">
                         {% endif %}
-                    {% endwith %}
+                        <div class="name-tag position-absolute text-center w-100" style="bottom: -22px;">
+                            <h6 class="bg-light py-2 px-3 d-inline-block rounded-pill shadow-sm">
+                                {{ primer_miembro.nombre }}
+                            </h6>
+                        </div>
+                    {% else %}
+                        <p>No hay miembros del gabinete registrados.</p>
+                    {% endif %}
+                {% endwith %}
+                
                 </div>
             </div>
             
