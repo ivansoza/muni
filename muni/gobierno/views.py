@@ -24,3 +24,10 @@ class HomeGobiernoView(TemplateView):
         context['sidebar'] = 'gobierno'  # Marcar 'Inicio' como activo
 
         return context
+    
+class SemblanzaHomeView(TemplateView):
+    template_name = 'homeSemblanza.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context

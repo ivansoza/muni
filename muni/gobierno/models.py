@@ -2,9 +2,9 @@ from django.db import models
 from django_ckeditor_5.fields import CKEditor5Field
 
 from informacion_municipal.models import Municipio
+from servicios.models import Dependencia
 
 # Create your models here.
-
 class MiembroGabinete(models.Model):
     STATUS_CHOICES = [
         ('activo', 'Activo'),
@@ -24,7 +24,6 @@ class MiembroGabinete(models.Model):
     correo_electronico = models.EmailField("Correo Electrónico", blank=True, null=True)
     pagina_web = models.URLField("Página Web", blank=True, null=True)
     
-    # Nuevo campo para almacenar la foto
     imagen = models.ImageField(
         "Fotografía del Miembro",
         upload_to='gabinete/',
@@ -44,7 +43,24 @@ class MiembroGabinete(models.Model):
         choices=STATUS_CHOICES, 
         default='activo'
     )
-
+    
+    # Nuevos campos:
+    telefono = models.CharField("Teléfono", max_length=20, blank=True, null=True)
+    horario = models.CharField("Horario de Atención", max_length=255, blank=True, null=True)
+    formacion_academica = models.TextField("Formación Académica", blank=True, null=True)
+    experiencia = models.TextField("Experiencia en el Servicio Público", blank=True, null=True)
+    area = models.CharField("Área de Trabajo", max_length=255, blank=True, null=True)
+    descripcion_area = models.TextField("Descripción del Área de Trabajo", blank=True, null=True)
+    
+    # Relación con Dependencia
+    dependencia = models.ForeignKey(
+        Dependencia, 
+        on_delete=models.CASCADE, 
+        related_name="miembros", 
+        verbose_name="Dependencia",
+        blank=True,  # Permite que este campo quede vacío en formularios
+        null=True    # Permite que este campo sea nulo en la base de datos
+    )
     class Meta:
         ordering = ['orden']
         verbose_name = "Miembro del Gabinete"
