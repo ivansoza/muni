@@ -26,8 +26,8 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
-from transparencia.forms import SeccionTransparenciaForm, EjercicioFiscalForm, DocumentoTransparenciaForm
-from transparencia.models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia
+from transparencia.forms import SeccionTransparenciaForm, EjercicioFiscalForm, DocumentoTransparenciaForm, ListaObligacionesForm, ArticuloLigaForm
+from transparencia.models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga
 from sevac.models import Carpeta, Archivo
 from sevac.forms import CarpetaForm, ArchivoForm
 # Create your views here.
@@ -916,3 +916,199 @@ def eliminar_archivo(request, id):
         return JsonResponse({'status': 'success'})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
+    
+class ListaObligacionesView(ListView):
+    model = ListaObligaciones
+    template_name = 'transparencia2/inicioTrasnparencia.html'
+    context_object_name = 'lista_obligaciones'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Total de listas de obligaciones
+        context['total_lista_obligaciones'] = ListaObligaciones.objects.count()
+
+        # Total de artículos (registros) relacionados con las listas de obligaciones
+        context['total_articulos'] = ArticuloLiga.objects.count()
+
+
+        # Agregar breadcrumbs y sidebar al contexto
+        url_configuracion = reverse('dashboard')
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': url_configuracion},
+            'child': {'name': 'Transparencia', 'url': ''}
+        }
+        context['sidebar'] = 'transparencia'
+
+        return context
+
+    
+# Vista para crear un nuevo registro de ListaObligaciones
+class ListaObligacionesCreateView(CreateView):
+    model = ListaObligaciones
+    form_class = ListaObligacionesForm
+    template_name = 'transparencia2/crearLista.html'  # Template a usar para la vista
+    success_url = reverse_lazy('lista_obligaciones')  # URL a la que redirigir después de guardar el formulario
+
+    def form_valid(self, form):
+        # Aquí puedes añadir lógica adicional antes de guardar, si lo necesitas
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        url_configuracion = reverse('lista_obligaciones')
+        context["breadcrumb"] = {
+            'parent': {'name': 'Trasnparencia', 'url': url_configuracion},
+            'child': {'name': 'Regitro de nueva lista', 'url': ''}
+        }
+        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+        return context
+
+# Vista para editar un registro de ListaObligaciones
+class ListaObligacionesUpdateView(UpdateView):
+    model = ListaObligaciones
+    form_class = ListaObligacionesForm
+    template_name = 'transparencia2/editarLista.html'  # Template a usar para la vista
+    context_object_name = 'lista_obligaciones'  # Nombre del objeto que se pasará al contexto
+    success_url = reverse_lazy('lista_obligaciones')  # URL a la que redirigir después de guardar el formulario
+
+    def form_valid(self, form):
+        # Aquí puedes añadir lógica adicional antes de guardar, si lo necesitas
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        url_configuracion = reverse('lista_obligaciones')
+        context["breadcrumb"] = {
+            'parent': {'name': 'Trasnparencia', 'url': url_configuracion},
+            'child': {'name': 'Edición de lista', 'url': ''}
+        }
+        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+        return context
+
+class ListaObligacionesDeleteView(View):
+    def post(self, request, pk):
+        # Obtener el objeto que se quiere eliminar
+        lista_obligaciones = get_object_or_404(ListaObligaciones, pk=pk)
+
+        # Eliminar el objeto
+        lista_obligaciones.delete()
+
+        # Retornar una respuesta JSON indicando que la eliminación fue exitosa
+        return JsonResponse({'success': True, 'message': 'Lista de Obligación eliminada exitosamente.'})
+    
+
+class GestionarArticulosView(View):
+    def get(self, request, lista_id):
+        # Obtener la lista de obligaciones
+        lista_obligaciones = get_object_or_404(ListaObligaciones, pk=lista_id)
+
+        # Obtener los artículos relacionados con la lista
+        articulos = lista_obligaciones.articulos_liga.all()
+
+        # Crear el contexto con la información necesaria
+        context = {
+            'lista_obligaciones': lista_obligaciones,
+            'articulos': articulos,
+            'breadcrumb': {
+                'parent': {'name': 'Transparencia', 'url': reverse('lista_obligaciones')},
+                'child': {'name': 'Gestión de artículos', 'url': ''}
+            },
+            'sidebar': 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+        }
+
+        # Renderizar la plantilla con el contexto
+        return render(request, 'transparencia2/gestionarLista.html', context)
+            
+
+
+class CrearArticuloView(CreateView):
+    model = ArticuloLiga
+    form_class = ArticuloLigaForm
+    template_name = 'transparencia2/crearArticulo.html'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        lista_obligacion_id = self.kwargs.get('lista_obligacion_id')
+        kwargs['lista_obligacion_id'] = lista_obligacion_id
+        return kwargs
+    
+    def form_valid(self, form):
+        # Obtener la instancia de ListaObligaciones usando el id proporcionado
+        lista_obligacion_id = self.kwargs['lista_obligacion_id']
+        lista_obligacion = get_object_or_404(ListaObligaciones, pk=lista_obligacion_id)
+
+        # Asignamos la instancia de ListaObligaciones al artículo
+        form.instance.lista_obligaciones = lista_obligacion
+
+        # Guardamos el artículo y mostramos el mensaje de éxito
+        response = super().form_valid(form)
+        messages.success(self.request, 'Artículo creado con éxito!')
+        return response
+
+    def get_success_url(self):
+        # Redirigimos al usuario a la vista de gestión de artículos después de la creación
+        return reverse_lazy('gestionar_articulos', kwargs={'lista_id': self.kwargs['lista_obligacion_id']})
+
+    def get_context_data(self, **kwargs):
+        # Obtener la lista de obligaciones para pasarla al contexto
+        context = super().get_context_data(**kwargs)
+        lista_obligacion_id = self.kwargs['lista_obligacion_id']
+        lista_obligacion = get_object_or_404(ListaObligaciones, pk=lista_obligacion_id)
+        context['lista_obligaciones'] = lista_obligacion  # Pasamos el objeto lista_obligaciones
+        url_configuracion = reverse('gestionar_articulos', kwargs={'lista_id': self.kwargs['lista_obligacion_id']})
+        context["breadcrumb"] = {
+            'parent': {'name': 'Gestión de artículos', 'url': url_configuracion},
+            'child': {'name': 'Registro de articulos en lista', 'url': ''}
+        }
+        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+        
+        return context
+
+
+class EditarArticuloView(UpdateView):
+    model = ArticuloLiga
+    form_class = ArticuloLigaForm
+    template_name = 'transparencia2/editarArticulo.html'
+
+    def get_object(self):
+        # Recuperar el artículo por su ID
+        articulo_id = self.kwargs['articulo_id']
+        articulo = get_object_or_404(ArticuloLiga, pk=articulo_id)
+        return articulo
+    
+    def form_valid(self, form):
+        # Al enviar el formulario correctamente, mostramos un mensaje de éxito
+        messages.success(self.request, 'Artículo actualizado con éxito!')
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        # Redirigimos al usuario a la vista de gestión de artículos después de la edición
+        lista_obligacion_id = self.kwargs['lista_obligacion_id']
+        return reverse_lazy('gestionar_articulos', kwargs={'lista_id': lista_obligacion_id})
+    
+    def get_context_data(self, **kwargs):
+        # Obtener la lista de obligaciones para pasarla al contexto
+        context = super().get_context_data(**kwargs)
+        lista_obligacion_id = self.kwargs['lista_obligacion_id']
+        lista_obligacion = get_object_or_404(ListaObligaciones, pk=lista_obligacion_id)
+        context['lista_obligaciones'] = lista_obligacion  # Pasamos el objeto lista_obligaciones
+        url_configuracion = reverse('gestionar_articulos', kwargs={'lista_id': self.kwargs['lista_obligacion_id']})
+        context["breadcrumb"] = {
+            'parent': {'name': 'Gestión de artículos', 'url': url_configuracion},
+            'child': {'name': 'Editar de articulos en lista', 'url': ''}
+        }
+        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+        return context
+    
+
+class EliminarArticuloView(View):
+    def post(self, request, articulo_id):
+        # Obtener el artículo que se va a eliminar
+        articulo = get_object_or_404(ArticuloLiga, id=articulo_id)
+        
+        # Eliminar el artículo
+        articulo.delete()
+
+        # Responder con éxito
+        return JsonResponse({'success': True, 'message': 'Artículo eliminado con éxito'})
