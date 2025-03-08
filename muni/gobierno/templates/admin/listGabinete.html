@@ -11,7 +11,15 @@
                 <span>Arrastra las filas para reorganizar</span>
             </div>
         </div>
+        
         <div class="card-body">
+            <!-- Botón para agregar nuevo miembro -->
+            <div class="mb-3 text-start">
+                <a href="{% url 'gabinete_create' %}" class="btn btn-success">
+                    <i class="fa fa-user-plus"></i> Agregar nuevo miembro
+                </a>
+            </div>
+            
             <div class="table-responsive">
                 <table class="table table-hover" id="gabineteTable">
                     <thead class="table-light">
@@ -30,6 +38,7 @@
                 </table>
             </div>
         </div>
+        
         <div class="card-footer text-muted">
             <div id="statusMessage" class="text-center"></div>
         </div>
@@ -110,6 +119,10 @@
                             statusClass = "text-danger";
                         }
                         
+                        // Generar la columna de acciones con ícono de edición y drag-handle
+                        // Ajusta la URL de edición según tu configuración de rutas en Django.
+                        const editUrl = "{% url 'gabinete_edit' 99999 %}".replace("99999", miembro.id);
+                        
                         row.innerHTML = `
                             <td>${miembro.nombre}</td>
                             <td>${miembro.cargo}</td>
@@ -117,8 +130,13 @@
                             <td><span class="${statusClass}">${miembro.status}</span></td>
                             <td class="text-center">${miembro.orden}</td>
                             <td class="text-center">
-                                <div class="drag-handle">
-<i class="fa fa-th"></i>
+                                <!-- Ícono de edición con enlace -->
+                                <a href="${editUrl}" class="me-2 text-decoration-none">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                <!-- Ícono para drag (no hace navegación) -->
+                                <div class="drag-handle d-inline-block">
+                                    <i class="fa fa-th"></i>
                                 </div>
                             </td>
                         `;
@@ -154,12 +172,12 @@
                 ghostClass: 'sortable-ghost',
                 chosenClass: 'sortable-chosen',
                 
-                // `onStart` se dispara cuando comienza el arrastre
+                // onStart se dispara cuando comienza el arrastre
                 onStart: function(evt) {
                     document.body.style.cursor = 'grabbing';
                 },
                 
-                // `onEnd` se dispara cuando termina el arrastre
+                // onEnd se dispara cuando termina el arrastre
                 onEnd: function(evt) {
                     document.body.style.cursor = 'default';
                     
@@ -188,7 +206,7 @@
                     .then(res => res.json())
                     .then(data => {
                         showStatusMessage(data.message || "Posiciones actualizadas correctamente");
-                        fetchData(); // Recargar datos para mostrar el nuevo orden
+                        fetchData(); // Recargar datos para reflejar el nuevo orden
                     })
                     .catch(err => {
                         console.error(err);

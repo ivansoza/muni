@@ -4,333 +4,770 @@
 
 {% block content %}
 
-<style>
 
-    .container {
-        max-width: 1000px;
-        margin: 0 auto;
-        background: white;
-        padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-        color: #1a1a1a;
-        margin-bottom: 2rem;
-        text-align: center;
-    }
-
-    .add-new {
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-
-    .add-btn {
-        background: #42b72a;
-        color: white;
-        padding: 1rem 2rem;
-        font-size: 1.1rem;
-    }
-
-    .social-list {
-        display: grid;
-        gap: 1.5rem;
-    }
-
-    .social-card {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1.5rem;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        position: relative;
-        transition: all 0.3s ease;
-    }
-
-    .social-card.disabled {
-        background: #f8f9fa;
-        opacity: 0.6;
-    }
-
-    .social-header {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .social-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.2rem;
-        flex-shrink: 0;
-    }
-
-    .facebook { background: #1877f2; }
-    .twitter { background: #1da1f2; }
-    .instagram { background: #e1306c; }
-    .tiktok { background: #000000; }
-
-    .card-controls {
-        display: flex;
-        gap: 1rem;
-        margin-top: 1rem;
-        flex-wrap: wrap;
-    }
-
-    input {
-        padding: 0.8rem;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        font-size: 1rem;
-        width: 100%;
-        background: #fff;
-    }
-
-    input:disabled {
-        background: #f8f9fa;
-    }
-
-    button {
-        padding: 0.6rem 1.2rem;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: 500;
-        transition: all 0.2s ease;
-    }
-
-    .toggle-btn {
-        background: #e4e6eb;
-        color: #1a1a1a;
-    }
-
-    .toggle-btn.active {
-        background: #42b72a;
-        color: white;
-    }
-
-    .edit-btn {
-        background: #1877f2;
-        color: white;
-    }
-
-    .delete-btn {
-        background: #dc3545;
-        color: white;
-    }
-
-    button:hover {
-        opacity: 0.9;
-        transform: translateY(-1px);
-    }
-
-    .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.5);
-        justify-content: center;
-        align-items: center;
-    }
-
-    .modal-content {
-        background: white;
-        padding: 2rem;
-        border-radius: 8px;
-        width: 90%;
-        max-width: 500px;
-    }
-
-    .modal-controls {
-        margin-top: 1rem;
-        display: flex;
-        gap: 1rem;
-        justify-content: flex-end;
-    }
-
-    select {
-        width: 100%;
-        padding: 0.8rem;
-        margin: 1rem 0;
-        border-radius: 6px;
-    }
-</style>
-
-<div class="modal" id="addModal">
-    <div class="modal-content">
-        <h3>Agregar Nueva Red Social</h3>
-        <select id="socialType">
-            <option value="facebook">Facebook</option>
-            <option value="twitter">Twitter</option>
-            <option value="instagram">Instagram</option>
-            <option value="tiktok">TikTok</option>
-        </select>
-        <input type="url" id="socialUrl" placeholder="Ingresa la URL completa">
-        <div class="modal-controls">
-            <button onclick="closeModal()">Cancelar</button>
-            <button class="edit-btn" onclick="addSocial()">Agregar</button>
-        </div>
-    </div>
-</div>
-<div class="container">
-    <h1>Gestor de Redes Sociales</h1>
-    
-    <div class="add-new">
-        <button class="add-btn" onclick="openModal()">+ Agregar Nueva Red</button>
-    </div>
-
-    <div class="social-list" id="socialList">
-        <!-- Las redes sociales se agregarán aquí dinámicamente -->
-    </div>
-</div>
-
-<!-- Modal para agregar nueva red -->
-<div class="modal" id="addModal">
-    <div class="modal-content">
-        <h3>Agregar Nueva Red Social</h3>
-        <select id="socialType">
-            <option value="facebook">Facebook</option>
-            <option value="twitter">Twitter</option>
-            <option value="instagram">Instagram</option>
-            <option value="tiktok">TikTok</option>
-        </select>
-        <input type="url" id="socialUrl" placeholder="Ingresa la URL completa">
-        <div class="modal-controls">
-            <button onclick="closeModal()">Cancelar</button>
-            <button class="edit-btn" onclick="addSocial()">Agregar</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    let socials = [];
-
-    function openModal() {
-        document.getElementById('addModal').style.display = 'flex';
-    }
-
-    function closeModal() {
-        document.getElementById('addModal').style.display = 'none';
-    }
-
-    function addSocial() {
-        const type = document.getElementById('socialType').value;
-        const url = document.getElementById('socialUrl').value;
+    <style>
+  
         
-        if(url) {
-            const newSocial = {
-                id: Date.now(),
-                type: type,
-                url: url,
-                enabled: true
-            };
-            
-            socials.push(newSocial);
-            renderSocials();
-            closeModal();
-            document.getElementById('socialUrl').value = '';
-            saveToLocalStorage();
+        .container {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
         }
-    }
-
-    function deleteSocial(id) {
-        socials = socials.filter(social => social.id !== id);
-        renderSocials();
-        saveToLocalStorage();
-    }
-
-    function toggleSocial(id) {
-        socials = socials.map(social => {
-            if(social.id === id) {
-                social.enabled = !social.enabled;
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 2.5rem;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        h1:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            border-radius: 2px;
+        }
+        
+        h2 {
+            margin-bottom: 15px;
+            color: #444;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        h2 i {
+            color: #6a11cb;
+        }
+        
+        .social-form {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .social-form:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        select, input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background-color: #f9f9f9;
+        }
+        
+        select:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #6a11cb;
+            box-shadow: 0 0 0 2px rgba(106, 17, 203, 0.2);
+            background-color: white;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+        
+        .checkbox-group label i {
+            color: gold;
+            font-size: 18px;
+        }
+        
+        button {
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(106, 17, 203, 0.2);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(106, 17, 203, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(106, 17, 203, 0.2);
+        }
+        
+        .social-lists {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .favorites, .all-socials {
+            flex: 1;
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .favorites:hover, .all-socials:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        ul {
+            list-style-type: none;
+        }
+        
+        .social-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: all 0.3s;
+            border-radius: 6px;
+        }
+        
+        .social-item:hover {
+            background-color: #f9f9f9;
+            transform: translateY(-2px);
+        }
+        
+        .social-item:last-child {
+            border-bottom: none;
+        }
+        
+        .social-info {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .social-username {
+            background-color: #f5f5f5;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+        
+        .social-username i {
+            color: #777;
+            font-size: 12px;
+        }
+        
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: white;
+            font-size: 18px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .social-item a {
+            color: #2575fc;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        
+        .social-item a:hover {
+            background-color: #e6f0ff;
+            color: #1a5fd0;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-buttons button {
+            padding: 8px 10px;
+            font-size: 14px;
+        }
+        
+        .action-buttons .delete-btn {
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+        }
+        
+        .action-buttons .favorite-btn {
+            background: linear-gradient(to right, #f7971e, #ffd200);
+            color: #333;
+        }
+        
+        .favorite-badge {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background-color: gold;
+            color: black;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .favorite-badge i {
+            color: #333;
+        }
+        
+        .facebook {
+            background-color: #3b5998;
+        }
+        
+        .instagram {
+            background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
+        }
+        
+        .twitter {
+            background-color: #1DA1F2;
+        }
+        
+        .tiktok {
+            background: linear-gradient(to right, #000000, #25F4EE);
+        }
+        
+        .youtube {
+            background-color: #FF0000;
+        }
+        
+        .linkedin {
+            background-color: #0077B5;
+        }
+        
+        .error-message {
+            color: #fff;
+            margin-top: 15px;
+            font-size: 14px;
+            background-color: #ff4b2b;
+            padding: 10px 15px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeIn 0.3s;
+        }
+        
+        .error-message i {
+            font-size: 18px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .social-lists {
+                flex-direction: column;
             }
-            return social;
-        });
-        renderSocials();
-        saveToLocalStorage();
-    }
-
-    function editSocial(id) {
-        const social = socials.find(social => social.id === id);
-        const newUrl = prompt('Editar URL:', social.url);
-        if(newUrl) {
-            social.url = newUrl;
-            renderSocials();
-            saveToLocalStorage();
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .social-form, .favorites, .all-socials {
+                padding: 20px;
+            }
+            
+            .social-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .action-buttons {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .social-info {
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+            }
         }
-    }
-
-    function renderSocials() {
-        const list = document.getElementById('socialList');
-        list.innerHTML = '';
         
-        socials.forEach(social => {
-            const card = document.createElement('div');
-            card.className = `social-card ${social.enabled ? '' : 'disabled'}`;
-            card.innerHTML = `
-                <div class="social-header">
-                    <div class="social-icon ${social.type}">${getIconText(social.type)}</div>
-                    <h3>${social.type.charAt(0).toUpperCase() + social.type.slice(1)}</h3>
-                </div>
-                <input type="url" value="${social.url}" readonly>
-                <div class="card-controls">
-                    <button class="toggle-btn ${social.enabled ? 'active' : ''}" onclick="toggleSocial(${social.id})">
-                        ${social.enabled ? 'Habilitado' : 'Deshabilitado'}
-                    </button>
-                    <button class="edit-btn" onclick="editSocial(${social.id})">Editar</button>
-                    <button class="delete-btn" onclick="deleteSocial(${social.id})">Eliminar</button>
-                </div>
-            `;
-            list.appendChild(card);
-        });
-    }
-
-    function getIconText(type) {
-        const icons = {
-            facebook: 'FB',
-            twitter: 'TW',
-            instagram: 'IG',
-            tiktok: 'TT'
-        };
-        return icons[type] || '';
-    }
-
-    function saveToLocalStorage() {
-        localStorage.setItem('socials', JSON.stringify(socials));
-    }
-
-    function loadFromLocalStorage() {
-        const saved = localStorage.getItem('socials');
-        if(saved) {
-            socials = JSON.parse(saved);
-            renderSocials();
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+            }
+            
+            .social-lists {
+                gap: 15px;
+            }
+            
+            .social-info, .social-item a {
+                font-size: 14px;
+            }
+            
+            .action-buttons button {
+                padding: 6px 8px;
+                font-size: 12px;
+            }
         }
-    }
+    </style>
 
-    // Cargar datos al iniciar
-    loadFromLocalStorage();
-
-    // Ejemplo de datos iniciales (puedes eliminarlo)
-    socials.push(
-        {id: 1, type: 'facebook', url: 'https://facebook.com/perfil1', enabled: true},
-        {id: 2, 'facebook', url: 'https://facebook.com/perfil2', enabled: false},
-        {id: 3, type: 'instagram', url: 'https://instagram.com/perfil1', enabled: true}
-    );
-    renderSocials();
-</script>
-
-
+    <div class="container">
+        <h1>Gestor de Redes Sociales</h1>
+        
+        <div class="social-form">
+            <h2>Agregar Red Social</h2>
+            <div class="input-group">
+                <select id="socialType">
+                    <option value="">Selecciona red social</option>
+                    <option value="facebook">Facebook</option>
+                    <option value="instagram">Instagram</option>
+                    <option value="twitter">Twitter</option>
+                    <option value="tiktok">TikTok</option>
+                    <option value="youtube">YouTube</option>
+                    <option value="linkedin">LinkedIn</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <input type="text" id="socialUsername" placeholder="Nombre de usuario o identificador">
+            </div>
+            <div class="input-group">
+                <input type="text" id="socialURL" placeholder="URL de tu perfil">
+            </div>
+            <div class="input-group checkbox-group">
+                <input type="checkbox" id="isFavorite">
+                <label for="isFavorite">
+                    <i class="fa fa-star"></i> Marcar como favorita
+                </label>
+            </div>
+            <button id="addButton"><i class="fa fa-plus"></i> Agregar</button>
+        </div>
+        
+        <div class="social-lists">
+            <div class="favorites">
+                <h2><i class="fa fa-star"></i> Redes Favoritas</h2>
+                <ul id="favoritesList"></ul>
+            </div>
+            
+            <div class="all-socials">
+                <h2><i class="fa fa-list"></i> Todas las Redes</h2>
+                <ul id="socialsList"></ul>
+            </div>
+        </div>
+    </div>
+    
 
 
 {% endblock content %}
 
+
+
+{% block scriptcontent %} 
+
+<script>
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elementos del DOM
+        const socialTypeSelect = document.getElementById('socialType');
+        const socialURLInput = document.getElementById('socialURL');
+        const socialUsernameInput = document.getElementById('socialUsername');
+        const isFavoriteCheckbox = document.getElementById('isFavorite');
+        const addButton = document.getElementById('addButton');
+        const favoritesList = document.getElementById('favoritesList');
+        const socialsList = document.getElementById('socialsList');
+        
+        // Almacenamiento de redes sociales
+        let socialNetworks = [];
+        let favorites = {
+            facebook: null,
+            instagram: null,
+            twitter: null,
+            tiktok: null,
+            youtube: null,
+            linkedin: null
+        };
+        
+        // Cargar datos del localStorage si existen
+        if (localStorage.getItem('socialNetworks')) {
+            socialNetworks = JSON.parse(localStorage.getItem('socialNetworks'));
+            
+            // Reconstruir objetos favorites
+            favorites = {
+                facebook: null,
+                instagram: null,
+                twitter: null,
+                tiktok: null,
+                youtube: null,
+                linkedin: null
+            };
+            
+            socialNetworks.forEach(network => {
+                if (network.isFavorite) {
+                    favorites[network.type] = network;
+                }
+            });
+            
+            renderLists();
+        }
+        
+        // Evento para agregar red social
+        addButton.addEventListener('click', function() {
+            const type = socialTypeSelect.value;
+            const url = socialURLInput.value.trim();
+            const username = socialUsernameInput.value.trim();
+            const isFavorite = isFavoriteCheckbox.checked;
+            
+            // Validaciones
+            if (!type) {
+                showError('Por favor selecciona un tipo de red social');
+                return;
+            }
+            
+            if (!url) {
+                showError('Por favor ingresa la URL de tu perfil');
+                return;
+            }
+            
+            if (!username) {
+                showError('Por favor ingresa un nombre de usuario o identificador');
+                return;
+            }
+            
+            // Verificar formato de URL básico
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                showError('La URL debe comenzar con http:// o https://');
+                return;
+            }
+            
+            // Verificar si ya existe una favorita de este tipo
+            if (isFavorite && favorites[type]) {
+                // Desmarcar la anterior favorita
+                const oldFavoriteIndex = socialNetworks.findIndex(
+                    network => network.type === type && network.isFavorite
+                );
+                
+                if (oldFavoriteIndex !== -1) {
+                    socialNetworks[oldFavoriteIndex].isFavorite = false;
+                }
+            }
+            
+            // Crear nueva red social
+            const newSocial = {
+                id: Date.now().toString(),
+                type,
+                url,
+                username,
+                isFavorite
+            };
+            
+            // Actualizar favoritas si es necesario
+            if (isFavorite) {
+                favorites[type] = newSocial;
+            }
+            
+            // Agregar a la lista
+            socialNetworks.push(newSocial);
+            
+            // Guardar en localStorage
+            saveToLocalStorage();
+            
+            // Actualizar interfaz
+            renderLists();
+            
+            // Limpiar formulario
+            socialTypeSelect.value = '';
+            socialURLInput.value = '';
+            socialUsernameInput.value = '';
+            isFavoriteCheckbox.checked = false;
+            
+            // Mostrar mensaje de éxito
+            showSuccess('Red social agregada correctamente');
+        });
+        
+        // Función para mostrar error
+        function showError(message) {
+            // Eliminar mensajes previos
+            removeMessages();
+            
+            // Crear nuevo mensaje
+            const errorElement = document.createElement('div');
+            errorElement.className = 'error-message';
+            errorElement.innerHTML = `<i class="fa fa-exclamation-circle"></i> ${message}`;
+            
+            // Insertar después del botón
+            addButton.insertAdjacentElement('afterend', errorElement);
+            
+            // Eliminar después de 3 segundos
+            setTimeout(() => {
+                errorElement.remove();
+            }, 3000);
+        }
+        
+        // Función para mostrar mensaje de éxito
+        function showSuccess(message) {
+            // Eliminar mensajes previos
+            removeMessages();
+            
+            // Crear nuevo mensaje
+            const successElement = document.createElement('div');
+            successElement.className = 'error-message';
+            successElement.style.backgroundColor = '#4CAF50';
+            successElement.innerHTML = `<i class="fa fa-check-circle"></i> ${message}`;
+            
+            // Insertar después del botón
+            addButton.insertAdjacentElement('afterend', successElement);
+            
+            // Eliminar después de 3 segundos
+            setTimeout(() => {
+                successElement.remove();
+            }, 3000);
+        }
+        
+        // Eliminar mensajes previos
+        function removeMessages() {
+            const existingMessages = document.querySelectorAll('.error-message');
+            existingMessages.forEach(msg => msg.remove());
+        }
+        
+        // Función para renderizar listas
+        function renderLists() {
+            // Limpiar listas
+            favoritesList.innerHTML = '';
+            socialsList.innerHTML = '';
+            
+            // Renderizar favoritas
+            Object.values(favorites).forEach(network => {
+                if (network) {
+                    const li = createSocialItem(network, true);
+                    favoritesList.appendChild(li);
+                }
+            });
+            
+            if (favoritesList.children.length === 0) {
+                favoritesList.innerHTML = '<li class="social-item">No hay redes favoritas</li>';
+            }
+            
+            // Renderizar todas las redes
+            socialNetworks.forEach(network => {
+                const li = createSocialItem(network, false);
+                socialsList.appendChild(li);
+            });
+            
+            if (socialsList.children.length === 0) {
+                socialsList.innerHTML = '<li class="social-item">No hay redes sociales agregadas</li>';
+            }
+        }
+        
+        // Crear elemento de red social
+        function createSocialItem(network, isFavoriteList) {
+            const li = document.createElement('li');
+            li.className = 'social-item';
+            li.dataset.id = network.id;
+            
+            const iconSpan = document.createElement('span');
+            iconSpan.className = `social-icon ${network.type}`;
+            
+            // Icono según la red social
+            let iconClass;
+            switch(network.type) {
+                case 'facebook': iconClass = 'fa fa-facebook-f'; break;
+                case 'instagram': iconClass = 'fa fa-instagram'; break;
+                case 'twitter': iconClass = 'fa fa-twitter'; break;
+                case 'tiktok': iconClass = 'fa fa-tiktok'; break;
+                case 'youtube': iconClass = 'fa fa-youtube'; break;
+                case 'linkedin': iconClass = 'fa fa-linkedin-in'; break;
+                default: iconClass = 'fa fa-link';
+            }
+            
+            iconSpan.innerHTML = `<i class="${iconClass}"></i>`;
+            
+            const nameSpan = document.createElement('span');
+            // Capitalizar primera letra
+            const typeName = network.type.charAt(0).toUpperCase() + network.type.slice(1);
+            nameSpan.textContent = typeName;
+            
+            // Agregar elemento para nombre de usuario
+            const usernameSpan = document.createElement('span');
+            usernameSpan.className = 'social-username';
+            usernameSpan.innerHTML = `<i class="fa fa-user"></i> ${network.username}`;
+            
+            const urlLink = document.createElement('a');
+            urlLink.href = network.url;
+            urlLink.target = '_blank';
+            urlLink.innerHTML = '<i class="fa fa-external-link-alt"></i> Ver perfil';
+            
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'social-info';
+            infoDiv.appendChild(iconSpan);
+            infoDiv.appendChild(nameSpan);
+            infoDiv.appendChild(usernameSpan);
+            
+            if (network.isFavorite && !isFavoriteList) {
+                const favBadge = document.createElement('span');
+                favBadge.className = 'favorite-badge';
+                favBadge.innerHTML = '<i class="fa fa-star"></i> Favorita';
+                infoDiv.appendChild(favBadge);
+            }
+            
+            const actionDiv = document.createElement('div');
+            actionDiv.className = 'action-buttons';
+            
+            if (!isFavoriteList) {
+                const toggleFavBtn = document.createElement('button');
+                toggleFavBtn.className = 'favorite-btn';
+                toggleFavBtn.innerHTML = network.isFavorite ? 
+                    '<i class="fa fa-star"></i> Quitar favorito' : 
+                    '<i class="fa fa-star-o"></i> Hacer favorito';
+                toggleFavBtn.addEventListener('click', function() {
+                    toggleFavorite(network.id);
+                });
+                actionDiv.appendChild(toggleFavBtn);
+            }
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '<i class="fa fa-trash"></i> Eliminar';
+            deleteBtn.addEventListener('click', function() {
+                deleteSocial(network.id);
+            });
+            actionDiv.appendChild(deleteBtn);
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.style.width = '100%';
+            contentDiv.style.display = 'flex';
+            contentDiv.style.justifyContent = 'space-between';
+            contentDiv.style.alignItems = 'center';
+            contentDiv.appendChild(infoDiv);
+            contentDiv.appendChild(urlLink);
+            
+            li.appendChild(contentDiv);
+            li.appendChild(actionDiv);
+            
+            return li;
+        }
+        
+        // Alternar favorito
+        function toggleFavorite(id) {
+            const index = socialNetworks.findIndex(network => network.id === id);
+            if (index === -1) return;
+            
+            const network = socialNetworks[index];
+            
+            // Si ya es favorito, simplemente quitarlo
+            if (network.isFavorite) {
+                network.isFavorite = false;
+                favorites[network.type] = null;
+                showSuccess(`${network.type.charAt(0).toUpperCase() + network.type.slice(1)} ya no es favorita`);
+            } else {
+                // Si hay una favorita de este tipo, quitarla primero
+                if (favorites[network.type]) {
+                    const oldFavIndex = socialNetworks.findIndex(
+                        n => n.type === network.type && n.isFavorite
+                    );
+                    if (oldFavIndex !== -1) {
+                        socialNetworks[oldFavIndex].isFavorite = false;
+                    }
+                }
+                
+                // Marcar la nueva como favorita
+                network.isFavorite = true;
+                favorites[network.type] = network;
+                showSuccess(`${network.type.charAt(0).toUpperCase() + network.type.slice(1)} marcada como favorita`);
+            }
+            
+            saveToLocalStorage();
+            renderLists();
+        }
+        
+        // Eliminar red social
+        function deleteSocial(id) {
+            const index = socialNetworks.findIndex(network => network.id === id);
+            if (index === -1) return;
+            
+            const network = socialNetworks[index];
+            
+            // Si es favorita, también eliminarla de favoritos
+            if (network.isFavorite) {
+                favorites[network.type] = null;
+            }
+            
+            // Eliminar de la lista
+            socialNetworks.splice(index, 1);
+            
+            saveToLocalStorage();
+            renderLists();
+            
+            showSuccess(`${network.type.charAt(0).toUpperCase() + network.type.slice(1)} eliminada correctamente`);
+        }
+        
+        // Guardar en localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('socialNetworks', JSON.stringify(socialNetworks));
+        }
+    });
+</script>
+
+{% endblock  %}

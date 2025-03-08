@@ -6,8 +6,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
-
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, UpdateView
 from gobierno.models import MiembroGabinete
+from gobierno.forms import MiembroGabineteForm
 # Create your views here.
 class HomeGobiernoView(TemplateView):
     template_name = 'homeGobierno.html'
@@ -92,3 +94,16 @@ def gabinete_update_order_api(request):
         return JsonResponse({'message': 'Orden actualizado exitosamente'})
 
     return JsonResponse({'error': 'Método no permitido o no es AJAX'}, status=400)
+
+
+class MiembroGabineteCreateView(CreateView):
+    model = MiembroGabinete
+    form_class = MiembroGabineteForm
+    template_name = 'admin/gabinete_form.html'
+    success_url = reverse_lazy('ListarGabineteView')  # Ajusta al nombre de URL que desees
+
+class MiembroGabineteUpdateView(UpdateView):
+    model = MiembroGabinete
+    form_class = MiembroGabineteForm
+    template_name = 'admin/gabinete_form.html'
+    success_url = reverse_lazy('ListarGabineteView') 

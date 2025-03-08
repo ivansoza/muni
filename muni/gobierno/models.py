@@ -19,7 +19,7 @@ class MiembroGabinete(models.Model):
     )
     nombre = models.CharField("Nombre", max_length=255)
     cargo = models.CharField("Cargo", max_length=255)
-    semblanza = CKEditor5Field('Semblanza', config_name='extends', blank=True, null=True)
+    semblanza = models.TextField("Semblanza", blank=True, null=True)
     numero_contacto = models.CharField("Número de Contacto", max_length=20, blank=True, null=True)
     correo_electronico = models.EmailField("Correo Electrónico", blank=True, null=True)
     pagina_web = models.URLField("Página Web", blank=True, null=True)
