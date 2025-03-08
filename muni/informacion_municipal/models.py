@@ -198,3 +198,8 @@ class SeccionInicio(models.Model):
         if self.nombre != 'dinamica':
             if SeccionInicio.objects.filter(municipio=self.municipio, nombre=self.nombre).exclude(pk=self.pk).exists():
                 raise ValidationError(f"Ya existe una sección '{self.get_nombre_display()}' para este municipio.")
+
+
+
+
+
