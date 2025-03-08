@@ -1,8 +1,7 @@
 {% extends "baseTemplate.html" %}
 {% load static %}
 
-{% block extra_head %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% block content %}
 <style>
     .form-card {
         border-radius: 10px;
@@ -10,6 +9,7 @@
         transition: all 0.3s ease;
         border: none;
         overflow: hidden;
+        margin-bottom: 2rem;
     }
     
     .form-card:hover {
@@ -17,15 +17,11 @@
         transform: translateY(-2px);
     }
     
-    .form-card .card-header {
-        border-bottom: none;
-        padding: 1rem 1.5rem;
-        font-weight: 600;
-    }
-    
-    .form-card .card-body {
+    .card-body {
         padding: 1.5rem;
     }
+    
+    /* Ajusta si quieres menos/más padding para todo el contenido */
     
     .field-group {
         margin-bottom: 1.5rem;
@@ -70,15 +66,6 @@
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
     }
     
-    .image-preview {
-        max-width: 200px;
-        max-height: 250px;
-        border-radius: 5px;
-        object-fit: cover;
-        display: block;
-        margin-bottom: 1rem;
-    }
-    
     .required-field .form-label::after {
         content: " *";
         color: #dc3545;
@@ -90,81 +77,141 @@
         text-align: center;
         margin-right: 8px;
     }
+
+    .progress {
+        height: 10px;
+        border-radius: 8px;
+        background-color: #f0f0f0;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+    
+    .progress-bar {
+        background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, 
+                          transparent 50%, rgba(255, 255, 255, .15) 50%, 
+                          rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
+        background-size: 1rem 1rem;
+        transition: width 0.6s ease;
+    }
+    
+    .image-container {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        margin: 0 auto 1.5rem;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid #f8f9fa;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #e9ecef;
+    }
+    
+    .image-preview {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .image-container:hover .image-preview {
+        transform: scale(1.05);
+    }
+    
+    .image-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: 8px;
+        font-size: 0.8rem;
+        text-align: center;
+        transition: opacity 0.3s;
+        opacity: 0;
+    }
+    
+    .image-container:hover .image-overlay {
+        opacity: 1;
+    }
 </style>
-{% endblock %}
 
-{% block content %}
-<div class="container-fluid ">
-    <div class="row justify-content-center">
-        <div class="col-12 col-lg-10">
-            <!-- Encabezado -->
-            <div class="d-flex align-items-center mb-4">
-                <div class="me-auto">
-                    <h1 class="display-6 mb-1">
-                        {% if object %}
-                            <i class="fa fa-user-edit text-primary me-2"></i>Editar Miembro del Gabinete
-                        {% else %}
-                            <i class="fa fa-user-plus text-success me-2"></i>Crear Miembro del Gabinete
-                        {% endif %}
-                    </h1>
-                    <p class="text-muted">
-                        Complete los campos a continuación para
-                        {% if object %}actualizar{% else %}registrar{% endif %}
-                        la información del funcionario.
-                    </p>
-                </div>
-                <a href="{% url 'ListarGabineteView' %}" class="btn btn-outline-secondary">
-                    <i class="fa fa-arrow-left me-2"></i>Volver al listado
-                </a>
-            </div>
+<div class="container-fluid">
+    <div class="">
+        <div class="col-12">
+            
+            <!-- Aquí empieza la única Card que engloba todo -->
+            <div class="card form-card">
+                <div class="card-body">
 
-            <form method="post" enctype="multipart/form-data" novalidate id="gabineteForm">
-                {% csrf_token %}
+                    <!-- Encabezado principal (dentro de la card) -->
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="me-auto">
+                            <h1 class="display-6 mb-1">
+                                {% if object %}
+                                    <i class="fa fa-pencil field-icon text-primary me-2"></i>Editar Miembro del Gabinete
+                                {% else %}
+                                    <i class="fa fa-user-plus text-success me-2"></i>Crear Miembro del Gabinete
+                                {% endif %}
+                            </h1>
+                            <p class="text-muted">
+                                Complete los campos a continuación para
+                                {% if object %}actualizar{% else %}registrar{% endif %}
+                                la información del funcionario.
+                            </p>
+                        </div>
+                        <a href="{% url 'ListarGabineteView' %}" class="btn btn-outline-secondary">
+                            <i class="fa fa-arrow-left me-2"></i>Volver al listado
+                        </a>
+                    </div>
 
-                <!-- Barra de progreso -->
-                <div class="progress mb-4" style="height: 8px;">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-                         style="width: 0%" id="formProgress"></div>
-                </div>
-
-                <!-- Navegación de pestañas -->
-                <ul class="nav nav-pills mb-4 nav-fill" id="formTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="general-tab" data-bs-toggle="pill"
-                                data-bs-target="#general" type="button" role="tab" aria-controls="general"
-                                aria-selected="true">
-                            <i class="fa fa-info-circle me-2"></i>General
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="contacto-tab" data-bs-toggle="pill" data-bs-target="#contacto"
-                                type="button" role="tab" aria-controls="contacto" aria-selected="false">
-                            <i class="fa fa-address-card me-2"></i>Contacto
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="perfil-tab" data-bs-toggle="pill" data-bs-target="#perfil"
-                                type="button" role="tab" aria-controls="perfil" aria-selected="false">
-                            <i class="fa fa-user me-2"></i>Perfil
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="imagen-tab" data-bs-toggle="pill" data-bs-target="#imagen"
-                                type="button" role="tab" aria-controls="imagen" aria-selected="false">
-                            <i class="fa fa-camera me-2"></i>Imagen
-                        </button>
-                    </li>
-                </ul>
-
-                <!-- Contenido de las pestañas -->
-                <div class="tab-content" id="formTabContent">
-                    <!-- Información General -->
-                    <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
-                        <div class="form-card card mb-4">
-                            <div class="card-header bg-primary text-white">
-                                <i class="fa fa-info-circle me-2"></i>Información General
+                    <!-- Formulario -->
+                    <form method="post" enctype="multipart/form-data" novalidate id="gabineteForm">
+                        {% csrf_token %}
+                        
+                        <!-- Barra de progreso -->
+                        <div class="progress mb-4">
+                            <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" 
+                                 role="progressbar" style="width: 0%" id="formProgress" 
+                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                             </div>
-                            <div class="card-body">
+                        </div>
+                        
+                        <!-- Navegación de pestañas -->
+                        <ul class="nav nav-pills mb-4 nav-fill" id="formTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="general-tab" data-bs-toggle="pill"
+                                        data-bs-target="#general" type="button" role="tab" aria-controls="general"
+                                        aria-selected="true">
+                                    <i class="fa fa-info-circle me-2"></i>General
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="contacto-tab" data-bs-toggle="pill" data-bs-target="#contacto"
+                                        type="button" role="tab" aria-controls="contacto" aria-selected="false">
+                                    <i class="fa fa-address-card me-2"></i>Contacto
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="perfil-tab" data-bs-toggle="pill" data-bs-target="#perfil"
+                                        type="button" role="tab" aria-controls="perfil" aria-selected="false">
+                                    <i class="fa fa-user me-2"></i>Perfil
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="imagen-tab" data-bs-toggle="pill" data-bs-target="#imagen"
+                                        type="button" role="tab" aria-controls="imagen" aria-selected="false">
+                                    <i class="fa fa-camera me-2"></i>Imagen
+                                </button>
+                            </li>
+                        </ul>
+
+                        <!-- Contenido de las pestañas -->
+                        <div class="tab-content" id="formTabContent">
+
+                            <!-- Pestaña: Información General -->
+                            <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
                                 <div class="row g-3">
                                     <!-- Municipio -->
                                     <div class="col-md-6 field-group {% if form.municipio.field.required %}required-field{% endif %}">
@@ -250,23 +297,17 @@
                                         {% endif %}
                                     </div>
                                 </div>
+                                <!-- Botones de esta pestaña -->
+                                <div class="card-footer text-end bg-light mt-3">
+                                    <button type="button" class="btn btn-primary" onclick="nextTab('contacto-tab')">
+                                        Siguiente <i class="fa fa-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <div class="card-footer text-end bg-light">
-                                <button type="button" class="btn btn-primary" onclick="nextTab('contacto-tab')">
-                                    Siguiente <i class="fa fa-arrow-right ms-2"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Fin Información General -->
+                            <!-- Fin Información General -->
 
-                    <!-- Datos de Contacto -->
-                    <div class="tab-pane fade" id="contacto" role="tabpanel" aria-labelledby="contacto-tab">
-                        <div class="form-card card mb-4">
-                            <div class="card-header bg-primary text-white">
-                                <i class="fa fa-address-card me-2"></i>Datos de Contacto
-                            </div>
-                            <div class="card-body">
+                            <!-- Pestaña: Datos de Contacto -->
+                            <div class="tab-pane fade" id="contacto" role="tabpanel" aria-labelledby="contacto-tab">
                                 <div class="row g-3">
                                     <!-- Número de Contacto -->
                                     <div class="col-md-6 field-group">
@@ -338,26 +379,20 @@
                                         {% endif %}
                                     </div>
                                 </div>
+                                <!-- Botones de esta pestaña -->
+                                <div class="card-footer d-flex justify-content-between bg-light mt-3">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="nextTab('general-tab')">
+                                        <i class="fa fa-arrow-left me-2"></i>Anterior
+                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="nextTab('perfil-tab')">
+                                        Siguiente <i class="fa fa-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <div class="card-footer d-flex justify-content-between bg-light">
-                                <button type="button" class="btn btn-outline-secondary" onclick="nextTab('general-tab')">
-                                    <i class="fa fa-arrow-left me-2"></i>Anterior
-                                </button>
-                                <button type="button" class="btn btn-primary" onclick="nextTab('perfil-tab')">
-                                    Siguiente <i class="fa fa-arrow-right ms-2"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Fin Datos de Contacto -->
+                            <!-- Fin Datos de Contacto -->
 
-                    <!-- Perfil y Área -->
-                    <div class="tab-pane fade" id="perfil" role="tabpanel" aria-labelledby="perfil-tab">
-                        <div class="form-card card mb-4">
-                            <div class="card-header bg-primary text-white">
-                                <i class="fa fa-user me-2"></i>Perfil Profesional
-                            </div>
-                            <div class="card-body">
+                            <!-- Pestaña: Perfil y Área -->
+                            <div class="tab-pane fade" id="perfil" role="tabpanel" aria-labelledby="perfil-tab">
                                 <div class="row g-3">
                                     <!-- Semblanza -->
                                     <div class="col-12 field-group">
@@ -429,26 +464,20 @@
                                         {% endif %}
                                     </div>
                                 </div>
+                                <!-- Botones de esta pestaña -->
+                                <div class="card-footer d-flex justify-content-between bg-light mt-3">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="nextTab('contacto-tab')">
+                                        <i class="fa fa-arrow-left me-2"></i>Anterior
+                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="nextTab('imagen-tab')">
+                                        Siguiente <i class="fa fa-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <div class="card-footer d-flex justify-content-between bg-light">
-                                <button type="button" class="btn btn-outline-secondary" onclick="nextTab('contacto-tab')">
-                                    <i class="fa fa-arrow-left me-2"></i>Anterior
-                                </button>
-                                <button type="button" class="btn btn-primary" onclick="nextTab('imagen-tab')">
-                                    Siguiente <i class="fa fa-arrow-right ms-2"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Fin Perfil y Área -->
+                            <!-- Fin Perfil y Área -->
 
-                    <!-- Imagen -->
-                    <div class="tab-pane fade" id="imagen" role="tabpanel" aria-labelledby="imagen-tab">
-                        <div class="form-card card mb-4">
-                            <div class="card-header bg-primary">
-                                <i class="fa fa-camera me-2"></i>Fotografía
-                            </div>
-                            <div class="card-body">
+                            <!-- Pestaña: Imagen -->
+                            <div class="tab-pane fade" id="imagen" role="tabpanel" aria-labelledby="imagen-tab">
                                 <div class="row">
                                     <!-- Campo para cargar imagen -->
                                     <div class="col-md-6">
@@ -468,54 +497,60 @@
                                     <!-- Vista previa de la imagen -->
                                     <div class="col-md-6 text-center">
                                         <div class="mt-3">
-                                            {% if object and object.imagen %}
-                                                <img src="{{ object.imagen.url }}"
-                                                     alt="{{ object.nombre }}"
-                                                     class="image-preview mx-auto mb-3">
-                                            {% else %}
-                                                <img src="{% static 'img/default.png' %}"
-                                                     alt="Vista previa"
-                                                     class="image-preview mx-auto mb-3">
-                                            {% endif %}
+                                            <div class="image-container">
+                                                {% if object and object.imagen %}
+                                                    <img src="{{ object.imagen.url }}"
+                                                         alt="{{ object.nombre }}"
+                                                         class="image-preview">
+                                                    <div class="image-overlay">{{ object.nombre }}</div>
+                                                {% else %}
+                                                <img src="{{ municipio.logotipo.url }}"
+                                                alt="Vista previa"
+                                                         class="image-preview">
+                                                    <div class="image-overlay">Imagen por defecto</div>
+                                                {% endif %}
+                                            </div>
+                                            <p class="text-muted small">
+                                                Haz clic en "Examinar" para cambiar la imagen
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Botones de esta pestaña -->
+                                <div class="card-footer d-flex justify-content-between bg-light mt-3">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="nextTab('perfil-tab')">
+                                        <i class="fa fa-arrow-left me-2"></i>Anterior
+                                    </button>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fa fa-save me-2"></i>Guardar
+                                    </button>
+                                </div>
                             </div>
-                            <div class="card-footer d-flex justify-content-between bg-light">
-                                <!-- Botón para volver a la pestaña anterior -->
-                                <button type="button" class="btn btn-outline-secondary" onclick="nextTab('perfil-tab')">
-                                    <i class="fa fa-arrow-left me-2"></i>Anterior
-                                </button>
-                                <!-- Botón para Guardar/Enviar el formulario -->
-                                <button type="submit" class="btn btn-success">
-                                    <i class="fa fa-save me-2"></i>Guardar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Fin Imagen -->
-                </div> <!-- Cierre de .tab-content -->
-            </form> <!-- Cierre del formulario -->
-        </div> <!-- Cierre del col-12 col-lg-10 -->
-    </div> <!-- Cierre de row justify-content-center -->
-</div> <!-- Cierre del container py-5 -->
+                            <!-- Fin Imagen -->
+
+                        </div> <!-- Fin .tab-content -->
+                    </form> <!-- Fin formulario -->
+
+                </div> <!-- Fin .card-body -->
+            </div> <!-- Fin card principal -->
+
+        </div> <!-- col-12 -->
+    </div> <!-- row -->
+</div> <!-- container -->
+
 {% endblock %}
 
 {% block scriptcontent %}
 <script>
     // Función para mostrar la pestaña siguiente o la anterior
     function nextTab(tabId) {
-        // Busca el botón de la pestaña por ID
         var triggerEl = document.querySelector('#' + tabId);
         if (!triggerEl) {
             console.error("No se encontró el elemento con ID:", tabId);
             return;
         }
-
-        // Crea o recupera la instancia del Tab en Bootstrap 5
         var tab = bootstrap.Tab.getOrCreateInstance(triggerEl);
         tab.show();
-
         updateProgressBar();
     }
 
@@ -525,19 +560,46 @@
         var tabs = ['general-tab', 'contacto-tab', 'perfil-tab', 'imagen-tab'];
         var completedTabs = tabs.indexOf(activeTab.id);
         var progress = ((completedTabs + 1) / tabs.length) * 100;
-        document.getElementById('formProgress').style.width = progress + '%';
+        
+        var progressBar = document.getElementById('formProgress');
+        progressBar.style.width = progress + '%';
+        progressBar.setAttribute('aria-valuenow', progress);
+
+        if (progress <= 25) {
+            progressBar.className = 'progress-bar bg-info progress-bar-striped progress-bar-animated';
+        } else if (progress <= 50) {
+            progressBar.className = 'progress-bar bg-primary progress-bar-striped progress-bar-animated';
+        } else if (progress <= 75) {
+            progressBar.className = 'progress-bar bg-warning progress-bar-striped progress-bar-animated';
+        } else {
+            progressBar.className = 'progress-bar bg-success progress-bar-striped progress-bar-animated';
+        }
     }
 
-    // Al cargar el DOM, inicializamos la barra de progreso y escuchamos el evento de cambio de pestaña
     document.addEventListener('DOMContentLoaded', function() {
         updateProgressBar();
-
         var tabLinks = document.querySelectorAll('#formTabs button[data-bs-toggle="pill"]');
         tabLinks.forEach(function(tabLink) {
             tabLink.addEventListener('shown.bs.tab', function () {
                 updateProgressBar();
             });
         });
+        
+        // Vista previa de la imagen al seleccionarla
+        var imageInput = document.getElementById('{{ form.imagen.id_for_label }}');
+        if (imageInput) {
+            imageInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var imagePreview = document.querySelector('.image-preview');
+                        imagePreview.src = e.target.result;
+                        document.querySelector('.image-overlay').textContent = 'Vista previa';
+                    }
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+        }
     });
 </script>
 {% endblock %}

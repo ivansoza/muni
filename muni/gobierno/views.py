@@ -102,8 +102,27 @@ class MiembroGabineteCreateView(CreateView):
     template_name = 'admin/gabinete_form.html'
     success_url = reverse_lazy('ListarGabineteView')  # Ajusta al nombre de URL que desees
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+    
+        context["breadcrumb"] = {
+            'parent': {'name': 'Lista de Miembros del Gabinete Presidencial', 'url': '/gobierno/lista-gabinete/'},
+            'child': {'name': 'Crear Nuevo Miembro', 'url': ''}
+        }
+        context['sidebar'] = 'gabinete'  # Asegura que el sidebar resalte la sección de Transparencia
+        return context
 class MiembroGabineteUpdateView(UpdateView):
     model = MiembroGabinete
     form_class = MiembroGabineteForm
     template_name = 'admin/gabinete_form.html'
     success_url = reverse_lazy('ListarGabineteView') 
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+    
+        context["breadcrumb"] = {
+            'parent': {'name': 'Lista de Miembros del Gabinete Presidencial', 'url': '/gobierno/lista-gabinete/'},
+            'child': {'name': 'Editar Nuevo Miembro', 'url': ''}
+        }
+        context['sidebar'] = 'gabinete'  # Asegura que el sidebar resalte la sección de Transparencia
+        return context
