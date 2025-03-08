@@ -1,0 +1,212 @@
+{% extends "baseTemplate.html" %}
+
+{% block content %}
+<style>
+    .btn-round {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 5px;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .btn-round i {
+        margin-left: 8px;
+        font-size: 14px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn-round:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+    .actions {
+        display: flex;
+        align-items: center;
+    }
+    .card {
+        margin-bottom: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+    .card-header {
+        padding: 15px;
+        font-size: 18px;
+    }
+    .card-body {
+        padding: 20px;
+    }
+    .list-group-item {
+        padding-left: 30px;  /* Sangría para los artículos */
+    }
+</style>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+<!-- Botones para agregar o editar -->
+<div class="d-flex justify-content-start mb-4">
+    <a href="{% url 'crear_articulo' lista_obligaciones.id %}" class="btn btn-sm btn-primary" style="margin-bottom: 20px; border-radius: 10px; padding: 12px 20px; font-size: 16px;">
+        <i class="fas fa-plus"></i> Crear Artículo
+    </a>
+</div>
+
+<div class="container-fluid">
+    <!-- Formulario de búsqueda -->
+    <!-- <div class="d-flex justify-content-start mb-4">
+        <input type="text" id="searchInput" class="form-control" placeholder="Buscar Artículos..." onkeyup="filterArticles()">
+    </div>-->
+
+    <!-- Contenedor para los artículos de la lista -->
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-list"></i>  <!-- Icono de lista -->
+            Artículos de la Lista: <strong>{{ lista_obligaciones.titulo }}</strong>
+        </div>
+        <div class="card-body">
+            <ul class="list-group" id="articulosList">
+                {% for articulo in articulos %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center articulo-item">
+                        <div>
+                            <i class="fas fa-scroll text-warning"></i> <strong>{{ articulo.articulo_fraccion }}</strong>
+                        </div>
+                        <div class="actions">
+                            <a href="{{ articulo.liga }}" class="btn-round btn-primary" title="Ir al Artículo" target="_blank">
+                                <i class="fas fa-link"></i>
+                            </a>
+                            <!-- Botón Editar -->
+                            <a href="{% url 'editar_articulo' lista_obligacion_id=articulo.lista_obligaciones.id articulo_id=articulo.id %}" class="btn-round btn-warning" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            
+
+                            <!-- Botón Eliminar -->
+                            <button class="btn-round btn-danger eliminar-articulo" data-id="{{ articulo.id }}" data-nombre="{{ articulo.articulo_fraccion }}" title="Eliminar">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                            
+                        </div>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">No hay artículos disponibles en esta lista.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+<br>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function filterArticles() {
+        const input = document.getElementById('searchInput');
+        const filter = input.value.toLowerCase().trim();
+        const listItems = document.querySelectorAll('.articulo-item');
+    
+        let coincidencias = 0;  // Contador de coincidencias encontradas
+    
+        listItems.forEach((item) => {
+            const text = item.textContent.toLowerCase().trim();
+            const regex = new RegExp(filter, 'i');
+    
+    
+            if (regex.test(text)) {
+                item.style.display = '';  // Muestra los elementos que coinciden (vacío restaura el display original)
+                coincidencias++;  // Aumenta el contador si encuentra coincidencia
+            } else {
+                item.style.display = 'none';  // Oculta los elementos que no coinciden
+            }
+        });
+    
+        // Mostrar mensaje si no hay coincidencias
+        let noResultados = document.getElementById('noResultados');
+        if (coincidencias === 0) {
+            if (!noResultados) {
+                noResultados = document.createElement('li');
+                noResultados.id = 'noResultados';
+                noResultados.className = 'list-group-item text-muted';
+                noResultados.textContent = 'No se encontraron artículos que coincidan con la búsqueda.';
+                document.getElementById('articulosList').appendChild(noResultados);
+            }
+        } else {
+            if (noResultados) noResultados.remove();  // Quitar el mensaje si hay coincidencias
+        }
+    }     
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const deleteButtons = document.querySelectorAll(".eliminar-articulo");
+    
+        deleteButtons.forEach(button => {
+            button.addEventListener("click", function() {
+                const articuloId = this.getAttribute("data-id");
+                const articuloNombre = this.getAttribute("data-nombre");
+    
+                // Mostrar alerta de confirmación antes de eliminar
+                Swal.fire({
+                    title: "🗑️ Eliminar Artículo: " + articuloNombre,
+                    html: `
+                        <p>Esta acción eliminará el artículo <strong>${articuloNombre}</strong>.</p>
+                        <p><strong>Esta acción no se puede deshacer.</strong></p>
+                        <p>¿Deseas continuar?</p>
+                    `,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#dc3545",
+                    cancelButtonColor: "#6c757d",
+                    confirmButtonText: "Sí, eliminar",
+                    cancelButtonText: "Cancelar"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Usar Fetch API para eliminar el artículo
+                        fetch(`/admin/eliminar_articulo/${articuloId}/`, {
+                            method: "POST",
+                            headers: {
+                                "X-CSRFToken": "{{ csrf_token }}",
+                                "Content-Type": "application/x-www-form-urlencoded"
+                            }
+                        }).then(response => response.json())
+                          .then(data => {
+                              if (data.success) {
+                                  // Mostrar alerta de éxito
+                                  Swal.fire({
+                                      title: "¡Eliminado!",
+                                      text: data.message,
+                                      icon: "success",
+                                      timer: 2000,
+                                      showConfirmButton: false
+                                  }).then(() => {
+                                      // Recargar la página después de la eliminación exitosa
+                                      window.location.reload();
+                                  });
+                              } else {
+                                  // Mostrar alerta de error si falla la eliminación
+                                  Swal.fire({
+                                      title: "Error",
+                                      text: "No se pudo eliminar el artículo. Intenta de nuevo.",
+                                      icon: "error",
+                                      confirmButtonText: "Aceptar"
+                                  });
+                              }
+                          }).catch(error => {
+                              // Mostrar alerta de error si la petición falla
+                              Swal.fire({
+                                  title: "Error",
+                                  text: "Ocurrió un error. Intenta de nuevo.",
+                                  icon: "error",
+                                  confirmButtonText: "Aceptar"
+                              });
+                          });
+                    }
+                });
+            });
+        });
+    });
+    
+</script>
+
+{% endblock %}
