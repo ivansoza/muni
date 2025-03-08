@@ -2,7 +2,131 @@
 {% load static %}
 
 {% block content %}
+
+<style>
+    .btn-add {
+        display: block;
+        margin-bottom: 20px;
+        background-color: #3E688C;
+        color: white;
+        border-radius: 10px;
+        padding: 12px 20px;
+        font-size: 16px;
+        border: none;
+        width: 25%;
+    }
+
+    .btn-add:hover {
+        background-color: rgb(20, 102, 149);
+        color: white;
+    }
+
+    .dashboard {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+        gap: 3rem !important;
+        width: 100% !important;
+        max-width: 1200px !important;
+        margin-bottom: 60px;
+    }
+    
+    .cardash {
+        background: white !important;
+        border-radius: 1rem !important;
+        padding: 1.5rem !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px -20px rgba(0, 0, 0, 0.1) !important;
+        border: 1px solid rgba(241, 245, 249, 0.8) !important;
+        transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+    
+    .cardash:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 25px 50px -12px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .cardash::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 4px !important;
+        background: linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #ec4899 100%) !important;
+    }
+    
+    .cardash-header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        margin-bottom: 1.5rem !important;
+    }
+    
+    .cardash-title {
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        color: #64748b !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+    }
+    
+    .cardash-icon {
+        width: 48px !important;
+        height: 48px !important;
+        border-radius: 0.75rem !important;
+        background: #f1f5f9 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all 0.3s ease !important;
+        font-size: 1.5rem !important;
+    }
+    
+    .cardash-content {
+        max-height: 100px; /* Ajusta la altura según lo que necesites */
+        overflow-y: auto; /* Activa el scroll si el contenido excede la altura */
+        padding-right: 8px; /* Espacio para evitar que el scroll tape el contenido */
+        padding-top: 4px; /* Añadir un pequeño padding superior */
+        scroll-padding-top: 10px; /* Ayuda a que el primer elemento no quede oculto */
+    }
+
+</style>
 <div class="container-fluid mt-5">
+
+    <div class="dashboard">
+        <!-- Tarjeta: Total de Secciones -->
+        <div class="row justify-content-end">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="cardash">
+                    <div class="cardash-header">
+                        <span class="cardash-title">Total de Miembros</span>
+                        <div class="cardash-icon">
+                            <span class="emoji-transition">📁</span>
+                        </div>
+                    </div>
+                    <div class="cardash-content" style="font-size: 30px;">
+                        {{ contacts_data.contador_miembros_activos }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+
+    </div>
+
+
+    <div class="row">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <a href="{% url 'gabinete_create' %}" class="btn btn-add w-100" style="margin-bottom: 20px; border-radius: 10px; padding: 12px 20px; font-size: 16px;">
+                <i class="fa fa-user-plus"></i> Agregar nuevo miembro
+            </a>
+        </div>
+    </div>
+    
+     
+
     <div class="card shadow">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h2 class="mb-0">Miembros del Gabinete</h2>
@@ -13,12 +137,7 @@
         </div>
         
         <div class="card-body">
-            <!-- Botón para agregar nuevo miembro -->
-            <div class="mb-3 text-start">
-                <a href="{% url 'gabinete_create' %}" class="btn btn-success">
-                    <i class="fa fa-user-plus"></i> Agregar nuevo miembro
-                </a>
-            </div>
+
             
             <div class="table-responsive">
                 <table class="table table-hover" id="gabineteTable">
