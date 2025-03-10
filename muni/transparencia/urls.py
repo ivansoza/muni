@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import HomeReportesView, HomeSevacView, HomeTransparenciaView, get_encuestas_activas, guardar_respuestas
-from .views import HomeTransparenciaView, EjerciciosPorSeccionView
+from .views import HomeReportesView, HomeTransparenciaView, get_encuestas_activas, guardar_respuestas
+from .views import HomeTransparenciaView, EjerciciosPorSeccionView, lista_obligaciones
 
 urlpatterns = [
     path('', HomeTransparenciaView.as_view(), name='homeTransferencia'), 
@@ -10,9 +10,7 @@ urlpatterns = [
     path('api/encuesta/enviar/', guardar_respuestas, name='guardar_respuestas'),
     
     path('transparencia/secciones/ejercicios/<int:seccion_id>/', EjerciciosPorSeccionView.as_view(), name='lista_ejercicios'),
+    path('lista-transparencia/', lista_obligaciones, name='lista_transparencia'),
 
-    path('sevac/', HomeSevacView.as_view(), name='homeSevac'), 
-
-    
 
 ]

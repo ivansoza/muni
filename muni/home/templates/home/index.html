@@ -267,7 +267,7 @@
                     </li>
                     <li class="nav-item"><a class="nav-link" href="{% url "homeServicios" %}">Servicios</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url "homeNoticias" %}">Noticias</a></li>
-                    <li class="nav-item {% if sidebar == 'transparecnia' %}active{% endif %}"><a class="nav-link" href="{% url "homeTransferencia" %}">Transparencia</a></li>
+                    <li class="nav-item {% if sidebar == 'transparecnia' %}active{% endif %}"><a class="nav-link" href="{% url "lista_transparencia" %}">Transparencia</a></li>
                     <li class="nav-item {% if sidebar == 'sevac' %}active{% endif %}"><a class="nav-link" href="{% url "homeSevac" %}">SEVAC</a></li>
                     <li class="nav-item {% if sidebar == 'reportes' %}active{% endif %}"><a class="nav-link" href="{% url "homeReportes" %}">Reportes</a></li>
                     <!-- En tu navbar -->
@@ -289,6 +289,7 @@
                             <li><a class="dropdown-item" href="{% url "homeHabla" %}">Habla con tus hijos</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url "HomePrivacidad" %}">Aviso de privacidad de datos personales</a></li>
+                            <li><a class="dropdown-item" href="{% url "homeContacts" %}">Contacto</a></li>
                         </ul>
                     </li>
                 </ul>

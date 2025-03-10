@@ -19,7 +19,8 @@ urlpatterns = [
     path('inicio/', include('inicio.urls')),  
     path('noticias/', include('noticias.urls')), 
     path('tramites/', include('tramites.urls')), 
-    path('transparencia/', include('transparencia.urls')), 
+    path('transparencia/', include('transparencia.urls')),
+    path('sevac/', include('sevac.urls')),  
     path('admin/', include('generales.urls')), 
     path('ckeditor5/', include('django_ckeditor_5.urls')), 
 

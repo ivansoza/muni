@@ -1,5 +1,5 @@
 from django import forms
-from .models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia
+from .models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga
 
 class SeccionTransparenciaForm(forms.ModelForm):
     class Meta:
@@ -55,3 +55,33 @@ class DocumentoTransparenciaForm(forms.ModelForm):
         if self.seccion and not self.seccion.usa_meses:
             self.fields.pop('mes')
     
+class ListaObligacionesForm(forms.ModelForm):
+    class Meta:
+        model = ListaObligaciones
+        fields = ['titulo', 'articulo']
+        labels = {
+            'titulo': 'Título de la lista',
+            'articulo': 'Título de artículo',
+        }
+        widgets = {
+            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
+            'articulo': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+class ArticuloLigaForm(forms.ModelForm):
+    class Meta:
+        model = ArticuloLiga
+        fields = ['lista_obligaciones', 'articulo_fraccion', 'liga']
+        widgets = {
+            'lista_obligaciones': forms.Select(attrs={'class': 'form-control'}),
+            'articulo_fraccion': forms.TextInput(attrs={'class': 'form-control'}),
+            'liga': forms.URLInput(attrs={'class': 'form-control'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        lista_obligacion_id = kwargs.pop('lista_obligacion_id', None)
+        super().__init__(*args, **kwargs)
+        
+        if lista_obligacion_id:
+            self.fields['lista_obligaciones'].queryset = ListaObligaciones.objects.filter(id=lista_obligacion_id)
+            self.fields['lista_obligaciones'].initial = lista_obligacion_id

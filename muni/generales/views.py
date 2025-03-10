@@ -7,7 +7,7 @@ from django.http import JsonResponse
 
 from django.urls import reverse_lazy
 
-from django.views.generic import TemplateView, ListView, CreateView, UpdateView
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from informacion_municipal.models import Municipio
@@ -26,8 +26,10 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
-from transparencia.forms import SeccionTransparenciaForm, EjercicioFiscalForm, DocumentoTransparenciaForm
-from transparencia.models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia
+from transparencia.forms import SeccionTransparenciaForm, EjercicioFiscalForm, DocumentoTransparenciaForm, ListaObligacionesForm, ArticuloLigaForm
+from transparencia.models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga
+from sevac.models import Carpeta, Archivo
+from sevac.forms import CarpetaForm, ArchivoForm
 # Create your views here.
 from django.db.models import Count
 
@@ -633,3 +635,480 @@ def eliminar_documento_transparencia(request, pk):
         documento.delete()
         messages.success(request, "Documento eliminado exitosamente.")
         return redirect('documento_list', seccion_id=seccion_id, ejercicio_id=ejercicio_id)
+
+
+class CrearCarpetaView(View):
+    template_name = 'sevac/crear_carpeta.html'
+
+    def get_context_data(self, **kwargs):
+        context = kwargs
+        padre_id = self.request.GET.get('padre')
+        context['carpetas'] = Carpeta.objects.filter(estatus='A', padre=None)
+        context["breadcrumb"] = {
+            'parent': {'name': 'SEVAC', 'url': '/admin/lista-sevac'},
+            'child': {'name': 'Registrar Carpeta', 'url': ''}
+        }
+        context['sidebar'] = 'sevac'
+
+        if padre_id:
+            padre = get_object_or_404(Carpeta, id=padre_id)
+            context['form'] = CarpetaForm(initial={'padre': padre}, es_subcarpeta=True, padre_id=padre_id)
+            context['carpeta_padre'] = padre
+            context['carpeta_padre_id'] = padre.pk  # Guardar el ID de la carpeta padre en el contexto
+        else:
+            context['form'] = CarpetaForm(es_subcarpeta=False)
+            context['carpeta_padre'] = None
+
+        return context
+
+    def get(self, request):
+        context = self.get_context_data()
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        padre_id = request.GET.get('padre')
+        if padre_id:
+            form = CarpetaForm(request.POST, es_subcarpeta=True, padre_id=padre_id)
+        else:
+            form = CarpetaForm(request.POST, es_subcarpeta=False)
+
+        if form.is_valid():
+            carpeta = form.save(commit=False)
+            if not padre_id:
+                carpeta.padre = None  # Establecer como carpeta principal
+            carpeta.save()
+
+            # Redirección según el tipo de carpeta creada
+            if padre_id:
+                return redirect('gestionar_carpetas', carpeta_id=padre_id)  # Subcarpeta
+            else:
+                return redirect('listar_carpetas')  # Carpeta principal
+
+        context = self.get_context_data(form=form)
+        return render(request, self.template_name, context)
+
+    
+# Vista para editar carpeta
+class EditarCarpetaView(View):
+    template_name = 'sevac/editar_carpeta.html'
+
+    def get_context_data(self, carpeta_id, **kwargs):
+        context = kwargs
+        carpeta = get_object_or_404(Carpeta, id=carpeta_id)
+
+        # Añadir carpeta y formulario al contexto
+        context['carpeta'] = carpeta
+        context['form'] = CarpetaForm(instance=carpeta)
+
+        # Breadcrumb y sidebar para navegación
+        context["breadcrumb"] = {
+            'parent': {'name': 'SEVAC', 'url': '/admin/lista-sevac'},
+            'child': {'name': f'Editar Carpeta', 'url': ''}
+        }
+        context['sidebar'] = 'sevac'  # Resalta la sección de Transparencia en el sidebar
+
+        # Añadir la carpeta principal a los datos del contexto
+        context['carpeta_principal'] = self.get_carpeta_principal(carpeta)
+
+        return context
+
+    def get(self, request, carpeta_id):
+        context = self.get_context_data(carpeta_id)
+        return render(request, self.template_name, context)
+
+    def post(self, request, carpeta_id):
+        carpeta = get_object_or_404(Carpeta, id=carpeta_id)
+        form = CarpetaForm(request.POST, instance=carpeta)
+        if form.is_valid():
+            form.save()
+            if carpeta.padre:  # Es una subcarpeta
+                # Buscar la carpeta principal (padre de todos los niveles)
+                while carpeta.padre:
+                    carpeta = carpeta.padre
+                # Redirigir a la carpeta principal
+                return redirect('gestionar_carpetas', carpeta_id=carpeta.id)
+
+            # Redirigir según si es carpeta principal o subcarpeta
+           
+            else:  # Es una carpeta principal
+                return redirect('listar_carpetas')  # Redirige a la lista de carpetas principales
+
+        # Si el formulario no es válido, regresar el contexto con los errores
+        context = self.get_context_data(carpeta_id, form=form)
+        return render(request, self.template_name, context)
+
+    def get_carpeta_principal(self, carpeta):
+        """
+        Función que recursivamente busca la carpeta principal a partir de cualquier subcarpeta.
+        """
+        while carpeta.padre:
+            carpeta = carpeta.padre
+        return carpeta
+
+
+    
+# Vista para subir archivos
+class SubirArchivoView(View):
+    template_name = 'sevac/subir_archivo.html'
+
+    def get_context_data(self, padre_id=None, **kwargs):
+        context = kwargs
+
+        if padre_id:
+            carpeta = get_object_or_404(Carpeta, id=padre_id)
+            context['form'] = ArchivoForm(padre_id=padre_id)
+            context['carpeta'] = carpeta  # Pasar la carpeta padre al contexto
+        else:
+            context['form'] = ArchivoForm()
+        carpeta_principal = carpeta
+        while carpeta_principal.padre:
+                carpeta_principal = carpeta_principal.padre
+        context['carpeta_principal'] = carpeta_principal  # Pasar la carpeta principal al contexto
+
+
+        # Breadcrumb y sidebar para navegación
+        context["breadcrumb"] = {
+            'parent': {'name': 'Carpeta', 'url': f'/admin/gestionar-carpetas/{carpeta_principal.id}/'},
+            'child': {'name': 'Subir Archivo para Carpeta', 'url': ''}
+        }
+        context['sidebar'] = 'sevac'  # Resalta la sección de Transparencia en el sidebar
+
+        return context
+
+    def get(self, request):
+        padre_id = request.GET.get('carpeta')
+        context = self.get_context_data(padre_id=padre_id)
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        padre_id = request.GET.get('carpeta')
+        if padre_id:
+            form = ArchivoForm(request.POST, request.FILES, padre_id=padre_id)
+        else:
+            form = ArchivoForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            form.save()
+            return redirect('gestionar_carpetas', carpeta_id=padre_id)  # Subcarpeta
+
+        # Si el formulario no es válido, regresar el contexto con los errores
+        context = self.get_context_data(padre_id=padre_id, form=form)
+        return render(request, self.template_name, context)
+
+class EditarArchivoView(View):
+    template_name = 'sevac/editar_archivo.html'
+
+    def get_context_data(self, archivo_id, **kwargs):
+        context = kwargs
+        archivo = get_object_or_404(Archivo, id=archivo_id)
+
+        # Añadir archivo y formulario al contexto
+        context['archivo'] = archivo
+        context['form'] = ArchivoForm(instance=archivo)
+
+        # Breadcrumb y sidebar para navegación
+        context["breadcrumb"] = {
+            'parent': {'name': 'SEVAC', 'url': '/admin/lista-sevac'},
+            'child': {'name': f'Editar Archivo', 'url': ''}
+        }
+        context['sidebar'] = 'sevac'
+
+        return context
+
+    def get(self, request, archivo_id):
+        context = self.get_context_data(archivo_id)
+        return render(request, self.template_name, context)
+
+    def post(self, request, archivo_id):
+        archivo = get_object_or_404(Archivo, id=archivo_id)
+        form = ArchivoForm(request.POST, request.FILES, instance=archivo)
+        if form.is_valid():
+            form.save()
+
+            # Redirigir según si el archivo está en una subcarpeta dentro de una subcarpeta o no
+            if archivo.carpeta.padre:  # Es un archivo dentro de subcarpeta
+                carpeta_principal = self.get_carpeta_principal(archivo.carpeta)
+                return redirect('gestionar_carpetas', carpeta_id=carpeta_principal.id)
+            else:  # Es un archivo dentro de carpeta principal
+                return redirect('listar_carpetas')  # Redirige a la lista de carpetas principales
+
+        # Si el formulario no es válido, regresar el contexto con los errores
+        context = self.get_context_data(archivo_id, form=form)
+        return render(request, self.template_name, context)
+
+    def get_carpeta_principal(self, carpeta):
+        """
+        Función que recursivamente busca la carpeta principal a partir de cualquier subcarpeta.
+        """
+        while carpeta.padre:
+            carpeta = carpeta.padre
+        return carpeta
+
+
+    
+class ListarCarpetasView(LoginRequiredMixin,TemplateView):
+    template_name = 'sevac/lista_archivos.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['carpetas'] = Carpeta.objects.filter(padre=None)
+                # Total de carpetas activas (sin subcarpetas)
+        context['total_carpetas'] = Carpeta.objects.filter(estatus='A', padre=None).count()
+
+        # Total de archivos registrados
+        context['total_archivos'] = Archivo.objects.filter(estatus='A').count()
+
+        # Última carpeta creada
+        context['ultima_carpeta'] = Carpeta.objects.filter(estatus='A').order_by('-id').first()
+
+        # Total de subcarpetas
+        context['total_subcarpetas'] = Carpeta.objects.filter(estatus='A').exclude(padre=None).count()
+
+        # Total de archivos inactivos
+        context['total_archivos_inactivos'] = Archivo.objects.filter(estatus='I').count()
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': '/index'},
+            'child': {'name': 'SEVAC - Carpetas y Archivos', 'url': ''}
+        }
+        context['sidebar'] = 'sevac'  # Asegura que el sidebar resalte la sección de Transparencia
+        return context
+    
+class EliminarCarpetaView(View):
+    def post(self, request, carpeta_id):
+        carpeta = get_object_or_404(Carpeta, id=carpeta_id)
+        carpeta.delete()  # Elimina la carpeta y su contenido
+        return redirect('listar_carpetas')
+    
+# Vista para gestionar subcarpetas y archivos de una carpeta principal
+class GestionarCarpetaView(View):
+    template_name = 'sevac/gestionar_carpetas.html'
+
+    def get_context_data(self, carpeta_id, **kwargs):
+        context = kwargs
+        carpeta = get_object_or_404(Carpeta, id=carpeta_id)
+        
+        # Obtener todas las subcarpetas y archivos, activos e inactivos
+        subcarpetas = carpeta.subcarpetas.all().prefetch_related('archivos', 'subcarpetas__archivos')
+        archivos = carpeta.archivos.all()
+        
+        # Añadir datos al contexto
+        context['carpeta'] = carpeta
+        context['subcarpetas'] = subcarpetas
+        context['archivos'] = archivos
+        
+        # Breadcrumb y sidebar para navegación
+        context["breadcrumb"] = {
+            'parent': {'name': 'SEVAC', 'url': '/admin/lista-sevac'},
+            'child': {'name': f'Gestionar Carpeta - {carpeta.nombre}', 'url': ''}
+        }
+        context['sidebar'] = 'sevac'  # Resalta la sección de Transparencia en el sidebar
+
+        return context
+
+    def get(self, request, carpeta_id):
+        context = self.get_context_data(carpeta_id)
+        return render(request, self.template_name, context)
+
+def eliminar_archivo(request, id):
+    archivo = get_object_or_404(Archivo, id=id)
+    try:
+        archivo.delete()
+        return JsonResponse({'status': 'success'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+    
+class ListaObligacionesView(ListView):
+    model = ListaObligaciones
+    template_name = 'transparencia2/inicioTrasnparencia.html'
+    context_object_name = 'lista_obligaciones'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Total de listas de obligaciones
+        context['total_lista_obligaciones'] = ListaObligaciones.objects.count()
+
+        # Total de artículos (registros) relacionados con las listas de obligaciones
+        context['total_articulos'] = ArticuloLiga.objects.count()
+
+
+        # Agregar breadcrumbs y sidebar al contexto
+        url_configuracion = reverse('dashboard')
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': url_configuracion},
+            'child': {'name': 'Transparencia', 'url': ''}
+        }
+        context['sidebar'] = 'transparencia'
+
+        return context
+
+    
+# Vista para crear un nuevo registro de ListaObligaciones
+class ListaObligacionesCreateView(CreateView):
+    model = ListaObligaciones
+    form_class = ListaObligacionesForm
+    template_name = 'transparencia2/crearLista.html'  # Template a usar para la vista
+    success_url = reverse_lazy('lista_obligaciones')  # URL a la que redirigir después de guardar el formulario
+
+    def form_valid(self, form):
+        # Aquí puedes añadir lógica adicional antes de guardar, si lo necesitas
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        url_configuracion = reverse('lista_obligaciones')
+        context["breadcrumb"] = {
+            'parent': {'name': 'Trasnparencia', 'url': url_configuracion},
+            'child': {'name': 'Regitro de nueva lista', 'url': ''}
+        }
+        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+        return context
+
+# Vista para editar un registro de ListaObligaciones
+class ListaObligacionesUpdateView(UpdateView):
+    model = ListaObligaciones
+    form_class = ListaObligacionesForm
+    template_name = 'transparencia2/editarLista.html'  # Template a usar para la vista
+    context_object_name = 'lista_obligaciones'  # Nombre del objeto que se pasará al contexto
+    success_url = reverse_lazy('lista_obligaciones')  # URL a la que redirigir después de guardar el formulario
+
+    def form_valid(self, form):
+        # Aquí puedes añadir lógica adicional antes de guardar, si lo necesitas
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        url_configuracion = reverse('lista_obligaciones')
+        context["breadcrumb"] = {
+            'parent': {'name': 'Trasnparencia', 'url': url_configuracion},
+            'child': {'name': 'Edición de lista', 'url': ''}
+        }
+        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+        return context
+
+class ListaObligacionesDeleteView(View):
+    def post(self, request, pk):
+        # Obtener el objeto que se quiere eliminar
+        lista_obligaciones = get_object_or_404(ListaObligaciones, pk=pk)
+
+        # Eliminar el objeto
+        lista_obligaciones.delete()
+
+        # Retornar una respuesta JSON indicando que la eliminación fue exitosa
+        return JsonResponse({'success': True, 'message': 'Lista de Obligación eliminada exitosamente.'})
+    
+
+class GestionarArticulosView(View):
+    def get(self, request, lista_id):
+        # Obtener la lista de obligaciones
+        lista_obligaciones = get_object_or_404(ListaObligaciones, pk=lista_id)
+
+        # Obtener los artículos relacionados con la lista
+        articulos = lista_obligaciones.articulos_liga.all()
+
+        # Crear el contexto con la información necesaria
+        context = {
+            'lista_obligaciones': lista_obligaciones,
+            'articulos': articulos,
+            'breadcrumb': {
+                'parent': {'name': 'Transparencia', 'url': reverse('lista_obligaciones')},
+                'child': {'name': 'Gestión de artículos', 'url': ''}
+            },
+            'sidebar': 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+        }
+
+        # Renderizar la plantilla con el contexto
+        return render(request, 'transparencia2/gestionarLista.html', context)
+            
+
+
+class CrearArticuloView(CreateView):
+    model = ArticuloLiga
+    form_class = ArticuloLigaForm
+    template_name = 'transparencia2/crearArticulo.html'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        lista_obligacion_id = self.kwargs.get('lista_obligacion_id')
+        kwargs['lista_obligacion_id'] = lista_obligacion_id
+        return kwargs
+    
+    def form_valid(self, form):
+        # Obtener la instancia de ListaObligaciones usando el id proporcionado
+        lista_obligacion_id = self.kwargs['lista_obligacion_id']
+        lista_obligacion = get_object_or_404(ListaObligaciones, pk=lista_obligacion_id)
+
+        # Asignamos la instancia de ListaObligaciones al artículo
+        form.instance.lista_obligaciones = lista_obligacion
+
+        # Guardamos el artículo y mostramos el mensaje de éxito
+        response = super().form_valid(form)
+        messages.success(self.request, 'Artículo creado con éxito!')
+        return response
+
+    def get_success_url(self):
+        # Redirigimos al usuario a la vista de gestión de artículos después de la creación
+        return reverse_lazy('gestionar_articulos', kwargs={'lista_id': self.kwargs['lista_obligacion_id']})
+
+    def get_context_data(self, **kwargs):
+        # Obtener la lista de obligaciones para pasarla al contexto
+        context = super().get_context_data(**kwargs)
+        lista_obligacion_id = self.kwargs['lista_obligacion_id']
+        lista_obligacion = get_object_or_404(ListaObligaciones, pk=lista_obligacion_id)
+        context['lista_obligaciones'] = lista_obligacion  # Pasamos el objeto lista_obligaciones
+        url_configuracion = reverse('gestionar_articulos', kwargs={'lista_id': self.kwargs['lista_obligacion_id']})
+        context["breadcrumb"] = {
+            'parent': {'name': 'Gestión de artículos', 'url': url_configuracion},
+            'child': {'name': 'Registro de articulos en lista', 'url': ''}
+        }
+        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+        
+        return context
+
+
+class EditarArticuloView(UpdateView):
+    model = ArticuloLiga
+    form_class = ArticuloLigaForm
+    template_name = 'transparencia2/editarArticulo.html'
+
+    def get_object(self):
+        # Recuperar el artículo por su ID
+        articulo_id = self.kwargs['articulo_id']
+        articulo = get_object_or_404(ArticuloLiga, pk=articulo_id)
+        return articulo
+    
+    def form_valid(self, form):
+        # Al enviar el formulario correctamente, mostramos un mensaje de éxito
+        messages.success(self.request, 'Artículo actualizado con éxito!')
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        # Redirigimos al usuario a la vista de gestión de artículos después de la edición
+        lista_obligacion_id = self.kwargs['lista_obligacion_id']
+        return reverse_lazy('gestionar_articulos', kwargs={'lista_id': lista_obligacion_id})
+    
+    def get_context_data(self, **kwargs):
+        # Obtener la lista de obligaciones para pasarla al contexto
+        context = super().get_context_data(**kwargs)
+        lista_obligacion_id = self.kwargs['lista_obligacion_id']
+        lista_obligacion = get_object_or_404(ListaObligaciones, pk=lista_obligacion_id)
+        context['lista_obligaciones'] = lista_obligacion  # Pasamos el objeto lista_obligaciones
+        url_configuracion = reverse('gestionar_articulos', kwargs={'lista_id': self.kwargs['lista_obligacion_id']})
+        context["breadcrumb"] = {
+            'parent': {'name': 'Gestión de artículos', 'url': url_configuracion},
+            'child': {'name': 'Editar de articulos en lista', 'url': ''}
+        }
+        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+        return context
+    
+
+class EliminarArticuloView(View):
+    def post(self, request, articulo_id):
+        # Obtener el artículo que se va a eliminar
+        articulo = get_object_or_404(ArticuloLiga, id=articulo_id)
+        
+        # Eliminar el artículo
+        articulo.delete()
+
+        # Responder con éxito
+        return JsonResponse({'success': True, 'message': 'Artículo eliminado con éxito'})

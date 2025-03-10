@@ -14,13 +14,13 @@
                 <p class="lead text-muted">
                     <i class="fas fa-quote-left me-2"></i>{{municipio.nombre_municipio}}, Fuerte y Seguro.<i class="fas fa-quote-right ms-2"></i></p> 
                     <div class="info-box mt-4 p-4 border rounded-3 shadow-sm position-relative">
-                        <h5 class="fw-bold">Zacatelco, el corazón del sur de Tlaxcala, México.</h5>
+                        <h5 class="fw-bold">{{municipio.nombre_municipio}}, el corazón del sur de Tlaxcala, México.</h5>
                         <ul class="list-unstyled mt-3">
                             <li><i class="fas fa-check-circle me-2" style='color:var(--color-iconos)'></i>Es una ciudad dinámica que combina desarrollo, historia y tradición.</li>
                             <li><i class="fas fa-check-circle me-2" style='color:var(--color-iconos)'></i>Reconocida por su destacada actividad ferroviaria y su contribución al progreso regional.</li>
                             <li><i class="fas fa-check-circle me-2" style='color:var(--color-iconos)'></i>Un crisol de cultura que se refleja en su gente trabajadora, su gastronomía y sus eventos emblemáticos.</li>
                             <li><i class="fas fa-check-circle me-2" style='color:var(--color-iconos)'></i>
-                            Zacatelco narra un capítulo de esfuerzo y crecimiento que inspira a todos sus visitantes.</li>
+                                {{municipio.nombre_municipio}} narra un capítulo de esfuerzo y crecimiento que inspira a todos sus visitantes.</li>
                         </ul>
                     
                     </div>
@@ -31,12 +31,28 @@
             <div class="col-md-4 text-center position-relative">
                 <div class="image-wrapper">
                     <br>
-                    <img src="{% static 'img/alcalde.png' %}" alt="Imagen del Alcalde" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid rgb(var(--color-primario-rgb));">
-                    <div class="name-tag position-absolute text-center w-100" style="bottom: -22px;">
-                        <h6 class="bg-light py-2 px-3 d-inline-block rounded-pill shadow-sm">Lic. José Miguel Acatzi Luna</h6>
-                    </div>
+                    {% with municipio.gabinete.first as primer_miembro %}
+                    {% if primer_miembro %}
+                        {% if primer_miembro.imagen %}
+                            <img src="{{ primer_miembro.imagen.url }}" alt="{{ primer_miembro.nombre }}" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid rgb(var(--color-primario-rgb));">
+                        {% elif municipio.logotipo_claro %}
+                            <img src="{{ municipio.logotipo_claro.url }}" alt="Logotipo del municipio" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid rgb(var(--color-primario-rgb));">
+                        {% else %}
+                            <img src="{{ logotipo.url }}" alt="Logotipo por defecto" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid rgb(var(--color-primario-rgb));">
+                        {% endif %}
+                        <div class="name-tag position-absolute text-center w-100" style="bottom: -22px;">
+                            <h6 class="bg-light py-2 px-3 d-inline-block rounded-pill shadow-sm">
+                                {{ primer_miembro.nombre }}
+                            </h6>
+                        </div>
+                    {% else %}
+                        <p>No hay miembros del gabinete registrados.</p>
+                    {% endif %}
+                {% endwith %}
+                
                 </div>
             </div>
+            
         </div>
     </div>
 </section>

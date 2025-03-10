@@ -1,0 +1,339 @@
+{% extends "baseTemplate.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .btn-add {
+        display: block;
+        margin-bottom: 20px;
+        background-color: #3E688C;
+        color: white;
+        border-radius: 10px;
+        padding: 12px 20px;
+        font-size: 16px;
+        border: none;
+        width: 25%;
+    }
+
+    .btn-add:hover {
+        background-color: rgb(20, 102, 149);
+        color: white;
+    }
+
+    .dashboard {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+        gap: 3rem !important;
+        width: 100% !important;
+        max-width: 1200px !important;
+        margin-bottom: 60px;
+    }
+    
+    .cardash {
+        background: white !important;
+        border-radius: 1rem !important;
+        padding: 1.5rem !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px -20px rgba(0, 0, 0, 0.1) !important;
+        border: 1px solid rgba(241, 245, 249, 0.8) !important;
+        transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+    
+    .cardash:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 25px 50px -12px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .cardash::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 4px !important;
+        background: linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #ec4899 100%) !important;
+    }
+    
+    .cardash-header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        margin-bottom: 1.5rem !important;
+    }
+    
+    .cardash-title {
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        color: #64748b !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+    }
+    
+    .cardash-icon {
+        width: 48px !important;
+        height: 48px !important;
+        border-radius: 0.75rem !important;
+        background: #f1f5f9 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all 0.3s ease !important;
+        font-size: 1.5rem !important;
+    }
+    
+    .cardash-content {
+        max-height: 100px; /* Ajusta la altura según lo que necesites */
+        overflow-y: auto; /* Activa el scroll si el contenido excede la altura */
+        padding-right: 8px; /* Espacio para evitar que el scroll tape el contenido */
+        padding-top: 4px; /* Añadir un pequeño padding superior */
+        scroll-padding-top: 10px; /* Ayuda a que el primer elemento no quede oculto */
+    }
+
+</style>
+<div class="container-fluid mt-5">
+
+    <div class="dashboard">
+        <!-- Tarjeta: Total de Secciones -->
+        <div class="row justify-content-end">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="cardash">
+                    <div class="cardash-header">
+                        <span class="cardash-title">Total de Miembros</span>
+                        <div class="cardash-icon">
+                            <span class="emoji-transition">📁</span>
+                        </div>
+                    </div>
+                    <div class="cardash-content" style="font-size: 30px;">
+                        {{ contacts_data.contador_miembros_activos }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+
+    </div>
+
+
+    <div class="row">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <a href="{% url 'gabinete_create' %}" class="btn btn-add w-100" style="margin-bottom: 20px; border-radius: 10px; padding: 12px 20px; font-size: 16px;">
+                <i class="fa fa-user-plus"></i> Agregar nuevo miembro
+            </a>
+        </div>
+    </div>
+    
+     
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">Miembros del Gabinete</h2>
+            <div class="drag-hint">
+                <i class="fa fa-info-circle me-2"></i>
+                <span>Arrastra las filas para reorganizar</span>
+            </div>
+        </div>
+        
+        <div class="card-body">
+
+            
+            <div class="table-responsive">
+                <table class="table table-hover" id="gabineteTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="border-0">Nombre</th>
+                            <th class="border-0">Cargo</th>
+                            <th class="border-0">Área</th>
+                            <th class="border-0">Estado</th>
+                            <th class="border-0 text-center">Posición</th>
+                            <th class="border-0 text-center">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gabineteTableBody" class="sortable-table">
+                        <!-- Aquí se cargarán las filas dinámicamente mediante AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card-footer text-muted">
+            <div id="statusMessage" class="text-center"></div>
+        </div>
+    </div>
+</div>
+
+<!-- CSS personalizado -->
+<style>
+    .sortable-table tr {
+        cursor: grab;
+        transition: background-color 0.2s;
+    }
+    
+    .sortable-table tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+    
+    .sortable-table tr.sortable-ghost {
+        background-color: #f8f9fa;
+        opacity: 0.8;
+    }
+    
+    .sortable-table tr.sortable-chosen {
+        background-color: #e9ecef;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    }
+    
+    .drag-handle {
+        cursor: grab;
+        color: #6c757d;
+    }
+    
+    .drag-handle:hover {
+        color: #0d6efd;
+    }
+    
+    .drag-hint {
+        font-size: 0.9rem;
+    }
+    
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+    
+    .fade-out {
+        animation: fadeOut 2s forwards;
+        animation-delay: 3s;
+    }
+</style>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Carga inicial de datos
+        fetchData();
+        
+        function fetchData() {
+            fetch("{% url 'gabinete_list_api' %}", { method: "GET" })
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById("gabineteTableBody");
+                    tbody.innerHTML = "";
+                    
+                    data.miembros.forEach(miembro => {
+                        const row = document.createElement("tr");
+                        row.setAttribute("data-id", miembro.id);
+                        row.className = "position-relative";
+                        
+                        // Asignar clases para estilo según el estado
+                        let statusClass = "";
+                        if (miembro.status === "Activo") {
+                            statusClass = "text-success";
+                        } else if (miembro.status === "Inactivo") {
+                            statusClass = "text-danger";
+                        }
+                        
+                        // Generar la columna de acciones con ícono de edición y drag-handle
+                        // Ajusta la URL de edición según tu configuración de rutas en Django.
+                        const editUrl = "{% url 'gabinete_edit' 99999 %}".replace("99999", miembro.id);
+                        
+                        row.innerHTML = `
+                            <td>${miembro.nombre}</td>
+                            <td>${miembro.cargo}</td>
+                            <td>${miembro.area}</td>
+                            <td><span class="${statusClass}">${miembro.status}</span></td>
+                            <td class="text-center">${miembro.orden}</td>
+                            <td class="text-center">
+                                <!-- Ícono de edición con enlace -->
+                                <a href="${editUrl}" class="me-2 text-decoration-none">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                <!-- Ícono para drag (no hace navegación) -->
+                                <div class="drag-handle d-inline-block">
+                                    <i class="fa fa-th"></i>
+                                </div>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                    
+                    initSortable();
+                })
+                .catch(error => {
+                    console.error("Error al cargar datos:", error);
+                    showStatusMessage("Error al cargar los datos", "danger");
+                });
+        }
+        
+        function showStatusMessage(message, type = "success") {
+            const statusDiv = document.getElementById("statusMessage");
+            statusDiv.innerHTML = `<div class="alert alert-${type} py-2 mb-0">${message}</div>`;
+            statusDiv.classList.add("fade-out");
+            
+            setTimeout(() => {
+                statusDiv.innerHTML = "";
+                statusDiv.classList.remove("fade-out");
+            }, 5000);
+        }
+        
+        function initSortable() {
+            let tbody = document.getElementById("gabineteTableBody");
+            
+            // Instancia Sortable
+            new Sortable(tbody, {
+                animation: 150,
+                handle: '.drag-handle',
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'sortable-chosen',
+                
+                // onStart se dispara cuando comienza el arrastre
+                onStart: function(evt) {
+                    document.body.style.cursor = 'grabbing';
+                },
+                
+                // onEnd se dispara cuando termina el arrastre
+                onEnd: function(evt) {
+                    document.body.style.cursor = 'default';
+                    
+                    let order = [];
+                    tbody.querySelectorAll("tr").forEach((tr) => {
+                        order.push(tr.getAttribute("data-id"));
+                    });
+                    
+                    // Mostrar un indicador visual de carga
+                    showStatusMessage("Actualizando posiciones...", "info");
+                    
+                    // Construir los parámetros correctamente
+                    const params = new URLSearchParams();
+                    order.forEach(id => {
+                        params.append('order[]', id);
+                    });
+                    
+                    fetch("{% url 'gabinete_update_order_api' %}", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRFToken": "{{ csrf_token }}",
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        body: params
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        showStatusMessage(data.message || "Posiciones actualizadas correctamente");
+                        fetchData(); // Recargar datos para reflejar el nuevo orden
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        showStatusMessage("Error al actualizar posiciones", "danger");
+                    });
+                }
+            });
+        }
+    });
+</script>
+{% endblock content %}

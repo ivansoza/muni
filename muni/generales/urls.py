@@ -3,7 +3,8 @@ from .views import CustomLoginView, DashboardView, NewsView, PersonalizacionView
 from django.contrib.auth.views import LogoutView
 from .views import TransparenciaView, crear_seccion, EjercicioFiscalListView, EjercicioFiscalCreateView, DocumentoTransparenciaListView, registrar_documento, SeccionTransparenciaUpdateView, eliminar_seccion, EjercicioFiscalUpdateView, eliminar_ejercicio_fiscal, DocumentoTransparenciaUpdateView, eliminar_documento_transparencia
 from . import views
-
+from .views import CrearCarpetaView, SubirArchivoView, ListarCarpetasView, EditarCarpetaView, GestionarCarpetaView, EliminarCarpetaView, EditarArchivoView, eliminar_archivo
+from .views import ListaObligacionesView, ListaObligacionesCreateView, ListaObligacionesUpdateView, ListaObligacionesDeleteView, GestionarArticulosView, CrearArticuloView, EditarArticuloView, EliminarArticuloView
 urlpatterns = [
     path("", CustomLoginView.as_view(),name='login'),
     path('logout/', LogoutView.as_view(next_page='home'),  name='logout'),      
@@ -32,4 +33,28 @@ urlpatterns = [
     path('servicios/eliminar/<uuid:servicio_id>/', views.eliminar_servicio, name='eliminar_servicio'),
     path('servicios/crear/', ServicioCreateView.as_view(), name='crear_servicio'),
     path('servicios/editar/<uuid:pk>/', ServicioUpdateView.as_view(), name='editar_servicio'),
+
+
+
+    #----------------------------------SEVAC-------------------------------------------------
+    path('crear-carpeta/', CrearCarpetaView.as_view(), name='crear_carpeta'),
+    path('subir-archivo/', SubirArchivoView.as_view(), name='subir_archivo'),
+    path('lista-sevac/', ListarCarpetasView.as_view(), name='listar_carpetas'),
+    path('editar-carpeta/<int:carpeta_id>/', EditarCarpetaView.as_view(), name='editar_carpeta'),
+    path('gestionar-carpetas/<int:carpeta_id>/', GestionarCarpetaView.as_view(), name='gestionar_carpetas'),
+    path('eliminar-carpeta/<int:carpeta_id>/', EliminarCarpetaView.as_view(), name='eliminar_carpeta'),
+    path('editar-archivo/<int:archivo_id>/', EditarArchivoView.as_view(), name='editar_archivo'),
+    path('eliminar-archivo/<int:id>/', eliminar_archivo, name='eliminar_archivo'),
+
+
+    #-------------------------------TRANSPARENCIA---------------------------------------------
+    path('lista-obligaciones/', ListaObligacionesView.as_view(), name='lista_obligaciones'),
+    path('crear_lista_obligaciones/', ListaObligacionesCreateView.as_view(), name='crear_lista_obligaciones'),
+    path('editar_lista_obligaciones/<int:pk>/', ListaObligacionesUpdateView.as_view(), name='editar_lista_obligaciones'),
+    path('eliminar_lista_obligaciones/<int:pk>/', ListaObligacionesDeleteView.as_view(), name='eliminar_lista_obligaciones'),
+    path('gestionar_articulos/<int:lista_id>/', GestionarArticulosView.as_view(), name='gestionar_articulos'),
+    path('crear_articulo/<int:lista_obligacion_id>/', CrearArticuloView.as_view(), name='crear_articulo'),
+    path('editar_articulo/<int:lista_obligacion_id>/<int:articulo_id>/', EditarArticuloView.as_view(), name='editar_articulo'),
+    path('eliminar_articulo/<int:articulo_id>/', EliminarArticuloView.as_view(), name='eliminar_articulo'),
+
 ]

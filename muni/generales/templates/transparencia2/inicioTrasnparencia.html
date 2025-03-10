@@ -1,0 +1,270 @@
+{% extends "baseTemplate.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+<style>
+    .dashboard {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+        gap: 3rem !important;
+        width: 100% !important;
+        max-width: 1200px !important;
+        margin-bottom: 60px;
+    }
+    
+    .cardash {
+        background: white !important;
+        border-radius: 1rem !important;
+        padding: 1.5rem !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px -20px rgba(0, 0, 0, 0.1) !important;
+        border: 1px solid rgba(241, 245, 249, 0.8) !important;
+        transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+    
+    .cardash:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 25px 50px -12px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .cardash::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 4px !important;
+        background: linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #ec4899 100%) !important;
+    }
+    
+    .cardash-header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        margin-bottom: 1.5rem !important;
+    }
+    
+    .cardash-title {
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        color: #64748b !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+    }
+    
+    .cardash-icon {
+        width: 48px !important;
+        height: 48px !important;
+        border-radius: 0.75rem !important;
+        background: #f1f5f9 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all 0.3s ease !important;
+        font-size: 1.5rem !important;
+    }
+    
+    .cardash-content {
+        max-height: 100px; /* Ajusta la altura según lo que necesites */
+        overflow-y: auto; /* Activa el scroll si el contenido excede la altura */
+        padding-right: 8px; /* Espacio para evitar que el scroll tape el contenido */
+        padding-top: 4px; /* Añadir un pequeño padding superior */
+        scroll-padding-top: 10px; /* Ayuda a que el primer elemento no quede oculto */
+    }
+    .btn-round {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 5px;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .btn-round i {
+        font-size: 18px;
+        color: #fff;
+    }
+    .btn-round:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+    }
+    .btn-warning {
+        background-color: #ffc107;
+        border: none;
+    }
+    .btn-danger {
+        background-color: #dc3545;
+        border: none;
+    }
+    .card-footer {
+        display: flex;
+        justify-content: center;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-top: 1px solid #e9ecef;
+    }
+    .card-footer a, .card-footer button {
+        text-decoration: none;
+        outline: none;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="dashboard">
+        <!-- Tarjeta: Total de Listas de Obligaciones -->
+        <div class="cardash">
+            <div class="cardash-header">
+                <span class="cardash-title">Total de Listas de Obligaciones</span>
+                <div class="cardash-icon">
+                    <span class="emoji-transition">📁</span>
+                </div>
+            </div>
+            <div class="cardash-content" style="font-size: 30px;">{{ total_lista_obligaciones }}</div>
+            <h3 style="color: #64748b;">Listas de obligaciones activas</h3>
+        </div>
+    
+        <!-- Tarjeta: Total de Artículos -->
+        <div class="cardash">
+            <div class="cardash-header">
+                <span class="cardash-title">Total de Artículos Registrados</span>
+                <div class="cardash-icon">
+                    <span class="emoji-transition">📄</span>
+                </div>
+            </div>
+            <div class="cardash-content" style="font-size: 30px;">{{ total_articulos }}</div>
+            <h3 style="color: #64748b;">Artículos registrados hasta la fecha</h3>
+        </div>
+        
+    </div>
+    
+    <!-- Botón Crear Obligación Arriba -->
+    <div class="d-flex justify-content-start mb-4">
+        <a href="{% url "crear_lista_obligaciones" %}" class="btn btn-sm btn-primary" style="margin-bottom: 20px; border-radius: 10px; padding: 12px 20px; font-size: 16px;">
+            <i class="fas fa-plus-circle"></i> Crear Obligación
+        </a>
+    </div>
+
+    <div class="row">
+        {% for lista in lista_obligaciones %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header {% if lista.estatus == 'I' %}bg-danger{% else %}bg-primary{% endif %} text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0" style="color:white; font-size: 15px;">
+                            <i class="fas fa-scroll"></i> {{ lista.titulo }}
+                        </h5>
+                        <span class="badge {% if lista.estatus == 'I' %}bg-warning text-dark{% else %}bg-light text-dark{% endif %}">
+                            {% if lista.estatus == 'I' %}Inactivo{% else %}{{ lista.get_estatus_display }}{% endif %}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <h5><strong>📄 Artículo:</strong></h5>
+                        <ul class="list-group mb-3">
+                            <li class="list-group-item">
+                                <i class="fas fa-file-alt text-info"></i> 
+                                {{ lista.articulo }}
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="card-footer">
+                        <a href="{% url "gestionar_articulos" lista.id %}" class="btn-round btn-success" title="Gestionar">
+                            <i class="fas fa-cogs"></i>
+                        </a>
+                        <a href="{% url "editar_lista_obligaciones" lista.id %}" class="btn-round btn-warning" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <button class="btn-round btn-danger eliminar-obligacion" data-id="{{ lista.id }}" data-nombre="{{ lista.titulo }}" title="Eliminar">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-warning text-center">No hay obligaciones disponibles.</div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const deleteButtons = document.querySelectorAll(".eliminar-obligacion");
+        deleteButtons.forEach(button => {
+            button.addEventListener("click", function() {
+                const listaId = this.getAttribute("data-id");
+                const listaNombre = this.getAttribute("data-nombre");  // Capturar el nombre de la lista
+
+                // Mostrar alerta intuitiva antes de eliminar
+                Swal.fire({
+                    title: "🗑️ Eliminar Obligación: " + listaNombre,
+                    html: `
+                        <p>Esta acción eliminará la obligación <strong>${listaNombre}</strong> junto con todos los artículos asociados.</p>
+                        <p><strong>Esta acción no se puede deshacer.</strong></p>
+                        <p>¿Deseas continuar?</p>
+                    `,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#dc3545",
+                    cancelButtonColor: "#6c757d",
+                    confirmButtonText: "Sí, eliminar",
+                    cancelButtonText: "Cancelar"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Usar Fetch API para enviar el formulario sin recargar la página
+                        fetch("/admin/eliminar_lista_obligaciones/" + listaId + "/", {
+                            method: "POST",
+                            headers: {
+                                "X-CSRFToken": "{{ csrf_token }}",
+                                "Content-Type": "application/x-www-form-urlencoded"
+                            }
+                        }).then(response => {
+                            if (response.ok) {
+                                // Mostrar alerta de éxito después de eliminar
+                                Swal.fire({
+                                    title: "¡Eliminación exitosa!",
+                                    text: `La obligación "${listaNombre}" ha sido eliminada correctamente.`,
+                                    icon: "success",
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    // Recargar la página después de mostrar la alerta
+                                    window.location.reload();
+                                });
+                            } else {
+                                // Mostrar alerta de error si falla la eliminación
+                                Swal.fire({
+                                    title: "Error",
+                                    text: "No se pudo eliminar la obligación. Intenta de nuevo.",
+                                    icon: "error",
+                                    confirmButtonText: "Aceptar"
+                                });
+                            }
+                        }).catch(error => {
+                            // Manejo de errores en caso de fallo en la petición
+                            Swal.fire({
+                                title: "Error",
+                                text: "Ocurrió un error. Intenta de nuevo.",
+                                icon: "error",
+                                confirmButtonText: "Aceptar"
+                            });
+                        });
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+{% endblock %}

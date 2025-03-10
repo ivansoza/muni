@@ -1,0 +1,595 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<style>
+  /* ========================
+     SECCIÓN: SEMBLANZA MIEMBRO
+     ======================== */
+  .semblanza-contenedor {
+    max-width: 1600px;
+    margin: 2rem auto;
+    padding: 2rem;
+  }
+
+  .semblanza-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .semblanza-header h1 {
+    font-size: 2.5rem;
+    background: linear-gradient(to right, var(--color-primario), var(--color-secundario));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+  }
+
+  .semblanza-header p {
+    color: #555;
+    font-size: 1.2rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .semblanza-principal {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 4rem;
+    margin-bottom: 4rem;
+    align-items: start;
+  }
+
+  /* Fotografía y datos de contacto */
+  .perfil-lateral {
+    position: sticky;
+    top: 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .foto-funcionario {
+    width: 280px;
+    height: 280px;
+    position: relative;
+    margin-bottom: 2rem;
+  }
+
+  .foto-funcionario::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 2px solid var(--color-secundario);
+    opacity: 0.3;
+  }
+
+  .marco-foto {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .marco-foto:hover {
+    transform: rotateZ(2deg) scale(1.05);
+  }
+
+  .marco-foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(20%);
+    transition: filter 0.3s ease;
+  }
+
+  .marco-foto:hover img {
+    filter: grayscale(0%);
+  }
+
+  .datos-contacto {
+    width: 100%;
+    margin-top: 2rem;
+  }
+
+  .datos-contacto h3 {
+    font-size: 1.3rem;
+    color: var(--color-primario);
+    margin-bottom: 1.5rem;
+    text-align: center;
+    position: relative;
+    padding-bottom: 0.5rem;
+  }
+
+  .datos-contacto h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 3px;
+    background: var(--color-iconos);
+  }
+
+  .lista-contacto {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .lista-contacto li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0.8rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+
+  .lista-contacto li:hover {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  .icono-contacto {
+    margin-right: 1rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(to right, var(--color-primario), var(--color-secundario));
+    color: white;
+  }
+
+  .datos-contacto-info {
+    flex: 1;
+  }
+
+  .datos-contacto-info strong {
+    display: block;
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 0.3rem;
+  }
+
+  .datos-contacto-info span {
+    color: #444;
+    font-weight: 500;
+  }
+
+  /* Información detallada */
+  .info-detallada {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 3rem;
+    position: relative;
+  }
+
+  .info-detallada section {
+    margin-bottom: 3rem;
+  }
+
+  .info-detallada h2 {
+    font-size: 2rem;
+    position: relative;
+    padding-left: 2rem;
+    margin-bottom: 2rem;
+    color: var(--color-primario);
+  }
+
+  .info-detallada h2::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 80%;
+    background: linear-gradient(to bottom, var(--color-primario), var(--color-secundario));
+    border-radius: 4px;
+  }
+
+  .info-detallada p {
+    color: #444;
+    line-height: 1.8;
+    font-size: 1.05rem;
+    text-align: justify;
+    margin-bottom: 1.5rem;
+  }
+
+  .area-trabajo {
+    margin-top: 3rem;
+    padding: 2rem;
+    border-radius: 15px;
+    background: linear-gradient(to right, rgba(var(--color-primario-rgb), 0.05), rgba(var(--color-secundario-rgb), 0.05));
+    border: 1px solid rgba(var(--color-primario-rgb), 0.1);
+  }
+
+  .area-trabajo h3 {
+    color: var(--color-primario);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+  }
+
+  .area-descripcion {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+  }
+
+  .area-icono {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    background: white;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    color: var(--color-primario);
+  }
+
+  /* Galería de imágenes y logros */
+  .galeria-logros {
+    margin-top: 4rem;
+  }
+
+  .galeria-titulo {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .galeria-titulo h2 {
+    color: var(--color-primario);
+    padding-left: 0;
+    margin-bottom: 1rem;
+  }
+
+  .galeria-titulo h2::before {
+    display: none;
+  }
+
+  .galeria-titulo p {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .galeria-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .galeria-item {
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    height: 250px;
+  }
+
+  .galeria-item:hover {
+    transform: translateY(-5px);
+  }
+
+  .galeria-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .galeria-item:hover img {
+    transform: scale(1.05);
+  }
+
+  .galeria-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 1.5rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    color: white;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+  }
+
+  .galeria-item:hover .galeria-overlay {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .galeria-overlay h4 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .galeria-overlay p {
+    font-size: 0.9rem;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  /* Botón para volver */
+  .boton-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--color-gradiente);
+    color: white;
+    padding: 1rem 2.5rem;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 5px 15px rgba(41, 94, 132, 0.2);
+    margin-top: 2rem;
+  }
+
+  .boton-volver:hover {
+    background: var(--color-gradiente);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(30, 71, 101, 0.3);
+  }
+
+  .accion-volver {
+    display: flex;
+    justify-content: center;
+    margin-top: 4rem;
+  }
+
+  /* Patrón decorativo */
+  .patron-decorativo {
+    position: absolute;
+    bottom: -20px;
+    right: -20px;
+    width: 150px;
+    height: 150px;
+    background: linear-gradient(45deg, var(--color-primario) 0%, var(--color-secundario) 100%);
+    opacity: 0.08;
+    clip-path: polygon(100% 0, 0 100%, 100% 100%);
+    z-index: -1;
+  }
+
+  /* ========================
+     MEDIA QUERIES
+     ======================== */
+  @media (max-width: 992px) {
+    .semblanza-principal {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .perfil-lateral {
+      position: relative;
+      top: 0;
+      margin-bottom: 2rem;
+    }
+
+    .galeria-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .semblanza-contenedor {
+      padding: 1rem;
+    }
+
+    .info-detallada {
+      padding: 2rem;
+    }
+
+    .galeria-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<div class="container">
+  <h2 class="news-title">Gobierno 
+    <span>| Semblanza</span>
+  </h2>
+</div>
+
+<section class="semblanza-contenedor">
+  <!-- Encabezado de la página -->
+  <div class="semblanza-header">
+    <h1>Semblanza del Equipo de Gobierno</h1>
+  </div>
+
+  <!-- Contenido principal - Se puede incluir lógica para mostrar el miembro específico -->
+  <div class="semblanza-principal">
+    <!-- Información lateral: foto y datos de contacto -->
+    <div class="perfil-lateral">
+      <div class="foto-funcionario">
+        <div class="marco-foto">
+          {% if miembro.imagen %}
+            <img src="{{ miembro.imagen.url }}" alt="{{ miembro.nombre }}">
+          {% else %}
+            <img src="{{ municipio.logotipo.url }}" alt="{{ miembro.nombre }}">
+          {% endif %}
+        </div>
+      </div>
+
+      <h2>{{ miembro.nombre }}</h2>
+      <p class="cargo">{{ miembro.cargo }}</p>
+
+      <div class="datos-contacto">
+        <h3>Información de Contacto</h3>
+        <ul class="lista-contacto">
+          <li>
+            <div class="icono-contacto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+            </div>
+            <div class="datos-contacto-info">
+              <strong>Teléfono</strong>
+              <span>{{ miembro.telefono }}</span>
+            </div>
+          </li>
+          <li>
+            <div class="icono-contacto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </div>
+            <div class="datos-contacto-info">
+              <strong>Correo Electrónico</strong>
+              <span>{{ miembro.correo }}</span>
+            </div>
+          </li>
+          <li>
+            <div class="icono-contacto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+            </div>
+            <div class="datos-contacto-info">
+              <strong>Oficina</strong>
+              <span>{{ miembro.oficina }}</span>
+            </div>
+          </li>
+          <li>
+            <div class="icono-contacto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+            </div>
+            <div class="datos-contacto-info">
+              <strong>Sitio Web</strong>
+              <span>{{ miembro.sitio_web|default:"No disponible" }}</span>
+            </div>
+          </li>
+          <li>
+            <div class="icono-contacto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </div>
+            <div class="datos-contacto-info">
+              <strong>Horario de Atención</strong>
+              <span>{{ miembro.horario|default:"Lunes a Viernes, 9:00 - 15:00" }}</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Información detallada: biografía, trayectoria, etc. -->
+    <div class="info-detallada">
+      <section class="biografia-completa">
+        <h2>Trayectoria Profesional</h2>
+        {{ miembro.semblanza|safe }}
+      </section>
+
+      <section class="formacion-academica">
+        <h2>Formación Académica</h2>
+        {{ miembro.formacion_academica|safe }}
+      </section>
+
+      <section class="experiencia">
+        <h2>Experiencia en el Servicio Público</h2>
+        {{ miembro.experiencia|safe }}
+      </section>
+
+      <div class="area-trabajo">
+        <h3>Área de Trabajo</h3>
+        <div class="area-descripcion">
+          <div class="area-icono">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg>
+          </div>
+          <div>
+            <p><strong>{{ miembro.area }}</strong></p>
+            <p>{{ miembro.descripcion_area|safe }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="patron-decorativo"></div>
+    </div>
+  </div>
+
+  <!-- Galería de logros o actividades (opcional) -->
+  <div class="galeria-logros">
+    <div class="galeria-titulo">
+      <h2>Galería de Actividades</h2>
+      <p>Conoce las principales actividades y logros en la gestión actual.</p>
+    </div>
+
+    <div class="galeria-grid">
+      {% for actividad in miembro.actividades.all %}
+        <div class="galeria-item">
+          <img src="{{ actividad.imagen.url }}" alt="{{ actividad.titulo }}">
+          <div class="galeria-overlay">
+            <h4>{{ actividad.titulo }}</h4>
+            <p>{{ actividad.descripcion }}</p>
+          </div>
+        </div>
+      {% empty %}
+        <div class="galeria-item">
+          <img src="{% static 'img/placeholder1.jpg' %}" alt="Actividad 1">
+          <div class="galeria-overlay">
+            <h4>Reunión con ciudadanos</h4>
+            <p>Atendiendo las necesidades de la comunidad.</p>
+          </div>
+        </div>
+        <div class="galeria-item">
+          <img src="{% static 'img/placeholder2.jpg' %}" alt="Actividad 2">
+          <div class="galeria-overlay">
+            <h4>Inauguración de obra pública</h4>
+            <p>Mejorando la infraestructura municipal.</p>
+          </div>
+        </div>
+        <div class="galeria-item">
+          <img src="{% static 'img/placeholder3.jpg' %}" alt="Actividad 3">
+          <div class="galeria-overlay">
+            <h4>Programa social</h4>
+            <p>Apoyando a los sectores más vulnerables.</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Botón para volver al gabinete -->
+  <div class="accion-volver">
+    <a href="{% url 'homeGobierno' %}" class="boton-volver">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      Volver al Gabinete
+    </a>
+  </div>
+</section>
+{% endblock content %}

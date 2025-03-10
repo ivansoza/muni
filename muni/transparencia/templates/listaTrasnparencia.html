@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+<style>
+
+  .lista-obligaciones-container {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: #333;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Estilo para el ícono en el título */
+  h1 i {
+    font-size: 24px;
+    margin-right: 10px;
+    color: #3498db;
+  }
+
+  /* Título de cada artículo */
+  .obligacion {
+    padding: 15px;
+    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 20px;
+  }
+
+  .obligacion h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+
+  .articulos-list {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  .articulos-list li {
+    font-size: 1rem;
+    margin-bottom: 1px;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Estilo para los iconos */
+  .articulos-list i {
+    font-size: 18px;
+    margin-right: 10px;  /* Espacio entre el ícono y el texto */
+    color: #000;  /* Color del ícono en negro */
+    transition: color 0.3s ease;
+  }
+
+  /* Hover effect para los iconos */
+  .articulos-list li:hover i {
+    color: var(--color-primario);  /* Cambia el color del ícono cuando se pasa el mouse */
+  }
+
+  /* Estilo para los enlaces */
+  .articulos-list a {
+    font-size: 1rem;
+    text-decoration: none;
+    color: #000;  /* Color negro por defecto */
+    transition: color 0.3s ease;
+  }
+
+  /* Hover effect para los enlaces */
+  .articulos-list a:hover {
+    color: var(--color-secundario);  /* Cambia el color a var(--color-primario) cuando se pasa el mouse */
+  }
+
+  /* Hover effect para los artículos */
+  .articulos-list li:hover {
+    background-color: #f0f0f0;  /* Color de fondo cuando se pasa el mouse */
+  }
+
+  @media (max-width: 768px) {
+    .main-container {
+      max-width: 95%;
+    }
+  }
+
+  /* Estilos para el input de búsqueda */
+  .search-container {
+    margin-bottom: 20px;
+    text-align: right;  /* Alineación del buscador a la derecha */
+    margin-top: 20px;
+    margin-bottom: 30px; /* Separación entre el buscador y las tarjetas */
+  }
+
+  .search-input {
+    padding: 10px;
+    width: 350px;  /* Ajustado el tamaño del campo de búsqueda */
+    font-size: 1rem;
+    border-radius: 25px;
+    border: 1px solid #ccc;
+    transition: all 0.3s ease;
+  }
+
+  .search-input:focus {
+    border-color: var(--color-primario);
+    box-shadow: 0 0 5px var(--color-primario);
+  }
+/* Estilos para el fondo gris claro que abarca todo el ancho */
+.transparency-section {
+    background-color: #f5f5f5; /* Gris claro */
+    width: 100%; /* Abarca todo el ancho de la pantalla */
+    padding: 40px 0; /* Espacio arriba y abajo */
+}
+
+/* Estilos de la nueva sección de accesos rápidos sin fondo blanco */
+.transparency-access {
+    padding: 20px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    max-width: 1200px; /* Limitar el ancho máximo para centrar */
+    margin: 0 auto; /* Centrar la sección */
+}
+
+.transparency-access .access-item {
+    text-align: center;
+    width: 350px;
+    margin: 10px;
+}
+
+/* Estilos para las imágenes: mismo tamaño sin recorte */
+.transparency-access .access-item img {
+    width: 300px; /* Ancho fijo para todas las imágenes */
+    height: 200px; /* Alto fijo para todas las imágenes */
+    object-fit: contain; /* Ajustar sin recortar */
+    background-color: #f5f5f5; /* Fondo blanco para los espacios vacíos */
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.transparency-access .access-item img:hover {
+    transform: scale(1.05);
+}
+
+/* Estilo para el texto */
+.transparency-access .access-item p {
+    margin-top: 10px;
+    color: var(--color-primario);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+/* Definición de la animación de rebote */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+/* Estilos para el texto dual con barra vertical */
+.dual-text {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 20px;
+    color: #6b7280; /* Color gris suave para el texto claro */
+}
+
+.bold-text {
+    font-weight: 700; /* Negrita para el primer texto */
+    color: var(--color-primario); /* Color primario para el texto en negrita */
+}
+
+.light-text {
+    font-weight: 400; /* Normal para el segundo texto */
+    color: #6b7280; /* Color gris suave para el segundo texto */
+}
+</style>
+
+<div class="container">
+    <h2 class="news-title">Transparencia
+        <span>| Acceso a la Información</span>
+    </h2>
+</div>
+
+
+
+<!-- Contenedor común para el buscador y las listas -->
+<div class="container mt-4">
+    <!-- Contenedor del buscador -->
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar artículo..." onkeyup="filterArticles()">
+    </div>
+  <!-- Contenedor de las listas de obligaciones -->
+  <div class="lista-obligaciones-container">
+    {% for lista in lista_obligaciones %}
+        <div class="obligacion" id="lista-{{ lista.id }}">
+            <!-- Título con un ícono a la izquierda -->
+            <h4>{{ lista.titulo }}</h4>
+            <h5>{{ lista.articulo }}</h5>
+            <ul class="articulos-list" id="articulosList-{{ lista.id }}">
+                {% for articulo in lista.articulos_liga.all %}
+                    <li class="articulo-item">
+                        <a href="{{ articulo.liga }}" target="_blank">
+                            <!-- Ícono de archivo antes del artículo -->
+                            <i class="fas fa-scroll"></i> 
+                            {{ articulo.articulo_fraccion }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+  </div>
+</div>
+<br>
+
+<div class="transparency-section">
+    <div class="access-item">
+        <p class="dual-text">
+            <span class="bold-text">Realiza tus consultas</span> | 
+            <span class="light-text">Consulta los portales de transparencia</span>
+        </p>
+    </div>
+    
+    <div class="transparency-access">
+        <div class="access-item">
+            <a href="https://pruebas.iaiptlaxcala.org.mx/">
+                <img class="large-img" src="{% static 'img/aipi.png' %}" alt="Información Pública">
+            </a>
+        </div>
+        <div class="access-item">
+            <a href="https://www.plataformadetransparencia.org.mx/Inicio">
+                <img src="{% static 'img/Transparencia.png' %}" alt="Indicadores de Resultados">
+            </a>
+        </div>
+        <div class="access-item">
+            <a href="https://consultapublicamx.plataformadetransparencia.org.mx/vut-web/faces/view/consultaPublica.xhtml#obligaciones">
+                <img src="{% static 'img/ltaip.jpg' %}" alt="Directorio">
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function filterArticles() {
+        const input = document.getElementById('searchInput');
+        const filter = input.value.toLowerCase();
+        
+        // Iteramos sobre cada lista
+        const allLists = document.querySelectorAll('.obligacion');
+
+        allLists.forEach((list) => {
+            const listItems = list.querySelectorAll('.articulo-item');
+            let hasMatch = false;
+
+            // Iteramos sobre los artículos dentro de la lista
+            listItems.forEach((item) => {
+                const text = item.textContent || item.innerText;
+                if (text.toLowerCase().includes(filter)) {
+                    item.style.display = '';
+                    hasMatch = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Si no hay coincidencias en la lista, ocultamos el título y la lista
+            if (hasMatch) {
+                list.style.display = '';  // Muestra la lista si hay coincidencias
+            } else {
+                list.style.display = 'none';  // Oculta la lista si no hay coincidencias
+            }
+        });
+    }
+</script>
+
+{% endblock %}

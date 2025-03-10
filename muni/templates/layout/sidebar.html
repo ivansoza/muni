@@ -102,13 +102,31 @@
             </li>
 
             <li class="sidebar-list {% if sidebar == 'transparencia' %}active{% endif %}">
-              <a class="sidebar-link sidebar-title" href="{% url "transparencia_view" %}">
+              <a class="sidebar-link sidebar-title" href="{% url "lista_obligaciones" %}">
                 <i class="fa fa-folder-open" style='color:white;'></i>                
                 <i class="fa fa-cogs fill-icon"></i>
                 <span>Transparencia</span>
               </a>
             </li>
 
+            <li class="sidebar-list {% if sidebar == 'sevac' %}active{% endif %}">
+              <a class="sidebar-link sidebar-title" href="{% url "listar_carpetas" %}">
+                <i class="fa fa-folder-open" style='color:white;'></i>                
+                <i class="fa fa-cogs fill-icon"></i>
+                <span>SEVAC</span>
+              </a>
+            </li>
+
+            <li class="sidebar-list {% if sidebar == 'gabinete' %}active{% endif %}">
+              <a class="sidebar-link sidebar-title" href="{% url 'ListarGabineteView' %}">
+                <i class="fa fa-university" style="color:white;"></i>                
+                <i class="fa fa-users fill-icon"></i>
+                <span>Gabinete</span>
+              </a>
+            </li>
+            
+            
+            
 
           </ul>
         </div>

@@ -6,6 +6,7 @@ class Municipio(models.Model):
         ('activo', 'Activo'),
         ('inactivo', 'Inactivo'),
     ]
+    
     nombre_municipio = models.CharField(
         "Nombre Municipio", 
         max_length=120, 
@@ -16,9 +17,17 @@ class Municipio(models.Model):
     nombre = models.CharField("Nombre oficial", max_length=120, unique=True)
 
     logotipo = models.ImageField("Logotipo", upload_to='municipio/')
+    logotipo_claro = models.ImageField(
+        "Logotipo para fondos claros",
+        upload_to='municipio/logotipos_claros/',
+        blank=True,
+        null=True,
+        help_text="Versión del logotipo optimizada para fondos claros"
+    )
+    
     banner = models.ImageField(
         "Banner/Portada", 
-        upload_to='municipio/banners/',  # Carpeta específica para banners
+        upload_to='municipio/banners/',  
         help_text="Imagen destacada para la página principal"
     )
     descripcion = models.TextField("Descripción breve", max_length=300)
@@ -32,6 +41,7 @@ class Municipio(models.Model):
 
     def __str__(self):
         return self.nombre
+
 
 class ColoresMunicipio(models.Model):
     municipio = models.ForeignKey(Municipio, related_name='colores', on_delete=models.CASCADE)
@@ -188,3 +198,8 @@ class SeccionInicio(models.Model):
         if self.nombre != 'dinamica':
             if SeccionInicio.objects.filter(municipio=self.municipio, nombre=self.nombre).exclude(pk=self.pk).exists():
                 raise ValidationError(f"Ya existe una sección '{self.get_nombre_display()}' para este municipio.")
+
+
+
+
+
