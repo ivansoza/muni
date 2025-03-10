@@ -80,19 +80,27 @@ h2 {
     margin: 15px 0;
 }
 
+/* Estilos para alinear correctamente los títulos y etiquetas */
 .info-item {
-    width: 48%;
+    display: flex;
+    flex-direction: column; /* Pone el texto arriba y la etiqueta abajo */
     font-size: 16px;
     padding: 10px 0;
 }
 
+/* Etiquetas estilo circular */
 .badge {
-    padding: 5px 10px;
-    border-radius: 10px;
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 20px; /* Hace el fondo más redondeado */
     font-size: 14px;
     font-weight: bold;
+    margin-top: 5px; /* Espacio entre el título y la etiqueta */
+    text-align: center;
+    width: fit-content; /* Ajusta el ancho al contenido */
 }
 
+/* Específicos para cada badge */
 .costo {
     background-color: #e67e22;
     color: white;
@@ -101,6 +109,13 @@ h2 {
 .presencial {
     background-color: #6c757d;
     color: white;
+}
+
+.economico {
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-top: 5px; /* Separación */
 }
 
 /* Descripción */
