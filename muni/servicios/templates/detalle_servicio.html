@@ -54,7 +54,7 @@
             <div class="info-grid">
                 <div class="info-item">
                     <strong>Trámite:</strong>
-                    <span class="badge costo">Tiene Costo</span>
+                    <span class="badge costo">{{ consiste.tramite }}</span>
                 </div>
                 <div class="info-item">
                     <strong>Sector Económico:</strong> 
@@ -62,7 +62,7 @@
                 </div>
                 <div class="info-item">
                     <strong>Canales de presentación:</strong> 
-                    <span class="badge presencial">Presencial</span>
+                    <span class="badge presencial">{{ consiste.get_canales_presentacion_display }}</span>
                 </div>
             </div>
 
@@ -74,11 +74,11 @@
             <div class="info-grid">
                 <div class="info-item">
                     <strong>Puede ser solicitado por:</strong> 
-                    Persona física y moral
+                    {{ consiste.get_solicitado_por_display }}
                 </div>
                 <div class="info-item">
                     <strong>En qué momento se deberá solicitar:</strong> 
-                    En cualquier momento
+                    {{ consiste.momento_solicitud }}
                 </div>
             </div>
         </div>

@@ -58,3 +58,16 @@ class Servicio(models.Model):
     
     class Meta:
         verbose_name_plural = "Servicios"
+
+class EnQueConsiste(models.Model):
+    servicio = models.OneToOneField(Servicio, on_delete=models.CASCADE, related_name="detalle")
+    tramite = models.CharField(max_length=255, choices=[("Tiene Costo", "Tiene Costo"), ("Sin Costo", "Sin Costo")], default="Sin Costo")
+    canales_presentacion = models.CharField(max_length=255, choices=[("Presencial", "Presencial"), ("En Línea", "En Línea"), ("Mixto", "Presencial y En Línea")], default="Presencial")
+    solicitado_por = models.CharField(max_length=255, choices=[("Persona física", "Persona física"), ("Persona moral", "Persona moral"), ("Ambos", "Persona Física y Moral")], default="Ambos")
+    momento_solicitud = models.CharField(max_length=255, default="En cualquier momento")
+
+    def __str__(self):
+        return f"Detalle de {self.servicio.titulo}"
+    
+    class Meta:
+        verbose_name_plural = "¿En que consiste?"
