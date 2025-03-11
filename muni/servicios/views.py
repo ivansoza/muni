@@ -53,3 +53,8 @@ class ServicioDetailView(DetailView):
     model = Servicio
     template_name = "detalle_servicio.html"
     context_object_name = "servicio"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["consiste"] = EnQueConsiste.objects.get(servicio=self.object)
+        return context
