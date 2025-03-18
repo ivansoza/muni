@@ -235,3 +235,30 @@ h2 {
         box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Sombra ligera */
     }
 }
+
+/* Estilo de la tabla de requisitos */
+.tabla-requisitos {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.tabla-requisitos th, .tabla-requisitos td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.tabla-requisitos th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.tabla-requisitos a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.tabla-requisitos a:hover {
+    text-decoration: underline;
+}
