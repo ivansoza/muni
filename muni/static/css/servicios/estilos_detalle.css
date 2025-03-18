@@ -262,3 +262,14 @@ h2 {
 .tabla-requisitos a:hover {
     text-decoration: underline;
 }
+
+.seccion {
+    display: none;
+}
+
+.menu-item.active {
+    font-weight: bold;
+    color: #80004D;
+    border-left: 4px solid #80004D;
+    padding-left: 8px;
+}
