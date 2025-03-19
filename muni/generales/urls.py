@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import CustomLoginView, DashboardView, NewsView, PersonalizacionView, ServicioCreateView, ServicioUpdateView,SocialMediaView,ServicesView, create_social_network, custom_upload_function, agregar_categoria, delete_social_network, eliminar_noticia, editar_noticia, list_social_networks, toggle_favorite
+from .views import CustomLoginView, DashboardView, GeneralesDashboardView, NewsView, PersonalizacionView, ServicioCreateView, ServicioUpdateView,SocialMediaView,ServicesView, create_social_network, custom_upload_function, agregar_categoria, delete_social_network, eliminar_noticia, editar_noticia, list_social_networks, toggle_favorite
 from django.contrib.auth.views import LogoutView
 from .views import TransparenciaView, crear_seccion, EjercicioFiscalListView, EjercicioFiscalCreateView, DocumentoTransparenciaListView, registrar_documento, SeccionTransparenciaUpdateView, eliminar_seccion, EjercicioFiscalUpdateView, eliminar_ejercicio_fiscal, DocumentoTransparenciaUpdateView, eliminar_documento_transparencia
 from . import views
@@ -9,6 +9,7 @@ urlpatterns = [
     path("", CustomLoginView.as_view(),name='login'),
     path('logout/', LogoutView.as_view(next_page='home'),  name='logout'),      
     path('mi-panel/', DashboardView.as_view(), name='dashboard'),
+    path('generales/', GeneralesDashboardView.as_view(), name='generalesDashboard'),
     path('personalizacion/', PersonalizacionView.as_view(), name='personalizacion_view'),
     path('social-media/', SocialMediaView.as_view(), name='social_view'),
     path('noticias/', NewsView.as_view(), name='noticias_view'),
