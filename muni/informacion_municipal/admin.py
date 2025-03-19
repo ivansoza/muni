@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Municipio, ColoresMunicipio, GobiernoActual, MisionVision,SeccionInicio
+from .models import Municipio, ColoresMunicipio, GobiernoActual, MisionVision,SeccionInicio, Video
 
 # Registro de Municipio
 @admin.register(Municipio)
@@ -189,3 +189,12 @@ class MisionVisionAdmin(admin.ModelAdmin):
 
 
 admin.site.register(SeccionInicio)
+
+
+class VideoAdmin(admin.ModelAdmin):
+    list_display = ('titulo', 'municipio', 'url_video', 'canal_youtube')
+    search_fields = ('titulo',)
+
+
+
+admin.site.register(Video, VideoAdmin)
