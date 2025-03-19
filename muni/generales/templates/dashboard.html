@@ -6,40 +6,158 @@
 
 
 {% block content %}
-<style>
-    .contenedor {
-        max-width: 1700px;
-        margin: 0 auto;
-    }
 
-    /* Estilos para el buscador */
+
+<style>
     .search-container {
         display: flex;
         justify-content: center;
-        margin-bottom: 20px;
+        margin: 30px 0;
+        width: 100%;
+    }
+
+    .search-wrapper {
+        position: relative;
+        width: 60%;
+        max-width: 600px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .search-wrapper:hover, .search-wrapper:focus-within {
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.15);
+        transform: translateY(-2px);
     }
 
     .search-input {
-        width: 50%;
-        padding: 10px;
-        border: 2px solid #6366f1;
-        border-radius: 8px;
+        width: 100%;
+        padding: 14px 50px 14px 20px;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
         font-size: 1rem;
         color: #333;
+        background-color: #fff;
         transition: all 0.3s ease;
     }
 
     .search-input:focus {
         outline: none;
-        border-color: #a855f7;
+        border-color: #6366f1;
+    }
+
+    .search-input::placeholder {
+        color: #9ca3af;
+        opacity: 1;
+    }
+
+    .search-button {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: #6366f1;
+        padding: 8px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+
+    .search-button:hover {
+        background-color: #f3f4f6;
+    }
+
+    .search-results {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        width: 100%;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 10;
+    }
+
+    .search-results.active {
+        max-height: 300px;
+        opacity: 1;
+        padding: 10px 0;
+    }
+
+    .result-item {
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .result-item:hover {
+        background-color: #f3f4f6;
+    }
+
+    /* Estilos para enfoque con teclado (accesibilidad) */
+    .search-input:focus-visible {
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Animación al escribir */
+    .search-input:not(:placeholder-shown) + .search-button {
+        background-color: #6366f1;
+        color: white;
     }
 
     @media (max-width: 768px) {
+        .search-wrapper {
+            width: 90%;
+        }
+        
         .search-input {
-            width: 80%;
+            padding: 12px 45px 12px 18px;
+            font-size: 0.95rem;
         }
     }
 
+    /* Tema oscuro (opcional) */
+    @media (prefers-color-scheme: dark) {
+        .search-input {
+            background-color: #1f2937;
+            color: #e5e7eb;
+            border-color: #374151;
+        }
+        
+        .search-input::placeholder {
+            color: #6b7280;
+        }
+        
+        .search-wrapper:hover, .search-wrapper:focus-within {
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.2);
+        }
+        
+        .search-results {
+            background: #1f2937;
+        }
+        
+        .result-item:hover {
+            background-color: #374151;
+        }
+    }
+</style>
+
+<style>
+    .contenedor {
+        max-width: 1700px;
+        padding-top: 50px;
+    }
+
+  
     /* Grid de aplicaciones mejorado */
     .apps-grid {
         display: grid;
@@ -274,11 +392,18 @@
         </div>
     </div>
 
-    <div class="contenedor">
         <div class="search-container">
-            <input type="text" id="search-input" placeholder="Buscar aplicaciones..." class="search-input">
+            <div class="search-wrapper">
+                <input type="text" id="search-input" placeholder="Buscar aplicaciones..." class="search-input">
+                <button class="search-button" id="search-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+                <div class="search-results" id="search-results"></div>
+            </div>
         </div>
-
         
         <div class="apps-grid mt-4">
             <!-- Noticias -->
@@ -333,7 +458,6 @@
                 <div class="app-name">Generales</div>
             </a>
         </div>
-    </div>
 </div>
 
 
