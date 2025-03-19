@@ -40,5 +40,8 @@ class HomeSevacView(TemplateView):
 
         # Añadir las carpetas ordenadas al contexto
         context['carpetas'] = carpetas_ordenadas
+
+        context['sidebar'] = "sevac"
+
         return context
 
