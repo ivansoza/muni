@@ -59,17 +59,18 @@ class SocialNetwork(models.Model):
     class Meta:
         verbose_name = "Red Social"
         verbose_name_plural = "Redes Sociales"
-        # Restricción para permitir solo una favorita por municipio:
+        # Restricción para permitir solo una red social favorita por tipo para cada municipio
         constraints = [
             models.UniqueConstraint(
-                fields=['municipio'],
+                fields=['municipio', 'social_type'],
                 condition=Q(is_favorite=True),
-                name='unique_favorite_per_municipio'
+                name='unique_favorite_per_social_type_per_municipio'
             )
         ]
 
     def __str__(self):
         return f"{self.get_social_type_display()} - {self.social_username}"
+
     
 
 class ContadorVisitas(models.Model):

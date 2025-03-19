@@ -296,13 +296,29 @@
             </div>
         </div>
     </nav>
+    
 
-    <!-- Flotantes -->
+
+
     <div class="social-icons-float">
-        <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
-        <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
-        <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
-        <a href="https://youtube.com" target="_blank"><i class="fab fa-youtube"></i></a>
+        {% for red in municipio.redes_sociales.all %}
+            {% if red.is_favorite %}
+                {% if red.social_type == 'facebook' %}
+                    <a href="{{ red.social_url }}" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                {% elif red.social_type == 'twitter' %}
+                    <a href="{{ red.social_url }}" target="_blank"><i class="fab fa-twitter"></i></a>
+                {% elif red.social_type == 'instagram' %}
+                    <a href="{{ red.social_url }}" target="_blank"><i class="fab fa-instagram"></i></a>
+                {% elif red.social_type == 'youtube' %}
+                    <a href="{{ red.social_url }}" target="_blank"><i class="fab fa-youtube"></i></a>
+                {% elif red.social_type == 'linkedin' %}
+                    <a href="{{ red.social_url }}" target="_blank"><i class="fab fa-linkedin"></i></a>
+                {% elif red.social_type == 'tiktok' %}
+                    <a href="{{ red.social_url }}" target="_blank"><i class="fab fa-tiktok"></i></a>
+                {% endif %}
+            {% endif %}
+        {% empty %}
+        {% endfor %}
     </div>
     
 
