@@ -283,6 +283,66 @@
         background: rgba(255, 255, 255, 0.3);
     }
 </style>
+
+
+<style>
+
+.contenido-noticia {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Estilos para las tablas generadas por CKEditor */
+.contenido-noticia table {
+    width: 100%;  /* Hace que las tablas ocupen el ancho disponible */
+    border-collapse: collapse; /* Elimina espacios entre bordes */
+    margin: 20px 0;  /* Espaciado arriba y abajo */
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+.contenido-noticia th, 
+.contenido-noticia td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+/* Encabezados de tabla */
+.contenido-noticia th {
+    background-color: #f4f4f4;
+}
+
+/* Estilos para citas */
+.contenido-noticia blockquote {
+    border-left: 4px solid var(--color-secundario);
+    padding: 10px 20px;
+    margin: 20px 0;
+    background: #f8f9fa;
+    font-style: italic;
+}
+
+/* Listas dentro del contenido */
+.contenido-noticia ul, 
+.contenido-noticia ol {
+    margin: 15px 0;
+    padding-left: 20px;
+}
+
+/* Imágenes dentro del contenido */
+.contenido-noticia img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 10px auto;
+}
+
+
+
+
+</style>
+
 <div class="container">
 
     <h2 class="news-title">Privacidad
@@ -290,6 +350,26 @@
     </h2>
 
 </div>
+{% if municipio.avisos_privacidad.all %}
+<ul>
+    {% for aviso in municipio.avisos_privacidad.all %}
+        <li>
+            <h2>{{ aviso.titulo }}</h2>
+            <p><strong>Fecha de creación:</strong> {{ aviso.fecha_creacion }}</p>
+
+            <div class="contenido-noticia">
+                <div>{{ aviso.contenido|safe }}</div>
+            </div>
+
+
+        </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No hay avisos de privacidad para este municipio.</p>
+{% endif %}
+
+
 
 
 <div class="container-privacidad">
