@@ -3,6 +3,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.views.generic.base import TemplateView
 
+from generales.models import ContadorVisitas
 from noticias.models import Noticia
 
 
@@ -15,6 +16,18 @@ class HomePageView(TemplateView):
         context['sidebar'] = 'home'  # Marcar 'Inicio' como activo
         # Cargar las últimas 3 noticias ordenadas por fecha descendente
         context['ultimas_noticias'] = Noticia.objects.order_by('-fecha')[:3]
+
+
+                # Manejo del contador de visitas
+        if 'visita' not in self.request.session:
+            self.request.session['visita'] = True  # Marcamos que la visita es real
+
+            # Crear o actualizar el contador
+            contador, created = ContadorVisitas.objects.get_or_create(id=1)
+            contador.visitas += 1
+            contador.save()
+
+
         return context
 
     

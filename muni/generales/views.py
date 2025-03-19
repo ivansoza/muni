@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.http import JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.urls import reverse_lazy
 
@@ -12,7 +13,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.http import require_POST
 
 from informacion_municipal.models import Municipio
-from generales.models import SocialNetwork
+from generales.models import ContadorVisitas, SocialNetwork
 from servicios.forms import ServicioForm
 from servicios.models import Servicio
 from .forms import CustomAuthenticationForm
@@ -53,7 +54,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'dashboard.html'
     login_url = reverse_lazy('login')  # Redirige al login si no está autenticado
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['breadcrumb'] = {
@@ -61,6 +61,14 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             'child': {'name': 'Home comisión de agua potable'}
         }
         context['sidebar'] = 'dashboard'
+
+        try:
+            # Intentar obtener el contador de visitas
+            contador = ContadorVisitas.objects.get(id=1)
+            context['contador_visitas'] = contador.visitas
+        except ObjectDoesNotExist:
+            # Si no existe, asignamos 0 como valor por defecto
+            context['contador_visitas'] = 0
 
         return context
     

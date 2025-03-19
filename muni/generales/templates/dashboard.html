@@ -388,7 +388,7 @@
                     <span class="emoji-transition">👤</span>
                 </div>
             </div>
-            <div class="cardash-content" id="visit-count">0</div>
+            <div class="cardash-content" id="visit-count">{{contador_visitas}}</div>
         </div>
     </div>
 
@@ -502,18 +502,7 @@
         }
     }
 
-    function updateVisitCounter() {
-        let visits = localStorage.getItem('pageVisits') || 0;
-        visits = parseInt(visits) + 1;
-        localStorage.setItem('pageVisits', visits);
-        
-        const counterElement = document.getElementById('visit-count');
-        counterElement.style.transform = 'scale(1.1)';
-        setTimeout(() => {
-            counterElement.style.transform = 'scale(1)';
-        }, 200);
-        counterElement.textContent = visits.toLocaleString();
-    }
+
 
     document.addEventListener('DOMContentLoaded', () => {
         updateDateTime();

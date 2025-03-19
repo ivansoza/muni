@@ -70,3 +70,11 @@ class SocialNetwork(models.Model):
 
     def __str__(self):
         return f"{self.get_social_type_display()} - {self.social_username}"
+    
+
+class ContadorVisitas(models.Model):
+    fecha = models.DateTimeField(auto_now_add=True)
+    visitas = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f"Visitas: {self.visitas} - Fecha: {self.fecha}"
