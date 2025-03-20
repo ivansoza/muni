@@ -94,6 +94,8 @@ class Secciones(models.Model):
     sevac = models.BooleanField(default=False)
     contacts = models.BooleanField(default=False)
     reportes = models.BooleanField(default=False)
+    encuestas = models.BooleanField(default=False)
+    servicios_en_linea = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Secciones de {self.municipio}"

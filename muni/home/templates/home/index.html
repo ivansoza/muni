@@ -421,18 +421,34 @@
                         {% endif %}
                     {% else %}
                         {# Aquí tus condiciones para las secciones estáticas, por ejemplo: #}
+
+
                         {% if seccion.nombre == 'servicios' %}
                             {% include "home/components/nuestros_servicios.html" %}
-                            {% include "home/components/encuestas.html" %}
+
+                            {% if municipio.secciones_hab and municipio.secciones_hab.encuestas %}
+                                {% include "home/components/encuestas.html" %}
+                            {% endif %}
 
                         {% elif seccion.nombre == 'ultimas_noticias' %}
-                            {% include "home/components/ultimas_noticias.html" %}
+
+                            {% if municipio.secciones_hab and municipio.secciones_hab.noticias %}
+                                {% include "home/components/ultimas_noticias.html" %}
+                            {% endif %}
+
                         {% elif seccion.nombre == 'convocatorias' %}
-                            {% include "home/components/ultimas_convocatorias.html" %}
+
+                            {% if municipio.secciones_hab and municipio.secciones_hab.convocatorias %}
+                                {% include "home/components/ultimas_convocatorias.html" %}
+                            {% endif %}
+
                         {% elif seccion.nombre == 'redes_sociales' %}
                             {% include "home/components/nuestras_redes.html" %}
                         {% elif seccion.nombre == 'contactos' %}
-                            {% include "home/components/nuestros_contactos.html" %}
+                            {% if municipio.secciones_hab and municipio.secciones_hab.contacts %}
+                                {% include "home/components/nuestros_contactos.html" %}
+                            {% endif %}
+
                         {% elif seccion.nombre == 'informacion_presidente' %}
                             {% include "home/components/alcalde.html" %}
                         {% endif %}
@@ -441,10 +457,22 @@
             {% else %}
                 {# Orden predeterminado si no hay secciones definidas #}
                 {% include "home/components/nuestros_servicios.html" %}
-                {% include "home/components/encuestas.html" %}
 
-                {% include "home/components/ultimas_noticias.html" %}
-                {% include "home/components/ultimas_convocatorias.html" %}
+
+                {% if municipio.secciones_hab and municipio.secciones_hab.encuestas %}
+                    {% include "home/components/encuestas.html" %}
+                {% endif %}
+
+
+                {% if municipio.secciones_hab and municipio.secciones_hab.noticias %}
+                    {% include "home/components/ultimas_noticias.html" %}
+                {% endif %}
+
+                {% if municipio.secciones_hab and municipio.secciones_hab.convocatorias %}
+                    {% include "home/components/ultimas_convocatorias.html" %}
+                {% endif %}
+
+
                 {% include "home/components/nuestras_redes.html" %}
                 {% include "home/components/nuestros_contactos.html" %}
                 {% include "home/components/alcalde.html" %}
