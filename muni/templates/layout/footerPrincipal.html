@@ -24,13 +24,43 @@
             </div>
 
             <!-- Enlaces principales -->
+            <!-- Acceso Rápido -->
             <div class="col-md-3">
                 <h5 class="footer-title">Acceso Rápido</h5>
                 <ul class="footer-nav list-unstyled">
-                    <li><a href="{% url 'home' %}" class="footer-link"><i class="fas fa-home me-2"></i>Inicio</a></li>
-                    <li><a href="{% url 'homeGobierno' %}" class="footer-link"><i class="fas fa-university me-2"></i>Gobierno</a></li>
-                    <li><a href="{% url 'homeServicios' %}" class="footer-link"><i class="fas fa-concierge-bell me-2"></i>Servicios</a></li>
-                    <li><a href="{% url 'homeNoticias' %}" class="footer-link"><i class="fas fa-newspaper me-2"></i>Noticias</a></li>
+                    <!-- "Inicio" (se muestra siempre) -->
+                    <li>
+                        <a href="{% url 'home' %}" class="footer-link">
+                            <i class="fas fa-home me-2"></i>Inicio
+                        </a>
+                    </li>
+
+                    <!-- "Gobierno" depende de 'gabinete' -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.gabinete %}
+                    <li>
+                        <a href="{% url 'homeGobierno' %}" class="footer-link">
+                            <i class="fas fa-university me-2"></i>Gobierno
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <!-- "Servicios" depende de 'servicios' -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.servicios %}
+                    <li>
+                        <a href="{% url 'homeServicios' %}" class="footer-link">
+                            <i class="fas fa-concierge-bell me-2"></i>Servicios
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <!-- "Noticias" depende de 'noticias' -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.noticias %}
+                    <li>
+                        <a href="{% url 'homeNoticias' %}" class="footer-link">
+                            <i class="fas fa-newspaper me-2"></i>Noticias
+                        </a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
 
@@ -38,14 +68,50 @@
             <div class="col-md-3">
                 <h5 class="footer-title">Más Información</h5>
                 <ul class="footer-nav list-unstyled">
-                    <li><a href="{% url 'homeTransferencia' %}" class="footer-link">Transparencia</a></li>
-                    <li><a href="{% url 'homeSevac' %}" class="footer-link">SEVAC</a></li>
-                    <li><a href="{% url 'homeReportes' %}" class="footer-link">Reportes Ciudadanos</a></li>
-                    <li><a href="{% url 'HomeConvocatoriasView' %}" class="footer-link">Convocatorias</a></li>
-                    <li><a href="{% url 'homeHabla' %}" class="footer-link">Programa Familia</a></li>
-                    <li><a href="{% url 'HomePrivacidad' %}" class="footer-link">Privacidad</a></li>
+                    <!-- "Transparencia" depende de 'transparencia' -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.transparencia %}
+                    <li>
+                        <a href="{% url 'homeTransferencia' %}" class="footer-link">Transparencia</a>
+                    </li>
+                    {% endif %}
+
+                    <!-- "SEVAC" depende de 'sevac' -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.sevac %}
+                    <li>
+                        <a href="{% url 'homeSevac' %}" class="footer-link">SEVAC</a>
+                    </li>
+                    {% endif %}
+
+                    <!-- "Reportes Ciudadanos" depende de 'reportes' -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.reportes %}
+                    <li>
+                        <a href="{% url 'homeReportes' %}" class="footer-link">Reportes Ciudadanos</a>
+                    </li>
+                    {% endif %}
+
+                    <!-- "Convocatorias" depende de 'convocatorias' -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.convocatorias %}
+                    <li>
+                        <a href="{% url 'HomeConvocatoriasView' %}" class="footer-link">Convocatorias</a>
+                    </li>
+                    {% endif %}
+
+                    <!-- "Programa Familia" depende de 'habla_con_tus_hijos' -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.habla_con_tus_hijos %}
+                    <li>
+                        <a href="{% url 'homeHabla' %}" class="footer-link">Programa Familia</a>
+                    </li>
+                    {% endif %}
+
+                    <!-- "Privacidad" depende de 'aviso_de_privacidad' -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.aviso_de_privacidad %}
+                    <li>
+                        <a href="{% url 'HomePrivacidad' %}" class="footer-link">Privacidad</a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
+
 
             <!-- Redes sociales -->
             <div class="col-md-3">
