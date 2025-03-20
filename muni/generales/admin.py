@@ -1,6 +1,6 @@
 # admin.py
 from django.contrib import admin
-from .models import ContadorVisitas, SocialNetwork
+from .models import ContadorVisitas, Secciones, SocialNetwork
 
 @admin.register(SocialNetwork)
 class SocialNetworkAdmin(admin.ModelAdmin):
@@ -17,3 +17,5 @@ class SocialNetworkAdmin(admin.ModelAdmin):
     ordering = ('municipio', 'social_type')
 
 admin.site.register(ContadorVisitas)
+admin.site.register(Secciones)
+

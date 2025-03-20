@@ -79,3 +79,23 @@ class ContadorVisitas(models.Model):
 
     def __str__(self):
         return f"Visitas: {self.visitas} - Fecha: {self.fecha}"
+
+
+
+class Secciones(models.Model):
+    municipio = models.OneToOneField(Municipio, on_delete=models.CASCADE, related_name='secciones_hab')
+    noticias = models.BooleanField(default=False)
+    convocatorias = models.BooleanField(default=False)
+    transparencia = models.BooleanField(default=False)
+    servicios = models.BooleanField(default=False)
+    habla_con_tus_hijos = models.BooleanField(default=False)
+    aviso_de_privacidad = models.BooleanField(default=False)
+    gabinete = models.BooleanField(default=False)
+    sevac = models.BooleanField(default=False)
+    contacts = models.BooleanField(default=False)
+    reportes = models.BooleanField(default=False)
+    encuestas = models.BooleanField(default=False)
+    servicios_en_linea = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Secciones de {self.municipio}"
