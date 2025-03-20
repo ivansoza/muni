@@ -24,20 +24,54 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="{% url "home" %}">Inicio</a></li>
+                <!-- "Inicio" siempre disponible -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">Inicio</a>
+                </li>
+            
+                <!-- "Gobierno" depende de 'gabinete' -->
+                {% if municipio.secciones_hab and municipio.secciones_hab.gabinete %}
                 <li class="nav-item {% if sidebar == 'gobierno' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'homeGobierno' %}">Gobierno</a>
                 </li>
-                
+                {% endif %}
+            
+                <!-- "Servicios" depende de 'servicios' -->
+                {% if municipio.secciones_hab and municipio.secciones_hab.servicios %}
                 <li class="nav-item {% if sidebar == 'servicios' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'homeServicios' %}">Servicios</a>
                 </li>
-                           
-                <li class="nav-item {% if sidebar == 'noticias' %}active{% endif %}"><a class="nav-link" href="{% url "homeNoticias" %}">Noticias</a></li>
-                <li class="nav-item {% if sidebar == 'transparencia' %}active{% endif %}"><a class="nav-link" href="{% url "lista_transparencia" %}">Transparencia</a></li>
-                <li class="nav-item {% if sidebar == 'sevac' %}active{% endif %}"><a class="nav-link" href="{% url "homeSevac" %}">SEVAC</a></li>
-                <li class="nav-item {% if sidebar == 'reportes' %}active{% endif %}"><a class="nav-link" href="{% url "homeReportes" %}">Reportes</a></li>
-                <!-- En tu navbar -->
+                {% endif %}
+            
+                <!-- "Noticias" depende de 'noticias' -->
+                {% if municipio.secciones_hab and municipio.secciones_hab.noticias %}
+                <li class="nav-item {% if sidebar == 'noticias' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'homeNoticias' %}">Noticias</a>
+                </li>
+                {% endif %}
+            
+                <!-- "Transparencia" depende de 'transparencia' -->
+                {% if municipio.secciones_hab and municipio.secciones_hab.transparencia %}
+                <li class="nav-item {% if sidebar == 'transparencia' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'lista_transparencia' %}">Transparencia</a>
+                </li>
+                {% endif %}
+            
+                <!-- "SEVAC" depende de 'sevac' -->
+                {% if municipio.secciones_hab and municipio.secciones_hab.sevac %}
+                <li class="nav-item {% if sidebar == 'sevac' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'homeSevac' %}">SEVAC</a>
+                </li>
+                {% endif %}
+            
+                <!-- "Reportes" depende de 'reportes' -->
+                {% if municipio.secciones_hab and municipio.secciones_hab.reportes %}
+                <li class="nav-item {% if sidebar == 'reportes' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'homeReportes' %}">Reportes</a>
+                </li>
+                {% endif %}
+            
+                <!-- Menú desplegable "Más" -->
                 <li class="nav-item dropdown {% if sidebar == 'mas' %}active{% endif %}">
                     <a 
                         class="nav-link dropdown-toggle d-flex align-items-center" 
@@ -47,18 +81,34 @@
                         aria-expanded="false"
                     >
                         Más
-                        <!-- Icono de flecha hacia abajo de Bootstrap Icons -->
                         <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url "HomeConvocatoriasView" %}">Convocatorias</a></li>
-
-                        <li><a class="dropdown-item" href="{% url "homeHabla" %}">Habla con tus hijos</a></li>
+                        <!-- "Convocatorias" depende de 'convocatorias' -->
+                        {% if municipio.secciones_hab and municipio.secciones_hab.convocatorias %}
+                        <li><a class="dropdown-item" href="{% url 'HomeConvocatoriasView' %}">Convocatorias</a></li>
+                        {% endif %}
+            
+                        <!-- "Habla con tus hijos" depende de 'habla_con_tus_hijos' -->
+                        {% if municipio.secciones_hab and municipio.secciones_hab.habla_con_tus_hijos %}
+                        <li><a class="dropdown-item" href="{% url 'homeHabla' %}">Habla con tus hijos</a></li>
+                        {% endif %}
+            
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url "HomePrivacidad" %}">Aviso de privacidad de datos personales</a></li>
+            
+                        <!-- "Aviso de privacidad" depende de 'aviso_de_privacidad' -->
+                        {% if municipio.secciones_hab and municipio.secciones_hab.aviso_de_privacidad %}
+                        <li><a class="dropdown-item" href="{% url 'HomePrivacidad' %}">Aviso de privacidad de datos personales</a></li>
+                        {% endif %}
+            
+                        <!-- "Contacto" depende de 'contacts' -->
+                        {% if municipio.secciones_hab and municipio.secciones_hab.contacts %}
+                        <li><a class="dropdown-item" href="{% url 'homeContacts' %}">Contacto</a></li>
+                        {% endif %}
                     </ul>
                 </li>
             </ul>
+            
         </div>
     </div>
 </nav>

@@ -259,40 +259,99 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <!-- Inicio siempre se muestra -->
                     <li class="nav-item {% if sidebar == 'home' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'home' %}">Inicio</a>
                     </li>
+                
+                    <!-- Gobierno se muestra solo si 'gabinete' está habilitado -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.gabinete %}
                     <li class="nav-item {% if sidebar == 'gobierno' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'homeGobierno' %}">Gobierno</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="{% url "homeServicios" %}">Servicios</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url "homeNoticias" %}">Noticias</a></li>
-                    <li class="nav-item {% if sidebar == 'transparecnia' %}active{% endif %}"><a class="nav-link" href="{% url "lista_transparencia" %}">Transparencia</a></li>
-                    <li class="nav-item {% if sidebar == 'sevac' %}active{% endif %}"><a class="nav-link" href="{% url "homeSevac" %}">SEVAC</a></li>
-                    <li class="nav-item {% if sidebar == 'reportes' %}active{% endif %}"><a class="nav-link" href="{% url "homeReportes" %}">Reportes</a></li>
-                    <!-- En tu navbar -->
+                    {% endif %}
+                
+                    <!-- Servicios -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.servicios %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'homeServicios' %}">Servicios</a>
+                    </li>
+                    {% endif %}
+                
+                    <!-- Noticias -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.noticias %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'homeNoticias' %}">Noticias</a>
+                    </li>
+                    {% endif %}
+                
+                    <!-- Transparencia -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.transparencia %}
+                    <li class="nav-item {% if sidebar == 'transparecnia' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'lista_transparencia' %}">Transparencia</a>
+                    </li>
+                    {% endif %}
+                
+                    <!-- SEVAC -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.sevac %}
+                    <li class="nav-item {% if sidebar == 'sevac' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'homeSevac' %}">SEVAC</a>
+                    </li>
+                    {% endif %}
+                    {% if municipio.secciones_hab and municipio.secciones_hab.reportes %}
+
+                    <!-- Reportes (se muestra siempre, ejemplo) -->
+                    <li class="nav-item {% if sidebar == 'reportes' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'homeReportes' %}">Reportes</a>
+                    </li>
+                    {% endif %}
+
+                    <!-- Dropdown "Más" -->
                     <li class="nav-item dropdown {% if sidebar == 'mas' %}active{% endif %}">
-                        <a 
-                            class="nav-link dropdown-toggle d-flex align-items-center" 
-                            href="#" 
-                            role="button" 
-                            data-bs-toggle="dropdown" 
+                        <a
+                            class="nav-link dropdown-toggle d-flex align-items-center"
+                            href="#"
+                            role="button"
+                            data-bs-toggle="dropdown"
                             aria-expanded="false"
                         >
                             Más
-                            <!-- Icono de flecha hacia abajo de Bootstrap Icons -->
                             <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url "HomeConvocatoriasView" %}">Convocatorias</a></li>
-    
-                            <li><a class="dropdown-item" href="{% url "homeHabla" %}">Habla con tus hijos</a></li>
+                            <!-- Convocatorias -->
+                            {% if municipio.secciones_hab and municipio.secciones_hab.convocatorias %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'HomeConvocatoriasView' %}">Convocatorias</a>
+                            </li>
+                            {% endif %}
+                
+                            <!-- Habla con tus hijos -->
+                            {% if municipio.secciones_hab and municipio.secciones_hab.habla_con_tus_hijos %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'homeHabla' %}">Habla con tus hijos</a>
+                            </li>
+                            {% endif %}
+                
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url "HomePrivacidad" %}">Aviso de privacidad de datos personales</a></li>
-                            <li><a class="dropdown-item" href="{% url "homeContacts" %}">Contacto</a></li>
+                
+                            <!-- Aviso de privacidad -->
+                            {% if municipio.secciones_hab and municipio.secciones_hab.aviso_de_privacidad %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'HomePrivacidad' %}">Aviso de privacidad de datos personales</a>
+                            </li>
+                            {% endif %}
+                            {% if municipio.secciones_hab and municipio.secciones_hab.contacts %}
+
+                            <li>
+                                <a class="dropdown-item" href="{% url 'homeContacts' %}">Contacto</a>
+                            </li>
+                            {% endif %}
+
                         </ul>
                     </li>
                 </ul>
+                
             </div>
         </div>
     </nav>

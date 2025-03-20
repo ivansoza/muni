@@ -92,6 +92,8 @@ class Secciones(models.Model):
     aviso_de_privacidad = models.BooleanField(default=False)
     gabinete = models.BooleanField(default=False)
     sevac = models.BooleanField(default=False)
+    contacts = models.BooleanField(default=False)
+    reportes = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Secciones de {self.municipio}"
