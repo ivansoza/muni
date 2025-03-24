@@ -1,10 +1,3 @@
-/* Contenedor principal */
-.container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 20px;
-}
-
 /* Encabezado */
 .header {
     text-align: left;
@@ -35,10 +28,15 @@
 
 /* Sidebar */
 .sidebar {
-    width: 30%;
+    width: 260px;  /* Ancho fijo para todas las secciones */
+    min-width: 260px;
+    max-width: 260px;  /* Evita que crezca en otras secciones */
     background: #f4f4f4;
     padding: 15px;
     border-radius: 8px;
+    min-height: 100%;
+    overflow-y: auto;
+    transition: all 0.3s ease-in-out;  /* Transición suave para evitar cambios bruscos */
 }
 
 .menu {
@@ -272,4 +270,9 @@ h2 {
     color: #80004D;
     border-left: 4px solid #80004D;
     padding-left: 8px;
+}
+
+.table-container {
+    max-width: calc(100% - 250px); /* Se ajusta al ancho sin afectar el sidebar */
+    overflow-x: auto;
 }

@@ -37,19 +37,19 @@
         <!-- Menú lateral en pantallas grandes -->
         <div class="sidebar desktop-sidebar">
             <ul class="menu">
-                <li class="active">📌 ¿En qué consiste?</li>
-                <li>📄 ¿Qué se requiere?</li>
-                <li>🛠️ ¿Cómo lo realizo?</li>
-                <li>📍 ¿Dónde lo realizo presencial?</li>
-                <li>💰 ¿Cuánto cuesta?</li>
-                <li>🏦 ¿Dónde lo pago?</li>
-                <li>📆 Plazos y criterios de resolución</li>
-                <li>📑 Inspección y verificación</li>
+                <li class="menu-item active" data-seccion="seccion-consiste">📌 ¿En qué consiste?</li>
+                <li class="menu-item" data-seccion="seccion-requisitos">📄 ¿Qué se requiere?</li>
+                <li class="menu-item" data-seccion="seccion-realizo">🛠️ ¿Cómo lo realizo?</li>
+                <li class="menu-item" data-seccion="seccion-presencial">📍 ¿Dónde lo realizo presencial?</li>
+                <li class="menu-item" data-seccion="seccion-costo">💰 ¿Cuánto cuesta?</li>
+                <li class="menu-item" data-seccion="seccion-pago">🏦 ¿Dónde lo pago?</li>
+                <li class="menu-item" data-seccion="seccion-plazos">📆 Plazos y criterios de resolución</li>
+                <li class="menu-item" data-seccion="seccion-inspeccion">📑 Inspección y verificación</li>
             </ul>
         </div>
 
-        <!-- Sección principal -->
-        <div class="main-content">
+        <!-- Sección "¿En qué consiste?" -->
+        <div id="seccion-consiste" class="seccion">
             <h2>Información del Trámite</h2>
             <div class="info-grid">
                 <div class="info-item">
@@ -82,49 +82,77 @@
                 </div>
             </div>
         </div>
+
+        <!-- Sección "¿Qué se requiere?" -->
+        <div id="seccion-requisitos" class="seccion">
+            <h2>Requisitos</h2>
+            
+            <table class="tabla-requisitos">
+                <thead>
+                    <tr>
+                        <th>Documento</th>
+                        <th>Especificaciones</th>
+                        <th>Tipo de documentos</th>
+                        <th>Presentar en</th>
+                        <th>Descargar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for requisito in requiere %}
+                    <tr>
+                        <td>{{ forloop.counter }}. {{ requisito.nombre }}</td>
+                        <td>{{ requisito.especificaciones }}</td>
+                        <td>{{ requisito.tipo_documento }}</td>
+                        <td>Original ({{ requisito.presentar_original }}) / Copia ({{ requisito.presentar_copia }})</td>
+                        <td>
+                            {% if requisito.archivo_descarga %}
+                                <a href="{{ requisito.archivo_descarga.url }}" target="_blank">Descargar documento</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No se requieren documentos.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Botones de acción -->
     <div class="action-buttons">
         <a href="{% url 'homeServicios' %}" class="btn btn-secondary">← Regresar</a>
         <a href="#" class="btn btn-warning">⚠️ Presentar una queja</a>
-    </div>
-
-    <div id="requisitos" class="seccion-oculta">
-        <h2>Requisitos</h2>
-        
-        <table class="tabla-requisitos">
-            <thead>
-                <tr>
-                    <th>Documento</th>
-                    <th>Especificaciones</th>
-                    <th>Tipo de documentos</th>
-                    <th>Presentar en</th>
-                    <th>Descargar</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for requisito in requiere %}
-                <tr>
-                    <td>{{ forloop.counter }}. {{ requisito.nombre }}</td>
-                    <td>{{ requisito.especificaciones }}</td>
-                    <td>{{ requisito.tipo_documento }}</td>
-                    <td>Original ({{ requisito.presentar_original }}) / Copia ({{ requisito.presentar_copia }})</td>
-                    <td>
-                        {% if requisito.archivo_descarga %}
-                            <a href="{{ requisito.archivo_descarga.url }}" target="_blank">Descargar documento</a>
-                        {% else %}
-                            N/A
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center">No se requieren documentos.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>    
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const menuItems = document.querySelectorAll(".menu-item");
+        const sections = document.querySelectorAll(".seccion");
+
+        menuItems.forEach(item => {
+            item.addEventListener("click", function() {
+                // Remover clase "active" de todos los elementos del menú
+                menuItems.forEach(i => i.classList.remove("active"));
+                this.classList.add("active");
+
+                // Ocultar todas las secciones
+                sections.forEach(sec => sec.style.display = "none");
+
+                // Mostrar la sección seleccionada
+                const seccionId = this.getAttribute("data-seccion");
+                document.getElementById(seccionId).style.display = "block";
+            });
+        });
+
+        // Mostrar solo la primera sección por defecto
+        document.getElementById("seccion-consiste").style.display = "block";
+    });
+</script>
 {% endblock %}
