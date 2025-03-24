@@ -4,13 +4,16 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.http import JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.urls import reverse_lazy
 
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.decorators.http import require_POST
 
 from informacion_municipal.models import Municipio
+from generales.models import ContadorVisitas, SocialNetwork
 from servicios.forms import ServicioForm
 from servicios.models import Servicio
 from .forms import CustomAuthenticationForm
@@ -51,7 +54,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'dashboard.html'
     login_url = reverse_lazy('login')  # Redirige al login si no está autenticado
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['breadcrumb'] = {
@@ -60,7 +62,32 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         }
         context['sidebar'] = 'dashboard'
 
+        try:
+            # Intentar obtener el contador de visitas
+            contador = ContadorVisitas.objects.get(id=1)
+            context['contador_visitas'] = contador.visitas
+        except ObjectDoesNotExist:
+            # Si no existe, asignamos 0 como valor por defecto
+            context['contador_visitas'] = 0
+
         return context
+    
+
+class GeneralesDashboardView(LoginRequiredMixin, TemplateView):
+    template_name = 'generales.html'
+    login_url = reverse_lazy('login')  # Redirige al login si no está autenticado
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['breadcrumb'] = {
+            'parent': {'name': 'Dashboard', 'url': '/index'},
+            'child': {'name': 'Generales'}
+        }
+        context['sidebar'] = 'Generales'
+
+        return context
+    
     
 
 class PersonalizacionView(LoginRequiredMixin, TemplateView):
@@ -1114,3 +1141,146 @@ class EliminarArticuloView(View):
 
         # Responder con éxito
         return JsonResponse({'success': True, 'message': 'Artículo eliminado con éxito'})
+    
+
+
+def get_active_municipality():
+    """
+    Retorna el primer municipio con status='activo',
+    o None si no existe.
+    """
+    return Municipio.objects.filter(status='activo').first()
+
+def list_social_networks(request):
+    """
+    Retorna todas las redes sociales (en formato JSON) del primer municipio activo.
+    Se separan en 'favoritas' y 'normales'.
+    """
+    municipality = get_active_municipality()
+    if not municipality:
+        return JsonResponse({
+            'error': 'No hay municipios con estado activo.'
+        }, status=400)
+
+    # Tomamos todas las redes de ese municipio
+    all_networks = SocialNetwork.objects.filter(municipio=municipality)
+    
+    # Separamos favoritas y normales
+    favorite_networks = []
+    normal_networks = []
+    for net in all_networks:
+        data = {
+            'id': net.id,
+            'type': net.social_type,
+            'username': net.social_username,
+            'url': net.social_url,
+            'is_favorite': net.is_favorite,
+        }
+        if net.is_favorite:
+            favorite_networks.append(data)
+        else:
+            normal_networks.append(data)
+    
+    response_data = {
+        'favorites': favorite_networks,
+        'normals': normal_networks
+    }
+    return JsonResponse(response_data, safe=False)
+
+
+@require_POST
+def create_social_network(request):
+    """
+    Crea una nueva red social para el primer municipio activo.
+    Espera los campos: social_type, social_username, social_url, is_favorite (opcional).
+    """
+    municipality = get_active_municipality()
+    if not municipality:
+        return JsonResponse({
+            'error': 'No hay municipios con estado activo.'
+        }, status=400)
+
+    social_type = request.POST.get('social_type')
+    social_username = request.POST.get('social_username')
+    social_url = request.POST.get('social_url')
+    is_favorite = request.POST.get('is_favorite') == 'true'
+
+    # Validaciones mínimas
+    if not social_type:
+        return JsonResponse({'error': 'El campo "social_type" es requerido.'}, status=400)
+    if not social_url:
+        return JsonResponse({'error': 'El campo "social_url" es requerido.'}, status=400)
+    if not social_username:
+        return JsonResponse({'error': 'El campo "social_username" es requerido.'}, status=400)
+
+    # Si se va a crear como favorita, primero desmarcamos la anterior de la misma red (si existe)
+    if is_favorite:
+        SocialNetwork.objects.filter(
+            municipio=municipality,
+            social_type=social_type,
+            is_favorite=True
+        ).update(is_favorite=False)
+
+    new_network = SocialNetwork.objects.create(
+        municipio=municipality,
+        social_type=social_type,
+        social_username=social_username,
+        social_url=social_url,
+        is_favorite=is_favorite
+    )
+
+    # Retornar la información del objeto creado
+    data = {
+        'id': new_network.id,
+        'type': new_network.social_type,
+        'username': new_network.social_username,
+        'url': new_network.social_url,
+        'is_favorite': new_network.is_favorite,
+    }
+    return JsonResponse(data, status=201)
+
+
+@require_POST
+def toggle_favorite(request, pk):
+    """
+    Alterna si una red social es favorita o no.
+    Si se marca como favorita, desmarca la anterior (de la misma red social).
+    """
+    # Obtener la red social
+    network = get_object_or_404(SocialNetwork, pk=pk)
+    municipality = network.municipio
+
+    # Si ya es favorita, la quitamos
+    if network.is_favorite:
+        network.is_favorite = False
+        network.save()
+        return JsonResponse({
+            'id': network.id,
+            'type': network.social_type,
+            'is_favorite': network.is_favorite
+        })
+    else:
+        # Si no es favorita, primero desmarcamos la anterior de la misma red
+        SocialNetwork.objects.filter(
+            municipio=municipality,
+            social_type=network.social_type,
+            is_favorite=True
+        ).update(is_favorite=False)
+
+        network.is_favorite = True
+        network.save()
+        return JsonResponse({
+            'id': network.id,
+            'type': network.social_type,
+            'is_favorite': network.is_favorite
+        })
+
+
+@require_POST
+def delete_social_network(request, pk):
+    """
+    Elimina la red social con id=pk.
+    """
+    network = get_object_or_404(SocialNetwork, pk=pk)
+    network.delete()
+    return JsonResponse({'deleted': True})

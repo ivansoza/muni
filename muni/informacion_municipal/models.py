@@ -203,3 +203,13 @@ class SeccionInicio(models.Model):
 
 
 
+
+class Video(models.Model):
+    titulo = models.CharField(max_length=255, null=True, blank=True)
+    descripcion = models.TextField(null=True, blank=True)
+    url_video = models.URLField(null=True, blank=True)
+    canal_youtube = models.URLField(null=True, blank=True)
+    municipio = models.OneToOneField('Municipio', related_name='video', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.titulo if self.titulo else 'Video sin título'

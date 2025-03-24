@@ -376,7 +376,7 @@
 
     <div class="container-fluid">
         <h1>Gestor de Redes Sociales</h1>
-        
+    
         <div class="social-form">
             <h2>Agregar Red Social</h2>
             <div class="input-group">
@@ -404,13 +404,13 @@
             </div>
             <button id="addButton"><i class="fa fa-plus"></i> Agregar</button>
         </div>
-        
+    
         <div class="social-lists">
             <div class="favorites">
                 <h2><i class="fa fa-star"></i> Redes Favoritas</h2>
                 <ul id="favoritesList"></ul>
             </div>
-            
+    
             <div class="all-socials">
                 <h2><i class="fa fa-list"></i> Todas las Redes</h2>
                 <ul id="socialsList"></ul>
@@ -426,11 +426,27 @@
 
 {% block scriptcontent %} 
 
-<script>
 
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // Elementos del DOM
+    <script>
+    
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+    
         const socialTypeSelect = document.getElementById('socialType');
         const socialURLInput = document.getElementById('socialURL');
         const socialUsernameInput = document.getElementById('socialUsername');
@@ -438,135 +454,209 @@
         const addButton = document.getElementById('addButton');
         const favoritesList = document.getElementById('favoritesList');
         const socialsList = document.getElementById('socialsList');
-        
-        // Almacenamiento de redes sociales
-        let socialNetworks = [];
-        let favorites = {
-            facebook: null,
-            instagram: null,
-            twitter: null,
-            tiktok: null,
-            youtube: null,
-            linkedin: null
-        };
-        
-        // Cargar datos del localStorage si existen
-        if (localStorage.getItem('socialNetworks')) {
-            socialNetworks = JSON.parse(localStorage.getItem('socialNetworks'));
-            
-            // Reconstruir objetos favorites
-            favorites = {
-                facebook: null,
-                instagram: null,
-                twitter: null,
-                tiktok: null,
-                youtube: null,
-                linkedin: null
-            };
-            
-            socialNetworks.forEach(network => {
-                if (network.isFavorite) {
-                    favorites[network.type] = network;
+    
+        function loadSocialNetworks() {
+            fetch('/admin/list-media/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    renderLists(data.favorites, data.normals);
                 }
+            })
+            .catch(error => {
+                console.error('Error fetching social networks:', error);
             });
-            
-            renderLists();
         }
-        
-        // Evento para agregar red social
-        addButton.addEventListener('click', function() {
-            const type = socialTypeSelect.value;
-            const url = socialURLInput.value.trim();
-            const username = socialUsernameInput.value.trim();
-            const isFavorite = isFavoriteCheckbox.checked;
-            
-            // Validaciones
-            if (!type) {
-                showError('Por favor selecciona un tipo de red social');
-                return;
-            }
-            
-            if (!url) {
-                showError('Por favor ingresa la URL de tu perfil');
-                return;
-            }
-            
-            if (!username) {
-                showError('Por favor ingresa un nombre de usuario o identificador');
-                return;
-            }
-            
-            // Verificar formato de URL básico
-            if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                showError('La URL debe comenzar con http:// o https://');
-                return;
-            }
-            
-            // Verificar si ya existe una favorita de este tipo
-            if (isFavorite && favorites[type]) {
-                // Desmarcar la anterior favorita
-                const oldFavoriteIndex = socialNetworks.findIndex(
-                    network => network.type === type && network.isFavorite
-                );
-                
-                if (oldFavoriteIndex !== -1) {
-                    socialNetworks[oldFavoriteIndex].isFavorite = false;
+    
+        function createSocialNetwork() {
+            const formData = new FormData();
+            formData.append('social_type', socialTypeSelect.value);
+            formData.append('social_username', socialUsernameInput.value.trim());
+            formData.append('social_url', socialURLInput.value.trim());
+            formData.append('is_favorite', isFavoriteCheckbox.checked);
+    
+            fetch('/admin/create-media/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    showSuccess('Red social agregada correctamente');
+                    // Recargar la lista
+                    loadSocialNetworks();
+                    // Limpiar formulario
+                    resetForm();
                 }
+            })
+            .catch(error => {
+                console.error('Error creating social network:', error);
+                showError('Ocurrió un error al crear la red social.');
+            });
+        }
+    
+        function toggleFavorite(pk) {
+            fetch(`/admin/toggle-favorite-media/${pk}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    // Actualizamos la lista
+                    loadSocialNetworks();
+                    showSuccess('El estado de favorito ha sido cambiado');
+                }
+            })
+            .catch(error => {
+                console.error('Error toggling favorite:', error);
+                showError('Ocurrió un error al cambiar favorito.');
+            });
+        }
+    
+        function deleteSocialNetwork(pk) {
+            fetch(`/admin/delete-media/${pk}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.deleted) {
+                    showSuccess('Red social eliminada correctamente');
+                    loadSocialNetworks();
+                } else {
+                    showError('No se pudo eliminar la red social');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting social network:', error);
+                showError('Ocurrió un error al eliminar la red social.');
+            });
+        }
+    
+        function renderLists(favorites, normals) {
+            // Limpiar listas
+            favoritesList.innerHTML = '';
+            socialsList.innerHTML = '';
+    
+            // Renderizar favoritas
+            if (!favorites || favorites.length === 0) {
+                favoritesList.innerHTML = '<li class="social-item">No hay redes favoritas</li>';
+            } else {
+                favorites.forEach(item => {
+                    const li = createSocialItem(item, true);
+                    favoritesList.appendChild(li);
+                });
             }
-            
-            // Crear nueva red social
-            const newSocial = {
-                id: Date.now().toString(),
-                type,
-                url,
-                username,
-                isFavorite
-            };
-            
-            // Actualizar favoritas si es necesario
-            if (isFavorite) {
-                favorites[type] = newSocial;
+    
+            // Renderizar normales
+            if (!normals || normals.length === 0) {
+                socialsList.innerHTML = '<li class="social-item">No hay redes sociales agregadas</li>';
+            } else {
+                normals.forEach(item => {
+                    const li = createSocialItem(item, false);
+                    socialsList.appendChild(li);
+                });
             }
-            
-            // Agregar a la lista
-            socialNetworks.push(newSocial);
-            
-            // Guardar en localStorage
-            saveToLocalStorage();
-            
-            // Actualizar interfaz
-            renderLists();
-            
-            // Limpiar formulario
-            socialTypeSelect.value = '';
-            socialURLInput.value = '';
-            socialUsernameInput.value = '';
-            isFavoriteCheckbox.checked = false;
-            
-            // Mostrar mensaje de éxito
-            showSuccess('Red social agregada correctamente');
-        });
+        }
+    
+        function createSocialItem(network, isFavoriteList) {
+            const li = document.createElement('li');
+            li.className = 'social-item';
+            li.dataset.id = network.id;
         
-        // Función para mostrar error
-        function showError(message) {
-            // Eliminar mensajes previos
-            removeMessages();
-            
-            // Crear nuevo mensaje
-            const errorElement = document.createElement('div');
-            errorElement.className = 'error-message';
-            errorElement.innerHTML = `<i class="fa fa-exclamation-circle"></i> ${message}`;
-            
-            // Insertar después del botón
-            addButton.insertAdjacentElement('afterend', errorElement);
-            
-            // Eliminar después de 3 segundos
-            setTimeout(() => {
-                errorElement.remove();
-            }, 3000);
+            // Determinar el ícono de la red social
+            let iconClass;
+            switch(network.type) {
+                case 'facebook': iconClass = 'fa fa-facebook-f'; break;
+                case 'instagram': iconClass = 'fa fa-instagram'; break;
+                case 'twitter': iconClass = 'fa fa-twitter'; break;
+                case 'tiktok': iconClass = 'fa fa-music'; break;
+                case 'youtube': iconClass = 'fa fa-youtube'; break;
+                case 'linkedin': iconClass = 'fa fa-linkedin'; break;
+                default: iconClass = 'fa fa-link';
+            }
+        
+            // Ícono dentro de un span con clase correspondiente
+            const iconSpan = document.createElement('span');
+            iconSpan.className = `social-icon ${network.type}`;
+            iconSpan.innerHTML = `<i class="${iconClass}"></i>`;
+        
+            // Info básica (tipo y username)
+            const typeSpan = document.createElement('span');
+            typeSpan.textContent = `(${network.type}) `;
+            const usernameSpan = document.createElement('span');
+            usernameSpan.innerHTML = `<i class="fa fa-user"></i> ${network.username}`;
+        
+            // Contenedor de la info
+            const infoDiv = document.createElement('div');
+            infoDiv.style.display = 'flex';
+            infoDiv.style.flexDirection = 'column';
+            infoDiv.appendChild(iconSpan);
+            infoDiv.appendChild(typeSpan);
+            infoDiv.appendChild(usernameSpan);
+        
+            // Link al perfil
+            const urlLink = document.createElement('a');
+            urlLink.href = network.url;
+            urlLink.target = '_blank';
+            urlLink.innerHTML = '<i class="fa fa-external-link-alt"></i> Ver perfil';
+            urlLink.style.margin = '0 8px';
+        
+            // Contenedor de acciones
+            const actionDiv = document.createElement('div');
+            actionDiv.className = 'action-buttons';
+        
+            // --- AQUÍ ES DONDE AJUSTAMOS EL BOTÓN DE FAVORITO ---
+            // Siempre mostrará un botón que llame a toggleFavorite
+            // y el texto/ícono cambia según el estado actual de is_favorite
+            const favButton = document.createElement('button');
+            favButton.className = 'favorite-btn';
+        
+            if (network.is_favorite) {
+                // Si ya es favorito, mostramos "Quitar Fav"
+                favButton.innerHTML = '<i class="fa fa-star"></i> Quitar Fav';
+            } else {
+                // Si no es favorito, mostramos "Hacer Fav"
+                favButton.innerHTML = '<i class="fa fa-star-o"></i> Hacer Fav';
+            }
+        
+            // Al hacer clic, llamamos a la función que alterna el favorito en servidor
+            favButton.addEventListener('click', () => toggleFavorite(network.id));
+            actionDiv.appendChild(favButton);
+        
+            // Botón para eliminar
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '<i class="fa fa-trash"></i> Eliminar';
+            deleteBtn.addEventListener('click', () => deleteSocialNetwork(network.id));
+            actionDiv.appendChild(deleteBtn);
+        
+            // Armamos el "li"
+            li.appendChild(infoDiv);
+            li.appendChild(urlLink);
+            li.appendChild(actionDiv);
+        
+            return li;
         }
         
-        // Función para mostrar mensaje de éxito
+    
+        function showError(message) {
+            alert(`ERROR: ${message}`);
+        }
         function showSuccess(message) {
             // Eliminar mensajes previos
             removeMessages();
@@ -592,182 +682,37 @@
             existingMessages.forEach(msg => msg.remove());
         }
         
-        // Función para renderizar listas
-        function renderLists() {
-            // Limpiar listas
-            favoritesList.innerHTML = '';
-            socialsList.innerHTML = '';
+    
+        function resetForm() {
+            socialTypeSelect.value = '';
+            socialURLInput.value = '';
+            socialUsernameInput.value = '';
+            isFavoriteCheckbox.checked = false;
+        }
+    
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cargar la lista al inicio
+            loadSocialNetworks();
             
-            // Renderizar favoritas
-            Object.values(favorites).forEach(network => {
-                if (network) {
-                    const li = createSocialItem(network, true);
-                    favoritesList.appendChild(li);
+            // Manejar el evento de Agregar
+            addButton.addEventListener('click', () => {
+                // Validaciones mínimas en front
+                if (!socialTypeSelect.value) {
+                    showError('Por favor selecciona un tipo de red social');
+                    return;
                 }
-            });
-            
-            if (favoritesList.children.length === 0) {
-                favoritesList.innerHTML = '<li class="social-item">No hay redes favoritas</li>';
-            }
-            
-            // Renderizar todas las redes
-            socialNetworks.forEach(network => {
-                const li = createSocialItem(network, false);
-                socialsList.appendChild(li);
-            });
-            
-            if (socialsList.children.length === 0) {
-                socialsList.innerHTML = '<li class="social-item">No hay redes sociales agregadas</li>';
-            }
-        }
-        
-        // Crear elemento de red social
-        function createSocialItem(network, isFavoriteList) {
-            const li = document.createElement('li');
-            li.className = 'social-item';
-            li.dataset.id = network.id;
-            
-            const iconSpan = document.createElement('span');
-            iconSpan.className = `social-icon ${network.type}`;
-            
-            // Icono según la red social
-            let iconClass;
-            switch(network.type) {
-                case 'facebook': iconClass = 'fa fa-facebook-f'; break;
-                case 'instagram': iconClass = 'fa fa-instagram'; break;
-                case 'twitter': iconClass = 'fa fa-twitter'; break;
-                case 'tiktok': iconClass = 'fa fa-tiktok'; break;
-                case 'youtube': iconClass = 'fa fa-youtube'; break;
-                case 'linkedin': iconClass = 'fa fa-linkedin-in'; break;
-                default: iconClass = 'fa fa-link';
-            }
-            
-            iconSpan.innerHTML = `<i class="${iconClass}"></i>`;
-            
-            const nameSpan = document.createElement('span');
-            // Capitalizar primera letra
-            const typeName = network.type.charAt(0).toUpperCase() + network.type.slice(1);
-            nameSpan.textContent = typeName;
-            
-            // Agregar elemento para nombre de usuario
-            const usernameSpan = document.createElement('span');
-            usernameSpan.className = 'social-username';
-            usernameSpan.innerHTML = `<i class="fa fa-user"></i> ${network.username}`;
-            
-            const urlLink = document.createElement('a');
-            urlLink.href = network.url;
-            urlLink.target = '_blank';
-            urlLink.innerHTML = '<i class="fa fa-external-link-alt"></i> Ver perfil';
-            
-            const infoDiv = document.createElement('div');
-            infoDiv.className = 'social-info';
-            infoDiv.appendChild(iconSpan);
-            infoDiv.appendChild(nameSpan);
-            infoDiv.appendChild(usernameSpan);
-            
-            if (network.isFavorite && !isFavoriteList) {
-                const favBadge = document.createElement('span');
-                favBadge.className = 'favorite-badge';
-                favBadge.innerHTML = '<i class="fa fa-star"></i> Favorita';
-                infoDiv.appendChild(favBadge);
-            }
-            
-            const actionDiv = document.createElement('div');
-            actionDiv.className = 'action-buttons';
-            
-            if (!isFavoriteList) {
-                const toggleFavBtn = document.createElement('button');
-                toggleFavBtn.className = 'favorite-btn';
-                toggleFavBtn.innerHTML = network.isFavorite ? 
-                    '<i class="fa fa-star"></i> Quitar favorito' : 
-                    '<i class="fa fa-star-o"></i> Hacer favorito';
-                toggleFavBtn.addEventListener('click', function() {
-                    toggleFavorite(network.id);
-                });
-                actionDiv.appendChild(toggleFavBtn);
-            }
-            
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'delete-btn';
-            deleteBtn.innerHTML = '<i class="fa fa-trash"></i> Eliminar';
-            deleteBtn.addEventListener('click', function() {
-                deleteSocial(network.id);
-            });
-            actionDiv.appendChild(deleteBtn);
-            
-            const contentDiv = document.createElement('div');
-            contentDiv.style.width = '100%';
-            contentDiv.style.display = 'flex';
-            contentDiv.style.justifyContent = 'space-between';
-            contentDiv.style.alignItems = 'center';
-            contentDiv.appendChild(infoDiv);
-            contentDiv.appendChild(urlLink);
-            
-            li.appendChild(contentDiv);
-            li.appendChild(actionDiv);
-            
-            return li;
-        }
-        
-        // Alternar favorito
-        function toggleFavorite(id) {
-            const index = socialNetworks.findIndex(network => network.id === id);
-            if (index === -1) return;
-            
-            const network = socialNetworks[index];
-            
-            // Si ya es favorito, simplemente quitarlo
-            if (network.isFavorite) {
-                network.isFavorite = false;
-                favorites[network.type] = null;
-                showSuccess(`${network.type.charAt(0).toUpperCase() + network.type.slice(1)} ya no es favorita`);
-            } else {
-                // Si hay una favorita de este tipo, quitarla primero
-                if (favorites[network.type]) {
-                    const oldFavIndex = socialNetworks.findIndex(
-                        n => n.type === network.type && n.isFavorite
-                    );
-                    if (oldFavIndex !== -1) {
-                        socialNetworks[oldFavIndex].isFavorite = false;
-                    }
+                if (!socialURLInput.value) {
+                    showError('Por favor ingresa la URL de tu perfil');
+                    return;
                 }
-                
-                // Marcar la nueva como favorita
-                network.isFavorite = true;
-                favorites[network.type] = network;
-                showSuccess(`${network.type.charAt(0).toUpperCase() + network.type.slice(1)} marcada como favorita`);
-            }
-            
-            saveToLocalStorage();
-            renderLists();
-        }
-        
-        // Eliminar red social
-        function deleteSocial(id) {
-            const index = socialNetworks.findIndex(network => network.id === id);
-            if (index === -1) return;
-            
-            const network = socialNetworks[index];
-            
-            // Si es favorita, también eliminarla de favoritos
-            if (network.isFavorite) {
-                favorites[network.type] = null;
-            }
-            
-            // Eliminar de la lista
-            socialNetworks.splice(index, 1);
-            
-            saveToLocalStorage();
-            renderLists();
-            
-            showSuccess(`${network.type.charAt(0).toUpperCase() + network.type.slice(1)} eliminada correctamente`);
-        }
-        
-        // Guardar en localStorage
-        function saveToLocalStorage() {
-            localStorage.setItem('socialNetworks', JSON.stringify(socialNetworks));
-        }
-    });
-</script>
+                if (!socialUsernameInput.value) {
+                    showError('Por favor ingresa un nombre de usuario o identificador');
+                    return;
+                }
+                // Llamada AJAX para crear
+                createSocialNetwork();
+            });
+        });
+    </script>
 
 {% endblock  %}

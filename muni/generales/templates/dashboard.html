@@ -6,22 +6,165 @@
 
 
 {% block content %}
+
+
 <style>
-    /* Estilos generales */
+    .search-container {
+        display: flex;
+        justify-content: center;
+        margin: 30px 0;
+        width: 100%;
+    }
 
+    .search-wrapper {
+        position: relative;
+        width: 60%;
+        max-width: 600px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
 
+    .search-wrapper:hover, .search-wrapper:focus-within {
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 14px 50px 14px 20px;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        font-size: 1rem;
+        color: #333;
+        background-color: #fff;
+        transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #6366f1;
+    }
+
+    .search-input::placeholder {
+        color: #9ca3af;
+        opacity: 1;
+    }
+
+    .search-button {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: #6366f1;
+        padding: 8px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+
+    .search-button:hover {
+        background-color: #f3f4f6;
+    }
+
+    .search-results {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        width: 100%;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 10;
+    }
+
+    .search-results.active {
+        max-height: 300px;
+        opacity: 1;
+        padding: 10px 0;
+    }
+
+    .result-item {
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .result-item:hover {
+        background-color: #f3f4f6;
+    }
+
+    /* Estilos para enfoque con teclado (accesibilidad) */
+    .search-input:focus-visible {
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Animación al escribir */
+    .search-input:not(:placeholder-shown) + .search-button {
+        background-color: #6366f1;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .search-wrapper {
+            width: 90%;
+        }
+        
+        .search-input {
+            padding: 12px 45px 12px 18px;
+            font-size: 0.95rem;
+        }
+    }
+
+    /* Tema oscuro (opcional) */
+    @media (prefers-color-scheme: dark) {
+        .search-input {
+            background-color: #1f2937;
+            color: #e5e7eb;
+            border-color: #374151;
+        }
+        
+        .search-input::placeholder {
+            color: #6b7280;
+        }
+        
+        .search-wrapper:hover, .search-wrapper:focus-within {
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.2);
+        }
+        
+        .search-results {
+            background: #1f2937;
+        }
+        
+        .result-item:hover {
+            background-color: #374151;
+        }
+    }
+</style>
+
+<style>
     .contenedor {
         max-width: 1700px;
-        margin: 0 auto;
         padding-top: 50px;
     }
 
+  
     /* Grid de aplicaciones mejorado */
     .apps-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1.9rem;
+        gap: 2.9rem;
         justify-items: center;
+        padding: 0 -30px; /* Asegura que las aplicaciones no se peguen al borde */
     }
 
     .app-item {
@@ -34,10 +177,12 @@
         transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
+    /* Establecer tamaño fijo para las tarjetas */
     .app-card {
-        width: 100%;
-        aspect-ratio: 1;
-        border-radius: 89px;
+        width: 200px;  /* Tamaño fijo para las tarjetas */
+        height: 200px; /* Tamaño fijo */
+        aspect-ratio: 1; /* Mantener proporción cuadrada */
+        border-radius: 60px;
         background-size: cover;
         background-position: center;
         display: flex;
@@ -49,65 +194,16 @@
         transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
-    /* Efecto de brillo suave en los bordes */
-    .app-card::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border-radius: 89px;
-        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3), 
-                   inset 0 0 30px rgba(255, 255, 255, 0.12);
-        pointer-events: none;
-        transition: all 0.3s ease;
-    }
-
-    /* Efecto de resplandor al hacer hover */
-    .app-card::before {
-        content: '';
-        position: absolute;
-        top: -2px;
-        left: -2px;
-        right: -2px;
-        bottom: -2px;
-        border-radius: 91px;
-        background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.12), transparent 70%);
-        opacity: 0;
-        z-index: 1;
-        transition: opacity 0.4s ease;
-        pointer-events: none;
-    }
-
     .app-item:hover .app-card {
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
     }
 
-    .app-item:hover .app-card::before {
-        opacity: 1;
+    .app-item:hover .app-name {
+        transform: scale(1.03);
+        color: #000;
     }
 
-    .app-item:hover .app-card::after {
-        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4), 
-                   inset 0 0 40px rgba(255, 255, 255, 0.18);
-    }
-
-    .app-icon {
-        font-size: 2rem;
-        color: white;
-        user-select: none;
-        transition: transform 0.2s ease;
-        position: relative;
-        z-index: 2;
-    }
-
-    .app-icon:hover {
-        transform: scale(1.2);
-    }
-
-    /* Estilo mejorado para el nombre de la app */
     .app-name {
         font-size: 0.9rem;
         font-weight: 500;
@@ -121,71 +217,28 @@
         transition: all 0.2s ease;
     }
 
-    .app-item:hover .app-name {
-        transform: scale(1.03);
-        color: #000;
-    }
-
-    /* Respuesta táctil para dispositivos móviles */
-    @media (hover: none) {
-        .app-item:active .app-card {
-            transform: scale(0.96);
-            transition: transform 0.1s ease;
-        }
-    }
-
     /* Responsive para pantallas grandes */
     @media (max-width: 1500px) {
         .app-card {
-            border-radius: 57px;
-        }
-        
-        .app-card::after {
-            border-radius: 57px;
-        }
-        
-        .app-card::before {
-            border-radius: 59px;
+            width: 180px; /* Ajustar el tamaño para pantallas grandes */
+            height: 180px;
         }
     }
 
     /* Responsive para móviles */
     @media (max-width: 768px) {
         .apps-grid {
-            gap: 1rem;
-            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            gap: 3rem;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
         }
-        
+
         .app-card {
-            border-radius: 27px;
-        }
-        
-        .app-card::after {
-            border-radius: 27px;
-        }
-        
-        .app-card::before {
-            border-radius: 29px;
-        }
-        
-        .app-icon {
-            font-size: 1.8rem;
+            width: 150px;
+            height: 150px;
         }
         
         .app-name {
             font-size: 0.65rem;
-            margin-top: 0.6rem;
-        }
-    }
-
-    /* Responsive para móviles pequeños */
-    @media (max-width: 480px) {
-        body {
-            padding: 1rem 0.5rem;
-        }
-        
-        .apps-grid {
-            gap: 0.8rem;
         }
     }
 </style>
@@ -310,6 +363,8 @@
 
 </style>
 <div class="container-fluid mt-4 contenedor">
+    <!-- Campo de búsqueda -->
+
     <div class="dashboard">
         <!-- Tarjeta 1: Fecha y Hora -->
         <div class="cardash">
@@ -333,79 +388,83 @@
                     <span class="emoji-transition">👤</span>
                 </div>
             </div>
-            <div class="cardash-content" id="visit-count">0</div>
+            <div class="cardash-content" id="visit-count">{{contador_visitas}}</div>
         </div>
     </div>
 
-
-
-    <div class="contenedor">
+        <div class="search-container">
+            <div class="search-wrapper">
+                <input type="text" id="search-input" placeholder="Buscar aplicaciones..." class="search-input">
+                <button class="search-button" id="search-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+                <div class="search-results" id="search-results"></div>
+            </div>
+        </div>
+        
         <div class="apps-grid mt-4">
             <!-- Noticias -->
-            <a class="app-item" href="#">
-                <div class="app-card" style="background-image: url('{% static 'img/apps/news.png' %}');">
-                </div>
+            <a class="app-item" href="{% url "noticias_view" %}">
+                <div class="app-card" style="background-image: url('{% static 'img/apps/news.png' %}');"></div>
                 <div class="app-name">Noticias</div>
             </a>
             
             <!-- Redes Sociales -->
-            <a class="app-item" href="#">
-                <div class="app-card" style="background-image: url('{% static 'img/apps/social.png' %}');">
-                </div>
+            <a class="app-item" href="{% url "social_view" %}">
+                <div class="app-card" style="background-image: url('{% static 'img/apps/social.png' %}');"></div>
                 <div class="app-name">Redes Sociales</div>
             </a>
 
             <!-- Servicios -->
-            <a class="app-item" href="#">
-                <div class="app-card" style="background-image: url('{% static 'img/apps/servicios.png' %}');">
-                </div>
+            <a class="app-item" href="{% url "servicios_view" %}">
+                <div class="app-card" style="background-image: url('{% static 'img/apps/servicios.png' %}');"></div>
                 <div class="app-name">Servicios</div>
             </a>
             
             <!-- Personalizar -->
             <a class="app-item" href="#">
-                <div class="app-card" style="background-image: url('{% static 'img/apps/custom.png' %}');">
-                </div>
+                <div class="app-card" style="background-image: url('{% static 'img/apps/custom.png' %}');"></div>
                 <div class="app-name">Personalizar</div>
             </a>
             
             <!-- Transparencia -->
-            <a class="app-item" href="#">
-                <div class="app-card" style="background-image: url('{% static 'img/apps/trans.png' %}');">
-                </div>
+            <a class="app-item" href="{% url "lista_obligaciones" %}">
+                <div class="app-card" style="background-image: url('{% static 'img/apps/trans.png' %}');"></div>
                 <div class="app-name">Transparencia</div>
             </a>
             
             <!-- Convocatorias -->
             <a class="app-item" href="#">
-                <div class="app-card" style="background-image: url('{% static 'img/apps/convocatoria.png' %}');">
-                </div>
+                <div class="app-card" style="background-image: url('{% static 'img/apps/convocatoria.png' %}');"></div>
                 <div class="app-name">Convocatorias</div>
             </a>
             
             <a class="app-item" href="{% url "listar_carpetas" %}">
-                <div class="app-card" style="background-image: url('{% static 'img/apps/SEVAC.png' %}');">
-                </div>
+                <div class="app-card" style="background-image: url('{% static 'img/apps/SEVAC.png' %}');"></div>
                 <div class="app-name">SEVAC</div>
             </a>
             
             <!-- Gabinete -->
             <a class="app-item" href="{% url "ListarGabineteView" %}">
-                <div class="app-card" style="background-image: url('{% static 'img/apps/gabinete.png' %}');">
-                </div>
+                <div class="app-card" style="background-image: url('{% static 'img/apps/gabinete.png' %}');"></div>
                 <div class="app-name">Gabinete</div>
             </a>
-        </div>
-    </div>
-</div>
 
+            <a class="app-item" href="{% url "generalesDashboard" %}">
+                <div class="app-card" style="background-image: url('{% static 'img/apps/generales.png' %}');"></div>
+                <div class="app-name">Generales</div>
+            </a>
+        </div>
+</div>
 
 
 
 {% endblock content %}
 
 {% block scriptcontent %}
-
 <script>
     function updateDateTime() {
         const now = new Date();
@@ -443,25 +502,29 @@
         }
     }
 
-    function updateVisitCounter() {
-        let visits = localStorage.getItem('pageVisits') || 0;
-        visits = parseInt(visits) + 1;
-        localStorage.setItem('pageVisits', visits);
-        
-        const counterElement = document.getElementById('visit-count');
-        counterElement.style.transform = 'scale(1.1)';
-        setTimeout(() => {
-            counterElement.style.transform = 'scale(1)';
-        }, 200);
-        counterElement.textContent = visits.toLocaleString();
-    }
+
 
     document.addEventListener('DOMContentLoaded', () => {
         updateDateTime();
         setInterval(updateDateTime, 1000);
         
-        updateVisitCounter();
         
+        // Filtrado de aplicaciones
+        const searchInput = document.getElementById('search-input');
+        const appItems = document.querySelectorAll('.app-item');
+
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            appItems.forEach(item => {
+                const appName = item.querySelector('.app-name').textContent.toLowerCase();
+                if (appName.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
         document.querySelectorAll('.card').forEach((card, index) => {
             card.style.animationDelay = `${index * 0.1}s`;
         });

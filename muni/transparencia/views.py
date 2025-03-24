@@ -175,7 +175,9 @@ class EjerciciosPorSeccionView(TemplateView):
 
 
 
-
 def lista_obligaciones(request):
     lista_obligaciones = ListaObligaciones.objects.all()
-    return render(request, 'listaTrasnparencia.html', {'lista_obligaciones': lista_obligaciones})
+    return render(request, 'listaTrasnparencia.html', {
+        'lista_obligaciones': lista_obligaciones,
+        'sidebar': 'transparencia'
+    })

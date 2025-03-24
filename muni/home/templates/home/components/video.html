@@ -145,31 +145,51 @@
     }
 </style>
 
+{% if municipio.video %}
 <section class="video-section">
     <div class="video-container">
-        <h2 class="section-title">Explora Nuestro Municipio</h2>
-        <p class="video-intro">Te invitamos a descubrir las maravillas, tradiciones y paisajes que hacen de nuestro municipio un lugar único. Sumérgete en esta experiencia visual y conoce más sobre nuestra cultura y belleza natural.</p>
+        <h2 class="section-title">
+            {{ municipio.video.titulo }}
+        </h2>
         
+        <p class="video-intro">
+            {% if municipio.video.descripcion %}
+                {{ municipio.video.descripcion }}
+            {% else %}
+                Aún no tenemos una descripción disponible para el video.
+            {% endif %}
+        </p>
         <div class="video-wrapper">
             <div class="video-overlay"></div>
-            <iframe class="youtube-video" 
-                   src="https://www.youtube.com/embed/CpcU2zjR3FI?si=_QyV_SY1nvF6yPS2"
-                    loading="lazy"
-                    title="Video promocional de nuestro municipio"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen>
-            </iframe>
-
-   
+            {% if municipio.video.url_video %}
+                <iframe class="youtube-video" 
+                        src="{{ municipio.video.url_video }}?autoplay=1"
+                        loading="lazy"
+                        title="Video promocional de {{ municipio.nombre }}"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                </iframe>
+            {% else %}
+                <p>Lo sentimos, no hay video disponible en este momento.</p>
+            {% endif %}
         </div>
+
         
         <div class="video-actions">
-            <a href="https://www.youtube.com/channel/TUCANAL" target="_blank" class="video-btn">
-                <i class="fa fa-video"></i> Suscríbete al canal
-            </a>
+            {% if municipio.video.canal_youtube %}
+                <a href="{{ municipio.video.canal_youtube }}" target="_blank" class="video-btn">
+                    <i class="fa fa-video"></i> Suscríbete al canal
+                </a>
+            {% else %}
+                <p>El canal de YouTube aún no está disponible.</p>
+            {% endif %}
+            
             <a href="galeria.html" class="video-btn">
                 <i class="fas fa-images"></i> Ver más contenido
             </a>
         </div>
     </div>
 </section>
+{% else %}
+<!-- No hay video disponible para este municipio, no mostramos la sección -->
+{% endif %}

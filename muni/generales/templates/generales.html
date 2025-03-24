@@ -1,0 +1,262 @@
+{% extends "baseTemplate.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+
+    .container {
+        max-width: 1200px;
+        width: 100%;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 40px;
+        color: #333;
+    }
+
+    .cards-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        justify-content: center;
+    }
+
+    .card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        width: 300px;
+        height: 180px;
+        position: relative;
+        overflow: visible;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-content {
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+    }
+
+    .icon {
+        font-size: 24px;
+        color: #4285f4;
+        margin-bottom: 15px;
+    }
+
+    .card h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
+        color: #333;
+        text-align: center;
+    }
+
+    .card p {
+        font-size: 14px;
+        color: #666;
+        text-align: center;
+    }
+
+    .preview {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 320px;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        padding: 15px;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+        z-index: 100;
+        pointer-events: none;
+        margin-top: 20px;
+    }
+
+    .card:hover .preview {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    .preview::before {
+        content: '';
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-bottom: 10px solid white;
+    }
+
+    .preview-image {
+        width: 100%;
+        height: 200px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        object-fit: cover;
+    }
+
+    .preview-info h4 {
+        font-size: 16px;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .preview-info p {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .cards-container {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card {
+            width: 90%;
+            max-width: 320px;
+        }
+
+        .preview {
+            width: 90%;
+            max-width: 280px;
+            left: 50%;
+            position: fixed;
+            margin-top: 10px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        h1 {
+            font-size: 24px;
+        }
+
+        .card {
+            height: auto;
+            min-height: 180px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card:hover {
+            z-index: 101;
+        }
+    }
+</style>
+
+<div class="container">
+    <h1>Acciones generales del sistema</h1>
+    
+    <div class="cards-container">
+        <a href="https://example.com/video-settings" class="card" data-preview="video">
+            <div class="card-content">
+
+                <i class="icon fa fa-youtube-play"></i>
+                <h3>Video de Youtube</h3>
+                <p>Administre y personalice su video principal de YouTube en su perfil.</p>
+            </div>
+            <div class="preview">
+                <img class="preview-image" src="{% static "img/ejemplos/videoejemplo.jpg" %}" alt="Configuración de Video">
+                <div class="preview-info">
+                    <h4>Configuración de Video</h4>
+                    <p>Suba, edite y administre la presentación en video de su perfil.</p>
+                </div>
+            </div>
+        </a>
+        
+
+        <a href="https://example.com/security" class="card" data-preview="seguridad">
+            <div class="card-content">
+                <i class="icon fa fa-shield-alt"></i>
+                <h3>Seguridad</h3>
+                <p>Proteja su cuenta y datos personales</p>
+            </div>
+            <div class="preview">
+                <img class="preview-image" src="https://picsum.photos/600/600?random=2" alt="Seguridad">
+                <div class="preview-info">
+                    <h4>Configuración de Seguridad</h4>
+                    <p>Configure la autenticación de dos factores, revise actividad reciente y actualice su contraseña.</p>
+                </div>
+            </div>
+        </a>
+
+        <a href="https://example.com/notifications" class="card" data-preview="notificaciones">
+            <div class="card-content">
+                <i class="icon fa fa-bell"></i>
+                <h3>Notificaciones</h3>
+                <p>Administre sus alertas y avisos</p>
+            </div>
+            <div class="preview">
+                <img class="preview-image" src="https://picsum.photos/600/600?random=3" alt="Notificaciones">
+                <div class="preview-info">
+                    <h4>Centro de Notificaciones</h4>
+                    <p>Elija qué notificaciones recibir y cómo recibirlas (email, push, SMS).</p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scriptcontent %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.card');
+        
+        // Add event listeners for touch devices
+        cards.forEach(card => {
+            let touchTimeout;
+            
+            card.addEventListener('touchstart', function() {
+                // Set higher z-index for touched card
+                cards.forEach(c => c.style.zIndex = "1");
+                card.style.zIndex = "101";
+                
+                touchTimeout = setTimeout(function() {
+                    const preview = card.querySelector('.preview');
+                    preview.style.opacity = '1';
+                    preview.style.visibility = 'visible';
+                }, 300);
+            });
+            
+            card.addEventListener('touchend', function() {
+                clearTimeout(touchTimeout);
+                setTimeout(function() {
+                    const preview = card.querySelector('.preview');
+                    preview.style.opacity = '0';
+                    preview.style.visibility = 'hidden';
+                    // Reset z-index after delay
+                    setTimeout(() => card.style.zIndex = "1", 300);
+                }, 1000);
+            });
+            
+            // Add click event to redirect
+            card.addEventListener('click', function() {
+                const url = this.getAttribute('data-url');
+                if (url) {
+                    window.location.href = url;
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
