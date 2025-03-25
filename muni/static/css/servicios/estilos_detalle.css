@@ -39,6 +39,23 @@
     transition: all 0.3s ease-in-out;  /* Transición suave para evitar cambios bruscos */
 }
 
+/* Ajuste para pantallas más pequeñas */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 220px;
+        min-width: 220px;
+        max-width: 220px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        min-width: auto;
+        max-width: 100%;
+    }
+}
+
 .menu {
     list-style: none;
     padding: 0;
@@ -59,7 +76,7 @@
 
 /* Sección de contenido */
 .main-content {
-    width: 95%;
+    flex-grow: 1;
     padding: 20px;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -273,6 +290,6 @@ h2 {
 }
 
 .table-container {
-    max-width: calc(100% - 250px); /* Se ajusta al ancho sin afectar el sidebar */
+    width: 100%; /* Se ajusta al ancho sin afectar el sidebar */
     overflow-x: auto;
 }
