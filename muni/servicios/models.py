@@ -71,3 +71,18 @@ class EnQueConsiste(models.Model):
     
     class Meta:
         verbose_name_plural = "¿En que consiste?"
+
+class QueSeRequiere(models.Model):
+    servicio = models.ForeignKey(Servicio, on_delete=models.CASCADE, related_name="requisitos")
+    nombre = models.CharField(max_length=255)  # Nombre del documento
+    especificaciones = models.TextField(default="N/A")  # Descripción del requisito
+    tipo_documento = models.TextField(default="N/A")
+    presentar_original = models.PositiveIntegerField(default=0)  # Número de originales requeridos
+    presentar_copia = models.PositiveIntegerField(default=0)  # Número de copias requeridas
+    archivo_descarga = models.FileField(upload_to="requisitos/", null=True, blank=True)  # Archivo descargable opcional
+
+    def __str__(self):
+        return f"{self.nombre} - {self.servicio.titulo}"
+    
+    class Meta:
+        verbose_name_plural = "¿Que se requiere?"
