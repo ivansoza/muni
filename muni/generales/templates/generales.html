@@ -4,257 +4,411 @@
 {% block content %}
 <style>
 
-    .container {
+    .ag-wrapper {
         max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* Search Section */
+    .ag-search-section {
+        margin-bottom: 50px;
+        position: relative;
+    }
+    .ag-search-container {
+        position: relative;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .ag-search-input {
         width: 100%;
+        padding: 18px 25px;
+        border-radius: 2px;
+        border: none;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        font-size: 16px;
+        background-color: white;
+        transition: all 0.3s ease;
+        padding-left: 55px;
+    }
+    .ag-search-input:focus {
+        outline: none;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+    }
+    .ag-search-icon {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c7293;
     }
 
-    h1 {
-        text-align: center;
-        margin-bottom: 40px;
-        color: #333;
-    }
-
-    .cards-container {
-        display: flex;
-        flex-wrap: wrap;
+    /* Cards Section */
+    .ag-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 30px;
-        justify-content: center;
     }
-
-    .card {
+    .ag-card-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        transition: transform 0.3s ease;
+    }
+    .ag-card-link:hover {
+        transform: translateY(-10px);
+    }
+    .ag-card {
         background-color: white;
         border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        width: 300px;
-        height: 180px;
-        position: relative;
-        overflow: visible;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        cursor: pointer;
-    }
-
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    }
-
-    .card-content {
-        padding: 25px;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
         display: flex;
         flex-direction: column;
+        min-height: 180px;
+    }
+    .ag-card:hover {
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+    .ag-card-icon {
+        padding: 35px 20px;
+        display: flex;
         align-items: center;
-        height: 100%;
+        justify-content: center;
+        background-color: #f9f9ff;
     }
-
-    .icon {
-        font-size: 24px;
-        color: #4285f4;
+    .ag-card-icon svg {
+        width: 60px;
+        height: 60px;
+    }
+    .ag-card-content {
+        padding: 25px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    .ag-card-title {
+        font-size: 22px;
+        font-weight: 600;
         margin-bottom: 15px;
-    }
-
-    .card h3 {
-        font-size: 18px;
-        margin-bottom: 10px;
         color: #333;
         text-align: center;
     }
-
-    .card p {
-        font-size: 14px;
-        color: #666;
+    .ag-card-text {
+        font-size: 15px;
+        color: #6c7293;
+        line-height: 1.6;
         text-align: center;
+        margin-bottom: auto;
     }
-
-    .preview {
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 320px;
-        background-color: white;
-        border-radius: 12px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        padding: 15px;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-        z-index: 100;
-        pointer-events: none;
-        margin-top: 20px;
+    .ag-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 25px;
+        transition: all 0.3s ease;
     }
-
-    .card:hover .preview {
-        opacity: 1;
-        visibility: visible;
-        transform: translateX(-50%) translateY(0);
+    .ag-card-footer span {
+        margin-right: 8px;
     }
-
-    .preview::before {
+    .ag-btn-see-more {
+        display: flex;
+        align-items: center;
+        padding: 8px 16px;
+        background: none;
+        border: 1px solid;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s ease;
+    }
+    .ag-btn-see-more span {
+        margin-right: 10px;
+        position: relative;
+        z-index: 2;
+        transition: all 0.3s ease;
+    }
+    .ag-btn-see-more svg {
+        position: relative;
+        z-index: 2;
+        transition: transform 0.3s ease;
+    }
+    .ag-btn-see-more:hover svg {
+        transform: translateX(4px);
+    }
+    .ag-btn-see-more::before {
         content: '';
         position: absolute;
-        top: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 0;
-        height: 0;
-        border-left: 10px solid transparent;
-        border-right: 10px solid transparent;
-        border-bottom: 10px solid white;
-    }
-
-    .preview-image {
+        top: 0;
+        left: -100%;
         width: 100%;
-        height: 200px;
-        border-radius: 8px;
-        margin-bottom: 15px;
-        object-fit: cover;
+        height: 100%;
+        background-color: currentColor;
+        opacity: 0.1;
+        transition: all 0.4s ease;
+        z-index: 1;
+    }
+    .ag-btn-see-more:hover::before {
+        left: 0;
+    }
+    .ag-btn-see-more:active {
+        transform: scale(0.96);
     }
 
-    .preview-info h4 {
-        font-size: 16px;
-        margin-bottom: 8px;
-        color: #333;
+    /* Esquemas de colores por tarjeta */
+    .ag-card.ag-video .ag-card-icon {
+        background-color: #FFF0F0;
+    }
+    .ag-card.ag-video svg {
+        fill: #FF6B6B;
+    }
+    .ag-card.ag-video .ag-btn-see-more {
+        color: #FF6B6B;
+        border-color: #FF6B6B;
+    }
+    .ag-card.ag-secciones .ag-card-icon {
+        background-color: #F0F8FF;
+    }
+    .ag-card.ag-secciones svg {
+        fill: #4D96FF;
+    }
+    .ag-card.ag-secciones .ag-btn-see-more {
+        color: #4D96FF;
+        border-color: #4D96FF;
+    }
+    .ag-card.ag-encuestas .ag-card-icon {
+        background-color: #FFF8E1;
+    }
+    .ag-card.ag-encuestas svg {
+        fill: #FFB400;
+    }
+    .ag-card.ag-encuestas .ag-btn-see-more {
+        color: #FFB400;
+        border-color: #FFB400;
+    }
+    .ag-card.ag-reportes .ag-card-icon {
+        background-color: #F2FFF5;
+    }
+    .ag-card.ag-reportes svg {
+        fill: #4CAF50;
+    }
+    .ag-card.ag-reportes .ag-btn-see-more {
+        color: #4CAF50;
+        border-color: #4CAF50;
     }
 
-    .preview-info p {
-        font-size: 14px;
-        color: #666;
-        line-height: 1.5;
-    }
-
-    /* Responsive adjustments */
+    /* Media Queries para Responsividad */
     @media (max-width: 768px) {
-        .cards-container {
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .card {
-            width: 90%;
-            max-width: 320px;
-        }
-
-        .preview {
-            width: 90%;
-            max-width: 280px;
-            left: 50%;
-            position: fixed;
-            margin-top: 10px;
+        .ag-cards-grid {
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
         }
     }
-
     @media (max-width: 480px) {
         h1 {
             font-size: 24px;
         }
-
-        .card {
-            height: auto;
-            min-height: 180px;
-            position: relative;
-            z-index: 1;
+        .ag-card-title {
+            font-size: 20px;
         }
-
-        .card:hover {
-            z-index: 101;
+        .ag-card-text {
+            font-size: 14px;
+        }
+        .ag-btn-see-more {
+            font-size: 13px;
         }
     }
 </style>
 
-<div class="container">
-    <h1>Acciones generales del sistema</h1>
-    
-    <div class="cards-container">
-        <a href="https://example.com/video-settings" class="card" data-preview="video">
-            <div class="card-content">
-
-                <i class="icon fa fa-youtube-play"></i>
-                <h3>Video de Youtube</h3>
-                <p>Administre y personalice su video principal de YouTube en su perfil.</p>
+<div class="container-fluid">
+    <div class="ag-wrapper">
+        <section class="ag-search-section">
+            <div class="ag-search-container">
+                <svg class="ag-search-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" 
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" 
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+                          stroke-linejoin="round"/>
+                </svg>
+                <input type="text" class="ag-search-input" placeholder="Buscar contenido..." id="searchInput">
             </div>
-            <div class="preview">
-                <img class="preview-image" src="{% static "img/ejemplos/videoejemplo.jpg" %}" alt="Configuración de Video">
-                <div class="preview-info">
-                    <h4>Configuración de Video</h4>
-                    <p>Suba, edite y administre la presentación en video de su perfil.</p>
-                </div>
+        </section>
+        <section class="ag-cards-section">
+            <div class="ag-cards-grid" id="cardsContainer">
+                <a href="{% url "VideoView" %}" class="ag-card-link" data-keywords="video grabación multimedia contenido audiovisual">
+                    <div class="ag-card ag-video">
+                        <div class="ag-card-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M18 7c0-1.1-.9-2-2-2H6C4.9 5 4 5.9 4 7v10c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V7zm-6 9l-4-4 1.41-1.41L12 13.17l2.59-2.58L16 12l-4 4z"/>
+                            </svg>
+                        </div>
+                        <div class="ag-card-content">
+                            <h3 class="ag-card-title">Video</h3>
+                            <p class="ag-card-text">Accede a nuestra colección de videos y contenido multimedia para mejorar tu experiencia de aprendizaje.</p>
+                            <div class="ag-card-footer">
+                                <button class="ag-btn-see-more">
+                                    <span>Ver más</span>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" 
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+                                              stroke-linejoin="round"/>
+                                        <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+                                              stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="{% url "SeccionesView" %}" class="ag-card-link" data-keywords="secciones categorías módulos partes">
+                    <div class="ag-card ag-secciones">
+                        <div class="ag-card-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
+                            </svg>
+                        </div>
+                        <div class="ag-card-content">
+                            <h3 class="ag-card-title">Secciones</h3>
+                            <p class="ag-card-text">Explora las diferentes secciones de contenido clasificadas de forma intuitiva para facilitar tu navegación.</p>
+                            <div class="ag-card-footer">
+                                <button class="ag-btn-see-more">
+                                    <span>Ver más</span>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" 
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+                                              stroke-linejoin="round"/>
+                                        <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+                                              stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="{% url "EncuestasView" %}" class="ag-card-link" data-keywords="encuestas cuestionarios formularios opinión">
+                    <div class="ag-card ag-encuestas">
+                        <div class="ag-card-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-2 17H7v-2h5v2zm3-4H7v-2h8v2zm0-4H7V9h8v2zm-1-6V3.5L18.5 9H14z"/>
+                            </svg>
+                        </div>
+                        <div class="ag-card-content">
+                            <h3 class="ag-card-title">Encuestas</h3>
+                            <p class="ag-card-text">Participa en nuestras encuestas para compartir tu opinión y ayudarnos a mejorar nuestros servicios.</p>
+                            <div class="ag-card-footer">
+                                <button class="ag-btn-see-more">
+                                    <span>Ver más</span>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" 
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+                                              stroke-linejoin="round"/>
+                                        <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+                                              stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="{% url "ReportesView" %}" class="ag-card-link" data-keywords="reportes informes análisis estadísticas datos">
+                    <div class="ag-card ag-reportes">
+                        <div class="ag-card-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                            </svg>
+                        </div>
+                        <div class="ag-card-content">
+                            <h3 class="ag-card-title">Reportes</h3>
+                            <p class="ag-card-text">Accede a reportes detallados y análisis de datos para tomar decisiones informadas en tu proyecto.</p>
+                            <div class="ag-card-footer">
+                                <button class="ag-btn-see-more">
+                                    <span>Ver más</span>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" 
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+                                              stroke-linejoin="round"/>
+                                        <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+                                              stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </a>
             </div>
-        </a>
-        
-
-        <a href="https://example.com/security" class="card" data-preview="seguridad">
-            <div class="card-content">
-                <i class="icon fa fa-shield-alt"></i>
-                <h3>Seguridad</h3>
-                <p>Proteja su cuenta y datos personales</p>
-            </div>
-            <div class="preview">
-                <img class="preview-image" src="https://picsum.photos/600/600?random=2" alt="Seguridad">
-                <div class="preview-info">
-                    <h4>Configuración de Seguridad</h4>
-                    <p>Configure la autenticación de dos factores, revise actividad reciente y actualice su contraseña.</p>
-                </div>
-            </div>
-        </a>
-
-        <a href="https://example.com/notifications" class="card" data-preview="notificaciones">
-            <div class="card-content">
-                <i class="icon fa fa-bell"></i>
-                <h3>Notificaciones</h3>
-                <p>Administre sus alertas y avisos</p>
-            </div>
-            <div class="preview">
-                <img class="preview-image" src="https://picsum.photos/600/600?random=3" alt="Notificaciones">
-                <div class="preview-info">
-                    <h4>Centro de Notificaciones</h4>
-                    <p>Elija qué notificaciones recibir y cómo recibirlas (email, push, SMS).</p>
-                </div>
-            </div>
-        </a>
+        </section>
     </div>
 </div>
 {% endblock content %}
 
 {% block scriptcontent %}
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const cards = document.querySelectorAll('.card');
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('.ag-card-link');
         
-        // Add event listeners for touch devices
-        cards.forEach(card => {
-            let touchTimeout;
+        searchInput.addEventListener('input', function() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
             
-            card.addEventListener('touchstart', function() {
-                // Set higher z-index for touched card
-                cards.forEach(c => c.style.zIndex = "1");
-                card.style.zIndex = "101";
+            cards.forEach(card => {
+                const cardTitle = card.querySelector('.ag-card-title').textContent.toLowerCase();
+                const cardText = card.querySelector('.ag-card-text').textContent.toLowerCase();
+                const keywords = card.dataset.keywords.toLowerCase();
                 
-                touchTimeout = setTimeout(function() {
-                    const preview = card.querySelector('.preview');
-                    preview.style.opacity = '1';
-                    preview.style.visibility = 'visible';
-                }, 300);
+                const isVisible = cardTitle.includes(searchTerm) || 
+                                 cardText.includes(searchTerm) || 
+                                 keywords.includes(searchTerm);
+                
+                card.style.display = isVisible ? 'block' : 'none';
             });
-            
-            card.addEventListener('touchend', function() {
-                clearTimeout(touchTimeout);
-                setTimeout(function() {
-                    const preview = card.querySelector('.preview');
-                    preview.style.opacity = '0';
-                    preview.style.visibility = 'hidden';
-                    // Reset z-index after delay
-                    setTimeout(() => card.style.zIndex = "1", 300);
-                }, 1000);
-            });
-            
-            // Add click event to redirect
-            card.addEventListener('click', function() {
-                const url = this.getAttribute('data-url');
-                if (url) {
-                    window.location.href = url;
+
+            // Mostrar mensaje si no hay resultados
+            const visibleCards = document.querySelectorAll('.ag-card-link[style="display: block"]');
+            if (visibleCards.length === 0 && searchTerm !== '') {
+                if (!document.getElementById('no-results')) {
+                    const noResults = document.createElement('div');
+                    noResults.id = 'no-results';
+                    noResults.style.textAlign = 'center';
+                    noResults.style.gridColumn = '1 / -1';
+                    noResults.style.padding = '30px';
+                    noResults.style.color = '#6c7293';
+                    noResults.style.fontSize = '18px';
+                    noResults.innerHTML = 'No se encontraron resultados para <strong>"' + searchTerm + '"</strong>';
+                    document.getElementById('cardsContainer').appendChild(noResults);
                 }
+            } else {
+                const noResults = document.getElementById('no-results');
+                if (noResults) {
+                    noResults.remove();
+                }
+            }
+        });
+
+        // Efectos de enfoque en el buscador
+        searchInput.addEventListener('focus', function() {
+            this.parentElement.style.transform = 'scale(1.01)';
+        });
+        searchInput.addEventListener('blur', function() {
+            this.parentElement.style.transform = 'scale(1)';
+        });
+
+        // Efectos hover para los botones
+        const buttons = document.querySelectorAll('.ag-btn-see-more');
+        buttons.forEach(button => {
+            button.addEventListener('mouseover', function() {
+                this.querySelector('span').style.transform = 'translateX(-3px)';
+            });
+            button.addEventListener('mouseout', function() {
+                this.querySelector('span').style.transform = 'translateX(0)';
+            });
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
             });
         });
     });

@@ -36,6 +36,64 @@ from sevac.forms import CarpetaForm, ArchivoForm
 # Create your views here.
 from django.db.models import Count
 
+
+
+
+class VideoView(LoginRequiredMixin,TemplateView):
+    template_name = 'generales/video.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': '/index'},
+            'child': {'name': 'SEVAC - Carpetas y Archivos', 'url': ''}
+        }
+        context['sidebar'] = 'generales' 
+        return context
+    
+
+
+class SeccionesView(LoginRequiredMixin,TemplateView):
+    template_name = 'generales/secciones.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': '/index'},
+            'child': {'name': 'SEVAC - Carpetas y Archivos', 'url': ''}
+        }
+        context['sidebar'] = 'generales' 
+        return context
+    
+class EncuestasView(LoginRequiredMixin,TemplateView):
+    template_name = 'generales/encuestas.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': '/index'},
+            'child': {'name': 'SEVAC - Carpetas y Archivos', 'url': ''}
+        }
+        context['sidebar'] = 'generales' 
+        return context
+
+
+class ReportesView(LoginRequiredMixin,TemplateView):
+    template_name = 'generales/reportes.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': '/index'},
+            'child': {'name': 'SEVAC - Carpetas y Archivos', 'url': ''}
+        }
+        context['sidebar'] = 'generales' 
+        return context
+
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
     authentication_form = CustomAuthenticationForm
@@ -1282,3 +1340,6 @@ def delete_social_network(request, pk):
     network = get_object_or_404(SocialNetwork, pk=pk)
     network.delete()
     return JsonResponse({'deleted': True})
+
+
+
