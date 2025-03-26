@@ -102,11 +102,7 @@ class QueSeRequiere(models.Model):
         verbose_name_plural = "¿Que se requiere?"
 
 class ComoLoRealizo(models.Model):
-    PRESENTACION_CHOICES = [
-        ('linea', 'En línea'),
-        ('presencial', 'Presencial'),
-    ]
-
     servicio = models.ForeignKey(Servicio, on_delete=models.CASCADE, related_name='instrucciones')
     canal_presentacion = models.ForeignKey(CanalPresentacion, on_delete=models.PROTECT)
+    paso = models.PositiveIntegerField()
     descripcion = models.TextField()
