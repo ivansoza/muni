@@ -46,8 +46,8 @@ class VideoView(LoginRequiredMixin,TemplateView):
         context = super().get_context_data(**kwargs)
 
         context["breadcrumb"] = {
-            'parent': {'name': 'Dashboard', 'url': '/index'},
-            'child': {'name': 'SEVAC - Carpetas y Archivos', 'url': ''}
+            'parent': {'name': 'Dashboard', 'url': '/admin'},
+            'child': {'name': 'Video Institucional', 'url': ''}
         }
         context['sidebar'] = 'generales' 
         return context
@@ -61,8 +61,8 @@ class SeccionesView(LoginRequiredMixin,TemplateView):
         context = super().get_context_data(**kwargs)
 
         context["breadcrumb"] = {
-            'parent': {'name': 'Dashboard', 'url': '/index'},
-            'child': {'name': 'SEVAC - Carpetas y Archivos', 'url': ''}
+            'parent': {'name': 'Dashboard', 'url': '/admin'},
+            'child': {'name': 'Secciones del Sistema', 'url': ''}
         }
         context['sidebar'] = 'generales' 
         return context
@@ -74,8 +74,8 @@ class EncuestasView(LoginRequiredMixin,TemplateView):
         context = super().get_context_data(**kwargs)
 
         context["breadcrumb"] = {
-            'parent': {'name': 'Dashboard', 'url': '/index'},
-            'child': {'name': 'SEVAC - Carpetas y Archivos', 'url': ''}
+            'parent': {'name': 'Dashboard', 'url': '/admin'},
+            'child': {'name': 'Encuestas', 'url': ''}
         }
         context['sidebar'] = 'generales' 
         return context
@@ -88,8 +88,8 @@ class ReportesView(LoginRequiredMixin,TemplateView):
         context = super().get_context_data(**kwargs)
 
         context["breadcrumb"] = {
-            'parent': {'name': 'Dashboard', 'url': '/index'},
-            'child': {'name': 'SEVAC - Carpetas y Archivos', 'url': ''}
+            'parent': {'name': 'Dashboard', 'url': '/admin'},
+            'child': {'name': 'Reportes', 'url': ''}
         }
         context['sidebar'] = 'generales' 
         return context
@@ -139,7 +139,7 @@ class GeneralesDashboardView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['breadcrumb'] = {
-            'parent': {'name': 'Dashboard', 'url': '/index'},
+            'parent': {'name': 'Dashboard', 'url': '/admin'},
             'child': {'name': 'Generales'}
         }
         context['sidebar'] = 'Generales'
