@@ -36,6 +36,20 @@ class Estado(models.Model):
     
     class Meta:
         verbose_name_plural = "Estados"
+
+class CanalPresentacion(models.Model):
+    nombre = models.CharField(
+        max_length=50,
+        choices=[
+            ("presencial", "Presencial"),
+            ("linea", "En Línea"),
+            ("mixto", "Presencial y En Línea")
+        ],
+        unique=True
+    )
+
+    def __str__(self):
+        return self.get_nombre_display()
     
 class Servicio(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -62,7 +76,7 @@ class Servicio(models.Model):
 class EnQueConsiste(models.Model):
     servicio = models.OneToOneField(Servicio, on_delete=models.CASCADE, related_name="detalle")
     tramite = models.CharField(max_length=255, choices=[("Tiene Costo", "Tiene Costo"), ("Sin Costo", "Sin Costo")], default="Sin Costo")
-    canales_presentacion = models.CharField(max_length=255, choices=[("Presencial", "Presencial"), ("En Línea", "En Línea"), ("Mixto", "Presencial y En Línea")], default="Presencial")
+    canal_presentacion = models.ForeignKey(CanalPresentacion, on_delete=models.PROTECT)
     solicitado_por = models.CharField(max_length=255, choices=[("Persona física", "Persona física"), ("Persona moral", "Persona moral"), ("Ambos", "Persona Física y Moral")], default="Ambos")
     momento_solicitud = models.CharField(max_length=255, default="En cualquier momento")
 
@@ -86,3 +100,13 @@ class QueSeRequiere(models.Model):
     
     class Meta:
         verbose_name_plural = "¿Que se requiere?"
+
+class ComoLoRealizo(models.Model):
+    PRESENTACION_CHOICES = [
+        ('linea', 'En línea'),
+        ('presencial', 'Presencial'),
+    ]
+
+    servicio = models.ForeignKey(Servicio, on_delete=models.CASCADE, related_name='instrucciones')
+    canal_presentacion = models.ForeignKey(CanalPresentacion, on_delete=models.PROTECT)
+    descripcion = models.TextField()
