@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, DetailView
 from django.core.paginator import Paginator
 from django.core.exceptions import ObjectDoesNotExist
-from servicios.models import EnQueConsiste, Servicio
+from servicios.models import EnQueConsiste, QueSeRequiere, Servicio
 
 class HomeServiciosView(TemplateView):
     template_name = 'homeServicios.html'  # Ruta del template
@@ -58,6 +58,8 @@ class ServicioDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         try:
             context["consiste"] = EnQueConsiste.objects.get(servicio=self.object)
+            context["requiere"] = QueSeRequiere.objects.filter(servicio=self.object)
         except ObjectDoesNotExist:
             context["consiste"] = None
+            context['requiere'] = None
         return context
