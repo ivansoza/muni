@@ -84,7 +84,7 @@ class EnQueConsiste(models.Model):
         return f"Detalle de {self.servicio.titulo}"
     
     class Meta:
-        verbose_name_plural = "¿En que consiste?"
+        verbose_name_plural = "1. ¿En que consiste?"
 
 class QueSeRequiere(models.Model):
     servicio = models.ForeignKey(Servicio, on_delete=models.CASCADE, related_name="requisitos")
@@ -99,10 +99,16 @@ class QueSeRequiere(models.Model):
         return f"{self.nombre} - {self.servicio.titulo}"
     
     class Meta:
-        verbose_name_plural = "¿Que se requiere?"
+        verbose_name_plural = "2. ¿Que se requiere?"
 
 class ComoLoRealizo(models.Model):
     servicio = models.ForeignKey(Servicio, on_delete=models.CASCADE, related_name='instrucciones')
     canal_presentacion = models.ForeignKey(CanalPresentacion, on_delete=models.PROTECT)
     paso = models.PositiveIntegerField()
     descripcion = models.TextField()
+
+    def __str__(self):
+        return f"{self.servicio.titulo} - {self.canal_presentacion} - {self.paso}"
+    
+    class Meta:
+        verbose_name_plural = "3. ¿Como lo realizo?"
