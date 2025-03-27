@@ -1,13 +1,230 @@
 {% extends "baseTemplate.html" %}
 
-
-
-
 {% block content %}
+<style>
+    .video-container {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .video-player, .youtube-video {
+        width: 100%;
+        height: 450px;
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        justify-content: center;
+        align-items: center;
+    }
+    .modal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 400px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+    }
+    .form-group input, 
+    .form-group textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    .btn {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+    .btn-secondary {
+        background-color: #6c757d;
+    }
+</style>
 
+<div class="video-container">
+    <div class="video-player">
+        {% if municipio.video and municipio.video.url_video %}
+            <iframe class="youtube-video" 
+                    src="{{ municipio.video.url_video }}?autoplay=1"
+                    loading="lazy"
+                    title="Video promocional de {{ municipio.nombre }}"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+            </iframe>
+        {% else %}
+            <!-- Video placeholder si no existe URL -->
+            <iframe class="youtube-video" 
+                    src="https://www.youtube.com/embed/placeholder_video?autoplay=1"
+                    loading="lazy"
+                    title="Video promocional de {{ municipio.nombre }}"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+            </iframe>
+        {% endif %}
+    </div>
+
+    <div class="video-info">
+        <h2 id="videoTitle">
+            {% if municipio.video and municipio.video.titulo %}
+                {{ municipio.video.titulo }}
+            {% else %}
+                Insertar título aquí
+            {% endif %}
+        </h2>
+        <p id="videoDescription">
+            {% if municipio.video and municipio.video.descripcion %}
+                {{ municipio.video.descripcion }}
+            {% else %}
+                Insertar descripción aquí
+            {% endif %}
+        </p>
+        <p id="videoChannel">
+            {% if municipio.video and municipio.video.canal_youtube %}
+                Canal: {{ municipio.video.canal_youtube }}
+            {% else %}
+                Insertar canal de YouTube
+            {% endif %}
+        </p>
+    </div>
+
+    <div class="actions">
+        <button onclick="openUpdateModal()" class="btn">
+            {% if municipio.video %}
+                Actualizar Video
+            {% else %}
+                Agregar Video
+            {% endif %}
+        </button>
+    </div>
+</div>
+
+<!-- Modal para Actualizar/Agregar Video -->
+<div id="updateModal" class="modal">
+    <div class="modal-content">
+        <h2>Actualizar Información del Video</h2>
+        <form id="videoUpdateForm">
+            <div class="form-group">
+                <label for="titulo">Título</label>
+                <input type="text" id="titulo" name="titulo" value="{% if municipio.video %}{{ municipio.video.titulo }}{% endif %}" placeholder="Ingresa el título del video">
+            </div>
+            <div class="form-group">
+                <label for="descripcion">Descripción</label>
+                <textarea id="descripcion" name="descripcion" placeholder="Ingresa la descripción del video">{% if municipio.video %}{{ municipio.video.descripcion }}{% endif %}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="url_video">URL del Video</label>
+                <input type="url" id="url_video" name="url_video" value="{% if municipio.video %}{{ municipio.video.url_video }}{% endif %}" placeholder="Ingresa la URL del video">
+            </div>
+            <div class="form-group">
+                <label for="canal_youtube">Canal de YouTube</label>
+                <input type="url" id="canal_youtube" name="canal_youtube" value="{% if municipio.video %}{{ municipio.video.canal_youtube }}{% endif %}" placeholder="Ingresa el canal de YouTube">
+            </div>
+            <div>
+                <button type="button" onclick="saveVideoDetails()" class="btn">Guardar</button>
+                <button type="button" onclick="closeUpdateModal()" class="btn btn-secondary">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock content %}
 
-
 {% block scriptcontent %}
+<script>
+    // Variable global con el ID del municipio (se asume que está en el contexto)
+    const municipioId = {{ municipio.id }};
 
+    // Función para obtener el token CSRF desde las cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Función para abrir el modal de actualización
+    function openUpdateModal() {
+        document.getElementById('updateModal').style.display = 'flex';
+    }
+
+    // Función para cerrar el modal de actualización
+    function closeUpdateModal() {
+        document.getElementById('updateModal').style.display = 'none';
+    }
+
+    // Función para guardar detalles del video vía Ajax
+    function saveVideoDetails() {
+        // Obtener valores del formulario
+        const newTitulo = document.getElementById('titulo').value;
+        const newDescripcion = document.getElementById('descripcion').value;
+        const newUrlVideo = document.getElementById('url_video').value;
+        const newCanalYoutube = document.getElementById('canal_youtube').value;
+
+        // Validación básica
+        if (!newUrlVideo) {
+            alert('La URL del video es obligatoria');
+            return;
+        }
+
+        const csrfToken = getCookie('csrftoken');
+
+        // Envío de la petición POST vía fetch
+        fetch("{% url 'actualizar_video' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken
+            },
+            body: JSON.stringify({
+                municipio_id: municipioId,
+                titulo: newTitulo,
+                descripcion: newDescripcion,
+                url_video: newUrlVideo,
+                canal_youtube: newCanalYoutube
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Recargar la página al actualizar correctamente
+                location.reload();
+            } else {
+                alert('Error al actualizar el video');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ocurrió un error al actualizar el video');
+        });
+    }
+</script>
 {% endblock scriptcontent %}

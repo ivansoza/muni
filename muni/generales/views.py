@@ -5,14 +5,14 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
-
+import json
 from django.urls import reverse_lazy
 
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.http import require_POST
 
-from informacion_municipal.models import Municipio
+from informacion_municipal.models import Municipio, Video
 from generales.models import ContadorVisitas, SocialNetwork
 from servicios.forms import ServicioForm
 from servicios.models import Servicio
@@ -1343,3 +1343,34 @@ def delete_social_network(request, pk):
 
 
 
+@require_POST
+def actualizar_video(request):
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Datos inválidos.'}, status=400)
+
+    municipio_id = data.get('municipio_id')
+    titulo = data.get('titulo', '')
+    descripcion = data.get('descripcion', '')
+    url_video = data.get('url_video', '')
+    canal_youtube = data.get('canal_youtube', '')
+
+    try:
+        municipio = Municipio.objects.get(id=municipio_id)
+    except Municipio.DoesNotExist:
+        return JsonResponse({'error': 'Municipio no encontrado.'}, status=404)
+
+    # Actualizar o crear el objeto Video relacionado
+    try:
+        video = municipio.video
+    except Video.DoesNotExist:
+        video = Video(municipio=municipio)
+
+    video.titulo = titulo
+    video.descripcion = descripcion
+    video.url_video = url_video
+    video.canal_youtube = canal_youtube
+    video.save()
+
+    return JsonResponse({'success': True})
