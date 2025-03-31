@@ -1,0 +1,119 @@
+
+{% if url_regreso %}
+<div class="container-principal">
+  <div class="boton-container">
+    <a href="{{ url_regreso }}" class="boton-regreso">
+      <div class="icono-wrapper">
+        <svg class="icono-flecha" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </div>
+      <span class="texto-boton">Regresar</span>
+    </a>
+  </div>
+</div>
+{% endif %}
+
+  
+  <style>
+  .container-principal {
+    position: relative;
+    width: 100%;
+    padding: 50px;
+  }
+  
+  .boton-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+  }
+  
+  .boton-regreso {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(to right bottom, var(--theme-default), var(--theme-default_dark));
+    color: white;
+    padding: 10px 16px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 12px rgba(47, 105, 143, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+  
+  .boton-regreso:hover {
+    background: linear-gradient(to right bottom, #3a7ba8, var(--theme-default_dark));
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(47, 105, 143, 0.35);
+  }
+  
+  .boton-regreso:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(47, 105, 143, 0.2);
+  }
+  
+  .icono-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    transition: all 0.3s ease;
+  }
+  
+  .icono-flecha {
+    transition: transform 0.3s ease;
+  }
+  
+  .boton-regreso:hover .icono-wrapper {
+    background-color: rgba(255, 255, 255, 0.25);
+    transform: scale(1.1);
+  }
+  
+  .boton-regreso:hover .icono-flecha {
+    transform: translateX(-3px);
+  }
+  
+  .texto-boton {
+    font-size: 15px;
+    position: relative;
+  }
+  
+  .texto-boton::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: -2px;
+    left: 0;
+    background-color: white;
+    transition: width 0.3s ease;
+  }
+  
+  .boton-regreso:hover .texto-boton::after {
+    width: 100%;
+  }
+  
+  @media (max-width: 768px) {
+    .boton-regreso {
+      padding: 8px 14px;
+    }
+    
+    .icono-wrapper {
+      width: 24px;
+      height: 24px;
+    }
+    
+    .texto-boton {
+      font-size: 14px;
+    }
+  }
+  </style>

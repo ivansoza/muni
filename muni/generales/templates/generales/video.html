@@ -1,6 +1,12 @@
 {% extends "baseTemplate.html" %}
 
 {% block content %}
+
+{% url 'generalesDashboard' as regreso_url %}
+{% include 'components/boton_regresar.html' with url_regreso=regreso_url %}
+
+
+
 <style>
     .video-container {
         background-color: white;
