@@ -293,3 +293,20 @@ h2 {
     width: 100%; /* Se ajusta al ancho sin afectar el sidebar */
     overflow-x: auto;
 }
+
+/* Estilos de la seccion ¿Como lo realizo?  */
+.seccion ol {
+    padding-left: 50px;
+    list-style: decimal;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.seccion li {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.seccion li:last-child {
+    border-bottom: none;
+}
