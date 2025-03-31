@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.views.generic.base import TemplateView
+from django.urls import reverse
 
 from informacion_municipal.models import Municipio
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -67,7 +68,9 @@ class ListarGabineteView(LoginRequiredMixin, TemplateView):
         context['contacts_data'] = {
             'contador_miembros_activos': contador
         }
-        
+        url_configuracion = reverse("dashboard")
+        context['regreso_url'] = url_configuracion
+
         return context
     
 

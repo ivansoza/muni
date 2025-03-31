@@ -44,12 +44,14 @@ class VideoView(LoginRequiredMixin,TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
+        url_configuracion = reverse('generalesDashboard')
         context["breadcrumb"] = {
             'parent': {'name': 'Dashboard', 'url': '/admin'},
             'child': {'name': 'Video Institucional', 'url': ''}
         }
         context['sidebar'] = 'Generales' 
+        context['regreso_url'] = url_configuracion 
+
         return context
     
 
@@ -59,12 +61,13 @@ class SeccionesView(LoginRequiredMixin,TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context["breadcrumb"] = {
             'parent': {'name': 'Dashboard', 'url': '/admin'},
             'child': {'name': 'Secciones del Sistema', 'url': ''}
         }
         context['sidebar'] = 'Generales' 
+        url_configuracion = reverse( 'generalesDashboard')
+        context['regreso_url']= url_configuracion
         return context
     
 class EncuestasView(LoginRequiredMixin,TemplateView):
@@ -78,6 +81,8 @@ class EncuestasView(LoginRequiredMixin,TemplateView):
             'child': {'name': 'Encuestas', 'url': ''}
         }
         context['sidebar'] = 'Generales' 
+        url_configuracion = reverse( 'generalesDashboard')
+        context['regreso_url']= url_configuracion
         return context
 
 
@@ -92,6 +97,8 @@ class ReportesView(LoginRequiredMixin,TemplateView):
             'child': {'name': 'Reportes', 'url': ''}
         }
         context['sidebar'] = 'Generales' 
+        url_configuracion = reverse( 'generalesDashboard')
+        context['regreso_url']= url_configuracion
         return context
 
 class CustomLoginView(LoginView):
@@ -138,11 +145,13 @@ class GeneralesDashboardView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        url_configuracion = reverse('dashboard')
         context['breadcrumb'] = {
             'parent': {'name': 'Dashboard', 'url': '/admin'},
             'child': {'name': 'Generales'}
         }
         context['sidebar'] = 'Generales'
+        context['regreso_url'] = url_configuracion
 
         return context
     
@@ -164,7 +173,8 @@ class PersonalizacionView(LoginRequiredMixin, TemplateView):
         # Obtener todos los municipios o asignar None si no hay registros
         municipios = Municipio.objects.all()
         context['municipios'] = municipios if municipios.exists() else None
-        
+        context['regreso_url'] = url_configuracion
+
         return context
     
 
@@ -221,7 +231,7 @@ class SocialMediaView(LoginRequiredMixin, TemplateView):
             'child': {'name': 'Redes Sociales', 'url': ''}
         }
         context['sidebar'] = 'socialmedia'  # Cambiar a 'socialmedia' para que el sidebar refleje correctamente la sección
-
+        context['regreso_url']= url_configuracion
         return context
 
 
@@ -270,7 +280,7 @@ class NewsView(LoginRequiredMixin, TemplateView):
             'child': {'name': 'Noticias', 'url': ''}
         }
         context['sidebar'] = 'noticias'  
-
+        context['regreso_url'] = url_configuracion 
         return context
 
     def post(self, request, *args, **kwargs):
@@ -956,6 +966,9 @@ class ListarCarpetasView(LoginRequiredMixin,TemplateView):
             'child': {'name': 'SEVAC - Carpetas y Archivos', 'url': ''}
         }
         context['sidebar'] = 'sevac'  # Asegura que el sidebar resalte la sección de Transparencia
+        url_configuracion = reverse("dashboard")
+        context['regreso_url'] = url_configuracion
+
         return context
     
 class EliminarCarpetaView(View):
@@ -1024,6 +1037,7 @@ class ListaObligacionesView(ListView):
             'child': {'name': 'Transparencia', 'url': ''}
         }
         context['sidebar'] = 'transparencia'
+        context['regreso_url'] = url_configuracion
 
         return context
 
