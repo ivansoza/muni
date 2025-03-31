@@ -49,7 +49,7 @@ class VideoView(LoginRequiredMixin,TemplateView):
             'parent': {'name': 'Dashboard', 'url': '/admin'},
             'child': {'name': 'Video Institucional', 'url': ''}
         }
-        context['sidebar'] = 'generales' 
+        context['sidebar'] = 'Generales' 
         return context
     
 
@@ -64,7 +64,7 @@ class SeccionesView(LoginRequiredMixin,TemplateView):
             'parent': {'name': 'Dashboard', 'url': '/admin'},
             'child': {'name': 'Secciones del Sistema', 'url': ''}
         }
-        context['sidebar'] = 'generales' 
+        context['sidebar'] = 'Generales' 
         return context
     
 class EncuestasView(LoginRequiredMixin,TemplateView):
@@ -77,7 +77,7 @@ class EncuestasView(LoginRequiredMixin,TemplateView):
             'parent': {'name': 'Dashboard', 'url': '/admin'},
             'child': {'name': 'Encuestas', 'url': ''}
         }
-        context['sidebar'] = 'generales' 
+        context['sidebar'] = 'Generales' 
         return context
 
 
@@ -91,7 +91,7 @@ class ReportesView(LoginRequiredMixin,TemplateView):
             'parent': {'name': 'Dashboard', 'url': '/admin'},
             'child': {'name': 'Reportes', 'url': ''}
         }
-        context['sidebar'] = 'generales' 
+        context['sidebar'] = 'Generales' 
         return context
 
 class CustomLoginView(LoginView):
