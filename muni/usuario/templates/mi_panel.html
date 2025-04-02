@@ -1,0 +1,449 @@
+{% extends "baseTemplate.html" %}
+
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+    
+    :root {
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --secondary: #f5f7ff;
+      --dark: #334155;
+      --light: #f8fafc;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      --gray: #94a3b8;
+      --danger: #ef4444;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .unique-container {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .unique-dashboard {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    
+    @media (min-width: 768px) {
+      .unique-dashboard {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    .unique-card {
+      background-color: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(241, 245, 249, 1);
+      transition: transform 0.2s ease;
+      height: 100%;
+    }
+    
+    .unique-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .unique-welcome-card {
+      grid-column: span 2;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    
+    .unique-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: var(--primary-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: white;
+      text-transform: uppercase;
+    }
+    
+    .unique-welcome-text h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .unique-welcome-text p {
+      color: var(--gray);
+    }
+    
+    .unique-section-title {
+      font-size: 1.2rem;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .unique-section-title i {
+      color: var(--primary);
+    }
+    
+    .unique-data-grid {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: 0.8rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .unique-data-label {
+      font-weight: 500;
+      color: var(--gray);
+    }
+    
+    .unique-data-value {
+      color: var(--dark);
+    }
+    
+    .unique-status-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    
+    .unique-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    
+    .unique-badge-success {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+    
+    .unique-badge-info {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: var(--info);
+    }
+    
+    .unique-badge-warning {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+    }
+    
+    .unique-group-list {
+      list-style: none;
+      margin-top: 1rem;
+    }
+    
+    .unique-group-item {
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        background-color: var(--secondary);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .unique-group-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: white;
+      text-transform: uppercase;
+    }
+    
+    .unique-empty-state {
+      padding: 2rem;
+      text-align: center;
+      color: var(--gray);
+    }
+    
+    .unique-empty-state i {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--gray);
+    }
+    
+    .unique-activity-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    
+    .unique-activity-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: var(--secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      color: var(--primary);
+    }
+    
+    .unique-activity-text {
+      flex: 1;
+    }
+    
+    .unique-activity-text h4 {
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    
+    .unique-activity-text p {
+      color: var(--gray);
+      font-size: 0.8rem;
+    }
+    
+    .unique-btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    
+    .unique-btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .unique-btn-primary:hover {
+      background-color: var(--primary-light);
+      transform: translateY(-2px);
+    }
+    
+    .unique-btn-outline {
+      background-color: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+    }
+    
+    .unique-btn-outline:hover {
+      background-color: var(--primary);
+      color: white;
+      transform: translateY(-2px);
+    }
+    
+    .unique-btn-danger {
+      background-color: var(--danger);
+      color: white;
+    }
+    
+    .unique-btn-danger:hover {
+      background-color: #f87171;
+      transform: translateY(-2px);
+    }
+    
+    .unique-edit-btn-container {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+    
+    .unique-account-actions {
+      grid-column: span 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+      margin-top: 1rem;
+    }
+    
+    .unique-account-actions-title {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      color: var(--gray);
+    }
+    
+    .unique-buttons-container {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    @media (max-width: 768px) {
+      .unique-buttons-container {
+        flex-direction: column;
+      }
+    }
+</style>
+
+<div class="container-fluid">
+  <div class="unique-dashboard">
+    
+    <!-- Tarjeta de Bienvenida con Avatar -->
+    <div class="unique-card unique-welcome-card">
+      <!-- Avatar con iniciales (manejo de casos para nombre y apellidos) -->
+      <div class="unique-avatar">
+        {% if usuario.first_name or usuario.last_name %}
+          {{ usuario.first_name|default_if_none:''|slice:"1" }}{{ usuario.last_name|default_if_none:''|slice:"1" }}
+        {% else %}
+          U
+        {% endif %}
+      </div>
+      <div class="unique-welcome-text">
+        <h1>¡Bienvenido, 
+          <span>
+            {% if usuario.first_name %}
+              {{ usuario.first_name }}
+            {% else %}
+              {{ usuario.username }}
+            {% endif %}
+          </span>!
+        </h1>
+        <p>Aquí puedes gestionar tu información personal y revisar tu actividad</p>
+      </div>
+    </div>
+    
+    <!-- Información Personal -->
+    <div class="unique-card">
+      <h3 class="unique-section-title"><i class="fa fa-user"></i> Información Personal</h3>
+      <div class="unique-data-grid">
+        <div class="unique-data-label">Nombre:</div>
+        <div class="unique-data-value">
+          {% if usuario.first_name or usuario.last_name %}
+            {{ usuario.first_name|default_if_none:'' }} {{ usuario.last_name|default_if_none:'' }}
+          {% else %}
+            {{ usuario.username }}  <!-- Si no tiene nombre, mostrar username -->
+          {% endif %}
+        </div>
+        
+        <div class="unique-data-label">Usuario:</div>
+        <div class="unique-data-value">{{ usuario.username }}</div>
+        
+        <div class="unique-data-label">Email:</div>
+        <div class="unique-data-value">
+          {% if usuario.email %}
+            {{ usuario.email }}
+          {% else %}
+            (No registrado)
+          {% endif %}
+        </div>
+      </div>
+      
+      <h3 class="unique-section-title"><i class="fa fa-shield"></i> Estado de Cuenta</h3>
+      <div class="unique-status-badges">
+        <!-- Activo -->
+        <div class="unique-badge unique-badge-success" 
+             style="{% if not usuario.is_active %}display: none;{% endif %}">
+          <i class="fa fa-check-circle"></i> Activo
+        </div>
+        <!-- Staff -->
+        <div class="unique-badge unique-badge-info"
+             style="{% if not usuario.is_staff %}display: none;{% endif %}">
+          <i class="fa fa-user"></i> Staff
+        </div>
+        <!-- Superusuario -->
+        <div class="unique-badge unique-badge-warning" 
+             style="{% if not usuario.is_superuser %}display: none;{% endif %}">
+          <i class="fa fa-star"></i> Superusuario
+        </div>
+      </div>
+      
+      <div class="unique-edit-btn-container">
+        <button class="unique-btn unique-btn-primary">
+          <i class="fa fa-edit"></i> Editar Perfil
+        </button>
+      </div>
+    </div>
+    
+    <!-- Grupos del Usuario -->
+    <div class="unique-card">
+      <h3 class="unique-section-title"><i class="fa fa-users"></i> Grupos</h3>
+      <div id="groupsContainer">
+        {% if usuario.groups.all %}
+          <ul class="unique-group-list">
+            {% for grupo in usuario.groups.all %}
+              <li class="unique-group-item">
+                <div class="unique-group-icon">
+                  {{ grupo.name|slice:"1" }}
+                </div>
+                <span>{{ grupo.name }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="unique-empty-state">
+            <i class="fas fa-users-slash"></i>
+            <p>Este usuario no pertenece a ningún grupo aún.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    
+    <!-- Actividad de Usuario -->
+    <div class="unique-card">
+      <h3 class="unique-section-title"><i class="fas fa-chart-line"></i> Actividad</h3>
+      <div class="unique-activity-item">
+        <div class="unique-activity-icon">
+          <i class="fa fa-calendar"></i> 
+        </div>
+        <div class="unique-activity-text">
+          <h4>Fecha de creación</h4>
+          <p>
+            {{ usuario.date_joined|date:"j \\d\\e F \\d\\e Y \\a\\ \\l\\a\\s H:i" }}
+        </p>
+        </div>
+      </div>
+      <div class="unique-activity-item">
+        <div class="unique-activity-icon">
+          <i class="fa fa-key"></i>
+        </div>
+        <div class="unique-activity-text">
+          <h4>Último inicio de sesión</h4>
+          <p>
+            {% if usuario.last_login %}
+            {{ usuario.last_login|date:"j \\d\\e F \\d\\e Y \\a\\ \\l\\a\\s H:i" }}
+            {% else %}
+              (Nunca ha iniciado sesión)
+            {% endif %}
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Acciones de Cuenta -->
+    <div class="unique-card" style="grid-column: span 2;">
+      <h3 class="unique-section-title"><i class="fa fa-cog"></i> Acciones de Cuenta</h3>
+      <div class="unique-buttons-container">
+        <button class="unique-btn unique-btn-outline">
+          <i class="fa fa-key"></i> Cambiar Contraseña
+        </button>
+        <button class="unique-btn unique-btn-danger">
+          <i class="fa fa-power-off"></i> Cerrar Sesión
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock content %}
+
+{% block scriptcontent %}
+<!-- Si no requieres JavaScript adicional, puedes dejar este bloque vacío o eliminarlo -->
+{% endblock scriptcontent %}

@@ -22,6 +22,8 @@ urlpatterns = [
     path('transparencia/', include('transparencia.urls')),
     path('sevac/', include('sevac.urls')),  
     path('admin/', include('generales.urls')), 
+    path('usuario/', include('usuario.urls')), 
+
     path('ckeditor5/', include('django_ckeditor_5.urls')), 
 
 
