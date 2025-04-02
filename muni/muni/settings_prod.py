@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     'sass_processor',
     'widget_tweaks',
+    'usuario',
     'django_ckeditor_5',  # Asegúrate de incluirlo aquí
 
 ]
