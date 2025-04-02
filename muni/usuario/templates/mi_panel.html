@@ -434,9 +434,14 @@
         <button class="unique-btn unique-btn-outline">
           <i class="fa fa-key"></i> Cambiar Contraseña
         </button>
-        <button class="unique-btn unique-btn-danger">
+        <button class="unique-btn unique-btn-danger" onclick="document.getElementById('logout-form').submit();">
           <i class="fa fa-power-off"></i> Cerrar Sesión
         </button>
+        
+        <form id="logout-form" action="{% url 'logout' %}" method="POST" style="display: none;">
+          {% csrf_token %}
+        </form>
+        
       </div>
     </div>
 
