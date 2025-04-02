@@ -431,9 +431,9 @@
     <div class="unique-card" style="grid-column: span 2;">
       <h3 class="unique-section-title"><i class="fa fa-cog"></i> Acciones de Cuenta</h3>
       <div class="unique-buttons-container">
-        <button class="unique-btn unique-btn-outline">
+        <a href="{% url "password_change" %}" class="unique-btn unique-btn-outline">
           <i class="fa fa-key"></i> Cambiar Contraseña
-        </button>
+        </a>
         <button class="unique-btn unique-btn-danger" onclick="document.getElementById('logout-form').submit();">
           <i class="fa fa-power-off"></i> Cerrar Sesión
         </button>
