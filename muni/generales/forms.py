@@ -19,10 +19,12 @@ class CustomAuthenticationForm(AuthenticationForm):
         widget=forms.PasswordInput(attrs={
             'placeholder': 'Contraseña',
             'class': 'form-control with-icon',
+            'id': 'password-field', 
             'autocomplete': 'current-password',
             'spellcheck': 'false'
         })
     )
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

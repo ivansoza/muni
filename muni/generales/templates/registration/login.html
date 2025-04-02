@@ -53,12 +53,22 @@
                           <h3>Inicia sesión en tu cuenta</h3>
                           <p>Introduce tu nombre de usuario o correo electrónico para iniciar sesión</p>
                           {{ form|crispy }}  <!-- Usa el formulario con crispy_forms para aplicar los estilos -->
+                          <div class="form-group d-flex justify-content-between">
+                            <div class="checkbox p-0">
+                              <input id="togglePassword" type="checkbox" onclick="togglePasswordVisibility()">
+                              <label class="text-muted" for="togglePassword">Mostrar contraseña</label>
+                            </div>
+                            <div class="checkbox p-0">
+                              <input id="checkbox1" type="checkbox">
+                              <label class="text-muted" for="checkbox1">Recordar contraseña</label>
+                            </div>
+                          </div>
+                          
+                          
+                          
                           <input type="hidden" name="next" value="{{ next }}">
                           <div class="form-group mb-0">
-                              <div class="checkbox p-0">
-                                  <input id="checkbox1" type="checkbox">
-                                  <label class="text-muted" for="checkbox1">Recordar contraseña</label>
-                              </div>
+                      
                               <button class="btn btn-primary btn-block w-100" type="submit">Iniciar sesión</button>
                               <p></p>
                               <h4 style="text-align: center;">By SIP Tlax.</h4>
@@ -70,5 +80,15 @@
       </div>
   </div>
 </div>
-
+<script>
+  function togglePasswordVisibility() {
+      const passwordInput = document.getElementById("password-field");
+      if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+      } else {
+          passwordInput.type = "password";
+      }
+  }
+  </script>
+  
 {% endblock content %}
