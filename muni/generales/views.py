@@ -457,7 +457,9 @@ class ServicioUpdateView(LoginRequiredMixin, UpdateView):
         }
         context['sidebar'] = 'servicios'
         return context
-
+"""
+    Terminan Vistas de Servicios en el administrador
+"""
 
 class TransparenciaView(LoginRequiredMixin, TemplateView):
     template_name = "transparencia/transparencia.html"  

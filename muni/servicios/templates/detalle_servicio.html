@@ -1,9 +1,180 @@
 {% extends "base.html" %}
-
 {% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/servicios/estilos_detalle.css' %}">
+{% endblock %}
 
 {% block content %}
 <div class="container">
-    En construccion
+    <!-- Encabezado del trámite -->
+    <div class="header">
+        <p class="breadcrumb">
+            {{ servicio.organismo.nombre }} / {{ servicio.clasificacion.nombre }}
+        </p>
+        <h1 class="title">{{ servicio.titulo }}</h1>
+        <p class="subtitle">
+            Esta modalidad pertenece al trámite de {{ servicio.clasificacion.nombre }}
+        </p>
+    </div>
+
+    <!-- Sidebar solo con iconos en móviles -->
+    <div class="sidebar responsive-sidebar">
+        <ul class="menu">
+            <li class="active"><i class="fas fa-thumbtack"></i></li>
+            <li><i class="fas fa-file-alt"></i></li>
+            <li><i class="fas fa-tools"></i></li>
+            <li><i class="fas fa-map-marker-alt"></i></li>
+            <li><i class="fas fa-money-bill-wave"></i></li>
+            <li><i class="fas fa-university"></i></li>
+            <li><i class="fas fa-calendar-alt"></i></li>
+            <li><i class="fas fa-clipboard-check"></i></li>
+        </ul>
+    </div>
+
+    <!-- Contenedor de contenido principal -->
+    <div class="content-wrapper">
+        <!-- Menú lateral en pantallas grandes -->
+        <div class="sidebar desktop-sidebar">
+            <ul class="menu">
+                <li class="menu-item active" data-seccion="seccion-consiste">📌 ¿En qué consiste?</li>
+                <li class="menu-item" data-seccion="seccion-requisitos">📄 ¿Qué se requiere?</li>
+                <li class="menu-item" data-seccion="seccion-realizo">🛠️ ¿Cómo lo realizo?</li>
+                <li class="menu-item" data-seccion="seccion-presencial">📍 ¿Dónde lo realizo presencial?</li>
+                <li class="menu-item" data-seccion="seccion-costo">💰 ¿Cuánto cuesta?</li>
+                <li class="menu-item" data-seccion="seccion-pago">🏦 ¿Dónde lo pago?</li>
+                <li class="menu-item" data-seccion="seccion-plazos">📆 Plazos y criterios de resolución</li>
+                <li class="menu-item" data-seccion="seccion-inspeccion">📑 Inspección y verificación</li>
+            </ul>
+        </div>
+
+        <!-- Sección "¿En qué consiste?" -->
+        <div id="seccion-consiste" class="seccion">
+            <h2>Información del Trámite</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Trámite:</strong>
+                    <span class="badge costo">{{ consiste.tramite }}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Sector Económico:</strong> 
+                    <span class="economico">{{ servicio.sector.nombre }}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Canales de presentación:</strong> 
+                    <span class="badge presencial">{{ consiste.canal_presentacion }}</span>
+                </div>
+            </div>
+
+            <div class="descripcion">
+                <h3>Descripción:</h3>
+                <p>{{ servicio.descripcion }}</p>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Puede ser solicitado por:</strong> 
+                    {{ consiste.get_solicitado_por_display }}
+                </div>
+                <div class="info-item">
+                    <strong>En qué momento se deberá solicitar:</strong> 
+                    {{ consiste.momento_solicitud }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección "¿Qué se requiere?" -->
+        <div id="seccion-requisitos" class="seccion table-container">
+            <h2>Requisitos</h2>
+            
+            <table class="tabla-requisitos table">
+                <thead>
+                    <tr>
+                        <th>Documento</th>
+                        <th>Especificaciones</th>
+                        <th>Tipo de documentos</th>
+                        <th>Presentar en</th>
+                        <th>Descargar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for requisito in requiere %}
+                    <tr>
+                        <td>{{ forloop.counter }}. {{ requisito.nombre }}</td>
+                        <td>{{ requisito.especificaciones }}</td>
+                        <td>{{ requisito.tipo_documento }}</td>
+                        <td>Original ({{ requisito.presentar_original }}) / Copia ({{ requisito.presentar_copia }})</td>
+                        <td>
+                            {% if requisito.archivo_descarga %}
+                                <a href="{{ requisito.archivo_descarga.url }}" target="_blank">Descargar documento</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No se requieren documentos.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Sección "¿Cómo lo realizo?" -->
+        <div id="seccion-realizo" class="seccion">
+            <h2>Canales de Presentación</h2>
+            {% if instrucciones_linea %}
+            <h4>💻 100% en línea</h4>
+            <ol>
+                {% for paso in instrucciones_linea %}
+                    <li>{{ paso.descripcion }}</li>
+                {% endfor %}
+            </ol>
+            {% endif %}
+
+            {% if instrucciones_presencial %}
+            <h4>🏢 Presencial</h4>
+            <ol>
+                {% for paso in instrucciones_presencial %}
+                    <li>{{ paso.descripcion }}</li>
+                {% endfor %}
+            </ol>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="action-buttons">
+        <a href="{% url 'homeServicios' %}" class="btn btn-secondary">← Regresar</a>
+        <a href="#" class="btn btn-warning">⚠️ Presentar una queja</a>
+    </div>    
 </div>
-{% endblock content %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const menuItems = document.querySelectorAll(".menu-item");
+        const sections = document.querySelectorAll(".seccion");
+
+        menuItems.forEach(item => {
+            item.addEventListener("click", function() {
+                // Remover clase "active" de todos los elementos del menú
+                menuItems.forEach(i => i.classList.remove("active"));
+                this.classList.add("active");
+
+                // Ocultar todas las secciones
+                sections.forEach(sec => sec.style.display = "none");
+
+                // Mostrar la sección seleccionada
+                const seccionId = this.getAttribute("data-seccion");
+                document.getElementById(seccionId).style.display = "block";
+            });
+        });
+
+        // Mostrar solo la primera sección por defecto
+        document.getElementById("seccion-consiste").style.display = "block";
+    });
+</script>
+{% endblock %}
