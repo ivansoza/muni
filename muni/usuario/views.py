@@ -69,3 +69,16 @@ class UserProfileUpdateView(LoginRequiredMixin, UpdateView):
         response = super().form_valid(form)
         messages.success(self.request, 'Tu perfil ha sido actualizado correctamente.')
         return response
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumb"] = {
+            'parent': {'name': 'Mi Perfil', 'url': '/admin'},
+            'child': {'name': 'Editar Perfil', 'url': ''}
+        }
+        url_configuracion = reverse( 'perfil_usuario')
+        context['regreso_url']= url_configuracion
+
+        return context
+    

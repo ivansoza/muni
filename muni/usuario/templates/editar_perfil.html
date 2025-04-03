@@ -1,25 +1,318 @@
-<!-- templates/editar_perfil.html -->
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Editar Perfil</title>
-</head>
-<body>
-  <h1>Editar Perfil</h1>
-  <form method="post">
-    {% csrf_token %}
+{% extends "baseTemplate.html" %}
+
+{% block content %}
+<div class="profile-edit-container">
+  <div class="profile-card">
+    <div class="card-header">
+      <h1>Editar Perfil</h1>
+      <svg class="profile-icon" viewBox="0 0 24 24" width="36" height="36">
+        <circle cx="12" cy="8" r="4" fill="var(--theme-default)"/>
+        <path d="M20 19v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6z" fill="var(--theme-default)"/>
+      </svg>
+    </div>
+
+    <form method="post" class="profile-form">
+      {% csrf_token %}
+      
+      <div class="form-group">
+        <label for="id_first_name">Nombre</label>
+        <div class="input-wrapper">
+          <input type="text" name="first_name" id="id_first_name" value="{{ form.first_name.value }}" required>
+          <svg class="input-icon" viewBox="0 0 24 24" width="20" height="20">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="var(--chart-text-color)"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_last_name">Apellido</label>
+        <div class="input-wrapper">
+          <input type="text" name="last_name" id="id_last_name" value="{{ form.last_name.value }}" required>
+          <svg class="input-icon" viewBox="0 0 24 24" width="20" height="20">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="var(--chart-text-color)"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_email">Correo electrónico</label>
+        <div class="input-wrapper">
+          <input type="email" name="email" id="id_email" value="{{ form.email.value }}" required>
+          <svg class="input-icon" viewBox="0 0 24 24" width="20" height="20">
+            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="var(--chart-text-color)"/>
+          </svg>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">
+        <span>Guardar Cambios</span>
+        <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16">
+          <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" fill="white"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+</div>
+
+<style>
+
+  .profile-edit-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    min-height: 80vh;
+  }
+
+  .profile-card {
+    width: 100%;
+    max-width: 1500px;
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+  }
+
+  .profile-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .card-header {
+    background: linear-gradient(135deg, var(--theme-default), var(--theme-default_dark));
+    color: var(--white);
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-header h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .profile-icon {
+    background: var(--white);
+    border-radius: 50%;
+    padding: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Estilos del formulario */
+  .profile-form {
+    padding: 2rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--bs-heading-color);
+  }
+
+  .input-wrapper {
+    position: relative;
+  }
+
+  .input-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 16px;
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .profile-form input {
+    width: 100%;
+    padding: 12px 16px;
+    padding-right: 40px;
+    border: 2px solid var(--chart-border);
+    border-radius: 10px;
+    font-size: 1rem;
+    background: var(--light2);
+    color: var(--body-font-color);
+    transition: all 0.3s ease;
+  }
+
+  .profile-form input:focus {
+    outline: none;
+    border-color: var(--theme-default);
+    box-shadow: 0 0 0 3px rgba(47, 105, 143, 0.2);
+    background: var(--white);
+  }
+
+  .profile-form input:hover {
+    border-color: var(--theme-default);
+  }
+
+  .submit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 14px 20px;
+    background: var(--theme-default);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(47, 105, 143, 0.2);
+    gap: 8px;
+  }
+
+  .submit-btn:hover {
+    background: var(--theme-default_dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(47, 105, 143, 0.3);
+  }
+
+  .submit-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(47, 105, 143, 0.2);
+  }
+
+  .btn-icon {
+    transition: transform 0.3s ease;
+  }
+  
+  .submit-btn:hover .btn-icon {
+    transform: translateX(4px);
+  }
+
+  /* Estilos responsivos */
+  @media (max-width: 768px) {
+    .profile-edit-container {
+      padding: 1rem;
+    }
     
-    <label for="id_first_name">Nombre:</label><br>
-    <input type="text" name="first_name" id="id_first_name" value="{{ form.first_name.value }}"><br><br>
+    .profile-card {
+      border-radius: 12px;
+    }
+    
+    .card-header {
+      padding: 1.25rem;
+    }
+    
+    .card-header h1 {
+      font-size: 1.5rem;
+    }
+    
+    .profile-form {
+      padding: 1.5rem;
+    }
+  }
 
-    <label for="id_last_name">Apellido:</label><br>
-    <input type="text" name="last_name" id="id_last_name" value="{{ form.last_name.value }}"><br><br>
+  @media (max-width: 480px) {
+    .card-header h1 {
+      font-size: 1.25rem;
+    }
+    
+    .profile-form input {
+      padding: 10px 14px;
+      padding-right: 36px;
+      font-size: 0.9rem;
+    }
+    
+    .submit-btn {
+      padding: 12px 16px;
+      font-size: 0.9rem;
+    }
+  }
+</style>
+{% endblock content %}
 
-    <label for="id_email">Correo electrónico:</label><br>
-    <input type="email" name="email" id="id_email" value="{{ form.email.value }}"><br><br>
+{% block scriptcontent %}
+<script>
+  // Añadimos validación simple del formulario
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.profile-form');
+    const inputs = form.querySelectorAll('input');
+    
+    // Animación suave al cargar el formulario
+    inputs.forEach((input, index) => {
+      setTimeout(() => {
+        input.style.opacity = '1';
+        input.style.transform = 'translateY(0)';
+      }, 100 * index);
+    });
+    
+    // Validación básica
+    form.addEventListener('submit', function(e) {
+      let isValid = true;
+      
+      inputs.forEach(input => {
+        if (input.required && !input.value.trim()) {
+          isValid = false;
+          input.classList.add('error');
+          
+          // Agitar el input si está vacío
+          input.style.animation = 'shake 0.5s ease';
+          setTimeout(() => {
+            input.style.animation = '';
+          }, 500);
+        } else {
+          input.classList.remove('error');
+        }
+      });
+      
+      if (!isValid) {
+        e.preventDefault();
+      } else {
+        // Efecto de carga al enviar
+        const submitBtn = form.querySelector('.submit-btn');
+        submitBtn.innerHTML = '<span>Guardando...</span>';
+        submitBtn.style.opacity = '0.8';
+        submitBtn.disabled = true;
+      }
+    });
+    
+    // Remover clase de error cuando el usuario escriba
+    inputs.forEach(input => {
+      input.addEventListener('input', function() {
+        if (this.required && this.value.trim()) {
+          this.classList.remove('error');
+        }
+      });
+      
+      // Estilo inicial para animación
+      input.style.opacity = '0';
+      input.style.transform = 'translateY(10px)';
+      input.style.transition = 'all 0.3s ease';
+    });
+  });
+  
+  // Animación para el botón de submit
+  document.querySelector('.submit-btn').addEventListener('mouseover', function() {
+    document.querySelector('.btn-icon').style.transform = 'translateX(4px)';
+  });
+  
+  document.querySelector('.submit-btn').addEventListener('mouseout', function() {
+    document.querySelector('.btn-icon').style.transform = 'translateX(0)';
+  });
+</script>
 
-    <button type="submit">Guardar Cambios</button>
-  </form>
-</body>
-</html>
+<style>
+  /* Estilos adicionales para animaciones */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+  }
+  
+  .error {
+    border-color: var(--theme-secondary) !important;
+    box-shadow: 0 0 0 3px rgba(255, 97, 80, 0.2) !important;
+  }
+</style>
+{% endblock scriptcontent %}
+
