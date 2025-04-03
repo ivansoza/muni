@@ -1,0 +1,25 @@
+<!-- templates/editar_perfil.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Perfil</title>
+</head>
+<body>
+  <h1>Editar Perfil</h1>
+  <form method="post">
+    {% csrf_token %}
+    
+    <label for="id_first_name">Nombre:</label><br>
+    <input type="text" name="first_name" id="id_first_name" value="{{ form.first_name.value }}"><br><br>
+
+    <label for="id_last_name">Apellido:</label><br>
+    <input type="text" name="last_name" id="id_last_name" value="{{ form.last_name.value }}"><br><br>
+
+    <label for="id_email">Correo electrónico:</label><br>
+    <input type="email" name="email" id="id_email" value="{{ form.email.value }}"><br><br>
+
+    <button type="submit">Guardar Cambios</button>
+  </form>
+</body>
+</html>

@@ -2,21 +2,24 @@
 {% load sass_tags %}
 
 <!DOCTYPE html>
-<html lang="en" dir="{{layout}}">
+<html lang="en" dir="{{ layout }}">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Cion admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+    <meta name="description" content="Cion admin es super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
     <meta name="keywords" content="admin template, Cion admin template, dashboard template, flat admin template, responsive admin template, web app">
     <meta name="author" content="pixelstrap">
     <link rel="icon" href="{% static 'assets/images/favicon.png' %}" type="image/x-icon">
     <link rel="shortcut icon" href="{% static 'assets/images/favicon.png' %}" type="image/x-icon">
+
     <title>MUNIX - Solución Digital para Municipios</title>
+
     <!-- Google font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100;200;300;400;500;600;700;800;900&amp;family=Nunito+Sans:ital,opsz,wght@0,6..12,200;0,6..12,300;0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700;0,6..12,800;0,6..12,900;0,6..12,1000;1,6..12,200;1,6..12,300;1,6..12,400;1,6..12,500;1,6..12,600;1,6..12,700;1,6..12,800;1,6..12,900;1,6..12,1000&amp;display=swap" rel="stylesheet">
+
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
     <!-- ico-font-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
@@ -32,7 +35,6 @@
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/scrollbar.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/animate.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/prism.css' %}">
-    <!-- Plugins css Ends-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatable-extension.css' %}">
     {% block css %}  {% endblock %}
@@ -44,16 +46,12 @@
     <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
-  </head>
 
-  <body> 
     <style>
       :root {
         --theme-default: #2F698F;
-        --theme-default_dark:rgb(26, 60, 83);
-
+        --theme-default_dark: rgb(26, 60, 83);
         --theme-secondary: #FF6150;
-
         --light-background: rgba(242, 243, 247, 0.7);
         --body-font-color: #2F2F3B;
         --chart-border: #ECF3FA;
@@ -91,55 +89,32 @@
         --active-tear: #76b5e7;
         --active-shadow-angry: #e94f1d;
       }
+      /* Estilo para el sidebar en modo compacto */
       .page-wrapper.compact-sidebar .simplebar-wrapper .simplebar-mask .simplebar-content-wrapper .simplebar-content {
-        display: -webkit-box;
-        display: -ms-flexbox;
         display: flex;
-        -webkit-box-orient: vertical;
-        -webkit-box-direction: normal;
-            -ms-flex-direction: column;
-                flex-direction: column;
+        flex-direction: column;
         height: 100%;
-        background:  var(--theme-default) !important;
+        background: var(--theme-default) !important;
       }
       .page-wrapper.compact-small .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-list {
         padding: 20px;
         background-color: var(--theme-default) !important;
       }
-
       .page-wrapper .sidebar-wrapper .logo-wrapper {
         padding: 20px;
-        display: -webkit-box;
-        display: -ms-flexbox;
         display: flex;
-        -webkit-box-align: center;
-            -ms-flex-align: center;
-                align-items: center;
-        -webkit-box-pack: center;
-            -ms-flex-pack: center;
-                justify-content: center;
+        align-items: center;
+        justify-content: center;
         background-color: var(--theme-default) !important;
       }
-
       .page-wrapper.compact-small .sidebar-list {
         border-top: 1px solid var(--sidebar-border) !important;
       }
-
-
       .page-wrapper.compact-small .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-list.active {
-        background-color: var(--theme-default_dark) !important; /* Nuevo color de fondo para el elemento activo */
+        background-color: var(--theme-default_dark) !important;
       }
 
-
-    </style>
-    <!-- Loader starts-->
-    <div class="loader-wrapper">
-      <div class="loader"></div>
-    </div>
-
-
-
-    <style>
+      /* Loader personalizado */
       .loader2 {
         width: 40px;
         aspect-ratio: 1;
@@ -147,7 +122,7 @@
         background: #f03355;
         clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
         animation: l1 2s infinite cubic-bezier(0.3, 1, 0, 1);
-        position: fixed;      /* para que permanezca en pantalla */
+        position: fixed;
         top: 50%; left: 50%;
         transform: translate(-50%, -50%);
         z-index: 9999;
@@ -164,55 +139,56 @@
           clip-path: polygon(50% 0,50% 0,100% 100%,0 100%);
         }
       }
-      
     </style>
+  </head>
+
+  <body>
+    <!-- Loader principal -->
+    <div class="loader-wrapper">
+      <div class="loader"></div>
+    </div>
+
+    <!-- Loader secundario (oculto por defecto) -->
     <div id="loader2" class="loader2" style="display:none;"></div>
 
-    <!-- Loader ends-->
-    <!-- tap on top starts-->
+    <!-- Botón para subir al top -->
     <div class="tap-top"><i data-feather="chevrons-up"></i></div>
-    <!-- tap on tap ends-->
 
     <!-- page-wrapper Start-->
     <div class="page-wrapper" id="pageWrapper">
-        {% include 'layout/header.html' %}
-        
-        <!-- Page Body Start-->
-        <div class="page-body-wrapper horizontal-menu">
-          {% include 'layout/sidebar.html' %}
-          
-          <div class="page-body">
+      <!-- Incluye tu header -->
+      {% include 'layout/header.html' %}
 
-            {% block sin_breadcumb %}
+      <div class="page-body-wrapper horizontal-menu">
+        <!-- Incluye tu sidebar -->
+        {% include 'layout/sidebar.html' %}
 
-                {% include 'layout/breadcrumb.html' %}
+        <div class="page-body">
+          {% block sin_breadcumb %}
+            {% include 'layout/breadcrumb.html' %}
+          {% endblock sin_breadcumb %}
 
-            {% endblock sin_breadcumb %}
+          <!-- Botón de regreso, ejemplo -->
+          {% include 'components/boton_regresar.html' with url_regreso=regreso_url %}
 
-
-            {% include 'components/boton_regresar.html' with url_regreso=regreso_url %}
-
-            {% block content %} {% endblock content %}
-          </div>
-
-          {% include 'layout/footer.html' %}
-        
+          <!-- Contenido de cada página -->
+          {% block content %}{% endblock content %}
         </div>
-    </div>
 
-    <!-- latest jquery-->
+        <!-- Incluye tu footer -->
+        {% include 'layout/footer.html' %}
+      </div>
+    </div>
+    <!-- page-wrapper End-->
+
+    <!-- Scripts base -->
     <script src="{% static 'assets/js/jquery.min.js' %}"></script>
-    <!-- Bootstrap js-->
     <script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
-    <!-- feather icon js-->
     <script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
     <script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
-    <!-- scrollbar js-->
     <script src="{% static 'assets/js/scrollbar/simplebar.js' %}"></script>
     <script src="{% static 'assets/js/scrollbar/custom.js' %}"></script>
-    <!-- Sidebar jquery-->
     <script src="{% static 'assets/js/config.js' %}"></script>
-    <!-- Plugins JS start-->
     <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.min.js' %}"></script>
     <script src="{% static 'assets/js/slick/slick.js' %}"></script>
@@ -225,7 +201,8 @@
     <script src="{% static 'assets/js/typeahead/typeahead.custom.js' %}"></script>
     <script src="{% static 'assets/js/typeahead-search/handlebars.js' %}"></script>
     <script src="{% static 'assets/js/typeahead-search/typeahead-custom.js' %}"></script>
-    <!-- Plugins JS Ends-->
+
+    <!-- DataTables -->
     <script src="{% static 'assets/js/datatable/datatables/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'assets/js/datatable/datatable-extension/dataTables.buttons.min.js' %}"></script>
     <script src="{% static 'assets/js/datatable/datatable-extension/jszip.min.js' %}"></script>
@@ -246,62 +223,90 @@
     <script src="{% static 'assets/js/datatable/datatable-extension/dataTables.rowReorder.min.js' %}"></script>
     <script src="{% static 'assets/js/datatable/datatable-extension/dataTables.scroller.min.js' %}"></script>
     <script src="{% static 'assets/js/datatable/datatable-extension/custom.js' %}"></script>
-    {% block scriptcontent %} {% endblock  %}
 
-    <!-- Theme js-->
+    <!-- SweetAlert2 (Toast) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Script base del tema -->
     <script src="{% static 'assets/js/script.js' %}"></script>
+
+    {% block scriptcontent %}
+      <!-- Scripts que quieras inyectar desde otras plantillas -->
+    {% endblock %}
+
+    <!-- Lógica para mostrar mensajes Django (toast) con SweetAlert2 -->
+    {% if messages %}
     <script>
-      $("#basic-2").DataTable({
-        paging: true,
-        lengthMenu: [5, 10, 25, 50, 100],
-        pageLength: 10,
-        lengthChange: true,
-        autoWidth: false,
-        searching: true,
-        bInfo: true,
-        bSort: true,
-        order: [[3, 'desc']], // Ordenar por la primera columna (índice 0) de forma descendente ('desc')
-        dom: 'Bfrltip',
-        buttons: [
+      document.addEventListener('DOMContentLoaded', function() {
+        {% for message in messages %}
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: '{{ message.tags }}',  // success, error, warning, info
+            title: '{{ message }}',
+            showConfirmButton: false,
+            timer: 4000,
+            timerProgressBar: true
+          });
+        {% endfor %}
+      });
+    </script>
+    {% endif %}
+
+    <!-- Ejemplo de inicialización DataTable (ajusta según tus necesidades) -->
+    <script>
+      $(document).ready(function(){
+        $("#basic-2").DataTable({
+          paging: true,
+          lengthMenu: [5, 10, 25, 50, 100],
+          pageLength: 10,
+          lengthChange: true,
+          autoWidth: false,
+          searching: true,
+          bInfo: true,
+          bSort: true,
+          order: [[3, 'desc']], // Ajusta si prefieres otro índice de columna
+          dom: 'Bfrltip',
+          buttons: [
             {
-                extend: 'print',
-                text: '<i class="icofont icofont-printer"></i>',
-                titleAttr: 'Imprimir'
+              extend: 'print',
+              text: '<i class="icofont icofont-printer"></i>',
+              titleAttr: 'Imprimir'
             },
             {
-                extend: 'excelHtml5',
-                text: '<i class="icofont icofont-file-excel"></i>',
-                titleAttr: 'Exportar a Excel'
+              extend: 'excelHtml5',
+              text: '<i class="icofont icofont-file-excel"></i>',
+              titleAttr: 'Exportar a Excel'
             },
             {
-                extend: 'pdfHtml5',
-                text: '<i class="icofont icofont-file-pdf"></i>',
-                titleAttr: 'Exportar a PDF'
+              extend: 'pdfHtml5',
+              text: '<i class="icofont icofont-file-pdf"></i>',
+              titleAttr: 'Exportar a PDF'
             }
-        ],
-        language: {
-            sProcessing: "Procesando...",
-            sLengthMenu: "Mostrar _MENU_ registros",
-            sZeroRecords: "No se encontraron resultados",
-            sEmptyTable: "Ningún dato disponible en esta tabla",
-            sInfo: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-            sInfoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
-            sInfoFiltered: "(filtrado de un total de _MAX_ registros)",
-            sSearch: "Buscar:",
-            sInfoThousands: ",",
+          ],
+          language: {
+            sProcessing:     "Procesando...",
+            sLengthMenu:     "Mostrar _MENU_ registros",
+            sZeroRecords:    "No se encontraron resultados",
+            sEmptyTable:     "Ningún dato disponible en esta tabla",
+            sInfo:           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            sInfoEmpty:      "Mostrando registros del 0 al 0 de un total de 0 registros",
+            sInfoFiltered:   "(filtrado de un total de _MAX_ registros)",
+            sSearch:         "Buscar:",
             sLoadingRecords: "Cargando...",
             oPaginate: {
-                sFirst: "Primero",
-                sLast: "Último",
-                sNext: "Siguiente",
-                sPrevious: "Anterior"
+              sFirst:    "Primero",
+              sLast:     "Último",
+              sNext:     "Siguiente",
+              sPrevious: "Anterior"
             },
             oAria: {
-                sSortAscending: ": Activar para ordenar la columna de manera ascendente",
-                sSortDescending: ": Activar para ordenar la columna de manera descendente"
+              sSortAscending:  ": Activar para ordenar la columna de manera ascendente",
+              sSortDescending: ": Activar para ordenar la columna de manera descendente"
             }
-        }
-    });
+          }
+        });
+      });
     </script>
   </body>
 </html>

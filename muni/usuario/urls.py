@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CustomPasswordChangeDoneView, CustomPasswordChangeView, PerfilUsuarioView
+from .views import CustomPasswordChangeDoneView, CustomPasswordChangeView, PerfilUsuarioView, UserProfileUpdateView
 
 urlpatterns = [
     path('mi-perfil/', PerfilUsuarioView.as_view(), name='perfil_usuario'),
@@ -15,4 +15,6 @@ urlpatterns = [
         CustomPasswordChangeDoneView.as_view(),
         name='password_change_done'
     ),
+
+    path('editar-perfil/', UserProfileUpdateView.as_view(), name='editar_perfil'),
 ]

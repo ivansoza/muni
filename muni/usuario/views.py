@@ -4,6 +4,9 @@ from django.views.generic import TemplateView
 from django.urls import reverse
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.views import PasswordChangeDoneView
+from django.contrib.auth.models import User
+from django.views.generic.edit import UpdateView
+from django.contrib import messages
 
 from django.urls import reverse_lazy
 
@@ -51,3 +54,18 @@ class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
 
 class CustomPasswordChangeDoneView(LoginRequiredMixin, PasswordChangeDoneView):
     template_name = 'registration/cambiar_contraseña_hecho.html'
+
+class UserProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = User
+    fields = ['first_name', 'last_name', 'email']
+    template_name = 'editar_perfil.html'
+    success_url = reverse_lazy('perfil_usuario')  
+
+    def get_object(self):
+        # Retorna el usuario autenticado
+        return self.request.user
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Tu perfil ha sido actualizado correctamente.')
+        return response
