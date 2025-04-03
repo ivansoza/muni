@@ -119,11 +119,11 @@ class CuantoCuesta(models.Model):
     notas = models.TextField(blank=True, null=True)
     vigencia = models.CharField(max_length=100, default="Sin vigencia")
     tipo = models.CharField(max_length=100, default="Variable")
-    tiene_cotizador = models.BooleanField(default=False)
+    costo = models.CharField(max_length=100, help_text="Ej. $200.00 o Entre $200 y $500")
     momento_pago = models.CharField(max_length=255, default="Al solicitar el trámite")
 
     def __str__(self):
         return f"{self.servicio.titulo} - {self.concepto}"
     
     class Meta:
-        verbose_name_plural = "4. ¿Cuanto cuesta?"
+        verbose_name_plural = "4. ¿Cuánto cuesta?"
