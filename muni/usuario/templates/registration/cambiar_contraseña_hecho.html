@@ -1,7 +1,121 @@
 {% extends "baseTemplate.html" %}
 
 {% block content %}
-  <h2>¡Contraseña actualizada!</h2>
-  <p>Tu contraseña se ha cambiado correctamente.</p>
-  <a href="{% url 'home' %}">Volver al inicio</a>
+    <style>
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+            background-color: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(47, 47, 59, 0.1);
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(47, 105, 143, 0.1);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .success-icon svg {
+            width: 40px;
+            height: 40px;
+            fill: var(--theme-default);
+        }
+
+        h2 {
+            color: var(--bs-heading-color);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        p {
+            color: var(--chart-text-color);
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 2rem;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            background-color: var(--theme-default);
+            color: var(--white);
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--theme-default_dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(47, 105, 143, 0.2);
+        }
+
+        .animation-container {
+            margin-bottom: 2rem;
+        }
+
+        @keyframes checkmark {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .checkmark {
+            animation: checkmark 0.8s ease-in-out forwards;
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+
+    <div class="container">
+        <div class="animation-container">
+            <div class="success-icon">
+                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle cx="26" cy="26" r="25" fill="none" stroke="#2F698F" stroke-width="2" />
+                    <path fill="none" stroke="#2F698F" stroke-width="2" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                </svg>
+            </div>
+        </div>
+        
+        <h2>¡Contraseña actualizada!</h2>
+        <p>Tu contraseña se ha cambiado correctamente. Ahora puedes iniciar sesión con tu nueva contraseña.</p>
+        
+        <a href="{% url 'dashboard' %}" class="btn-primary">Volver al inicio</a>
+    </div>
+
+    <script>
+        // Activa la animación al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('.checkmark').classList.add('active');
+        });
+    </script>
 {% endblock %}
