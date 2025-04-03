@@ -142,6 +142,46 @@
             </ol>
             {% endif %}
         </div>
+
+        <!-- Sección "¿Cuánto cuesta?" -->
+        <div id="seccion-costo" class="seccion table-container">
+            <h2>Costos</h2>
+
+            <table class="tabla-requisitos table">
+                <thead>
+                    <tr>
+                        <th>Concepto</th>
+                        <th>Notas</th>
+                        <th>Vigencia</th>
+                        <th>Tipo</th>
+                        <th>Costo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for costo in costos %}
+                    <tr>
+                        <td><strong>{{ forloop.counter }}. {{ costo.concepto }}</strong></td>
+                        <td>{{ costo.notas|default:"-" }}</td>
+                        <td>{{ costo.vigencia }}</td>
+                        <td>{{ costo.tipo }}</td>
+                        <td>{{ costo.costo|default:"No especificado" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">Este trámite no tiene costos definidos.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if costos %}
+            <div class="alert alert-info mt-3" role="alert">
+                <i class="fas fa-info-circle"></i>
+                <strong>Momento en el que se debe realizar el pago:</strong> {{ costos.0.momento_pago }}
+            </div>
+            {% endif %}
+        </div>
+
     </div>
 
     <!-- Botones de acción -->
