@@ -15,7 +15,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- Estilos personalizados -->
-     <link rel="stylesheet" href="{% static "css/stylos.css" %}?v1.1323">
+     <link rel="stylesheet" href="{% static "css/stylos.css" %}?v1.13233">
      <script async defer src="https://connect.facebook.net/es_LA/sdk.js#xfbml=1&version=v15.0"></script>
      <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatable-extension.css' %}">    
@@ -112,18 +112,27 @@
 
     </style>
 
+    
+    {% if municipio.cortina %}
+        {% if municipio.cortina.entrada == "entrada1" %}
+            {% include "home/components/entradas/entrada1.html" %}
+        {% elif municipio.cortina.entrada == "entrada2" %}
+            {% include "home/components/entradas/entrada2.html" %}
+        {% elif municipio.cortina.entrada == "entrada3" %}
+            {% include "home/components/entradas/entrada3.html" %}
+        {% elif municipio.cortina.entrada == "entrada4" %}
+            {% include "home/components/entradas/entrada4.html" %}
+        {% elif municipio.cortina.entrada == "sincortina" %}
+            {# No se incluye ninguna cortina porque es 'sincortina' #}
+        {% else %}
+            {# Fallback por si hay un valor inesperado #}
+            {% include "home/components/entradas/entrada1.html" %}
+        {% endif %}
+    {% else %}
+        {# Si no hay personalización definida para este municipio, se usa por defecto entrada1 #}
+        {% include "home/components/entradas/entrada1.html" %}
+    {% endif %}
 
-   <!-- Preloader -->
-<!-- Preloader -->
-    <div id="preloader">
-        <div class="preloader-content">
-            {% if  municipio.logotipo %}
-                <img src="{{municipio.logotipo.url}}" alt="Imagen representativa" class="preloader-logo mb-4 img-fluid" style="width: 250px; ">
-            {% else %}
-                <img src="{% static 'assets/images/logo/logo-new.png' %}"alt="Imagen representativa" class="preloader-logo mb-4 img-fluid" style="width: 250px; height: 250px;">
-            {% endif %}
-        </div>
-    </div>
 
 
 
@@ -231,6 +240,8 @@
             transform: rotate(-180deg);
         }
     </style>
+
+    
             <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-transparent fixed-top">
         <div class="container">
@@ -536,21 +547,6 @@
         navbarCollapse.addEventListener('hidden.bs.collapse', toggleNavbarClass);
         navbarCollapse.addEventListener('shown.bs.collapse', toggleNavbarClass);
         
-        document.addEventListener("DOMContentLoaded", function () {
-            const preloader = document.getElementById("preloader");
-            const preloaderContent = document.querySelector(".preloader-content");
-            const mainContent = document.getElementById("main-content");
-        
-            // Simula un tiempo de carga (2 segundos)
-            setTimeout(() => {
-                preloaderContent.classList.add("hide"); // Añade la clase para animar las mitades
-        
-                setTimeout(() => {
-                    preloader.style.display = "none"; // Oculta el preloader completamente
-                    mainContent.style.display = "block"; // Muestra el contenido principal
-                }, 600); // Tiempo para completar la animación
-            }, 400); // Tiempo del preloader antes de la animación
-        });
 
     </script>
    <script>

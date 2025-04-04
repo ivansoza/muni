@@ -109,16 +109,29 @@
 
 
 
-    <div id="preloader">
-        <div class="preloader-content">
-            {% if  municipio.logotipo %}
-                <img src="{{municipio.logotipo.url}}"
-                alt="Imagen representativa" class="preloader-logo mb-4 img-fluid" style="width: 250px; ">
-            {% else %}
-                <img src="{% static 'assets/images/logo/logo-new.png' %}"alt="Imagen representativa" class="preloader-logo mb-4 img-fluid" style="width: 250px; height: 250px;">
-            {% endif %}
-        </div>
-    </div>
+
+
+    {% if municipio.cortina %}
+        {% if municipio.cortina.entrada == "entrada1" %}
+            {% include "home/components/entradas/entrada1.html" %}
+        {% elif municipio.cortina.entrada == "entrada2" %}
+            {% include "home/components/entradas/entrada2.html" %}
+        {% elif municipio.cortina.entrada == "entrada3" %}
+            {% include "home/components/entradas/entrada3.html" %}
+        {% elif municipio.cortina.entrada == "entrada4" %}
+            {% include "home/components/entradas/entrada4.html" %}
+        {% elif municipio.cortina.entrada == "sincortina" %}
+            {# No se incluye ninguna cortina porque es 'sincortina' #}
+        {% else %}
+            {# Fallback por si hay un valor inesperado #}
+            {% include "home/components/entradas/entrada1.html" %}
+        {% endif %}
+    {% else %}
+        {# Si no hay personalización definida para este municipio, se usa por defecto entrada1 #}
+        {% include "home/components/entradas/entrada1.html" %}
+    {% endif %}
+
+
 
 
     <style>
@@ -278,28 +291,6 @@
     <!-- Scripts base -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <script>
-
-        
-        document.addEventListener("DOMContentLoaded", function () {
-            const preloader = document.getElementById("preloader");
-            const preloaderContent = document.querySelector(".preloader-content");
-            const mainContent = document.getElementById("main-content");
-        
-            // Simula un tiempo de carga (2 segundos)
-            setTimeout(() => {
-                preloaderContent.classList.add("hide"); // Añade la clase para animar las mitades
-        
-                setTimeout(() => {
-                    preloader.style.display = "none"; // Oculta el preloader completamente
-                    mainContent.style.display = "block"; // Muestra el contenido principal
-                }, 600); // Tiempo para completar la animación
-            }, 200); // Tiempo del preloader antes de la animación
-        });
-
-
-        
-    </script>
 
     <script>
         // JavaScript para mostrar/ocultar el botón

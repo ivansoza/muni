@@ -99,3 +99,26 @@ class Secciones(models.Model):
 
     def __str__(self):
         return f"Secciones de {self.municipio}"
+    
+
+
+
+
+class personalizacionPlantilla(models.Model):
+    ENTRADA_CHOICES = [
+        ('entrada1', 'Entrada 1'),
+        ('entrada2', 'Entrada 2'),
+        ('entrada3', 'Entrada 3'),
+        ('entrada4', 'Entrada 4'),
+        ('sincortina', 'Sin cortina'),
+    ]
+
+    municipio = models.OneToOneField(Municipio, on_delete=models.CASCADE, related_name='cortina')
+    entrada = models.CharField(
+        max_length=50,
+        choices=ENTRADA_CHOICES,
+        default='entrada1'  # Primera opción como predeterminada
+    )
+
+    def __str__(self):
+        return f"{self.municipio} - {self.get_entrada_display()}"

@@ -478,67 +478,7 @@
             z-index: 1;
         }
 
-        /* Preloader */
-        #preloader {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background: white;
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .preloader-content {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .preloader-content::before,
-        .preloader-content::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            width: 50%;
-            height: 100%;
-            background: var(--color-gradiente);
-            z-index: 1000;
-            transition: transform 0.6s ease-in-out;
-        }
-
-        .preloader-content::before {
-            left: 0;
-            transform: translateX(0);
-        }
-
-        .preloader-content::after {
-            right: 0;
-            transform: translateX(0);
-        }
-
-        .preloader-content.hide::before {
-            transform: translateX(-100%);
-        }
-
-        .preloader-content.hide::after {
-            transform: translateX(100%);
-        }
-
-        /* Logo */
-        .preloader-logo {
-            position: relative;
-            z-index: 1001;
-            /* Asegurar que quede sobre las mitades */
-            width: 150px;
-            /* Tamaño del logo */
-            animation: fadeInLogo 1s ease-in-out infinite alternate;
-            /* Efecto opcional */
-        }
+       
         .my-section img {
             max-width: 100%; /* Asegura que la imagen sea responsiva */
             height: auto;

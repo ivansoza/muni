@@ -1,0 +1,112 @@
+{% load static %}
+
+
+<!-- CSS del Preloader -->
+<style>
+    /* Preloader */
+    #preloader {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(120deg, #f0f0f0, #ffffff);
+        background-size: 200% 200%;
+        animation: gradientMove 4s ease infinite;
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: opacity 0.8s ease;
+    }
+
+    .preloader-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        animation: fadeScale 1.4s ease-in-out;
+        opacity: 1;
+        transform: scale(1);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .preloader-content.hide {
+        opacity: 0;
+        transform: scale(1.05);
+    }
+
+    .preloader-logo {
+        width: 200px;
+        height: auto;
+        animation: pulse 2s infinite ease-in-out;
+        z-index: 1001;
+    }
+
+    @keyframes fadeScale {
+        0% {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.03);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    @keyframes gradientMove {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+</style>
+
+
+<!-- HTML del Preloader -->
+<div id="preloader">
+    <div class="preloader-content">
+        {% if municipio.logotipo %}
+            <img src="{{ municipio.logotipo.url }}" alt="Imagen representativa" class="preloader-logo mb-4 img-fluid">
+        {% else %}
+            <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Imagen representativa" class="preloader-logo mb-4 img-fluid">
+        {% endif %}
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const preloader = document.getElementById("preloader");
+        const preloaderContent = document.querySelector(".preloader-content");
+        const mainContent = document.getElementById("main-content");
+
+        setTimeout(() => {
+            preloaderContent.classList.add("hide");
+
+            setTimeout(() => {
+                preloader.style.opacity = "0";
+
+                setTimeout(() => {
+                    preloader.style.display = "none";
+                    if (mainContent) mainContent.style.display = "block";
+                }, 400); // tiempo para opacidad
+            }, 400); // espera al hide
+        }, 800); // espera inicial de carga
+    });
+</script>

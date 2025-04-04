@@ -1,0 +1,145 @@
+{% load static %}
+
+<style>
+    /* Preloader */
+    #preloader {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background: #f8f9fa;
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .preloader-content {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #f8f9fa;
+    }
+
+    /* Efecto de cortina profesional con degradado */
+    .preloader-content::before,
+    .preloader-content::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-secundario) 100%);
+        z-index: 1000;
+        transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+
+    .preloader-content::before {
+        left: 0;
+        transform: translateX(0);
+    }
+
+    .preloader-content::after {
+        right: 0;
+        transform: translateX(0);
+    }
+
+    .preloader-content.hide::before {
+        transform: translateX(-100%);
+    }
+
+    .preloader-content.hide::after {
+        transform: translateX(100%);
+    }
+
+    /* Logo y animación */
+    .preloader-logo {
+        position: relative;
+        z-index: 1001;
+        width: 250px;
+        filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1));
+        transform: translateY(0);
+        animation: logoFloat 2s ease-in-out infinite alternate;
+    }
+
+    /* Loader circular alrededor del logo */
+    .logo-container {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1001;
+    }
+
+    .spinner {
+        position: absolute;
+        width: 280px;
+        height: 280px;
+        border: 3px solid transparent;
+        border-top: 3px solid #4CA1AF;
+        border-radius: 50%;
+        animation: spin 1.5s linear infinite;
+    }
+
+    /* Animaciones */
+    @keyframes logoFloat {
+        0% {
+            transform: translateY(0);
+        }
+        100% {
+            transform: translateY(-10px);
+        }
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<!-- HTML del Preloader -->
+<div id="preloader">
+    <div class="preloader-content">
+        <div class="logo-container">
+            <div class="spinner"></div>
+            {% if municipio.logotipo %}
+                <img src="{{municipio.logotipo.url}}" alt="Imagen representativa" class="preloader-logo mb-4 img-fluid">
+            {% else %}
+                <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Imagen representativa" class="preloader-logo mb-4 img-fluid">
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const preloader = document.getElementById("preloader");
+        const preloaderContent = document.querySelector(".preloader-content");
+        const mainContent = document.getElementById("main-content");
+    
+        // Asegurarse de que las imágenes estén cargadas
+        window.addEventListener('load', function() {
+            // Corta animación antes de la transición
+            setTimeout(() => {
+                preloaderContent.classList.add("hide"); // Añade la clase para animar las cortinas
+        
+                setTimeout(() => {
+                    preloader.style.display = "none"; // Oculta el preloader completamente
+                    mainContent.style.display = "block"; // Muestra el contenido principal
+                    // Opcional: Efecto de fade in para el contenido principal
+                    if (mainContent) {
+                        mainContent.style.opacity = 0;
+                        mainContent.style.transition = "opacity 0.5s ease";
+                        setTimeout(() => {
+                            mainContent.style.opacity = 1;
+                        }, 100);
+                    }
+                }, 800); // Tiempo para completar la animación de las cortinas
+            }, 800); // Tiempo del preloader antes de la animación (ajustado para una experiencia más profesional)
+        });
+    });
+</script>
