@@ -145,10 +145,10 @@ h2 {
 }
 
 /* Botones de acción */
-.action-buttons {
+/* .action-buttons {
     margin-top: 20px;
     text-align: right;
-}
+} */
 
 .btn {
     padding: 10px 20px;
@@ -161,11 +161,6 @@ h2 {
 
 .btn-secondary {
     background-color: #6c757d;
-    color: white;
-}
-
-.btn-warning {
-    background-color: #f39c12;
     color: white;
 }
 
@@ -331,4 +326,11 @@ h2 {
 
 .responsable-info p {
     margin: 5px 0;
+}
+
+.btn-volver {
+    position: absolute;
+    top: 98px;
+    right: 55px;
+    z-index: 10;
 }

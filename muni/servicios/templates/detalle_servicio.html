@@ -7,12 +7,17 @@
 
 {% block content %}
 <div class="container">
+    <!-- Botón fijo en esquina superior derecha -->
+    <a href="{% url 'homeServicios' %}" class="btn btn-secondary btn-volver">
+        ← Regresar
+    </a>
+
     <!-- Encabezado del trámite -->
     <div class="header">
         <p class="breadcrumb">
             {{ servicio.organismo.nombre }} / {{ servicio.clasificacion.nombre }}
         </p>
-        <h1 class="title">{{ servicio.titulo }}</h1>
+        <h1 class="title">{{ servicio.titulo }} mmm</h1>
         <p class="subtitle">
             Esta modalidad pertenece al trámite de {{ servicio.clasificacion.nombre }}
         </p>
@@ -197,13 +202,7 @@
             {% endif %}
         </div>        
 
-    </div>
-
-    <!-- Botones de acción -->
-    <div class="action-buttons">
-        <a href="{% url 'homeServicios' %}" class="btn btn-secondary">← Regresar</a>
-        <a href="#" class="btn btn-warning">⚠️ Presentar una queja</a>
-    </div>    
+    </div>  
 </div>
 {% endblock %}
 
