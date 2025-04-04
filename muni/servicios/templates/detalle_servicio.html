@@ -184,9 +184,8 @@
         </div>
 
         <!-- Sección "Responsable" -->
-        <div id="seccion-responsable" class="seccion">
+        <div id="seccion-responsable" class="seccion table-container">
             <h2>Responsable del Trámite</h2>
-
             {% if servicio.responsable %}
             <div class="responsable-box">
                 <img src="{{ servicio.responsable.imagen.url }}" alt="Foto del responsable" class="responsable-foto">
@@ -194,14 +193,16 @@
                     <p><strong>Nombre:</strong> {{ servicio.responsable.nombre }}</p>
                     <p><strong>Dependencia:</strong> {{ servicio.responsable.dependencia }}</p>
                     <p><strong>Teléfono:</strong> {{ servicio.responsable.telefono }}</p>
-                    <p><strong>Correo electrónico:</strong> <a href="mailto:{{ servicio.responsable.correo }}">{{ servicio.responsable.correo }}</a></p>
+                    <p><strong>Correo electrónico:</strong> 
+                        <a href="mailto:{{ servicio.responsable.correo }}">{{ servicio.responsable.correo }}</a>
+                    </p>
                     <p><strong>Horario de atención:</strong> {{ servicio.responsable.horario }}</p>
                 </div>
             </div>
             {% else %}
             <p>No se ha asignado responsable para este trámite.</p>
             {% endif %}
-        </div>
+        </div>        
 
     </div>
 
