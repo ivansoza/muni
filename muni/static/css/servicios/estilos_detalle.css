@@ -136,6 +136,7 @@ h2 {
 /* Descripción */
 .descripcion {
     margin: 15px 0;
+    text-align: justify;
 }
 
 .descripcion h3 {
