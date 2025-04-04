@@ -310,3 +310,24 @@ h2 {
 .seccion li:last-child {
     border-bottom: none;
 }
+
+.responsable-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    background: #f9f9f9;
+}
+
+.responsable-foto {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.responsable-info p {
+    margin: 5px 0;
+}

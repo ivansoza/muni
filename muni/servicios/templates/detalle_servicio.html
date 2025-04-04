@@ -45,6 +45,7 @@
                 <li class="menu-item" data-seccion="seccion-pago">🏦 ¿Dónde lo pago?</li>
                 <li class="menu-item" data-seccion="seccion-plazos">📆 Plazos y criterios de resolución</li>
                 <li class="menu-item" data-seccion="seccion-inspeccion">📑 Inspección y verificación</li>
+                <li class="menu-item" data-seccion="seccion-responsable">📑 Responsable</li>
             </ul>
         </div>
 
@@ -179,6 +180,26 @@
                 <i class="fas fa-info-circle"></i>
                 <strong>Momento en el que se debe realizar el pago:</strong> {{ costos.0.momento_pago }}
             </div>
+            {% endif %}
+        </div>
+
+        <!-- Sección "Responsable" -->
+        <div id="seccion-responsable" class="seccion">
+            <h2>Responsable del Trámite</h2>
+
+            {% if servicio.responsable %}
+            <div class="responsable-box">
+                <img src="{{ servicio.responsable.imagen.url }}" alt="Foto del responsable" class="responsable-foto">
+                <div class="responsable-info">
+                    <p><strong>Nombre:</strong> {{ servicio.responsable.nombre }}</p>
+                    <p><strong>Dependencia:</strong> {{ servicio.responsable.dependencia }}</p>
+                    <p><strong>Teléfono:</strong> {{ servicio.responsable.telefono }}</p>
+                    <p><strong>Correo electrónico:</strong> <a href="mailto:{{ servicio.responsable.correo }}">{{ servicio.responsable.correo }}</a></p>
+                    <p><strong>Horario de atención:</strong> {{ servicio.responsable.horario }}</p>
+                </div>
+            </div>
+            {% else %}
+            <p>No se ha asignado responsable para este trámite.</p>
             {% endif %}
         </div>
 
