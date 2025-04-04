@@ -21,12 +21,12 @@
     <!-- Sidebar solo con iconos en móviles -->
     <div class="sidebar responsive-sidebar">
         <ul class="menu">
-            <li class="active"><i class="fas fa-thumbtack"></i></li>
-            <li><i class="fas fa-file-alt"></i></li>
-            <li><i class="fas fa-tools"></i></li>
-            <li><i class="fas fa-money-bill-wave"></i></li>
-            <li><i class="fas fa-user"></i></li>
-        </ul>
+            <li class="menu-icon active" data-seccion="seccion-consiste"><i class="fas fa-thumbtack"></i></li>
+            <li class="menu-icon" data-seccion="seccion-requisitos"><i class="fas fa-file-alt"></i></li>
+            <li class="menu-icon" data-seccion="seccion-realizo"><i class="fas fa-tools"></i></li>
+            <li class="menu-icon" data-seccion="seccion-costo"><i class="fas fa-money-bill-wave"></i></li>
+            <li class="menu-icon" data-seccion="seccion-responsable"><i class="fas fa-user"></i></li>
+        </ul>        
     </div>
 
     <!-- Contenedor de contenido principal -->
@@ -209,27 +209,46 @@
 
 {% block extra_js %}
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const menuItems = document.querySelectorAll(".menu-item");
+    document.addEventListener("DOMContentLoaded", function () {
+        const desktopMenuItems = document.querySelectorAll(".menu-item");
+        const mobileMenuIcons = document.querySelectorAll(".menu-icon");
         const sections = document.querySelectorAll(".seccion");
-
-        menuItems.forEach(item => {
-            item.addEventListener("click", function() {
-                // Remover clase "active" de todos los elementos del menú
-                menuItems.forEach(i => i.classList.remove("active"));
-                this.classList.add("active");
-
-                // Ocultar todas las secciones
-                sections.forEach(sec => sec.style.display = "none");
-
-                // Mostrar la sección seleccionada
-                const seccionId = this.getAttribute("data-seccion");
-                document.getElementById(seccionId).style.display = "block";
+    
+        function mostrarSeccion(seccionId) {
+            // Oculta todas las secciones
+            sections.forEach(sec => sec.style.display = "none");
+            // Muestra solo la seleccionada
+            const target = document.getElementById(seccionId);
+            if (target) target.style.display = "block";
+        }
+    
+        function activarElemento(activos, actual) {
+            activos.forEach(i => i.classList.remove("active"));
+            actual.classList.add("active");
+        }
+    
+        // Menu de escritorio
+        desktopMenuItems.forEach(item => {
+            item.addEventListener("click", function () {
+                const seccion = this.getAttribute("data-seccion");
+                mostrarSeccion(seccion);
+                activarElemento(desktopMenuItems, this);
+                activarElemento(mobileMenuIcons, document.querySelector(`.menu-icon[data-seccion="${seccion}"]`));
             });
         });
-
-        // Mostrar solo la primera sección por defecto
-        document.getElementById("seccion-consiste").style.display = "block";
+    
+        // Menu móvil
+        mobileMenuIcons.forEach(icon => {
+            icon.addEventListener("click", function () {
+                const seccion = this.getAttribute("data-seccion");
+                mostrarSeccion(seccion);
+                activarElemento(mobileMenuIcons, this);
+                activarElemento(desktopMenuItems, document.querySelector(`.menu-item[data-seccion="${seccion}"]`));
+            });
+        });
+    
+        // Mostrar sección por defecto
+        mostrarSeccion("seccion-consiste");
     });
-</script>
+</script>    
 {% endblock %}
