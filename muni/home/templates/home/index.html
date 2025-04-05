@@ -409,10 +409,26 @@
 
 
 
-    
+    {% if municipio.cortina %}
+        {% if municipio.cortina.hero_seccion == "hero1" %}
+            {% include "home/components/herosection/hero1.html" %}
+        {% elif municipio.cortina.hero_seccion == "hero2" %}
+            {% include "home/components/herosection/hero2.html" %}
+        {% elif municipio.cortina.hero_seccion == "hero3" %}
+            {% include "home/components/herosection/hero3.html" %}
+        {% elif municipio.cortina.hero_seccion == "hero4" %}
+            {% include "home/components/herosection/hero4.html" %}
+        {% elif municipio.cortina.hero_seccion == "hero5" %}
+            {% include "home/components/herosection/hero5.html" %}
+        {% elif municipio.cortina.hero_seccion == "sinhero" %}
+            {# No se incluye nada si es sinhero #}
+        {% else %}
+            {% include "home/components/herosection/hero1.html" %}
+        {% endif %}
+    {% else %}
+        {% include "home/components/herosection/hero1.html" %}
+    {% endif %}
 
-    {% include "home/components/herosection/hero1.html" %}
-    <!-- Hero Section -->
 
 
 
