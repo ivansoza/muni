@@ -1,6 +1,6 @@
 # admin.py
 from django.contrib import admin
-from .models import ContadorVisitas, Secciones, SocialNetwork, personalizacionPlantilla
+from .models import ContadorVisitas, MetaMunicipio, Secciones, SocialNetwork, personalizacionPlantilla
 
 @admin.register(SocialNetwork)
 class SocialNetworkAdmin(admin.ModelAdmin):
@@ -24,3 +24,10 @@ class PersonalizacionPlantillaAdmin(admin.ModelAdmin):
     list_display = ('municipio', 'entrada')
     list_filter = ('entrada',)
     search_fields = ('municipio__nombre',)
+
+
+class MetaMunicipioAdmin(admin.ModelAdmin):
+    list_display = ('municipio', 'meta_title', 'meta_description')
+    search_fields = ('municipio__nombre', 'meta_title')
+
+admin.site.register(MetaMunicipio, MetaMunicipioAdmin)

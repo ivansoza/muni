@@ -122,3 +122,82 @@ class personalizacionPlantilla(models.Model):
 
     def __str__(self):
         return f"{self.municipio} - {self.get_entrada_display()}"
+    
+class MetaMunicipio(models.Model):
+    """
+    Modelo para almacenar los datos meta de cada Municipio
+    (etiquetas meta, Open Graph, etc.)
+    """
+    municipio = models.OneToOneField(
+        Municipio,
+        on_delete=models.CASCADE,
+        related_name='meta'
+    )
+
+    # Etiquetas meta básicas
+    meta_title = models.CharField(
+        max_length=255,
+        default='Gobierno Municipal - Inicio',
+        help_text="Título para la etiqueta <title> y meta title"
+    )
+    meta_description = models.TextField(
+        default='Descripción breve del municipio para SEO.',
+        help_text="Contenido de la etiqueta meta description"
+    )
+    meta_keywords = models.CharField(
+        max_length=255,
+        default='Municipio, Gobierno, Servicios',
+        help_text="Palabras clave para la etiqueta meta keywords"
+    )
+
+    # Open Graph (Facebook, LinkedIn, etc.)
+    og_title = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Título para compartir en redes sociales (og:title)."
+    )
+    og_description = models.TextField(
+        blank=True,
+        help_text="Descripción para compartir en redes sociales (og:description)."
+    )
+    # Este campo puede almacenar la URL de la imagen
+    # o, si deseas, un ImageField que luego se sirva como og:image
+    og_image = models.ImageField(
+        upload_to='og_images/',
+        null=True,
+        blank=True,
+        help_text="Imagen que se mostrará al compartir (og:image)."
+    )
+
+    # Twitter Cards (opcional)
+    twitter_title = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Título para Twitter Card."
+    )
+    twitter_description = models.TextField(
+        blank=True,
+        help_text="Descripción para Twitter Card."
+    )
+    twitter_image = models.ImageField(
+        upload_to='twitter_images/',
+        null=True,
+        blank=True,
+        help_text="Imagen para Twitter Card."
+    )
+
+    def __str__(self):
+        return f"MetaMunicipio de {self.municipio.nombre}"
+
+    def get_og_image_url(self):
+        """
+        Retorna la URL de la imagen OG si existe.
+        En caso contrario, intenta usar el logotipo del Municipio.
+        Si tampoco existe logotipo, retorna un path/URL por defecto.
+        """
+        if self.og_image:
+            return self.og_image.url
+        elif self.municipio.logotipo:
+            return self.municipio.logotipo.url
+        # URL estática de respaldo si no hay ninguna imagen
+        return '/static/assets/images/logo/logo-new.png'
