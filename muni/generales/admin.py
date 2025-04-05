@@ -21,8 +21,8 @@ admin.site.register(Secciones)
 
 @admin.register(personalizacionPlantilla)
 class PersonalizacionPlantillaAdmin(admin.ModelAdmin):
-    list_display = ('municipio', 'entrada')
-    list_filter = ('entrada',)
+    list_display = ('municipio', 'entrada','hero_seccion')
+    list_filter = ('entrada','hero_seccion')
     search_fields = ('municipio__nombre',)
 
 

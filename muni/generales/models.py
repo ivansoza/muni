@@ -119,6 +119,19 @@ class personalizacionPlantilla(models.Model):
         choices=ENTRADA_CHOICES,
         default='entrada1'  # Primera opción como predeterminada
     )
+    HERO_CHOICES = [
+        ('hero1', 'Hero 1'),
+        ('hero2', 'Hero 2'),
+        ('hero3', 'Hero 3'),
+        ('hero4', 'Hero 4'),
+        ('hero5', 'Hero 5'),
+        ('sinhero', 'Sin Hero'),
+    ]
+    hero_seccion = models.CharField(
+        max_length=50,
+        choices=HERO_CHOICES,
+        default='hero1'  # Primera opción como predeterminada
+    )
 
     def __str__(self):
         return f"{self.municipio} - {self.get_entrada_display()}"
