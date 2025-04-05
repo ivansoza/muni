@@ -1,0 +1,179 @@
+{% load static %}
+
+<style>
+    .hero-section {
+        position: relative;
+        background: linear-gradient(
+            135deg,
+            rgba(var(--color-primario-rgb), 0.85), 
+            rgba(var(--color-secundario-rgb), 0.85)
+        ),
+        url(
+            {% if municipio.banner %}
+                '{{ municipio.banner.url }}'
+            {% else %}
+                'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'
+            {% endif %}
+        );
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 120px 0 180px;
+        margin-bottom: 100px;
+        overflow: hidden;
+        /* Forma con curvas asimétricas */
+        clip-path: path('M0,0 L100%,0 L100%,85% C75%,95% 50%,85% 25%,90% L0,100% Z');
+    }
+
+    .hero-container {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .hero-content {
+        flex: 1;
+        text-align: left;
+        padding-right: 30px;
+        min-width: 300px;
+    }
+
+    .hero-image {
+        flex: 0 0 350px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+    .hero-logo-container {
+        border-radius: 10px;
+        padding: 30px;
+        transition: box-shadow 0.3s ease;
+    }
+
+
+
+    .hero-section h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+    }
+
+    .hero-section p {
+        font-size: 1.4rem;
+        margin-bottom: 2.5rem;
+        max-width: 600px;
+        line-height: 1.6;
+    }
+
+    .btn-hero {
+        background-color: white;
+        color: var(--color-primario);
+        padding: 16px 40px;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 2px solid white;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-hero:hover {
+        background-color: transparent;
+        color: white;
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-hero i {
+        transition: transform 0.3s ease;
+    }
+
+    .btn-hero:hover i {
+        transform: translateX(5px);
+    }
+
+
+
+    @media (max-width: 992px) {
+        .hero-container {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .hero-content {
+            padding-right: 0;
+            margin-bottom: 50px;
+        }
+        
+        .hero-section p {
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 100px 0 150px;
+            clip-path: path('M0,0 L100%,0 L100%,90% C75%,97% 50%,92% 25%,95% L0,100% Z');
+        }
+        
+        .hero-section h1 {
+            font-size: 2.8rem;
+        }
+        
+        .hero-image {
+            flex: 0 0 300px;
+        }
+    }
+</style>
+
+<section class="hero-section">
+  
+    
+    <div class="container hero-container">
+        <div class="hero-content">
+            <h1>{{ municipio.nombre|default:"Bienvenido a nuestro Municipio" }}</h1>
+            
+            {% if municipio.descripcion %}
+                <p>{{ municipio.descripcion }}</p>
+            {% else %}
+                <p>Aún no has agregado la descripción de tu municipio. ¡Hazlo ahora para que todos lo conozcan!</p>
+            {% endif %}
+            
+            <a href="#servicios" class="btn btn-hero">Explora nuestros servicios <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="hero-image">
+            <div class="hero-logo-container">
+                {% if municipio.logotipo %}
+                    <img src="{{municipio.logotipo.url}}" alt="Logo del municipio" class="img-fluid" style="width: 200px;">
+                {% else %}
+                    <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Logo predeterminado" class="img-fluid" style="width: 200px;">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Efecto sutil de paralaje al hacer scroll
+        window.addEventListener('scroll', function() {
+            const scrollPosition = window.pageYOffset;
+            const heroSection = document.querySelector('.hero-section');
+            
+            if (heroSection) {
+                heroSection.style.backgroundPositionY = scrollPosition * 0.3 + 'px';
+            }
+        });
+    });
+</script>

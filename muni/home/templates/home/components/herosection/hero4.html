@@ -1,0 +1,127 @@
+{% load static %}
+
+<style>
+    .hero-section {
+        position: relative;
+        background: linear-gradient(
+            105deg,
+            rgba(var(--color-primario-rgb), 0.92) 45%,
+            rgba(var(--color-secundario-rgb), 0.88) 100%
+        ),
+        url({% if municipio.banner %}'{{ municipio.banner.url }}'{% else %}'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'{% endif %});
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 6rem 0 8rem;
+        border-bottom: 3px solid rgba(255,255,255,0.1);
+        margin-bottom: 2rem;
+    }
+
+    
+
+    .hero-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        text-align: center;
+
+    }
+
+    .hero-logo {
+        width: 180px;
+        height: auto;
+        margin: 0 auto 2rem;
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 400;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.5px;
+    }
+
+    .hero-description {
+        font-size: 1.25rem;
+        line-height: 1.6;
+        margin: 0 auto 3rem;
+        max-width: 800px;
+        opacity: 0.95;
+        font-weight: 300;
+    }
+
+    .btn-hero {
+        display: inline-flex;
+        align-items: center;
+        background: transparent;
+        color: white;
+        padding: 1rem 2.5rem;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-radius: 0;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        position: relative;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .btn-hero::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -5px;
+        width: 100%;
+        height: 2px;
+        background: white;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .btn-hero:hover {
+        border-color: white;
+    }
+
+    .btn-hero:hover::after {
+        transform: scaleX(1);
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 4rem 0 6rem;
+        }
+        
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .hero-description {
+            font-size: 1.1rem;
+            padding: 0 1rem;
+        }
+        
+        .hero-logo {
+            width: 140px;
+        }
+    }
+</style>
+
+<section class="hero-section">
+    <div class="hero-container">
+        {% if municipio.logotipo %}
+            <img src="{{municipio.logotipo.url}}" alt="Logo {{ municipio.nombre }}" class="hero-logo">
+        {% else %}
+            <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Logo por defecto" class="hero-logo">
+        {% endif %}
+
+        <h1 class="hero-title">{{ municipio.nombre }}</h1>
+
+        {% if municipio.descripcion %}
+            <p class="hero-description">{{ municipio.descripcion }}</p>
+        {% else %}
+            <p class="hero-description">Descubre la excelencia de nuestro municipio comprometido con el progreso y desarrollo de nuestra comunidad.</p>
+        {% endif %}
+    
+        <a href="#" class="btn btn-hero">Explora nuestros servicios</a>
+    </div>
+</section>

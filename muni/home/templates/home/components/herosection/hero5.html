@@ -1,0 +1,177 @@
+{% load static %}
+
+<style>
+    .hero-section {
+        position: relative;
+        background: linear-gradient(
+            145deg,
+            rgba(var(--color-primario-rgb), 0.92) 0%,
+            rgba(var(--color-secundario-rgb), 0.88) 100%
+        ),
+        url({% if municipio.banner %}'{{ municipio.banner.url }}'{% else %}'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'{% endif %});
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 5rem 0;
+        overflow: hidden;
+    }
+
+    .hero-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-header {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .hero-logo {
+        width: 100px;
+        height: 100px;
+        object-fit: contain;
+        transition: transform 0.3s ease;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    }
+
+    .hero-logo:hover {
+        transform: rotate(-5deg) scale(1.05);
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        line-height: 1;
+        margin: 0;
+        position: relative;
+        display: inline-block;
+    }
+
+    .hero-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background: white;
+    }
+
+    .hero-content {
+        max-width: 800px;
+        margin-left: 120px;
+    }
+
+    .hero-description {
+        font-size: 1.2rem;
+        line-height: 1.8;
+        margin-bottom: 2.5rem;
+        position: relative;
+        padding-left: 2rem;
+        border-left: 2px solid rgba(255,255,255,0.2);
+    }
+
+    .btn-hero {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 4px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(5px);
+    }
+
+    .btn-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,0.2),
+            transparent
+        );
+        transition: 0.5s;
+    }
+
+    .btn-hero:hover {
+        background: rgba(255,255,255,0.2);
+        transform: translateY(-2px);
+    }
+
+    .btn-hero:hover::before {
+        left: 100%;
+    }
+
+    @media (max-width: 992px) {
+        .hero-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .hero-title::after {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .hero-content {
+            margin-left: 0;
+            text-align: center;
+        }
+        
+        .hero-description {
+            padding-left: 0;
+            border-left: none;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.2rem;
+        }
+        
+        .hero-description {
+            font-size: 1.1rem;
+        }
+        
+        .btn-hero {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<section class="hero-section">
+    <div class="hero-container">
+        <div class="hero-header">
+            {% if municipio.logotipo %}
+                <img src="{{municipio.logotipo.url}}" alt="Logo {{ municipio.nombre }}" class="hero-logo">
+            {% else %}
+                <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Logo por defecto" class="hero-logo">
+            {% endif %}
+            <h1 class="hero-title">{{ municipio.nombre }}</h1>
+        </div>
+
+        <div class="hero-content">
+            {% if municipio.descripcion %}
+                <p class="hero-description">{{ municipio.descripcion }}</p>
+            {% else %}
+                <p class="hero-description">Un municipio comprometido con el desarrollo sostenible y la excelencia en servicios públicos.</p>
+            {% endif %}
+            
+            <a href="#" class="btn btn-hero">Descubre nuestra gestión</a>
+        </div>
+    </div>
+</section>

@@ -46,7 +46,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- Estilos personalizados -->
-     <link rel="stylesheet" href="{% static "css/stylos.css" %}?v1.13233">
+     <link rel="stylesheet" href="{% static "css/stylos.css" %}?v1.1333">
      <script async defer src="https://connect.facebook.net/es_LA/sdk.js#xfbml=1&version=v15.0"></script>
      <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatable-extension.css' %}">    
@@ -86,26 +86,7 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .hero-section {
-            background: linear-gradient(
-                rgba(var(--color-primario-rgb), 0.8), 
-                rgba(var(--color-secundario-rgb), 0.8)
-            ),
-            url(
-                {% if municipio.banner %}
-                    '{{ municipio.banner.url }}'
-                {% else %}
-                    'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'
-                {% endif %}
-            );
-        
-            background-size: cover;
-            background-position: center;
-            color: white;
-            padding: 120px 0;
-            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
-            margin-bottom: 80px;
-        }
+
         
 
         .card-elegante:hover .card-icon {
@@ -423,26 +404,15 @@
     </div>
     
 
+
+
+
+
+
+    
+
+    {% include "home/components/herosection/hero1.html" %}
     <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="container text-center">
-
-            {% if  municipio.logotipo %}
-                <img src="{{municipio.logotipo.url}}" alt="Imagen representativa" class="mb-4 img-fluid" style="width: 250px;">
-
-            {% else %}
-                <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Imagen representativa" class="mb-4 img-fluid" style="width: 250px; height: 250px;">
-            {% endif %}
-
-            {% if municipio.descripcion %}
-                <p class="mb-5">{{ municipio.descripcion }}</p>
-            {% else %}
-                <p class="mb-5 text-gray-500">Aún no has agregado la descripción de tu municipio. ¡Hazlo ahora para que todos lo conozcan!</p>
-            {% endif %}
-        
-            <a href="#" class="btn btn-hero">Explora nuestros servicios <i class="fas fa-arrow-right ms-2"></i></a>
-        </div>
-    </section>
 
 
 

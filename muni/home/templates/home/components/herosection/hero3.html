@@ -1,0 +1,79 @@
+{% load static %}
+
+
+<style>
+    .hero-section {
+        background: linear-gradient(
+            rgba(var(--color-primario-rgb), 0.8), 
+            rgba(var(--color-secundario-rgb), 0.8)
+        ),
+        url(
+            {% if municipio.banner %}
+                '{{ municipio.banner.url }}'
+            {% else %}
+                'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'
+            {% endif %}
+        );
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 120px 0;
+        clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+        margin-bottom: 80px;
+    }
+
+    .hero-section h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+
+    .hero-section h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-section p {
+        font-size: 1.4rem;
+        margin-bottom: 2rem;
+    }
+
+    .btn-hero {
+        background-color: white;
+        color: var(--color-primario);
+        padding: 15px 40px;
+        border-radius: 30px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 2px solid white;
+    }
+
+    .btn-hero:hover {
+        background-color: transparent;
+        color: white;
+    }
+    
+    
+</style>
+
+<section class="hero-section">
+    <div class="container text-center">
+
+        {% if  municipio.logotipo %}
+            <img src="{{municipio.logotipo.url}}" alt="Imagen representativa" class="mb-4 img-fluid" style="width: 250px;">
+
+        {% else %}
+            <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Imagen representativa" class="mb-4 img-fluid" style="width: 250px; height: 250px;">
+        {% endif %}
+
+        {% if municipio.descripcion %}
+            <p class="mb-5">{{ municipio.descripcion }}</p>
+        {% else %}
+            <p class="mb-5 text-gray-500">Aún no has agregado la descripción de tu municipio. ¡Hazlo ahora para que todos lo conozcan!</p>
+        {% endif %}
+    
+        <a href="#" class="btn btn-hero">Explora nuestros servicios <i class="fas fa-arrow-right ms-2"></i></a>
+    </div>
+</section>
