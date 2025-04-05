@@ -101,17 +101,20 @@
         ============================
     -->
     <style>
-.sos-container {
-    position: fixed;
-    right: 0.1rem;
-    bottom: 0.3rem;
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: center;
-    z-index: 1000;
+      .sos-container{
+        position: fixed;
+        right: .1rem;
+        bottom: .3rem;
+        display: flex;
+        flex-direction: row-reverse;
+        align-items: center;
+        z-index: 1000;
+        pointer-events: none;          /* ← aquí está la clave */
+    }
+
+    .floating-button-sos{
+      pointer-events: auto;          /* vuelve a activarlos sólo en el botón */
   }
-
-
   .emergency-icon {
     background: #e74c3c;
   }
@@ -180,8 +183,10 @@
     opacity: 0;
     transform: translateX(20px);
     visibility: hidden;
+    pointer-events: none; /* Agregado para evitar interceptar clics */
     transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s 0.4s;
   }
+  
 
   /* Cada tarjeta */
   .info-container {
@@ -317,14 +322,15 @@
       transition-delay: 0.2s;
     }
   }
-
-  .sos-container.show-info .info-containers {
-    opacity: 1;
-    transform: translateX(0);
-    visibility: visible;
-    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s;
-  }
-  
+  .sos-container.show-info{
+    pointer-events: auto;          /* ahora sí se pueden clicar las tarjetas */
+}
+.sos-container.show-info .info-containers{
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  pointer-events: auto;
+}
   .sos-container.show-info .info-container:nth-child(1) {
     transform: translateY(0);
     opacity: 1;
