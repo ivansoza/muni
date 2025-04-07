@@ -142,33 +142,38 @@ class UsuariosView(LoginRequiredMixin, TemplateView):
 
 
 class UsuarioCreateView(LoginRequiredMixin, FormView):
-    template_name = 'generales/usuario_create.html'
+    template_name = "generales/usuario_create.html"
     form_class = UserCreationWithGroupForm
-    success_url = reverse_lazy('UsuariosView')
+    success_url = reverse_lazy("UsuariosView")
 
+    # --- control de permisos ---
     def dispatch(self, request, *args, **kwargs):
-        user = request.user
-        # Puedes ajustar los permisos según tu requerimiento
-        if not (user.is_superuser or user.has_perm('auth.add_user')):
+        if not (request.user.is_superuser or request.user.has_perm("auth.add_user")):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
+    # --- breadcrumbs, sidebar, etc. ---
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["breadcrumb"] = {
-            'parent': {'name': 'Dashboard', 'url': '/admin'},
-            'child': {'name': 'Crear Usuario', 'url': ''}
+            "parent": {"name": "Dashboard", "url": "/admin"},
+            "child": {"name": "Crear Usuario", "url": ""},
         }
-        context['sidebar'] = 'Generales'
-        context['regreso_url'] = reverse('generalesDashboard')
+        context["sidebar"] = "Generales"
+        context["regreso_url"] = reverse_lazy("generalesDashboard")
         return context
 
+    # --- guardado y mensaje de éxito ---
     def form_valid(self, form):
-        user = form.save()
-        messages.success(self.request, f"Usuario {user.username} creado correctamente.")
+        self.object = form.save()  # <‑‑ el usuario recién creado
+        messages.success(
+            self.request,
+            f"Usuario {self.object.username} creado correctamente."
+        )
         return super().form_valid(form)
     
 
+    
 class UsuarioEditView(LoginRequiredMixin, UpdateView):
     model = User
     form_class = UserEditForm

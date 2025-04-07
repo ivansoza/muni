@@ -71,9 +71,7 @@ class CustomAuthenticationForm(AuthenticationForm):
 class UserCreationWithGroupForm(UserCreationForm):
     email = forms.EmailField(
         required=True,
-        widget=forms.EmailInput(attrs={
-            "placeholder": "correo@ejemplo.com"
-        })
+        widget=forms.EmailInput(attrs={"placeholder": "correo@ejemplo.com"})
     )
     grupo = forms.ModelChoiceField(
         queryset=Group.objects.all(),
@@ -87,57 +85,68 @@ class UserCreationWithGroupForm(UserCreationForm):
         model = User
         fields = ("username", "email", "password1", "password2", "grupo")
         widgets = {
-            "username": forms.TextInput(attrs={
-                "placeholder": "Nombre de usuario",
-                # No se agrega autofocus aquí
-            }),
-            "password1": forms.PasswordInput(attrs={
-                "placeholder": "Contraseña segura"
-            }),
-            "password2": forms.PasswordInput(attrs={
-                "placeholder": "Repite la contraseña"
-            }),
+            "username": forms.TextInput(attrs={"placeholder": "Nombre de usuario"}),
+            "password1": forms.PasswordInput(attrs={"placeholder": "Contraseña segura"}),
+            "password2": forms.PasswordInput(attrs={"placeholder": "Repite la contraseña"}),
         }
 
+    # quitamos cualquier autofocus heredado
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Elimina cualquier atributo autofocus que pudiese haber en los widgets
         for field in self.fields.values():
-            field.widget.attrs.pop('autofocus', None)
+            field.widget.attrs.pop("autofocus", None)
 
+    # ---- CORRECCIÓN AQUÍ ----
     def save(self, commit=True):
-        user = super().save(commit=False)
-        user.email = self.cleaned_data["email"]
-        if commit:
-            user.save()
-            grupo = self.cleaned_data.get("grupo")
-            if grupo:
-                user.groups.add(grupo)
-        return user
+        # 1. Creamos el usuario con las contraseñas ya encriptadas
+        user = super().save(commit=True)   # commit=True porque UserCreationForm
+                                           # ya llama a set_password()
+
+        # 2. Añadimos el grupo (si se seleccionó)
+        grupo = self.cleaned_data.get("grupo")
+        if grupo:
+            grupo.user_set.add(user)       # equivalente a user.groups.add(grupo)
+
+        return user   
 
 
 class UserEditForm(forms.ModelForm):
-    email = forms.EmailField(required=True)
-    grupo = forms.ModelChoiceField(
-        queryset=Group.objects.all(),
-        required=False,
-        label="Grupo",
-        help_text="Selecciona un grupo para el usuario (opcional)."
+    email  = forms.EmailField(required=True)
+    grupo  = forms.ModelChoiceField(
+        queryset = Group.objects.all(),
+        required = False,
+        label    = "Grupo",
+        help_text= "Selecciona un grupo para el usuario (opcional)."
     )
 
     class Meta:
-        model = User
+        model  = User
         fields = ("username", "email", "grupo")
 
+    # --------- inicializamos el grupo actual ---------
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Si el usuario tiene algún grupo asignado, se inicializa con el primero
-        if self.instance:
-            groups = self.instance.groups.all()
-            if groups.exists():
-                self.fields["grupo"].initial = groups.first()
+        if self.instance and self.instance.pk:              # usuario ya existe
+            first_group = self.instance.groups.first()
+            if first_group:
+                self.fields["grupo"].initial = first_group
 
+    # --------- guardamos los cambios ---------
+    def save(self, commit=True):
+        user = super().save(commit=False)                   # username y email
 
+        if commit:
+            user.save()
+
+            grupo = self.cleaned_data.get("grupo")
+            if grupo:
+                # mantenemos SÓLO ese grupo
+                user.groups.set([grupo])
+            else:
+                # si se deja vacío, quitamos todos los grupos
+                user.groups.clear()
+
+        return user
 class GroupForm(forms.ModelForm):
     """
     Formulario para crear o editar un grupo, usando un campo oculto
