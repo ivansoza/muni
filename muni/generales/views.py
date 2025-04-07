@@ -36,6 +36,7 @@ from sevac.models import Carpeta, Archivo
 from sevac.forms import CarpetaForm, ArchivoForm
 # Create your views here.
 from django.db.models import Count
+from django.contrib.auth.models import User  # Asegúrate de importar el modelo User
 
 
 
@@ -124,6 +125,9 @@ class UsuariosView(LoginRequiredMixin,TemplateView):
         context['sidebar'] = 'Generales' 
         url_configuracion = reverse( 'generalesDashboard')
         context['regreso_url']= url_configuracion
+
+        context['usuarios'] = User.objects.all()  # Aquí estás pasando los usuarios al template
+       
         return context
 
 class CustomLoginView(LoginView):

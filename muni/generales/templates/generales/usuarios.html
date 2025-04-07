@@ -1,18 +1,52 @@
 {% extends "baseTemplate.html" %}
-
-
 {% load static %}
 
 {% block content %}
-
-
-
+<div class="container mt-5">
+    <h2 class="mb-4">Lista de Usuarios</h2>
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Usuario</th>
+                <th>Nombre completo</th>
+                <th>Correo electrónico</th>
+                <th>Grupos</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in usuarios %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.get_full_name|default:"-" }}</td>
+                <td>{{ user.email|default:"-" }}</td>
+                <td>
+                    {% if user.groups.all %}
+                        {% for group in user.groups.all %}
+                            <span class="badge bg-info text-dark">{{ group.name }}</span>
+                        {% empty %}
+                            -
+                        {% endfor %}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-primary">Editar usuario</button>
+                    <button class="btn btn-sm btn-warning">Inhabilitar usuario</button>
+                    <button class="btn btn-sm btn-secondary">Cambiar contraseña</button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No hay usuarios registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
-
 
 {% block scriptcontent %}
-
-
+<!-- Aquí podrías meter JS si necesitas -->
 {% endblock %}
-
-
