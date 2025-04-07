@@ -1,0 +1,485 @@
+{% extends "baseTemplate.html" %}
+
+{% block content %}
+<style>
+    /* Estilos base usando las variables de color del municipio */
+    :root {
+        {% if municipio.colores.exists %}
+            --color-primario:{{ municipio.colores.first.color_primario_dark }};
+            --color-secundario:{{ municipio.colores.first.color_primario }};
+            --color-iconos:{{municipio.colores.first.color_secundario}} ;
+            --color-primario-rgb: {{municipio.colores.first.color_primario_dark_rgb}};
+            --color-secundario-rgb: {{municipio.colores.first.color_primario_rgb}};
+        {% else %}
+            --color-primario: #1e4765;
+            --color-secundario: #295E84;
+            --color-iconos:rgb(109, 109, 109);
+            --color-primario-rgb: 30, 71, 101;
+            --color-secundario-rgb: 41, 94, 132;
+        {% endif %}
+        --color-gradiente: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+        --degradado: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+        
+        /* Colores adicionales para la UI */
+        --color-success: #10b981;
+        --color-danger: #ef4444;
+        --color-warning: #f59e0b;
+        --color-info: #3b82f6;
+        --color-light: #f3f4f6;
+        --color-dark: #1f2937;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --radius: 0.5rem;
+    }
+
+    .ag-wrapper {
+        padding: 2rem 0;
+        margin: 0 auto;
+    }
+
+    /* Grid de tarjetas */
+    .ag-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    /* Estilo de tarjeta mejorado */
+    .ag-card {
+        position: relative;
+        background-color: #fff;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(var(--color-primario-rgb), 0.1);
+    }
+
+    .ag-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .ag-card-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(var(--color-secundario-rgb), 0.9);
+        color: white;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+
+    .ag-card-icon {
+        background: var(--color-gradiente);
+        color: white;
+        padding: 1.5rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .ag-card-icon svg {
+        width: 48px;
+        height: 48px;
+        fill: white;
+    }
+
+    .ag-card-content {
+        padding: 1.5rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ag-card-title {
+        margin-top: 0;
+        margin-bottom: 0.75rem;
+        font-size: 1.25rem;
+        color: var(--color-primario);
+        font-weight: 600;
+    }
+
+    .ag-card-text {
+        margin-bottom: 1.5rem;
+        color: #4b5563;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        flex: 1;
+    }
+
+    /* Botones de acción */
+    .ag-card-actions {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+        margin-top: auto;
+    }
+
+    .ag-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: var(--radius);
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background-color: #f3f4f6;
+        color: #4b5563;
+    }
+
+    .ag-btn svg {
+        transition: transform 0.2s ease;
+    }
+
+    .ag-btn:hover svg {
+        transform: scale(1.1);
+    }
+
+    .ag-btn-primary {
+        background-color: var(--color-primario);
+        color: white;
+    }
+
+    .ag-btn-primary:hover {
+        background-color: var(--color-secundario);
+    }
+
+    .ag-btn-secondary {
+        background-color: var(--color-light);
+        color: var(--color-primario);
+        border: 1px solid rgba(var(--color-primario-rgb), 0.2);
+    }
+
+    .ag-btn-secondary:hover {
+        background-color: rgba(var(--color-primario-rgb), 0.1);
+    }
+
+    .ag-btn-danger {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+
+    .ag-btn-danger:hover {
+        background-color: #ef4444;
+        color: white;
+    }
+
+    .ag-btn-accent {
+        background: var(--color-gradiente);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        box-shadow: var(--shadow);
+    }
+
+    .ag-btn-accent:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    /* Estado vacío */
+    .ag-empty-state {
+        text-align: center;
+        padding: 3rem;
+        background-color: #f9fafb;
+        border-radius: var(--radius);
+        border: 1px dashed #d1d5db;
+    }
+
+    .ag-empty-state svg {
+        margin-bottom: 1rem;
+        stroke: var(--color-iconos);
+    }
+
+    .ag-empty-state h3 {
+        margin-bottom: 0.5rem;
+        color: var(--color-primario);
+    }
+
+    .ag-empty-state p {
+        color: #6b7280;
+    }
+
+    /* Modal */
+    .ag-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .ag-modal-content {
+        background-color: white;
+        border-radius: var(--radius);
+        width: 90%;
+        max-width: 500px;
+        box-shadow: var(--shadow-lg);
+        animation: modal-in 0.3s ease-out;
+    }
+
+    @keyframes modal-in {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .ag-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .ag-modal-header h4 {
+        margin: 0;
+        color: var(--color-primario);
+    }
+
+    .ag-modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #6b7280;
+    }
+
+    .ag-modal-body {
+        padding: 1.5rem;
+    }
+
+    .ag-modal-warning {
+        color: var(--color-danger);
+        font-size: 0.875rem;
+        margin-top: 1rem;
+    }
+
+    .ag-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    /* Media queries para responsividad */
+    @media (max-width: 768px) {
+        .ag-cards-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+        
+        .ag-card-actions {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+
+<div class="container-fluid">
+    <div class="ag-wrapper">
+        <h1 class="mb-4">Gestión de Grupos</h1>
+
+        <div class="mt-4 text-right">
+            <button class="ag-btn ag-btn-accent" onclick="createNewGroup()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Agregar Nuevo Grupo</span>
+            </button>
+        </div>
+
+
+
+        {% if groups %}
+        <div class="ag-cards-grid mt-3">
+            {% for group in groups %}
+            <div class="ag-card ag-grupos">
+                <div class="ag-card-badge">{{ group.user_set.count|default:"0" }} miembros</div>
+                <div class="ag-card-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 11c1.66 0 3-1.34 3-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05A5.73 5.73 0 0120 16.5V19h4v-2.5c0-2.33-4.67-3.5-8-3.5z"/>
+                    </svg>
+                </div>
+                <div class="ag-card-content">
+                    <h3 class="ag-card-title">{{ group.name }}</h3>
+                    <p class="ag-card-text">
+                        {% if group.description %}
+                            {{ group.description }}
+                        {% else %}
+                            Sin descripción.
+                        {% endif %}
+                    </p>
+                    <div class="ag-card-actions">
+                        <button class="ag-btn ag-btn-primary" onclick="editGroup('{{ group.id }}')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Editar</span>
+                        </button>
+                        <button class="ag-btn ag-btn-danger" onclick="confirmDelete('{{ group.id }}', '{{ group.name }}')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 6h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Eliminar</span>
+                        </button>
+                        <button class="ag-btn ag-btn-secondary" onclick="viewDetails('{{ group.id }}')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Ver</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="ag-empty-state mt-2">
+            <svg width="64" height="64" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+            </svg>
+            <h3>No se encontraron grupos</h3>
+            <p>Comienza creando tu primer grupo</p>
+        </div>
+        {% endif %}
+
+        <!-- Botón para agregar un nuevo grupo -->
+
+    </div>
+</div>
+
+<!-- Modal de confirmación para eliminar -->
+<div class="ag-modal" id="deleteModal">
+    <div class="ag-modal-content">
+        <div class="ag-modal-header">
+            <h4>Confirmar eliminación</h4>
+            <button class="ag-modal-close" onclick="closeDeleteModal()">&times;</button>
+        </div>
+        <div class="ag-modal-body">
+            <p>¿Estás seguro de que deseas eliminar el grupo <strong id="groupNameToDelete"></strong>?</p>
+            <p class="ag-modal-warning">Esta acción no se puede deshacer.</p>
+        </div>
+        <div class="ag-modal-footer">
+            <button class="ag-btn" onclick="closeDeleteModal()">Cancelar</button>
+            <button class="ag-btn ag-btn-danger" id="confirmDeleteBtn">Eliminar</button>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scriptcontent %}
+
+
+<script>
+    // Variables para almacenar el ID del grupo seleccionado
+    let selectedGroupId = null;
+    
+    // Función para mostrar modal de eliminación
+    function confirmDelete(groupId, groupName) {
+        selectedGroupId = groupId;
+        document.getElementById('groupNameToDelete').textContent = groupName;
+        document.getElementById('deleteModal').style.display = 'flex';
+        
+        // Configurar el botón de confirmación
+        document.getElementById('confirmDeleteBtn').onclick = function() {
+            deleteGroup(groupId);
+        };
+    }
+    
+    // Cerrar el modal
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+    }
+    
+    // Función para editar grupo
+    function editGroup(groupId) {
+        // Redirigir a la página de edición
+        window.location.href = `/grupos/editar/${groupId}/`;
+    }
+    
+    // Función para eliminar grupo
+// Dentro de la función deleteGroup en tu script
+    function deleteGroup(groupId) {
+        fetch(`/admin/api/grupos/${groupId}/`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken() // Función para obtener el token CSRF
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Error al eliminar el grupo. Inténtalo de nuevo.');
+            }
+        })
+        .then(data => {
+            // Redireccionar a la URL que devuelve el backend
+            window.location.href = data.redirect;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(error);
+        })
+        .finally(() => {
+            closeDeleteModal();
+        });
+    }
+
+    // Función para ver detalles del grupo
+    function viewDetails(groupId) {
+        window.location.href = `/grupos/detalle/${groupId}/`;
+    }
+    
+    // Función para crear un nuevo grupo
+    function createNewGroup() {
+        window.location.href = '/grupos/nuevo/';
+    }
+    
+    // Función para obtener el token CSRF desde las cookies
+    function getCsrfToken() {
+        const name = 'csrftoken';
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return '';
+    }
+    
+    // Cerrar modal al hacer clic fuera del contenido
+    window.onclick = function(event) {
+        const modal = document.getElementById('deleteModal');
+        if (event.target === modal) {
+            closeDeleteModal();
+        }
+    }
+    
+    // Permitir que escape cierre el modal
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "Escape") {
+            closeDeleteModal();
+        }
+    });
+</script>
+{% endblock scriptcontent %}

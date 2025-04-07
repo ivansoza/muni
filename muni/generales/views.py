@@ -9,6 +9,8 @@ import json
 from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.forms import SetPasswordForm
+from django.contrib.auth.models import Group
+from django.views.decorators.http import require_http_methods
 
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -40,8 +42,8 @@ from sevac.forms import CarpetaForm, ArchivoForm
 from django.db.models import Count
 from django.contrib.auth.models import User  # Asegúrate de importar el modelo User
 
-from django.contrib.auth.decorators import login_required
 
+from django.contrib.auth.decorators import login_required, permission_required
 
 
 class VideoView(LoginRequiredMixin,TemplateView):
@@ -186,6 +188,46 @@ class UsuarioEditView(LoginRequiredMixin, UpdateView):
         messages.success(self.request, f"El usuario {self.object.username} ha sido actualizado correctamente.")
         return response
     
+
+class GruposView(LoginRequiredMixin, ListView):
+    model = Group
+    template_name = 'grupos_view.html'  # Template para mostrar la lista de grupos en tarjetas o botones.
+    context_object_name = 'groups'
+
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        # Permitir acceso si es superusuario o tiene permiso para ver, agregar o cambiar grupos.
+        if not (user.is_superuser or 
+                user.has_perm('auth.view_group') or 
+                user.has_perm('auth.add_group') or 
+                user.has_perm('auth.change_group')):
+            raise PermissionDenied("No tienes permisos para ver los grupos.")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumb"] = {
+            'parent': {'name': 'Generales', 'url': '/admin/generales'},
+            'child': {'name': 'Grupos', 'url': ''}
+        }
+        context['sidebar'] = 'Generales'
+        context['regreso_url'] = reverse_lazy('generalesDashboard')
+        return context
+    
+
+
+
+@login_required
+@permission_required('auth.delete_group', raise_exception=True)
+@require_http_methods(["DELETE"])
+def delete_group(request, pk):
+    group = get_object_or_404(Group, pk=pk)
+    group_name = group.name  # Guardamos el nombre antes de eliminar
+    group.delete()
+    messages.success(request, f'El grupo "{group_name}" se ha eliminado con éxito.')
+    # Se retorna la URL a la que redirigir tras la eliminación (por ejemplo, la vista de listado de grupos)
+    return JsonResponse({'redirect': str(reverse_lazy("GruposView"))})
+
 
 class UsuarioPasswordChangeView(LoginRequiredMixin, FormView):
     template_name = 'generales/usuario_change_password.html'

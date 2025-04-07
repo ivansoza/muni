@@ -400,7 +400,7 @@
                 {% endif %}
                 
                 {% if is_superuser or 'auth.add_group' in user_permissions %}
-                <a href="#"
+                <a href="{% url "GruposView" %}"
                    class="ag-card-link"
                    data-keywords="grupos roles permisos seguridad administración">
                     <div class="ag-card ag-grupos">
