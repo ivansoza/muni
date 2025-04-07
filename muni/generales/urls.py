@@ -83,6 +83,6 @@ urlpatterns = [
     path('convocatorias/nueva/', views.crear_convocatoria, name='crear_convocatoria'),
     path('crear-categoria/', views.crear_categoria_ajax, name='crear_categoria_ajax'),
     path('convocatorias/<int:id>/eliminar/', views.eliminar_convocatoria, name='eliminarConvocatoria'),
-    path('convocatorias/<int:id>/detalle/', views.obtener_detalle_convocatoria, name='detalleConvocatoria'),
+    path('convocatorias/<int:id>/detalle/', views.obtener_detalle_convocatoria, name='detalle_Convocatoria'),
 
 ]
