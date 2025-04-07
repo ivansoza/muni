@@ -119,7 +119,7 @@ class UsuariosView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["breadcrumb"] = {
             'parent': {'name': 'Dashboard', 'url': '/admin'},
-            'child': {'name': 'Reportes', 'url': ''}
+            'child': {'name': 'Lista de Usuarios', 'url': ''}
         }
         context['sidebar'] = 'Generales' 
         context['regreso_url'] = reverse('generalesDashboard')
@@ -166,24 +166,24 @@ class UsuarioEditView(LoginRequiredMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         user = request.user
-        # Permisos para editar usuario (ajusta según tu lógica)
         if not (user.is_superuser or user.has_perm('auth.change_user')):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Agregamos el usuario que se está editando para mostrarlo en la plantilla
+        context['user_to_edit'] = self.object
         context["breadcrumb"] = {
             'parent': {'name': 'Dashboard', 'url': '/admin'},
             'child': {'name': 'Editar Usuario', 'url': ''}
         }
-        context['sidebar'] = 'Generales'
         context['regreso_url'] = reverse('UsuariosView')
         return context
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        messages.success(self.request, f"Usuario {self.object.username} editado correctamente.")
+        messages.success(self.request, f"El usuario {self.object.username} ha sido actualizado correctamente.")
         return response
     
 
