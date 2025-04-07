@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import CustomLoginView, DashboardView, EncuestasView, GeneralesDashboardView, NewsView, PersonalizacionView, ReportesView, SeccionesView, ServicioCreateView, ServicioUpdateView,SocialMediaView,ServicesView, VideoView, actualizar_video, create_social_network, custom_upload_function, agregar_categoria, delete_social_network, eliminar_noticia, editar_noticia, list_social_networks, toggle_favorite
+from .views import CustomLoginView, DashboardView, EncuestasView, GeneralesDashboardView, NewsView, PersonalizacionView, ReportesView, SeccionesView, ServicioCreateView, ServicioUpdateView,SocialMediaView,ServicesView, UsuariosView, VideoView, actualizar_video, create_social_network, custom_upload_function, agregar_categoria, delete_social_network, eliminar_noticia, editar_noticia, list_social_networks, toggle_favorite
 from django.contrib.auth.views import LogoutView
 from .views import TransparenciaView, crear_seccion, EjercicioFiscalListView, EjercicioFiscalCreateView, DocumentoTransparenciaListView, registrar_documento, SeccionTransparenciaUpdateView, eliminar_seccion, EjercicioFiscalUpdateView, eliminar_ejercicio_fiscal, DocumentoTransparenciaUpdateView, eliminar_documento_transparencia
 from . import views
@@ -42,6 +42,7 @@ urlpatterns = [
     path('generales/secciones', SeccionesView.as_view(), name='SeccionesView'),
 
     path('generales/encuestas', EncuestasView.as_view(), name='EncuestasView'),
+    path('generales/usuarios', UsuariosView.as_view(), name='UsuariosView'),
 
     path('generales/reportes', ReportesView.as_view(), name='ReportesView'),
     path('actualizar_video/', actualizar_video, name='actualizar_video'),
