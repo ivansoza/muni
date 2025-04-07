@@ -14,4 +14,14 @@ def user_info(request):
         'user_username': user.username if user.is_authenticated else "usuario anonimo",
     }
 
+    if not user.is_authenticated:
+        context['is_superuser'] = False
+        context['user_permissions'] = []
+    else:
+        # Permisos como lista de strings tipo "auth.add_user", "myapp.view_modelo"
+        permisos = user.get_all_permissions()
+        context['is_superuser'] = user.is_superuser
+        context['user_permissions'] = sorted(permisos)  # puedes quitar el sorted() si no necesitas orden
+
+
     return context

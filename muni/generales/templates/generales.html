@@ -358,31 +358,37 @@
                     </div>
                 </a>
 
-                <a href="{% url 'UsuariosView' %}" class="ag-card-link" data-keywords="usuarios perfiles cuentas personas administración">
-                    <div class="ag-card ag-usuarios">
-                        <div class="ag-card-icon">
-                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/>
-                            </svg>
-                        </div>
-                        <div class="ag-card-content">
-                            <h3 class="ag-card-title">Usuarios</h3>
-                            <p class="ag-card-text">Administra los usuarios registrados, visualiza sus perfiles y gestiona sus permisos fácilmente.</p>
-                            <div class="ag-card-footer">
-                                <button class="ag-btn-see-more">
-                                    <span>Ver más</span>
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                         xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                              stroke-linejoin="round"/>
-                                        <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                              stroke-linejoin="round"/>
-                                    </svg>
-                                </button>
+
+
+                {% if is_superuser or 'auth.add_user' in user_permissions %}
+                    <a href="{% url 'UsuariosView' %}" class="ag-card-link" data-keywords="usuarios perfiles cuentas personas administración">
+                        <div class="ag-card ag-usuarios">
+                            <div class="ag-card-icon">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/>
+                                </svg>
+                            </div>
+                            <div class="ag-card-content">
+                                <h3 class="ag-card-title">Usuarios</h3>
+                                <p class="ag-card-text">Administra los usuarios registrados, visualiza sus perfiles y gestiona sus permisos fácilmente.</p>
+                                <div class="ag-card-footer">
+                                    <button class="ag-btn-see-more">
+                                        <span>Ver más</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round"/>
+                                            <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                {% endif %}
+                
+
 
                 
             </div>

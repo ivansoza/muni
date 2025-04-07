@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 import json
 from django.urls import reverse_lazy
+from django.core.exceptions import PermissionDenied
 
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -103,6 +104,15 @@ class ReportesView(LoginRequiredMixin,TemplateView):
     
 class UsuariosView(LoginRequiredMixin,TemplateView):
     template_name = 'generales/usuarios.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+
+        if not (user.is_superuser or user.has_perm('auth.add_user')):
+            raise PermissionDenied  
+
+        return super().dispatch(request, *args, **kwargs)
+    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
