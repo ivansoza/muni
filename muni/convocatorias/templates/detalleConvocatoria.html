@@ -1,0 +1,1194 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+  <!-- Iconos de Lucide (versión CDN) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+  <style>
+    /* styles.css */
+:root {
+  --color-primary: #10b981;
+  --color-primary-hover: #059669;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f3f4f6;
+  --color-secondary-hover: #e5e7eb;
+  --color-secondary-foreground: #111827;
+  --color-success: #10b981;
+  --color-success-hover: #059669;
+  --color-success-foreground: #ffffff;
+  --color-background: #f9fafb;
+  --color-foreground: #111827;
+  --color-muted: #6b7280;
+  --color-muted-foreground: #4b5563;
+  --color-border: #e5e7eb;
+  --color-input: #ffffff;
+  --color-ring: #10b981;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  
+  --radius-sm: 0.125rem;
+  --radius: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-full: 9999px;
+  
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+    font-family: var(--font-sans);
+    color: var(--color-text);
+    line-height: 1.5;
+    background-color: var(--color-white);
+    padding-top: -100px;
+  }
+
+.min-h-screen {
+  min-height: 100vh;
+  margin-top: -45px;
+}
+
+.bg-gray-50 {
+  background-color: var(--color-background);
+}
+
+.container {
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+    
+  }
+
+/* Estilos de la cabecera */
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.back-link:hover {
+  color: var(--color-foreground);
+}
+
+.back-link i {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.25rem;
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-top: 0.5rem;
+  line-height: 1.2;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-full);
+  padding: 0.125rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-success {
+  background-color: var(--color-success);
+  color: var(--color-success-foreground);
+}
+
+.badge-outline {
+  background-color: var(--color-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.location i {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+/* Layout de la cuadrícula */
+.grid-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .grid-layout {
+    grid-template-columns: 1fr 2fr;
+  }
+}
+
+/* Estilos de tarjetas */
+.card {
+  background-color: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.5rem;
+}
+
+.poster-card {
+  padding: 1rem;
+}
+
+.contact-card, .share-card, .main-content, .related-card {
+  padding: 1.5rem;
+}
+
+.card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* Estilos del póster */
+.poster-container {
+  position: relative;
+}
+
+.poster-wrapper {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.poster-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.poster-actions {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.poster-buttons {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Estilos de botones */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  border: 1px solid transparent;
+}
+
+.btn i, .btn svg {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-secondary-foreground);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-secondary-hover);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border-color: var(--color-border);
+  color: var(--color-foreground);
+}
+
+.btn-outline:hover {
+  background-color: var(--color-secondary);
+}
+
+.btn-ghost {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--color-foreground);
+}
+
+.btn-ghost:hover {
+  background-color: var(--color-secondary);
+}
+
+.btn-icon {
+  padding: 0.25rem;
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.btn-icon i, .btn-icon svg {
+  margin-right: 0;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.btn-left {
+  justify-content: flex-start;
+}
+
+/* Estilos de información de contacto */
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.contact-item {
+  margin-bottom: 0.5rem;
+}
+
+.contact-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-muted);
+  margin-bottom: 0.25rem;
+}
+
+.contact-email {
+  color: var(--color-primary);
+}
+
+/* Estilos de compartir */
+.share-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.social-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Estilos del contenido principal */
+.apply-button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.content-section {
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.description {
+  color: var(--color-muted-foreground);
+  margin-bottom: 1.5rem;
+}
+
+.separator {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: 2rem 0;
+}
+
+/* Estilos de la cuadrícula de información */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .info-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.info-box {
+  background-color: var(--color-secondary);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+}
+
+.info-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-muted);
+  margin-bottom: 0.25rem;
+}
+
+.info-value {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+/* Estilos de requisitos */
+.requirements-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.requirement-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.requirement-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--radius-full);
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--color-primary);
+  font-weight: 600;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.requirement-text {
+  color: var(--color-muted-foreground);
+}
+
+/* Estilos de documentos */
+.documents-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.document-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: background-color 0.2s;
+}
+
+.document-item:hover {
+  background-color: var(--color-secondary);
+}
+
+.document-icon-container {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-md);
+  background-color: var(--color-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-muted);
+  margin-right: 0.75rem;
+}
+
+.document-info {
+  flex: 1;
+}
+
+.document-name {
+  font-weight: 500;
+}
+
+.document-meta {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+/* Estilos de cronograma */
+.timeline {
+  position: relative;
+  padding-left: 2.5rem;
+}
+
+.timeline-line {
+  position: absolute;
+  left: 1rem;
+  top: 0;
+  bottom: 0;
+  width: 0.125rem;
+  background-color: var(--color-secondary);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.timeline-icon {
+  position: absolute;
+  left: -2.5rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid white;
+}
+
+.timeline-icon i {
+  width: 1rem;
+  height: 1rem;
+}
+
+.timeline-icon-green {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.timeline-icon-red {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.timeline-icon-blue {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.timeline-icon-purple {
+  background-color: rgba(168, 85, 247, 0.1);
+  color: #a855f7;
+}
+
+.timeline-title {
+  font-weight: 500;
+}
+
+.timeline-date {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.timeline-description {
+  font-size: 0.875rem;
+  color: var(--color-muted-foreground);
+  margin-top: 0.25rem;
+}
+
+/* Estilos de convocatorias relacionadas */
+.related-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .related-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.related-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: background-color 0.2s;
+}
+
+.related-item:hover {
+  background-color: var(--color-secondary);
+}
+
+.related-image {
+  width: 3rem;
+  height: 4rem;
+  background-color: var(--color-secondary);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.related-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.related-date {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.related-link {
+  font-size: 0.75rem;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.related-link:hover {
+  text-decoration: underline;
+}
+
+.related-more {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.link-button {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.link-button:hover {
+  text-decoration: underline;
+}
+
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.8);
+}
+
+.image-modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.modal-poster-image {
+    max-height: 90vh;
+    max-width: 90vw;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
+
+.close-modal {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    background-color: var(--color-primario);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 50px;
+    font-size: 25px;
+    text-align: center;
+    line-height: 38px;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+
+/* Estilos de formulario */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+}
+
+.form-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+}
+
+.error-message {
+  font-size: 0.75rem;
+  color: #ef4444;
+  margin-top: 0.25rem;
+}
+
+.preview-container {
+  margin-top: 1rem;
+}
+
+.preview-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.image-preview {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  height: 200px;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Utilidades */
+.clear-btn {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .apply-button-container {
+    justify-content: center;
+  }
+  
+  .btn-full {
+    width: 100%;
+  }
+}
+.status-abierta {
+    color: #0a540a;
+    background-color: #c2f0c2;
+}
+
+.status-próxima {
+    color: #d19d01;
+    background-color: #fff3cd;
+}
+
+.status-cerrada {
+    color: #b3091a;
+    background-color: #f8d7da;
+}
+/* Colores para los iconos dependiendo del tipo de archivo */
+.icon-pdf {
+  color: #d32f2f; /* Rojo para los PDF */
+}
+
+.icon-docx {
+  color: #1976d2; /* Azul para los DOCX */
+}
+
+.icon-excel {
+  color: #388e3c; /* Verde para los archivos Excel */
+}
+
+.icon-powerpoint {
+  color: #f57c00; /* Naranja para los PowerPoint */
+}
+
+.icon-image {
+  color: #0288d1; /* Azul para las imágenes */
+}
+
+.icon-archive {
+  color: #8e24aa; /* Morado para los archivos comprimidos */
+}
+
+.icon-default {
+  color: #757575; /* Gris para otros archivos */
+}
+/* Contenedor de la barra de progreso */
+.circular-progress-wrapper {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: auto;
+}
+
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring__background {
+  fill: transparent;
+  stroke: #e0e0e0;
+  stroke-width: 10;
+}
+
+.progress-ring__circle {
+  fill: transparent;
+  stroke: #4caf50;
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: 314; /* 2πr = 2 * π * 50 = ~314 */
+  stroke-dashoffset: 314;
+  transition: stroke-dashoffset 1s ease;
+}
+
+.progress-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-size: 18px;
+}
+
+.social-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.social-buttons .btn-icon {
+  border: 1px solid var(--color-primario); /* Borde del círculo con el color primario */
+  background-color: transparent; /* Fondo transparente */
+  border-radius: 50%; /* Hace que sea circular */
+  padding: 18px; /* Ajusta el tamaño del círculo */
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.social-buttons .btn-icon img {
+  width: 24px; /* Tamaño del icono */
+  height: 24px; /* Tamaño del icono */
+}
+
+
+.social-buttons .btn-icon:hover {
+  transform: scale(1.1);
+}
+
+
+
+  </style>
+<body>
+  <div class="min-h-screen bg-gray-50">
+    <div class="container">
+      <!-- Header con navegación -->
+      <div class="header">
+        <a href="/convocatorias" class="back-link">
+            <br>
+
+          <i data-lucide="arrow-left"></i>
+          Volver a convocatorias
+        </a>
+        <h1 class="title">{{convocatoria.titulo}}</h1>
+      </div>
+
+      <div class="grid-layout">
+        <!-- Columna izquierda - Imagen del Póster -->
+        <div class="left-column">
+          <div class="card poster-card">
+            <div class="poster-container">
+              <div class="poster-wrapper">
+                <img src="{{convocatoria.imagen.url}}" alt="Póster de la convocatoria" class="poster-image">
+              </div>
+            </div>
+            
+            <div class="poster-buttons">
+                <button class="btn btn-primary btn-full" id="view-poster-btn" style="background-color: var(--color-primario);">
+                    <i data-lucide="eye"></i> Ver póster completo
+                </button>
+                <button id="download-poster-btn" class="btn btn-outline btn-full">
+                    <i data-lucide="download"></i>
+                    Descargar póster
+                </button>
+            </div>
+          </div>
+           <!-- Información de la convocatoria -->
+            <div class="card contact-card">
+                <h3 class="card-title" style="color: var(--color-primario);">Información de la convocatoria</h3>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <h4 class="contact-label">
+                            <i class="fa-solid fa-tag"></i> Categoría
+                        </h4>
+                        <p>{{ convocatoria.categoria.nombre }}</p> <!-- Mostramos la categoría -->
+                    </div>
+                    <div class="contact-item">
+                        <h4 class="contact-label">
+                            <i class="fa-solid fa-circle-check"></i> Estado
+                        </h4>
+                        <div class="status-{{ convocatoria.estado|lower }}" style="max-width: 90px; text-align: center;">
+                            {{ convocatoria.estado|title }}
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <h4 class="contact-label">
+                            <i class="fa-solid fa-calendar-day"></i> Fecha de Apertura
+                        </h4>
+                        <p>{{ convocatoria.fecha_apertura }}</p> <!-- Mostramos la fecha de apertura -->
+                    </div>
+                    <div class="contact-item">
+                        <h4 class="contact-label">
+                            <i class="fa-solid fa-calendar-check"></i> Fecha de Cierre
+                        </h4>
+                        <p>{{ convocatoria.fecha_cierre }}</p> <!-- Mostramos la fecha de cierre -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información de contacto -->
+            <div class="card contact-card">
+                <h3 class="card-title" style="color: var(--color-primario);">Información de contacto</h3>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <h4 class="contact-label">
+                            <i class="fa-solid fa-building"></i> Departamento
+                        </h4>
+                        <p>{{ convocatoria.departamento }}</p> <!-- Mostramos el departamento -->
+                    </div>
+                    <div class="contact-item">
+                        <h4 class="contact-label">
+                            <i class="fa-solid fa-envelope"></i> Email
+                        </h4>
+                        <p class="contact-email">{{ convocatoria.email }}</p> <!-- Mostramos el email -->
+                    </div>
+                    <div class="contact-item">
+                        <h4 class="contact-label">
+                            <i class="fa-solid fa-phone"></i> Teléfono
+                        </h4>
+                        <p>{{ convocatoria.telefono }}</p> <!-- Mostramos el teléfono -->
+                    </div>
+                    <button class="btn btn-outline btn-full" onclick="sendMessage()">
+                        Solicitar más información
+                    </button>
+                </div>
+            </div>
+
+
+          <!-- Compartir -->
+          <div class="card share-card">
+            <h3 class="card-title">Compartir convocatoria</h3>
+            <div class="share-options">
+                <button id="copy-link-btn" class="btn btn-outline btn-full btn-left">
+                    <i data-lucide="share-2"></i>
+                    Compartir enlace
+                  </button>
+                  
+                  <div class="social-buttons">
+                    <!-- Facebook -->
+                    <button class="btn btn-outline btn-icon" data-platform="facebook" aria-label="Compartir en Facebook">
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook" width="24" height="24">
+                    </button>
+                  
+                    <!-- Twitter (X) -->
+                    <button class="btn btn-outline btn-icon" data-platform="twitter" aria-label="Compartir en Twitter">
+                      <img src="https://images.seeklogo.com/logo-png/49/1/twitter-x-logo-png_seeklogo-492396.png" alt="X (Twitter)" width="24" height="24">
+                    </button>
+                  
+                    <!-- LinkedIn -->
+                    <button class="btn btn-outline btn-icon" data-platform="linkedin" aria-label="Compartir en LinkedIn">
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="24" height="24">
+                    </button>
+                  
+                    <!-- WhatsApp -->
+                    <button class="btn btn-outline btn-icon" data-platform="whatsapp" aria-label="Compartir en WhatsApp">
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" width="24" height="24">
+                    </button>
+                  </div>
+                  
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna derecha - Contenido principal -->
+        <div class="right-column">
+          <!-- Contenido principal - Todo en una sección -->
+          <div class="card main-content">
+
+            <!-- Sección de descripción -->
+            <section class="content-section">
+              <h3 class="section-title">Acerca de esta convocatoria</h3>
+              {{convocatoria.contenido|safe }}
+            </section>
+            <div class="separator"></div>
+            <!-- Sección de documentos -->
+            
+            <section class="content-section">
+                <h3 class="section-title">Documentos disponibles</h3>
+                <div class="documents-list">
+                  {% for archivo in convocatoria.archivos.all %}
+                    <div class="document-item">
+                      <div class="document-icon-container">
+                        <i class="fas
+                          {% if archivo.archivo.url|lower|slice:'-4:' == '.pdf' %}
+                            fa-file-pdf icon-pdf
+                          {% elif archivo.archivo.url|lower|slice:'-5:' == '.docx' or archivo.archivo.url|lower|slice:'-4:' == '.doc' %}
+                            fa-file-word icon-docx
+                          {% elif archivo.archivo.url|lower|slice:'-5:' == '.xlsx' or archivo.archivo.url|lower|slice:'-4:' == '.xls' %}
+                            fa-file-excel icon-excel
+                          {% elif archivo.archivo.url|lower|slice:'-5:' == '.pptx' or archivo.archivo.url|lower|slice:'-4:' == '.ppt' %}
+                            fa-file-powerpoint icon-powerpoint
+                          {% elif archivo.archivo.url|lower|slice:'-4:' == '.jpg' or archivo.archivo.url|lower|slice:'-4:' == '.png' or archivo.archivo.url|lower|slice:'-4:' == '.gif' %}
+                            fa-image icon-image
+                          {% elif archivo.archivo.url|lower|slice:'-4:' == '.zip' or archivo.archivo.url|lower|slice:'-4:' == '.rar' %}
+                            fa-file-archive icon-archive
+                          {% else %}
+                            fa-file-alt icon-default
+                          {% endif %}
+                        "></i>
+                      </div>
+                      <div class="document-info">
+                        <p class="document-name">{{ archivo.nombre|default:"Documento" }}</p>
+                        <p class="document-meta">
+                          {% if archivo.archivo.url|lower|slice:'-4:' == '.pdf' %}
+                            PDF
+                          {% elif archivo.archivo.url|lower|slice:'-5:' == '.docx' %}
+                            DOCX
+                          {% elif archivo.archivo.url|lower|slice:'-4:' == '.xlsx' %}
+                            XLSX
+                          {% elif archivo.archivo.url|lower|slice:'-3:' == '.xls' %}
+                            XLS
+                          {% elif archivo.archivo.url|lower|slice:'-4:' == '.zip' %}
+                            ZIP
+                          {% elif archivo.archivo.url|lower|slice:'-4:' == '.rar' %}
+                            RAR
+                          {% else %}
+                            ARCHIVO
+                          {% endif %}
+                           · {{ archivo.archivo.size|filesizeformat }}
+                        </p>
+                      </div>
+                      <a href="{{ archivo.archivo.url }}" target="_blank" class="btn btn-outline btn-sm">
+                        <i class="fas fa-download"></i>
+                        Descargar
+                      </a>
+                    </div>
+                  {% empty %}
+                    <p>No hay documentos disponibles para esta convocatoria.</p>
+                  {% endfor %}
+                </div>
+              </section>
+              
+
+            <div class="separator"></div>
+            
+            <section class="content-section">
+                <h3 class="section-title">Tiempo restante para el cierre</h3>
+                <div class="circular-progress-wrapper">
+                  <svg class="progress-ring" width="120" height="120">
+                    <circle class="progress-ring__background" r="50" cx="60" cy="60"/>
+                    <circle class="progress-ring__circle" r="50" cx="60" cy="60"/>
+                  </svg>
+                  <div class="progress-label">
+                    <span id="days-left">{{ tiempo_restante }}</span>
+                    <small>días restantes</small>
+                  </div>
+                </div>
+                <p style="text-align: center;">Fecha de cierre: {{ convocatoria.fecha_cierre }}</p>
+              </section>
+
+            <!-- Sección de cronograma -->
+        </div>
+              
+      </div>
+    </div>
+
+  </div>
+<!-- Modal del póster -->
+<div id="poster-modal" class="image-modal">
+    <span class="close-modal" id="close-poster-modal">&times;</span>
+    <div class="modal-wrapper">
+      <img src="{{convocatoria.imagen.url}}" alt="Póster de la convocatoria" class="modal-poster-image">
+    </div>
+  </div>
+
+  <script>
+    // Inicializar los iconos de Lucide
+    document.addEventListener('DOMContentLoaded', () => {
+  lucide.createIcons();
+
+  const posterModal = document.getElementById('poster-modal');
+  const viewPosterBtn = document.getElementById('view-poster-btn');
+  const closePosterBtn = document.getElementById('close-poster-modal');
+
+  viewPosterBtn.addEventListener('click', () => {
+    posterModal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  });
+
+  closePosterBtn.addEventListener('click', () => {
+    posterModal.classList.remove('show');
+    document.body.style.overflow = '';
+  });
+
+  posterModal.addEventListener('click', (e) => {
+    if (e.target === posterModal) {
+      posterModal.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+  });
+  const downloadPosterBtn = document.getElementById('download-poster-btn');
+const posterImage = document.querySelector('.poster-image');
+
+downloadPosterBtn.addEventListener('click', () => {
+  const imageUrl = posterImage.src;
+  const fileName = imageUrl.split('/').pop(); // Nombre del archivo basado en la URL
+
+  const link = document.createElement('a');
+  link.href = imageUrl;
+  link.download = fileName; // Esto le dice al navegador que debe descargarlo
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+});
+
+const copyLinkBtn = document.getElementById('copy-link-btn');
+
+copyLinkBtn.addEventListener('click', () => {
+const colorPrimario = getComputedStyle(document.documentElement).getPropertyValue('--color-primario').trim();
+
+  const url = window.location.href;
+  navigator.clipboard.writeText(url)
+    .then(() => {
+      Toastify({
+        text: "✅ Enlace copiado al portapapeles",
+        duration: 3000,
+        gravity: "bottom",
+        position: "left",
+        backgroundColor: colorPrimario, // aquí va tu color dinámico
+        stopOnFocus: true
+      }).showToast();
+    })
+    .catch(err => {
+      console.error("Error al copiar el enlace: ", err);
+    });
+});
+
+
+document.querySelectorAll('.social-buttons button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const url = encodeURIComponent(window.location.href);
+    const platform = btn.getAttribute('data-platform');
+    let shareUrl = '';
+
+    switch (platform) {
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+        break;
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=¡Mira esta convocatoria!`;
+        break;
+      case 'linkedin':
+        shareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${url}`;
+        break;
+      case 'whatsapp':
+        shareUrl = `https://wa.me/?text=¡Mira esta convocatoria! ${url}`;
+        break;
+    }
+
+    window.open(shareUrl, '_blank');
+  });
+});
+
+
+});
+
+  </script>
+<script>
+    const circle = document.querySelector('.progress-ring__circle');
+    const totalDays = {{ dias_totales }};
+    const remainingDays = {{ tiempo_restante }};
+    const elapsedDays = totalDays - remainingDays;
+    const percentage = Math.max(0, (elapsedDays / totalDays) * 100);
+    const circumference = 314; // 2 * π * r
+  
+    const offset = circumference - (percentage / 100) * circumference;
+    circle.style.strokeDashoffset = offset;
+  </script>
+  <script>
+    function sendMessage() {
+        // Obtenemos los valores del teléfono y el email
+        const telefono = '{{ convocatoria.telefono }}';
+        const email = '{{ convocatoria.email }}';
+        
+        // Aquí puedes elegir a cuál opción deseas redirigir (WhatsApp o correo)
+        // Para WhatsApp:
+        const whatsappUrl = `https://wa.me/${telefono}?text=Hola, estoy interesado en más información`;
+
+        // Para Correo (si prefieres esta opción):
+        const mailtoUrl = `mailto:${email}?subject=Solicitud%20de%20información&body=Hola, me gustaría recibir más información sobre la convocatoria.`;
+
+        // Puedes decidir que se abra WhatsApp si el número está disponible o el correo si no lo está
+        if (telefono) {
+            window.open(whatsappUrl, '_blank');
+        } else if (email) {
+            window.open(mailtoUrl, '_blank');
+        } else {
+            alert('No hay información de contacto disponible.');
+        }
+    }
+</script>
+</body>
+{% endblock %}

@@ -1,9 +1,6 @@
 {% extends "base.html" %}
-
-
-
-
 {% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
 <style>
 .container-convocatoria {
@@ -160,6 +157,10 @@
     box-shadow: 0 3px 10px rgba(0,0,0,0.08);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
 }
 
 .convocatoria-card:hover {
@@ -197,6 +198,7 @@
 .convocatoria-header {
     padding: 20px;
     background: rgba(var(--color-secundario-rgb), 0.08);
+    height:110px;
 }
 
 .convocatoria-title {
@@ -207,6 +209,8 @@
 
 .convocatoria-content {
     padding: 20px;
+    flex-grow: 1;
+    overflow: hidden;
 }
 
 .convocatoria-dates {
@@ -230,9 +234,29 @@
 }
 
 .convocatoria-description {
-    color: #555;
-    margin-bottom: 20px;
+    position: relative;
+    max-height: 116px; /* Altura inicial del texto */
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.convocatoria-description.expanded {
+    max-height: none; /* Se expande completamente cuando está activo */
+}
+
+.descripcion-texto {
+    margin: 0;
     line-height: 1.5;
+}
+
+.toggle-description {
+    background: none;
+    border: none;
+    color: var(--color-acento);
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 5px;
+    display: block;
 }
 
 .convocatoria-footer {
@@ -254,7 +278,7 @@
 }
 
 .view-details {
-    background-color: var(--color-acento);
+    background-color: var(--color-primario);
     color: white;
     border: none;
     padding: 8px 16px;
@@ -265,7 +289,7 @@
 }
 
 .view-details:hover {
-    background-color: var(--color-primario);
+    background-color: var(--color-secundario);
 }
 
 /* Paginación */
@@ -354,114 +378,6 @@
     background-color: rgba(255,255,255,0.9);
 }
 
-/* Modal para detalles de convocatoria */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.6);
-    z-index: 1000;
-    overflow-y: auto;
-    padding: 20px;
-}
-
-.modal-content {
-    background-color: white;
-    margin: 30px auto;
-    max-width: 800px;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 5px 25px rgba(0,0,0,0.15);
-    position: relative;
-    animation: modalFadeIn 0.3s ease;
-}
-
-@keyframes modalFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.modal-header {
-    padding: 20px 30px;
-    background: var(--color-gradiente);
-    color: white;
-    position: relative;
-}
-
-.modal-title {
-    font-size: 1.8rem;
-    margin-bottom: 10px;
-}
-
-.modal-subtitle {
-    font-size: 1rem;
-    opacity: 0.9;
-}
-
-.modal-close {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background-color: rgba(255,255,255,0.2);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 1.2rem;
-    transition: all 0.2s ease;
-}
-
-.modal-close:hover {
-    background-color: rgba(255,255,255,0.3);
-}
-
-.modal-body {
-    padding: 30px;
-}
-
-.modal-section {
-    margin-bottom: 25px;
-}
-
-.modal-section:last-child {
-    margin-bottom: 0;
-}
-
-.modal-section-title {
-    font-size: 1.2rem;
-    color: var(--color-primario);
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.modal-section-title::before {
-    content: '';
-    width: 5px;
-    height: 20px;
-    background-color: var(--color-acento);
-    border-radius: 3px;
-}
-
-.modal-section-content {
-    line-height: 1.6;
-    color: #444;
-}
-
 .document-list {
     list-style: none;
     margin-top: 15px;
@@ -546,14 +462,6 @@
     color: #333;
 }
 
-.modal-footer {
-    padding: 20px 30px;
-    background-color: #f9f9f9;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid #eee;
-}
 
 .contact-info {
     display: flex;
@@ -668,6 +576,194 @@
         font-size: 0.9rem;
     }
 }
+
+.convocatoria-status {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    display: inline-block;
+}
+
+.status-abierta {
+    color: #0a540a;
+    background-color: #c2f0c2;
+}
+
+.status-próxima {
+    color: #d19d01;
+    background-color: #fff3cd;
+}
+
+.status-cerrada {
+    color: #b3091a;
+    background-color: #f8d7da;
+}
+
+
+
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+
+.convocatoria-image {
+    display: block;
+    width: 50%;
+    height: 100%;
+    border-radius: 8px;
+}
+
+.overlay-eye {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 24px;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    z-index: 2;
+}
+
+.tooltip-container:hover .overlay-eye {
+    display: block;
+}
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.8);
+}
+
+.image-modal .modal-content {
+    display: block;
+    max-height: 90vh;
+    max-width: auto;
+    height: auto;
+    width: auto;
+    margin: auto;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+.close-modal {
+    position: absolute;
+    top: 25px;
+    right: 15px;
+    background-color: var(--color-primario);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 25px;
+    text-align: center;
+    line-height: 35px;
+    cursor: pointer;
+    z-index: 1001;
+    transition: background-color 0.3s ease;
+}
+
+.modal-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+.convocatoria-media-fechas {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.media-image {
+    flex: 1;
+}
+
+.media-image img {
+    height: 230px;  /* Ajusta la altura según lo que necesites */
+    width: auto;    /* Ajuste automático del ancho */
+    object-fit: cover; /* Asegura que la imagen no se deforme */
+}
+
+.media-dates {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    padding-left: 15px; /* Ajusta este valor según sea necesario */
+}
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.page-btn {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    color: #333;
+    padding: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.page-btn:hover {
+    background-color: var(--color-secundario);
+    color: white;
+    transform: scale(1.1);
+}
+
+.page-btn.active {
+    background-color: var(--color-primario);
+    color: white;
+    font-weight: bold;
+}
+
+.page-btn:first-child,
+.page-btn:last-child {
+    font-weight: bold;
+}
+/* Estilo del enlace 'Ver detalles' */
+.view-details {
+    display: inline-block;
+    background-color: var(--color-primario); /* Color de fondo azul */
+    color: white; /* Color del texto */
+    padding: 10px 20px; /* Espaciado alrededor del texto */
+    font-size: 14px; /* Tamaño del texto */
+    text-align: center;
+    border-radius: 50px; /* Bordes redondeados */
+    text-decoration: none; /* Sin subrayado */
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Transiciones suaves */
+    font-weight: bold; /* Poner el texto en negrita */
+}
+
+.view-details:hover {
+    background-color: var(--color-secundario); /* Cambiar el color de fondo al pasar el mouse */
+    transform: scale(1.05); /* Efecto de ampliación */
+}
+
+.view-details:active {
+    background-color: #003d7a; /* Color de fondo cuando se hace clic */
+}
+
 </style>
 
 
@@ -686,13 +782,9 @@
         <div class="filter-group">
             <select class="filter-select" id="category-filter">
                 <option value="">Todas las categorías</option>
-                <option value="subsidios">Subsidios</option>
-                <option value="becas">Becas</option>
-                <option value="emprendimiento">Emprendimiento</option>
-                <option value="empleo">Empleo</option>
-                <option value="vivienda">Vivienda</option>
-                <option value="cultura">Cultura</option>
-                <option value="deporte">Deporte</option>
+                {% for categoria in categorias %}
+                    <option value="{{ categoria.nombre|lower }}">{{ categoria.nombre }}</option>
+                {% endfor %}
             </select>
             <select class="filter-select" id="status-filter">
                 <option value="">Todos los estados</option>
@@ -709,176 +801,342 @@
         </div>
     </div>
     
+    
     <!-- Pestañas para alternar entre activas y pasadas -->
     <div class="tabs">
         <div class="tab active" data-tab="active">Convocatorias Activas y Próximas</div>
         <div class="tab" data-tab="past">Convocatorias Pasadas</div>
     </div>
     
-    <!-- Contenedor para convocatorias activas -->
-    <div class="tab-content" id="active-tab">
-        <div class="convocatorias-grid">
-            <!-- Convocatoria 1 -->
-            <div class="convocatoria-card" data-category="subsidios" data-status="active">
-                <div class="convocatoria-status status-active">Abierta</div>
-                <div class="convocatoria-header">
-                    <h3 class="convocatoria-title">Subsidio para Mejoramiento de Vivienda 2025</h3>
-                </div>
-                <div class="convocatoria-content">
-                    <div class="convocatoria-dates">
-                        <div class="date-group">
-                            <div class="date-label">Fecha de apertura</div>
-                            <div class="date-value">15/02/2025</div>
-                        </div>
-                        <div class="date-group">
-                            <div class="date-label">Fecha de cierre</div>
-                            <div class="date-value">30/03/2025</div>
+<!-- Contenedor para convocatorias activas -->
+<div class="tab-content active" id="active-tab">
+    <div class="convocatorias-grid">
+        {% for convocatoria in convocatorias_activas %}
+        <div class="convocatoria-card" data-category="{{ convocatoria.categoria.nombre|lower }}" data-status="{{ convocatoria.estado|lower }}">
+            <div class="convocatoria-status status-{{ convocatoria.estado|lower }}">
+                {{ convocatoria.estado|title }}
+            </div>
+            <div class="convocatoria-header">
+                <h3 class="convocatoria-title">{{ convocatoria.titulo }}</h3>
+            </div>
+            <div class="convocatoria-content">
+                <div class="convocatoria-media-fechas">
+                    <div class="media-image">
+                        <div class="tooltip-container">
+                            <img src="{{ convocatoria.imagen.url }}" alt="Imagen de convocatoria" class="convocatoria-image">
+                            <div class="overlay-eye" onclick="showImageModal('{{ convocatoria.imagen.url }}')">
+                                <i class="fa-solid fa-eye"></i>
+                            </div>
                         </div>
                     </div>
-                    <p class="convocatoria-description">Programa municipal para apoyar el mejoramiento de viviendas en condiciones de vulnerabilidad social.</p>
-                </div>
-                <div class="convocatoria-footer">
-                    <span class="category-tag">Subsidios</span>
-                    <button class="view-details" onclick="openModal('convocatoria1')">Ver detalles</button>
+                    <div class="media-dates">
+                        <div class="date-group">
+                            <div class="date-label">
+                                <i class="fa-solid fa-calendar-day"></i> Fecha de apertura
+                            </div>
+                            <div class="date-value">{{ convocatoria.fecha_apertura|date:"d/m/Y" }}</div>
+                        </div>
+                        <div class="date-group">
+                            <div class="date-label">
+                                <i class="fa-solid fa-calendar-check"></i> Fecha de cierre
+                            </div>
+                            <div class="date-value">{{ convocatoria.fecha_cierre|date:"d/m/Y" }}</div>
+                        </div>
+                    </div>
+                </div>                    
+                <div class="convocatoria-description">
+                    <p class="descripcion-texto" style="text-align: justify;">{{ convocatoria.descripcion }}</p>
                 </div>
             </div>
-            
-            <!-- Convocatoria 2 -->
-            <div class="convocatoria-card" data-category="emprendimiento" data-status="active">
-                <div class="convocatoria-status status-active">Abierta</div>
-                <div class="convocatoria-header">
-                    <h3 class="convocatoria-title">Fondo para Emprendedores Locales</h3>
-                </div>
-                <div class="convocatoria-content">
-                    <div class="convocatoria-dates">
-                        <div class="date-group">
-                            <div class="date-label">Fecha de apertura</div>
-                            <div class="date-value">10/02/2025</div>
-                        </div>
-                        <div class="date-group">
-                            <div class="date-label">Fecha de cierre</div>
-                            <div class="date-value">15/04/2025</div>
-                        </div>
-                    </div>
-                    <p class="convocatoria-description">Financiamiento para proyectos innovadores que impulsen la economía local y generen empleos en el municipio.</p>
-                </div>
-                <div class="convocatoria-footer">
-                    <span class="category-tag">Emprendimiento</span>
-                    <button class="view-details" onclick="openModal('convocatoria2')">Ver detalles</button>
-                </div>
-            </div>
-            
-            <!-- Convocatoria 3 -->
-            <div class="convocatoria-card" data-category="becas" data-status="upcoming">
-                <div class="convocatoria-status status-upcoming">Próxima</div>
-                <div class="convocatoria-header">
-                    <h3 class="convocatoria-title">Becas Municipales para Educación Superior</h3>
-                </div>
-                <div class="convocatoria-content">
-                    <div class="convocatoria-dates">
-                        <div class="date-group">
-                            <div class="date-label">Fecha de apertura</div>
-                            <div class="date-value">15/03/2025</div>
-                        </div>
-                        <div class="date-group">
-                            <div class="date-label">Fecha de cierre</div>
-                            <div class="date-value">30/04/2025</div>
-                        </div>
-                    </div>
-                    <p class="convocatoria-description">Programa de becas destinado a estudiantes de escasos recursos para cursar estudios universitarios y técnicos.</p>
-                </div>
-                <div class="convocatoria-footer">
-                    <span class="category-tag">Becas</span>
-                    <button class="view-details" onclick="openModal('convocatoria3')">Ver detalles</button>
-                </div>
-            </div>
-            
-            <!-- Convocatoria 4 -->
-            <div class="convocatoria-card" data-category="cultura" data-status="active">
-                <div class="convocatoria-status status-active">Abierta</div>
-                <div class="convocatoria-header">
-                    <h3 class="convocatoria-title">Fondos Culturales para Artistas Locales</h3>
-                </div>
-                <div class="convocatoria-content">
-                    <div class="convocatoria-dates">
-                        <div class="date-group">
-                            <div class="date-label">Fecha de apertura</div>
-                            <div class="date-value">01/02/2025</div>
-                        </div>
-                        <div class="date-group">
-                            <div class="date-label">Fecha de cierre</div>
-                            <div class="date-value">15/03/2025</div>
-                        </div>
-                    </div>
-                    <p class="convocatoria-description">Apoyo para proyectos artísticos y culturales que promuevan la identidad local y el patrimonio cultural del municipio.</p>
-                </div>
-                <div class="convocatoria-footer">
-                    <span class="category-tag">Cultura</span>
-                    <button class="view-details" onclick="openModal('convocatoria4')">Ver detalles</button>
-                </div>
-            </div>
-            
-            <!-- Convocatoria 5 -->
-            <div class="convocatoria-card" data-category="empleo" data-status="upcoming">
-                <div class="convocatoria-status status-upcoming">Próxima</div>
-                <div class="convocatoria-header">
-                    <h3 class="convocatoria-title">Programa de Primer Empleo Municipal</h3>
-                </div>
-                <div class="convocatoria-content">
-                    <div class="convocatoria-dates">
-                        <div class="date-group">
-                            <div class="date-label">Fecha de apertura</div>
-                            <div class="date-value">10/03/2025</div>
-                        </div>
-                        <div class="date-group">
-                            <div class="date-label">Fecha de cierre</div>
-                            <div class="date-value">10/04/2025</div>
-                        </div>
-                    </div>
-                    <p class="convocatoria-description">Iniciativa para la inserción laboral de jóvenes sin experiencia en colaboración con empresas del municipio.</p>
-                </div>
-                <div class="convocatoria-footer">
-                    <span class="category-tag">Empleo</span>
-                    <button class="view-details" onclick="openModal('convocatoria5')">Ver detalles</button>
-                </div>
-            </div>
-            
-            <!-- Convocatoria 6 -->
-            <div class="convocatoria-card" data-category="vivienda" data-status="active">
-                <div class="convocatoria-status status-active">Abierta</div>
-                <div class="convocatoria-header">
-                    <h3 class="convocatoria-title">Programa de Acceso a Vivienda Municipal</h3>
-                </div>
-                <div class="convocatoria-content">
-                    <div class="convocatoria-dates">
-                        <div class="date-group">
-                            <div class="date-label">Fecha de apertura</div>
-                            <div class="date-value">05/02/2025</div>
-                        </div>
-                        <div class="date-group">
-                            <div class="date-label">Fecha de cierre</div>
-                            <div class="date-value">05/05/2025</div>
-                        </div>
-                    </div>
-                    <p class="convocatoria-description">Subsidio para facilitar el acceso a primera vivienda para familias de ingresos medios y bajos del municipio.</p>
-                </div>
-                <div class="convocatoria-footer">
-                    <span class="category-tag">Vivienda</span>
-                    <button class="view-details" onclick="openModal('convocatoria6')">Ver detalles</button>
-                </div>
+            <div class="convocatoria-footer">
+                <span class="category-tag">
+                    <i class="fa-solid fa-tags"></i> {{ convocatoria.categoria.nombre }}
+                </span>
+                <a href="{% url 'detalleConvocatoria' convocatoria.id %}" style="text-decoration: none; color: inherit;">
+                    Ver detalles
+                </a>   
             </div>
         </div>
-        
-        <!-- Paginación -->
-        <div class="pagination">
-            <button class="pagination-btn">«</button>
-            <button class="pagination-btn active">1</button>
-            <button class="pagination-btn">2</button>
-            <button class="pagination-btn">3</button>
-            <button class="pagination-btn">»</button>
+        {% empty %}
+        <p>No hay convocatorias activas o próximas.</p>
+        {% endfor %}
+    </div>
+    <div class="pagination" id="pagination-active"></div>
+  
+</div>
+<!-- Contenedor para convocatorias cerradas -->
+<div class="tab-content" id="past-tab" style="display: none;">
+    <div class="convocatorias-grid">
+        {% for convocatoria in convocatorias_pasadas %}
+        <div class="convocatoria-card" data-category="{{ convocatoria.categoria.nombre|lower }}" data-status="{{ convocatoria.estado|lower }}">
+            <div class="convocatoria-status status-{{ convocatoria.estado|lower }}">
+                {{ convocatoria.estado|title }}
+            </div>
+            <div class="convocatoria-header">
+                <h3 class="convocatoria-title">{{ convocatoria.titulo }}</h3>
+            </div>
+            <div class="convocatoria-content">
+                <div class="convocatoria-media-fechas">
+                    <div class="media-image">
+                        <div class="tooltip-container">
+                            <img src="{{ convocatoria.imagen.url }}" alt="Imagen de convocatoria" class="convocatoria-image">
+                            <div class="overlay-eye" onclick="showImageModal('{{ convocatoria.imagen.url }}')">
+                                <i class="fa-solid fa-eye"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="media-dates">
+                        <div class="date-group">
+                            <div class="date-label">
+                                <i class="fa-solid fa-calendar-day"></i> Fecha de apertura
+                            </div>
+                            <div class="date-value">{{ convocatoria.fecha_apertura|date:"d/m/Y" }}</div>
+                        </div>
+                        <div class="date-group">
+                            <div class="date-label">
+                                <i class="fa-solid fa-calendar-check"></i> Fecha de cierre
+                            </div>
+                            <div class="date-value">{{ convocatoria.fecha_cierre|date:"d/m/Y" }}</div>
+                        </div>
+                    </div>
+                </div>                    
+                <div class="convocatoria-description">
+                    <p class="descripcion-texto" style="text-align: justify;">{{ convocatoria.descripcion }}</p>
+                </div>
+            </div>
+            <div class="convocatoria-footer">
+                <span class="category-tag">
+                    <i class="fa-solid fa-tags"></i> {{ convocatoria.categoria.nombre }}
+                </span>
+                <a href="{% url 'detalleConvocatoria' convocatoria.id %}" style="text-decoration: none; color: inherit;">
+                    Ver detalles
+                </a>            
+            </div>
+        </div>
+        {% empty %}
+        <p>No hay convocatorias cerradas.</p>
+        {% endfor %}
+    </div>
+    <div class="pagination" id="pagination-past"></div>
+</div>
+    
+    <div id="imageModal" class="image-modal">
+        <span class="close-modal" onclick="closeImageModal()">&times;</span>
+        <div class="modal-wrapper">
+            <img class="modal-content" id="modalImage">
         </div>
     </div>
+</div>
+  
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".convocatoria-description").forEach(container => {
+        const description = container.querySelector(".descripcion-texto");
+        const maxHeight = 116; // Altura máxima permitida antes de habilitar scroll
+
+        description.style.maxHeight = maxHeight + "px";
+        description.style.overflowY = "auto";
+    });
+});
+
+</script>
+<script>
+function showImageModal(src) {
+    const modal = document.getElementById("imageModal");
+    const modalImg = document.getElementById("modalImage");
+    modal.style.display = "block";
+    modalImg.src = src;
+}
+
+function closeImageModal() {
+    document.getElementById("imageModal").style.display = "none";
+}
+
+
+</script>
+<script>
+    function fetchConvocatorias(page = 1) {
+        const categoryFilter = document.getElementById("category-filter");
+        const statusFilter = document.getElementById("status-filter");
+        const dateFilter = document.getElementById("date-filter");
+        const searchInput = document.getElementById("search-input");
+    
+        const categoria = categoryFilter.value;
+        const estado = statusFilter.value;
+        const fecha = dateFilter.value;
+        const query = searchInput.value.toLowerCase();
+        const activeTab = window.getActiveTab(); // Obtener la pestaña activa
+        const convocatoriasContainer = document.querySelector(`#${activeTab}-tab .convocatorias-grid`);
+        const paginationContainer = document.getElementById(`pagination-${activeTab}`);
+    
+        const url = `/convocatorias/filtrar_convocatorias/?categoria=${categoria}&estado=${estado}&fecha=${fecha}&pestana=${activeTab}&page=${page}&query=${encodeURIComponent(query)}`;
+    
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                convocatoriasContainer.innerHTML = "";  // Limpiar contenedor antes de agregar nuevos resultados
+                paginationContainer.innerHTML = "";
+    
+                data.convocatorias.forEach(convocatoria => {
+                    const card = document.createElement("div");
+                    card.classList.add("convocatoria-card");
+                    card.innerHTML = `
+                        <div class="convocatoria-status status-${convocatoria.estado.toLowerCase()}">
+                            ${convocatoria.estado}
+                        </div>
+                        <div class="convocatoria-header">
+                            <h3 class="convocatoria-title">${convocatoria.titulo}</h3>
+                        </div>
+                        <div class="convocatoria-content">
+                            <div class="convocatoria-media-fechas">
+                                <div class="media-image">
+                                    <div class="tooltip-container">
+                                        <img src="${convocatoria.imagen}" alt="Imagen de convocatoria" class="convocatoria-image">
+                                        <div class="overlay-eye" onclick="showImageModal('${convocatoria.imagen}')">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+    
+                                <div class="media-dates">
+                                    <div class="date-group">
+                                        <div class="date-label">
+                                            <i class="fa-solid fa-calendar-day"></i> Fecha de apertura
+                                        </div>
+                                        <div class="date-value">${convocatoria.fecha_apertura}</div>
+                                    </div>
+                                    <div class="date-group">
+                                        <div class="date-label">
+                                            <i class="fa-solid fa-calendar-check"></i> Fecha de cierre
+                                        </div>
+                                        <div class="date-value">${convocatoria.fecha_cierre}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="convocatoria-description">
+                                <p class="descripcion-texto" style="text-align: justify;">${convocatoria.descripcion}</p>
+                            </div>
+                        </div>
+                        <div class="convocatoria-footer">
+                            <span class="category-tag">
+                                <i class="fa-solid fa-tags"></i> ${convocatoria.categoria}
+                            </span>
+                            <a href="/convocatorias/detalleConvocatoria/${convocatoria.id}/" class="view-details">
+                                Ver detalles
+                            </a>  
+                        </div>
+                    `;
+                    convocatoriasContainer.appendChild(card);
+                });
+                            // PAGINACIÓN MEJORADA
+            const totalPages = data.total_pages;
+            const currentPage = data.current_page;
+
+            const createPageButton = (page) => {
+                const button = document.createElement("button");
+                button.classList.add("page-btn");
+                if (page === currentPage) button.classList.add("active");
+                button.innerText = page;
+                button.addEventListener("click", () => fetchConvocatorias(page));
+                return button;
+            };
+
+            const addEllipsis = () => {
+                const span = document.createElement("span");
+                span.innerText = "...";
+                span.classList.add("pagination-ellipsis");
+                return span;
+            };
+
+            // Botón anterior
+            if (currentPage > 1) {
+                const prevBtn = document.createElement("button");
+                prevBtn.innerHTML = "«";
+                prevBtn.classList.add("page-btn", "arrow-btn");
+                prevBtn.addEventListener("click", () => fetchConvocatorias(currentPage - 1));
+                paginationContainer.appendChild(prevBtn);
+            }
+
+            // Mostrar máximo 5 botones
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, currentPage + 2);
+
+            if (currentPage <= 3) {
+                endPage = Math.min(5, totalPages);
+            }
+            if (currentPage >= totalPages - 2) {
+                startPage = Math.max(1, totalPages - 4);
+            }
+
+            // Primer botón + puntos
+            if (startPage > 1) {
+                paginationContainer.appendChild(createPageButton(1));
+                if (startPage > 2) paginationContainer.appendChild(addEllipsis());
+            }
+
+            // Botones del rango visible
+            for (let i = startPage; i <= endPage; i++) {
+                paginationContainer.appendChild(createPageButton(i));
+            }
+
+            // Último botón + puntos
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) paginationContainer.appendChild(addEllipsis());
+                paginationContainer.appendChild(createPageButton(totalPages));
+            }
+
+            // Botón siguiente
+            if (currentPage < totalPages) {
+                const nextBtn = document.createElement("button");
+                nextBtn.innerHTML = "»";
+                nextBtn.classList.add("page-btn", "arrow-btn");
+                nextBtn.addEventListener("click", () => fetchConvocatorias(currentPage + 1));
+                paginationContainer.appendChild(nextBtn);
+            }
+
+                
+
+            })
+            .catch(error => console.error("Error al cargar convocatorias:", error));
+    }
+    
+    document.addEventListener("DOMContentLoaded", function () {
+        const tabs = document.querySelectorAll(".tab");
+        const contents = document.querySelectorAll(".tab-content");
+        let activeTab = "active";  // Por defecto, se inicia en la pestaña "activa"
+    
+        tabs.forEach(tab => {
+            tab.addEventListener("click", function () {
+                tabs.forEach(t => t.classList.remove("active"));
+                contents.forEach(c => c.style.display = "none");
+    
+                this.classList.add("active");
+                activeTab = this.getAttribute("data-tab");
+                document.getElementById(activeTab + "-tab").style.display = "block";
+    
+                fetchConvocatorias();  // Llamada válida ahora
+            });
+        });
+    
+        window.getActiveTab = () => activeTab;
+    });
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        const categoryFilter = document.getElementById("category-filter");
+        const statusFilter = document.getElementById("status-filter");
+        const dateFilter = document.getElementById("date-filter");
+        const searchInput = document.getElementById("search-input");
+    
+        categoryFilter.addEventListener("change", fetchConvocatorias);
+        statusFilter.addEventListener("change", fetchConvocatorias);
+        dateFilter.addEventListener("change", fetchConvocatorias);
+        searchInput.addEventListener("input", fetchConvocatorias);
+    
+        fetchConvocatorias();  // Llama automáticamente al cargar la página
+    });
+    </script>
+    
 
 {% endblock content %}
 

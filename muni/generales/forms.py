@@ -5,7 +5,6 @@ from crispy_forms.layout import Layout, Submit, Div, HTML
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
 
-
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
         max_length=254,
@@ -62,6 +61,9 @@ class CustomAuthenticationForm(AuthenticationForm):
             </div>
             """)
         )
+
+
+
 
 
 
