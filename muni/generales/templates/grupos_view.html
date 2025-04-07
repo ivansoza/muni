@@ -297,12 +297,12 @@
         <h1 class="mb-4">Gestión de Grupos</h1>
 
         <div class="mt-4 text-right">
-            <button class="ag-btn ag-btn-accent" onclick="createNewGroup()">
+            <a  href="{% url "group_create" %}" class="ag-btn ag-btn-accent" >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 <span>Agregar Nuevo Grupo</span>
-            </button>
+            </a>
         </div>
 
 
@@ -341,13 +341,7 @@
                             </svg>
                             <span>Eliminar</span>
                         </button>
-                        <button class="ag-btn ag-btn-secondary" onclick="viewDetails('{{ group.id }}')">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            <span>Ver</span>
-                        </button>
+           
                     </div>
                 </div>
             </div>

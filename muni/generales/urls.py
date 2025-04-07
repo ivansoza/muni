@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import CustomLoginView, DashboardView, EncuestasView, GeneralesDashboardView, GruposView, NewsView, PersonalizacionView, ReportesView, SeccionesView, ServicioCreateView, ServicioUpdateView,SocialMediaView,ServicesView, UsuarioCreateView, UsuarioEditView, UsuarioEditView, UsuarioPasswordChangeView, UsuariosView, VideoView, actualizar_video, create_social_network, custom_upload_function, agregar_categoria, delete_group, delete_social_network, eliminar_noticia, editar_noticia, list_social_networks, toggle_favorite, toggle_user_status
+from .views import CustomLoginView, DashboardView, EncuestasView, GeneralesDashboardView, GroupCreateView, GruposView, NewsView, PersonalizacionView, ReportesView, SeccionesView, ServicioCreateView, ServicioUpdateView,SocialMediaView,ServicesView, UsuarioCreateView, UsuarioEditView, UsuarioEditView, UsuarioPasswordChangeView, UsuariosView, VideoView, actualizar_video, create_social_network, custom_upload_function, agregar_categoria, delete_group, delete_social_network, eliminar_noticia, editar_noticia, list_social_networks, toggle_favorite, toggle_user_status
 from django.contrib.auth.views import LogoutView
 from .views import TransparenciaView, crear_seccion, EjercicioFiscalListView, EjercicioFiscalCreateView, DocumentoTransparenciaListView, registrar_documento, SeccionTransparenciaUpdateView, eliminar_seccion, EjercicioFiscalUpdateView, eliminar_ejercicio_fiscal, DocumentoTransparenciaUpdateView, eliminar_documento_transparencia
 from . import views
@@ -52,6 +52,7 @@ urlpatterns = [
     path('generales/usuarios/change_password/<int:pk>/', UsuarioPasswordChangeView.as_view(), name='usuario_change_password'),
     path('generales/grupos/', GruposView.as_view(), name='GruposView'),
     path('api/grupos/<int:pk>/', delete_group, name='delete_group'),
+    path('generales/grupos/nuevo/', GroupCreateView.as_view(), name='group_create'),
 
 
     #----------------------------------SEVAC-------------------------------------------------

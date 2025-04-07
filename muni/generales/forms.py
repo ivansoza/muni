@@ -3,7 +3,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Div, HTML
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, Group, Permission
+from django.contrib.admin.widgets import FilteredSelectMultiple
 
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
@@ -135,3 +136,33 @@ class UserEditForm(forms.ModelForm):
             groups = self.instance.groups.all()
             if groups.exists():
                 self.fields["grupo"].initial = groups.first()
+
+
+class GroupForm(forms.ModelForm):
+    """
+    Formulario para crear o editar un grupo, usando un campo oculto
+    para gestionar los permisos seleccionados mediante JavaScript.
+    """
+    # Campo oculto que guardará los IDs de permisos seleccionados.
+    permission_ids = forms.CharField(required=False, widget=forms.HiddenInput())
+
+    class Meta:
+        model = Group
+        fields = ['name']  # Solo mostramos el nombre del grupo (los permisos se manejan manualmente)
+
+    def save(self, commit=True):
+        group = super().save(commit=False)
+        if commit:
+            group.save()
+
+        # Asignamos los permisos que vienen en 'permission_ids'
+        if self.cleaned_data.get('permission_ids'):
+            # Dividimos los IDs por coma y buscamos los permisos en la BD
+            permission_ids_list = self.cleaned_data['permission_ids'].split(',')
+            perms = Permission.objects.filter(id__in=permission_ids_list)
+            group.permissions.set(perms)
+        else:
+            # Si no hay nada seleccionado, se limpian los permisos
+            group.permissions.clear()
+
+        return group

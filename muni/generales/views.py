@@ -21,7 +21,7 @@ from informacion_municipal.models import Municipio, Video
 from generales.models import ContadorVisitas, SocialNetwork
 from servicios.forms import ServicioForm
 from servicios.models import Servicio
-from .forms import CustomAuthenticationForm, UserCreationWithGroupForm, UserEditForm
+from .forms import CustomAuthenticationForm, GroupForm, UserCreationWithGroupForm, UserEditForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from noticias.models import Noticia, ImagenGaleria, Categoria
@@ -51,7 +51,9 @@ from django.contrib.auth.models import User  # Asegúrate de importar el modelo 
 
 
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.models import Group, Permission
 
+from django.contrib.auth.mixins import  PermissionRequiredMixin
 
 class VideoView(LoginRequiredMixin,TemplateView):
     template_name = 'generales/video.html'
@@ -1741,3 +1743,42 @@ def obtener_detalle_convocatoria(request, id):
     
     # Devolver los detalles de la convocatoria como JSON
     return JsonResponse(data)
+
+
+class GroupCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = Group
+    form_class = GroupForm
+    template_name = 'group_form.html'
+    success_url = reverse_lazy('GruposView')
+    permission_required = 'auth.add_group'
+
+    def has_permission(self):
+        # Si el usuario es superuser, se le permite crear grupos
+        if self.request.user.is_superuser:
+            return True
+        return super().has_permission()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumb"] = {
+            'parent': {'name': 'Grupos', 'url': '/admin/generales/grupos/'},
+            'child': {'name': 'Crear Grupo', 'url': ''}
+        }
+        context['sidebar'] = 'Generales'
+        context['regreso_url'] = reverse_lazy('GruposView')
+
+        # Enviamos todos los permisos al template para mostrarlos en la columna "disponibles"
+        context['all_permissions'] = Permission.objects.all().order_by('codename')
+        return context
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        group_name = self.object.name
+        messages.success(
+            self.request,
+            f'El grupo "{group_name}" se ha creado y se le han asignado los permisos correctamente.'
+        )
+        return response
+    
+
