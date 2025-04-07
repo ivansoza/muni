@@ -2,51 +2,221 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">Crear Usuario</h2>
-    <form method="post" novalidate>
+<style>
+/* --- LAYOUT GENERAL --- */
+.user-create-container{display:flex;justify-content:center;align-items:center;padding:2rem;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
+.create-card{background:#fff;border-radius:10px;box-shadow:0 10px 25px rgba(0,0,0,.1);width:100%;max-width:1200px;overflow:hidden;transition:.3s}
+.create-card:hover{transform:translateY(-5px);box-shadow:0 15px 30px rgba(0,0,0,.15)}
+.card-header{background:linear-gradient(135deg,var(--theme-default),var(--theme-default_dark));color:#fff;padding:1.5rem;text-align:center;display:flex;flex-direction:column;align-items:center}
+.card-header h2{margin:0;font-weight:600;letter-spacing:1px}
+.form-fields{padding:2rem}
+.form-group{margin-bottom:1.5rem;position:relative}
+.form-group label{display:block;margin-bottom:.5rem;font-weight:500;color:#333}
+.form-group input,.form-group select{width:100%;padding:12px 15px;border:2px solid #e1e1e1;border-radius:6px;font-size:1rem;transition:.3s}
+.form-group input:focus,.form-group select:focus{border-color:#6e8efb;box-shadow:0 0 0 3px rgba(110,142,251,.2);outline:none}
+.text-danger{color:#e74c3c;font-size:.875rem;margin-top:.5rem}
+/* --- PASSWORD METER --- */
+.password-strength-container{padding:0 2rem 1rem}
+.strength-meter{height:8px;background:#f1f1f1;border-radius:4px;margin-bottom:8px;overflow:hidden}
+.strength-bar{height:100%;width:0;border-radius:4px;transition:.3s}
+.strength-text{font-size:.875rem;color:#666;text-align:right}
+.password-tips{background:#f9f9f9;padding:1.5rem 2rem;border-radius:6px;margin:0 2rem 2rem}
+.password-tips h4{margin:0 0 1rem;color:#333;font-size:1rem}
+.password-tips ul{list-style:none;padding:0;margin:0}
+.password-tips li{margin-bottom:.5rem;font-size:.9rem;color:#666}
+.password-tips .valid{color:#2ecc71}.password-tips .invalid{color:#e74c3c}
+/* --- BOTONES --- */
+.form-actions{padding:0 2rem 2rem;text-align:center;display:flex;justify-content:center;gap:1rem}
+.btn-submit,.btn-danger{border:none;border-radius:30px;padding:12px 30px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:.3s;display:inline-flex;align-items:center;justify-content:center;gap:10px}
+.btn-submit{background:linear-gradient(135deg,#6e8efb,#a777e3);color:#fff}
+.btn-submit:hover{box-shadow:0 7px 15px rgba(110,142,251,.3);transform:translateY(-2px)}
+.btn-danger{background:linear-gradient(135deg,#ff2b2b,#e39b77);color:#fff}
+.btn-danger:hover{box-shadow:0 7px 15px rgba(110,142,251,.3);transform:translateY(-2px)}
+.btn-submit:disabled{background:linear-gradient(135deg,#c2c9e7,#d3c1e7);cursor:not-allowed;opacity:.7}
+.btn-icon{width:20px;height:20px;fill:#fff;transition:.3s}
+.btn-submit:hover .btn-icon{transform:translateX(5px)}
+/* --- TOGGLE VISIBILIDAD --- */
+.password-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:5px}
+.eye-icon{width:24px;height:24px;fill:#999;transition:.3s}
+.password-toggle:hover .eye-icon{fill:#666}
+.password-toggle.visible .eye-open{display:none}.password-toggle:not(.visible) .eye-closed{display:none}
+/* --- RESPONSIVE --- */
+@media (max-width:768px){
+  .form-actions{flex-direction:column}
+  .btn-submit,.btn-danger{width:100%;font-size:1rem;padding:12px 0}
+}
+@media (max-width:480px){
+  .card-header h2{font-size:1.3rem}
+  .form-fields{padding:1rem}
+  .form-group input,.form-group select{font-size:.95rem;padding:10px 12px}
+  .btn-submit,.btn-danger{padding:10px 0}
+  .btn-submit .btn-icon{display:none}  /* Oculta plumita */
+}
+
+.eye-closed{display:none}
+.password-toggle.visible .eye-open{display:none}
+.password-toggle.visible .eye-closed{display:inline}
+
+
+
+</style>
+
+<div class="container-fluid">
+  <div class="user-create-container">
+    <div class="create-card">
+      <div class="card-header">
+        <h2>Crear Usuario</h2>
+      </div>
+
+      <form method="post" novalidate class="form-fields" id="create-form">
         {% csrf_token %}
-        <div class="mb-3">
-            <label for="id_username" class="form-label">Usuario</label>
-            {{ form.username }}
-            {% if form.username.errors %}
-                <div class="text-danger">{{ form.username.errors }}</div>
-            {% endif %}
+
+        <!-- Usuario -->
+        <div class="form-group">
+          <label for="id_username">Usuario</label>
+          {{ form.username }}
+          {% if form.username.errors %}
+            <div class="text-danger">{{ form.username.errors }}</div>
+          {% endif %}
         </div>
-        <div class="mb-3">
-            <label for="id_email" class="form-label">Correo electrónico</label>
-            {{ form.email }}
-            {% if form.email.errors %}
-                <div class="text-danger">{{ form.email.errors }}</div>
-            {% endif %}
+
+        <!-- Correo -->
+        <div class="form-group">
+          <label for="id_email">Correo electrónico</label>
+          {{ form.email }}
+          {% if form.email.errors %}
+            <div class="text-danger">{{ form.email.errors }}</div>
+          {% endif %}
         </div>
-        <div class="mb-3">
-            <label for="id_password1" class="form-label">Contraseña</label>
-            {{ form.password1 }}
-            {% if form.password1.errors %}
-                <div class="text-danger">{{ form.password1.errors }}</div>
-            {% endif %}
+
+        <!-- Contraseña 1 -->
+        <div class="form-group">
+          <label for="id_password1">Contraseña</label>
+          {{ form.password1 }}
+          {% if form.password1.errors %}
+            <div class="text-danger">{{ form.password1.errors }}</div>
+          {% endif %}
         </div>
-        <div class="mb-3">
-            <label for="id_password2" class="form-label">Confirmar contraseña</label>
-            {{ form.password2 }}
-            {% if form.password2.errors %}
-                <div class="text-danger">{{ form.password2.errors }}</div>
-            {% endif %}
+
+        <!-- Contraseña 2 -->
+        <div class="form-group">
+          <label for="id_password2">Confirmar contraseña</label>
+          {{ form.password2 }}
+          {% if form.password2.errors %}
+            <div class="text-danger">{{ form.password2.errors }}</div>
+          {% endif %}
         </div>
-        <div class="mb-3">
-            <label for="id_grupo" class="form-label">Grupo</label>
+
+        <!-- Grupo -->
+        <div class="form-group">
+            <label for="id_grupo">Grupo</label>
             {{ form.grupo }}
             {% if form.grupo.errors %}
-                <div class="text-danger">{{ form.grupo.errors }}</div>
+              <div class="text-danger">{{ form.grupo.errors }}</div>
             {% endif %}
+          
+            <!-- help‑text con enlace a la sección de grupos -->
+            <small class="form-text text-muted">
+                ¿No ves ningún grupo? 
+                <a href="#">Créalo aquí</a>.
+            </small>
+          </div>
+
+        <!-- Barra de fortaleza -->
+        <div class="password-strength-container">
+          <div class="strength-meter"><div class="strength-bar" id="strength-bar"></div></div>
+          <div class="strength-text" id="strength-text">Fortaleza de contraseña</div>
         </div>
-        <button type="submit" class="btn btn-primary">Crear usuario</button>
-        <a href="{{ regreso_url }}" class="btn btn-secondary">Regresar</a>
-    </form>
+
+        <!-- Tips -->
+        <div class="password-tips">
+          <h4>Consejos para una contraseña segura:</h4>
+          <ul>
+            <li id="length-check">✓ Al menos 8 caracteres</li>
+            <li id="uppercase-check">✓ Al menos una mayúscula</li>
+            <li id="lowercase-check">✓ Al menos una minúscula</li>
+            <li id="number-check">✓ Al menos un número</li>
+            <li id="special-check">✓ Al menos un caracter especial</li>
+          </ul>
+        </div>
+
+        <!-- Botones -->
+        <div class="form-actions">
+          <button type="submit" class="btn-submit" id="submit-btn" disabled>
+            <span>Crear usuario</span>
+            <svg class="btn-icon" viewBox="0 0 24 24">
+              <path d="M9 16.2L4.8 12 3.4 13.4 9 19 21 7 19.6 5.6z"/>
+            </svg>
+          </button>
+          <a href="{{ regreso_url }}" class="btn-danger">Regresar</a>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 {% endblock %}
 
 {% block scriptcontent %}
-<!-- Aquí podrías agregar scripts adicionales si los necesitas -->
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  const pwd1=document.querySelector('input[name="password1"]');
+  const pwd2=document.querySelector('input[name="password2"]');
+  const submitBtn=document.getElementById('submit-btn');
+  if(!pwd1) return;
+  const bar=document.getElementById('strength-bar');
+  const text=document.getElementById('strength-text');
+  const checks={
+    length:document.getElementById('length-check'),
+    upper:document.getElementById('uppercase-check'),
+    lower:document.getElementById('lowercase-check'),
+    num:document.getElementById('number-check'),
+    special:document.getElementById('special-check')
+  };
+  pwd1.addEventListener('input',updateStrength);
+  pwd2.addEventListener('input',validateMatch);
+  function updateStrength(){
+    const v=pwd1.value;
+    const hasLen=v.length>=8,hasUp=/[A-Z]/.test(v),hasLo=/[a-z]/.test(v),
+          hasNum=/[0-9]/.test(v),hasSp=/[^A-Za-z0-9]/.test(v);
+    setCheck(checks.length,hasLen);
+    setCheck(checks.upper,hasUp);
+    setCheck(checks.lower,hasLo);
+    setCheck(checks.num,hasNum);
+    setCheck(checks.special,hasSp);
+    const score=[hasLen,hasUp,hasLo,hasNum,hasSp].filter(Boolean).length*20;
+    bar.style.width=score+'%';
+    const colors=['#ff4d4d','#ffa64d','#ffff4d','#4dff4d','#2ecc71'];
+    bar.style.background=colors[Math.floor(score/20)-1]||colors[0];
+    const labels=['Muy débil','Débil','Moderada','Fuerte','Muy fuerte'];
+    text.textContent='Fortaleza: '+labels[Math.floor(score/20)-1];
+    validateForm();
+  }
+  function setCheck(el,ok){el.classList.toggle('valid',ok);el.classList.toggle('invalid',!ok)}
+  function validateMatch(){validateForm();}
+  function validateForm(){
+    const v=pwd1.value;
+    const ok=v.length>=8&&/[A-Z]/.test(v)&&/[a-z]/.test(v)&&/[0-9]/.test(v)&&/[^A-Za-z0-9]/.test(v)&&v===pwd2.value;
+    submitBtn.disabled=!ok;
+  }
+  /* Toggle visibilidad */
+  [pwd1,pwd2].forEach(field=>{
+    if(!field) return;
+    const wrap=field.parentElement;
+    const btn=document.createElement('button');
+    btn.type='button';btn.className='password-toggle';
+    btn.innerHTML = `
+    <svg viewBox="0 0 24 24" class="eye-icon eye-open">
+      <path d="M12 4.5C7 4.5 2.7 7.6 1 12c1.7 4.4 6 7.5 11 7.5s9.3-3.1 11-7.5C21.3 7.6 17 4.5 12 4.5z"/>
+      <circle cx="12" cy="12" r="3.2" fill="#fff"/>
+    </svg>
+    <svg viewBox="0 0 24 24" class="eye-icon eye-closed">
+      <path d="M3 3l18 18M1 12c1.7 4.4 6 7.5 11 7.5 2 0 3.9-.4 5.6-1.3M23 12c-1.7-4.4-6-7.5-11-7.5-2 0-3.9.4-5.6 1.3"/>
+    </svg>`;
+    
+    wrap.style.position='relative';
+    wrap.appendChild(btn);
+    btn.addEventListener('click',()=>{field.type=field.type==='password'?'text':'password';btn.classList.toggle('visible')});
+  });
+});
+</script>
 {% endblock %}

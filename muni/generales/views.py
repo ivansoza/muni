@@ -118,7 +118,7 @@ class UsuariosView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["breadcrumb"] = {
-            'parent': {'name': 'Dashboard', 'url': '/admin'},
+            'parent': {'name': 'Generales', 'url': '/admin'},
             'child': {'name': 'Lista de Usuarios', 'url': ''}
         }
         context['sidebar'] = 'Generales' 
@@ -175,7 +175,7 @@ class UsuarioEditView(LoginRequiredMixin, UpdateView):
         # Agregamos el usuario que se está editando para mostrarlo en la plantilla
         context['user_to_edit'] = self.object
         context["breadcrumb"] = {
-            'parent': {'name': 'Dashboard', 'url': '/admin'},
+            'parent': {'name': 'Lista de Usuario', 'url': '/admin/generales/usuarios'},
             'child': {'name': 'Editar Usuario', 'url': ''}
         }
         context['regreso_url'] = reverse('UsuariosView')
@@ -209,7 +209,7 @@ class UsuarioPasswordChangeView(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["breadcrumb"] = {
-            'parent': {'name': 'Dashboard', 'url': '/admin'},
+            'parent': {'name': 'Lista de Usuarios', 'url': '/admin/generales/usuarios'},
             'child': {'name': 'Cambiar Contraseña', 'url': ''}
         }        
         context['regreso_url'] = reverse('UsuariosView')

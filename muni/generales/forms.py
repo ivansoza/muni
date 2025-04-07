@@ -66,17 +66,41 @@ class CustomAuthenticationForm(AuthenticationForm):
 
 
 class UserCreationWithGroupForm(UserCreationForm):
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={
+            "placeholder": "correo@ejemplo.com"
+        })
+    )
     grupo = forms.ModelChoiceField(
         queryset=Group.objects.all(),
         required=False,
         label="Grupo",
-        help_text="Selecciona un grupo para el usuario (opcional)."
+        help_text="Si no ves un grupo disponible, crea uno primero.",
+        widget=forms.Select(attrs={"class": "form-select"})
     )
 
     class Meta:
         model = User
         fields = ("username", "email", "password1", "password2", "grupo")
+        widgets = {
+            "username": forms.TextInput(attrs={
+                "placeholder": "Nombre de usuario",
+                # No se agrega autofocus aquí
+            }),
+            "password1": forms.PasswordInput(attrs={
+                "placeholder": "Contraseña segura"
+            }),
+            "password2": forms.PasswordInput(attrs={
+                "placeholder": "Repite la contraseña"
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Elimina cualquier atributo autofocus que pudiese haber en los widgets
+        for field in self.fields.values():
+            field.widget.attrs.pop('autofocus', None)
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -87,7 +111,7 @@ class UserCreationWithGroupForm(UserCreationForm):
             if grupo:
                 user.groups.add(grupo)
         return user
-    
+
 
 class UserEditForm(forms.ModelForm):
     email = forms.EmailField(required=True)
