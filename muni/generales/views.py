@@ -206,6 +206,12 @@ class UsuarioPasswordChangeView(LoginRequiredMixin, FormView):
         kwargs['user'] = user_to_change
         return kwargs
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Agregamos el usuario a modificar al contexto para mostrarlo en la plantilla
+        context['user_to_change'] = get_object_or_404(User, pk=self.kwargs['pk'])
+        return context
+
     def form_valid(self, form):
         form.save()
         user_to_change = get_object_or_404(User, pk=self.kwargs['pk'])
