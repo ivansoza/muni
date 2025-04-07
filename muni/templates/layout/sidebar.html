@@ -109,6 +109,14 @@
               </a>
             </li>
 
+            <li class="sidebar-list {% if sidebar == 'convo' %}active{% endif %}">
+              <a class="sidebar-link sidebar-title" href="{% url "convocatorias" %}">
+                <i class="fa fa-file-photo-o" style='color:white;'></i>                
+                <i class="fa fa-cogs fill-icon"></i>
+                <span>Convocatorias</span>
+              </a>
+            </li>
+
             <li class="sidebar-list {% if sidebar == 'sevac' %}active{% endif %}">
               <a class="sidebar-link sidebar-title" href="{% url "listar_carpetas" %}">
                 <i class="fa fa-folder-open" style='color:white;'></i>                

@@ -1,0 +1,539 @@
+{% extends "baseTemplate.html" %}
+{% load static %}
+{% load crispy_forms_tags %}  <!-- Cargar el tag crispy_forms -->
+{% load sass_tags %}
+{% block content %}
+{% block header %}
+{{ form.media }}
+{% endblock %}
+<style>
+    /* Estilo general del contenedor */
+    .form-container {
+      margin: 0 auto;
+      padding: 30px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      font-family: Arial, sans-serif;
+    }
+    
+    /* Títulos */
+    .form-container h1 {
+      font-size: 26px;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    
+    .form-container legend {
+      font-size: 18px;
+      font-weight: bold;
+      color: #444;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 4px;
+    }
+    
+    /* Grillas y campos */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 15px;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: #337ab7;
+      outline: none;
+    }
+    
+    /* Errores */
+    .error {
+      color: #c0392b;
+      font-size: 13px;
+      margin-top: 3px;
+    }
+    
+    /* Botones */
+    .btn-submit,
+    .btn-secondary {
+      background-color: #337ab7;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      font-size: 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .btn-secondary {
+      background-color: #5bc0de;
+      margin-top: 10px;
+    }
+    
+    .btn-submit:hover,
+    .btn-secondary:hover {
+      background-color: #286090;
+    }
+    
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      
+      .form-half {
+        flex: 1 1 45%;
+        min-width: 250px;
+      }
+      /* Fondo oscuro semitransparente */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Contenedor del modal */
+.modal-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 20px 25px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Animación de aparición */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Botón de cerrar */
+.modal-content .close {
+  color: #aaa;
+  font-size: 24px;
+  font-weight: bold;
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  cursor: pointer;
+}
+
+.modal-content .close:hover {
+  color: #333;
+}
+
+/* Estilo del input */
+.modal-content input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* Botón de guardar */
+.modal-content button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  margin-top: 15px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.modal-content button:hover {
+  background-color: #45a049;
+}
+
+/* Mensaje de éxito */
+#categoriaMensaje {
+  color: #2d7a2d;
+  font-weight: 500;
+  font-size: 14px;
+  margin-top: 8px;
+}
+/* Estilos generales */
+.file-info {
+    font-size: 0.875rem;
+    color: #4A5568; /* Gris más oscuro para los textos */
+    margin-top: 0.5rem;
+}
+
+.file-name {
+    color: #2D3748;
+    font-weight: 500;
+}
+
+.file-error {
+    color: #E53E3E; /* Rojo para errores */
+    font-weight: 600;
+}
+
+/* Estilo de los botones de eliminar archivo */
+.remove-file-btn {
+    display: none; /* Ocultamos inicialmente */
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.25rem;
+    cursor: pointer;
+    border: none;
+    border-radius: 20%;
+    background-color: red;
+    color: white;
+}
+
+.archivo-form:hover .remove-file-btn {
+    display: block; /* Aparece al pasar el ratón */
+}
+
+.archivo-form {
+    position: relative;
+    padding: 1.25rem;
+    background-color: #F7FAFC;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #E2E8F0;
+}
+
+/* Botón de agregar otro archivo */
+#add-file-btn {
+    background: linear-gradient(to right, #02bb18, #028500);
+    color: white;
+    padding: 0.5rem 1.25rem;
+    font-size: 1rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    border: none;
+}
+
+/* Diseño del modal de agregar archivo */
+#formset-container .archivo-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #add-file-btn {
+        width: 100%;
+    }
+}
+#btn-guardar{
+    background: linear-gradient(to right, #221ef7, #7700ff);
+    color: white;
+}
+</style>
+<div class="form-container max-w-4xl mx-auto px-4 py-6 bg-white shadow rounded-md">
+    <h1 class="text-2xl font-bold mb-6 text-gray-700">Registrar Nueva Convocatoria</h1>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+  
+      {{ form.non_field_errors }}
+  
+      <!-- 🧾 Información General -->
+    <fieldset class="mb-6 border-b pb-4">
+        <legend>🧾 Información de la Convocatoria</legend>
+        <div class="form-group">
+        {{ form.titulo|as_crispy_field }}
+        </div>
+        <div class="form-row">
+        <div class="form-half" style="position: relative;">
+            {{ form.categoria|as_crispy_field }}
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" style="position: absolute; right: 0px; top: 56%; transform: translateY(-50%);" onclick="openCategoriaModal()">
+                +
+            </button>
+        </div>
+        <div class="form-half">
+            {{ form.estado|as_crispy_field }}
+        </div>
+        </div>
+        <div class="form-group">
+        {{ form.imagen|as_crispy_field }}
+        </div>
+        <div class="form-group">
+        {{ form.descripcion|as_crispy_field }}
+        </div>
+        <div class="form-group">
+        {{ form.contenido|as_crispy_field }}
+        </div>
+    </fieldset>
+  
+  
+      <!-- 📅 Fechas -->
+    <fieldset class="mb-6 border-b pb-4">
+        <legend>📅 Fechas de la Convocatoria</legend>
+        <div class="form-row">
+        <div class="form-half">
+            {{ form.fecha_apertura|as_crispy_field }}
+        </div>
+        <div class="form-half">
+            {{ form.fecha_cierre|as_crispy_field }}
+        </div>
+        </div>
+    </fieldset>
+  
+  
+        <!-- 🏢 Información del Departamento Responsable -->
+    <fieldset class="mb-6 border-b pb-4">
+        <legend>🏢 Departamento Responsable</legend>
+        <div class="form-row">
+        <div class="form-half">
+            {{ form.departamento|as_crispy_field }}
+        </div>
+        <div class="form-half">
+            {{ form.horarios_atencion|as_crispy_field }}
+        </div>
+        </div>
+        <div class="form-row">
+        <div class="form-half">
+            {{ form.telefono|as_crispy_field }}
+        </div>
+        <div class="form-half">
+            {{ form.email|as_crispy_field }}
+        </div>
+        </div>
+    </fieldset>
+  
+  
+      <!-- 📎 Archivos Adjuntos -->
+      <fieldset class="mb-6">
+        <legend class="text-lg font-semibold text-gray-800 mb-2">📎 Archivos Adjuntos</legend>
+        {{ formset.management_form }}
+        <div id="formset-container">
+            {% for subform in formset %}
+                <div class="archivo-form form-group p-4 border border-gray-300 rounded-md bg-gray-50">
+                    <button type="button" class="remove-file-btn absolute top-2 right-2 text-red-500 hover:text-red-700 text-xl">&times;</button>
+                    
+                    <!-- Nombre del archivo -->
+                    <div>
+                        {{ subform.nombre|as_crispy_field  }}
+                    </div>
+                    
+                    <!-- Selección del archivo -->
+                    <div>
+                        {{ subform.archivo|as_crispy_field  }}
+                    </div>
+    
+                    <div class="file-info">
+                        <span class="file-error text-sm text-red-600 font-semibold block mt-1"></span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <!-- Botón para agregar archivo -->
+          <!-- Botón para agregar archivo alineado a la derecha -->
+    <div style="text-align: right; margin-top: 1rem;">
+        <button type="button" id="add-file-btn">+ Agregar otro archivo</button>
+    </div>
+    </fieldset>
+    
+      <div class="text-right">
+        <button type="submit" class="btn-submit" id="btn-guardar">💾 Guardar Convocatoria</button>
+      </div>
+    </form>
+  </div>
+  <br>
+  <!-- Modal Nueva Categoría -->
+<div id="categoriaModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5);">
+    <div class="modal-content" style="background:white; margin:10% auto; padding:20px; width:300px; position:relative;">
+      <span class="close" onclick="closeCategoriaModal()" style="position:absolute; top:10px; right:15px; cursor:pointer;">&times;</span>
+      <h3>Nueva Categoría</h3>
+      <input type="text" id="nuevaCategoriaInput" placeholder="Nombre de categoría" style="width:100%; padding:8px; margin-top:10px;" />
+      <button onclick="guardarCategoria()" style="margin-top:10px;">Guardar</button>
+      <p id="categoriaMensaje" style="color:green; font-size: 0.9em;"></p>
+    </div>
+  </div>
+  
+<script src="https://cdn.ckeditor.com/ckeditor4/4.16.2/ckeditor.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelector("form").addEventListener("submit", function (e) {
+            let editorInstance = CKEDITOR.instances.id_contenido; // Obtiene la instancia del editor
+            let contenido = editorInstance.getData().trim(); // Obtiene el contenido limpio
+
+            let contenidoField = document.querySelector("#id_contenido"); // Campo original oculto
+
+            if (contenido === "" || contenido === "<p><br></p>") {
+                contenidoField.setCustomValidity("Este campo es obligatorio.");
+            } else {
+                contenidoField.setCustomValidity(""); // Limpia el error si el campo está lleno
+            }
+        });
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const container = document.getElementById("formset-container");
+        const addButton = document.getElementById("add-file-btn");
+        const totalForms = document.getElementById("id_form-TOTAL_FORMS");
+    
+        function updateFormIndices() {
+            const forms = container.querySelectorAll(".archivo-form");
+            totalForms.value = forms.length;
+            forms.forEach((form, index) => {
+                form.querySelectorAll("input, label").forEach(el => {
+                    if (el.name) el.name = el.name.replace(/form-(\d+)-/, `form-${index}-`);
+                    if (el.id) el.id = el.id.replace(/form-(\d+)-/, `form-${index}-`);
+                    if (el.htmlFor) el.htmlFor = el.htmlFor.replace(/form-(\d+)-/, `form-${index}-`);
+                });
+            });
+        }
+    
+        addButton.addEventListener("click", function () {
+            const formCount = parseInt(totalForms.value);
+            const firstForm = container.querySelector(".archivo-form");
+            const newForm = firstForm.cloneNode(true);
+    
+            // Limpiar campos del nuevo formulario
+            newForm.querySelectorAll("input").forEach(input => {
+                if (input.type !== "hidden") input.value = "";
+            });
+    
+            container.appendChild(newForm);
+            updateFormIndices();
+            attachRemoveHandlers();
+        });
+    
+        function attachRemoveHandlers() {
+            const removeButtons = container.querySelectorAll(".remove-file-btn");
+            removeButtons.forEach(btn => {
+                btn.onclick = function () {
+                    btn.parentElement.remove();
+                    updateFormIndices();
+                };
+            });
+        }
+    
+        attachRemoveHandlers();  // Inicial cuando carga
+    });
+    </script>
+    <script>
+            const MAX_FILE_SIZE_MB = 5;
+            const ALLOWED_TYPES = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/png'];
+            
+            function validateFileInput(input) {
+                const file = input.files[0];
+                if (!file) return;
+            
+                const errorSpan = input.closest(".archivo-form").querySelector(".file-error");
+                errorSpan.textContent = "";
+            
+                // Validar tipo
+                if (!ALLOWED_TYPES.includes(file.type)) {
+                    errorSpan.textContent = "⚠️ Tipo de archivo no permitido.";
+                    input.value = "";
+                    return;
+                }
+            
+                // Validar tamaño
+                if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+                    errorSpan.textContent = `⚠️ El archivo supera los ${MAX_FILE_SIZE_MB}MB permitidos.`;
+                    input.value = "";
+                    return;
+                }
+            
+                // Mostrar nombre del archivo
+                const label = input.closest(".archivo-form").querySelector(".file-name");
+                if (label) {
+                    label.textContent = `📎 ${file.name}`;
+                }
+            }
+            
+            function attachFileValidationHandlers() {
+                document.querySelectorAll(".archivo-form input[type='file']").forEach(input => {
+                    input.addEventListener("change", () => validateFileInput(input));
+                });
+            }
+            attachFileValidationHandlers();
+            
+    </script>
+    <script>
+            function openCategoriaModal() {
+              document.getElementById("categoriaModal").style.display = "block";
+              document.getElementById("nuevaCategoriaInput").value = "";
+              document.getElementById("categoriaMensaje").innerText = "";
+            }
+          
+            function closeCategoriaModal() {
+              document.getElementById("categoriaModal").style.display = "none";
+            }
+          
+            function guardarCategoria() {
+              const nombre = document.getElementById("nuevaCategoriaInput").value;
+              if (!nombre) {
+                alert("Escribe un nombre de categoría");
+                return;
+              }
+          
+              fetch("{% url 'crear_categoria_ajax' %}", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-CSRFToken": "{{ csrf_token }}",
+                },
+                body: JSON.stringify({ nombre })
+              })
+              .then(res => res.json())
+              .then(data => {
+                if (data.id) {
+                  const select = document.getElementById("id_categoria");
+                  const option = document.createElement("option");
+                  option.value = data.id;
+                  option.text = data.nombre;
+                  option.selected = true;
+                  select.add(option);
+                  document.getElementById("categoriaMensaje").innerText = "Guardado correctamente";
+                  setTimeout(closeCategoriaModal, 1000);
+                } else {
+                  alert(data.error || "No se pudo guardar");
+                }
+              })
+              .catch(err => console.error("Error:", err));
+            }
+          
+    </script>
+{% endblock %}

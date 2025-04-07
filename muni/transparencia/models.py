@@ -135,6 +135,9 @@ class ArticuloLiga(models.Model):
     lista_obligaciones = models.ForeignKey(ListaObligaciones, related_name='articulos_liga', on_delete=models.CASCADE)
     articulo_fraccion = models.CharField(max_length=255, verbose_name='Fracción del articulo')  # Ejemplo: "63" o "63A"
     liga = models.URLField(blank=True, null=True, verbose_name='link')  # Enlace al artículo completo
+    orden = models.PositiveIntegerField(default=0)  # Campo para definir el orden manualmente
+    class Meta:
+            ordering = ['orden']  # Los artículos se ordenarán por este campo
 
     def __str__(self):
         return f"ART. - {self.articulo_fraccion}"

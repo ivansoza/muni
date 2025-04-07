@@ -35,10 +35,13 @@ from sevac.models import Carpeta, Archivo
 from sevac.forms import CarpetaForm, ArchivoForm
 # Create your views here.
 from django.db.models import Count
+from django.db import models
+from convocatorias.models import Categoria as CategoriaConvocatoria, Convocatoria, ArchivoConvocatoria
 
-
-
-
+from django.db.models import Q
+from django.template.loader import render_to_string
+from django.views.decorators.http import require_GET
+from convocatorias.forms import ConvocatoriaForm, ArchivoConvocatoriaFormSet
 class VideoView(LoginRequiredMixin,TemplateView):
     template_name = 'generales/video.html'
 
@@ -1105,7 +1108,7 @@ class GestionarArticulosView(View):
         lista_obligaciones = get_object_or_404(ListaObligaciones, pk=lista_id)
 
         # Obtener los artículos relacionados con la lista
-        articulos = lista_obligaciones.articulos_liga.all()
+        articulos = lista_obligaciones.articulos_liga.all().order_by("orden")
 
         # Crear el contexto con la información necesaria
         context = {
@@ -1121,6 +1124,22 @@ class GestionarArticulosView(View):
         # Renderizar la plantilla con el contexto
         return render(request, 'transparencia2/gestionarLista.html', context)
             
+
+@csrf_exempt
+def actualizar_orden_articulos(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            for item in data["orden"]:
+                articulo = ArticuloLiga.objects.get(id=item["id"])
+                articulo.orden = item["orden"]
+                articulo.save()
+
+            return JsonResponse({"success": True})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+    
+    return JsonResponse({"success": False, "error": "Método no permitido"})
 
 
 class CrearArticuloView(CreateView):
@@ -1142,10 +1161,15 @@ class CrearArticuloView(CreateView):
         # Asignamos la instancia de ListaObligaciones al artículo
         form.instance.lista_obligaciones = lista_obligacion
 
+        # Asignamos el número de orden automáticamente
+        ultimo_orden = ArticuloLiga.objects.filter(lista_obligaciones=lista_obligacion).aggregate(max_orden=models.Max('orden'))['max_orden']
+        form.instance.orden = (ultimo_orden + 1) if ultimo_orden is not None else 1
+
         # Guardamos el artículo y mostramos el mensaje de éxito
         response = super().form_valid(form)
         messages.success(self.request, 'Artículo creado con éxito!')
         return response
+
 
     def get_success_url(self):
         # Redirigimos al usuario a la vista de gestión de artículos después de la creación
@@ -1390,3 +1414,137 @@ def actualizar_video(request):
     video.save()
 
     return JsonResponse({'success': True})
+
+class convocatoriaHome(TemplateView):
+    template_name = 'convocatorias/convocatoriasHome.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['convocatorias'] = Convocatoria.objects.all().order_by('-id')  # Ordenar por ID de forma descendente
+        context['categorias'] = CategoriaConvocatoria.objects.all()
+        url_configuracion = reverse('dashboard')
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': url_configuracion},
+            'child': {'name': 'Convocatorias', 'url': ''}
+        }
+        context['regreso_url'] = reverse('dashboard')
+        context['sidebar'] = 'convo'
+        return context
+
+@require_GET
+def filtrar_convocatorias(request):
+    search_query = request.GET.get('q', '')
+    estado_filtro = request.GET.get('estado', '')
+    categoria_filtro = request.GET.get('categoria', '')
+
+    convocatorias = Convocatoria.objects.all().order_by('-id')
+
+    if search_query:
+        convocatorias = convocatorias.filter(
+            Q(titulo__icontains=search_query) |
+            Q(categoria__nombre__icontains=search_query) |
+            Q(estado__icontains=search_query)
+        )
+
+    if estado_filtro:
+        convocatorias = convocatorias.filter(estado=estado_filtro)
+
+    if categoria_filtro:
+        convocatorias = convocatorias.filter(categoria__nombre=categoria_filtro)
+
+    datos = []
+    for convocatoria in convocatorias:
+        datos.append({
+            'id': convocatoria.id,
+            'titulo': convocatoria.titulo,
+            'categoria': convocatoria.categoria.nombre,
+            'estado': convocatoria.estado,
+            'descripcion': convocatoria.descripcion,
+            'fecha_inicio': convocatoria.fecha_apertura.strftime('%Y-%m-%d'),
+            'fecha_fin': convocatoria.fecha_cierre.strftime('%Y-%m-%d'),
+            'imagen': convocatoria.imagen.url if convocatoria.imagen else '',
+            'departamento': convocatoria.departamento if convocatoria.departamento else '',
+            'email': convocatoria.email if convocatoria.email else '',
+            'telefono': convocatoria.telefono if convocatoria.telefono else '',
+            'horarios_atencion': convocatoria.horarios_atencion if convocatoria.horarios_atencion else '',
+
+        })
+
+    return JsonResponse({'convocatorias': datos})
+
+def crear_convocatoria(request):
+    # Obtener la URL de configuración (Dashboard)
+    url_configuracion = reverse('convocatorias')
+
+    # Crear la estructura del breadcrumb
+    context = {
+        "breadcrumb": {
+            'parent': {'name': 'Convocatorias', 'url': url_configuracion},
+            'child': {'name': 'Registro de convocatoria', 'url': ''}
+        },
+        'sidebar': 'convo',
+        'regreso_url':url_configuracion
+    }
+
+    # Lógica para el formulario y el formset
+    if request.method == 'POST':
+        form = ConvocatoriaForm(request.POST, request.FILES)
+        formset = ArchivoConvocatoriaFormSet(request.POST, request.FILES, queryset=ArchivoConvocatoria.objects.none())
+
+        if form.is_valid() and formset.is_valid():
+            convocatoria = form.save()
+
+            for archivo_form in formset:
+                if archivo_form.cleaned_data and not archivo_form.cleaned_data.get('DELETE', False):
+                    archivo = archivo_form.save(commit=False)
+                    archivo.convocatoria = convocatoria
+                    archivo.save()
+
+            # Redirigir después de guardar la convocatoria
+            return redirect('convocatorias')
+    else:
+        form = ConvocatoriaForm()
+        formset = ArchivoConvocatoriaFormSet(queryset=ArchivoConvocatoria.objects.none())
+
+    # Incluir el contexto adicional antes de renderizar la plantilla
+    context.update({'form': form, 'formset': formset})
+
+    return render(request, 'convocatorias/crear_convocatoria.html', context)
+@csrf_exempt
+def crear_categoria_ajax(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            nombre = data.get("nombre")
+            if not nombre:
+                return JsonResponse({"error": "Nombre requerido"}, status=400)
+            categoria, created = CategoriaConvocatoria.objects.get_or_create(nombre=nombre)
+            return JsonResponse({"id": categoria.id, "nombre": categoria.nombre})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"error": "Método no permitido"}, status=405)
+# Vista para eliminar convocatoria
+def eliminar_convocatoria(request, id):
+    # Asegurarse de que la solicitud sea DELETE
+    if request.method == 'DELETE':
+        convocatoria = get_object_or_404(Convocatoria, id=id)
+        convocatoria.delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False}, status=400)
+def obtener_detalle_convocatoria(request, id):
+    # Obtener la convocatoria por id
+    convocatoria = get_object_or_404(Convocatoria, id=id)
+    
+    # Crear un diccionario con la información que deseas mostrar
+    data = {
+        'convocatoria': {
+            'titulo': convocatoria.titulo,
+            'fecha_inicio': convocatoria.fecha_apertura.strftime('%d-%m-%Y'),
+            'fecha_fin': convocatoria.fecha_cierre.strftime('%d-%m-%Y'),
+            'imagen': convocatoria.imagen.url if convocatoria.imagen else '',
+
+        }
+    }
+    
+    # Devolver los detalles de la convocatoria como JSON
+    return JsonResponse(data)

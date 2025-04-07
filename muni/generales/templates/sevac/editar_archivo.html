@@ -21,7 +21,7 @@
                     </button>
                     <!-- Botón cancelar, redirige a la URL correspondiente dependiendo del tipo de archivo -->
                     {% if archivo.carpeta.padre %}
-                        <a href="{% url 'gestionar_carpetas' archivo.carpeta.padre.padre.id %}" class="btn btn-secondary btn-lg">
+                        <a href="{% url 'gestionar_carpetas' archivo.carpeta.padre.id %}" class="btn btn-secondary btn-lg">
                             ❌ Cancelar
                         </a>
                     {% else %}

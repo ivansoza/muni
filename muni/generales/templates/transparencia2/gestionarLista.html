@@ -70,11 +70,13 @@
         <div class="card-body">
             <ul class="list-group" id="articulosList">
                 {% for articulo in articulos %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center articulo-item">
+                    <li class="list-group-item d-flex justify-content-between align-items-center articulo-item articulo" data-id="{{ articulo.id }}" draggable="true">
                         <div>
                             <i class="fas fa-scroll text-warning"></i> <strong>{{ articulo.articulo_fraccion }}</strong>
                         </div>
                         <div class="actions">
+                            <i class="fas fa-arrows-alt"></i> <!-- Icono de mover -->
+
                             <a href="{{ articulo.liga }}" class="btn-round btn-primary" title="Ir al Artículo" target="_blank">
                                 <i class="fas fa-link"></i>
                             </a>
@@ -208,5 +210,67 @@
     });
     
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const lista = document.getElementById("articulosList");
+        let draggingItem = null;
+    
+        document.querySelectorAll(".articulo").forEach(item => {
+            item.setAttribute("draggable", "true"); // Asegurar que sea arrastrable
+    
+            item.addEventListener("dragstart", function(e) {
+                draggingItem = this;
+                e.dataTransfer.effectAllowed = "move";
+            });
+    
+            item.addEventListener("dragend", function() {
+                draggingItem = null; // Resetear después del arrastre
+            });
+    
+            item.addEventListener("dragover", function(e) {
+                e.preventDefault();
+                this.style.borderTop = "2px solid blue"; // Indicar la posición
+            });
+    
+            item.addEventListener("dragleave", function() {
+                this.style.borderTop = "none";
+            });
+    
+            item.addEventListener("drop", function(e) {
+                e.preventDefault();
+                this.style.borderTop = "none";
+    
+                if (draggingItem && draggingItem !== this) {
+                    lista.insertBefore(draggingItem, this);
+                    actualizarOrden();
+                }
+            });
+        });
+    
+        function actualizarOrden() {
+            let orden = [];
+            document.querySelectorAll(".articulo").forEach((item, index) => {
+                orden.push({ id: item.getAttribute("data-id"), orden: index + 1 });
+            });
+    
+            fetch("{% url 'actualizar_orden' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ orden: orden })
+            }).then(response => response.json())
+              .then(data => {
+                  if (!data.success) {
+                      alert("Error al actualizar el orden.");
+                  }
+              });
+        }
+    });
+    
+    </script>
+    
+
 
 {% endblock %}
