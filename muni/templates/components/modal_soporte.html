@@ -1,0 +1,275 @@
+<div class="modal fade" id="soporteModal" tabindex="-1" aria-labelledby="soporteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content soporte-content">
+        <div class="modal-header soporte-header">
+          <h5 class="modal-title" id="soporteModalLabel">
+            <i class="bi bi-headset"></i> Soporte Técnico
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body soporte-body">
+          <div class="soporte-container" id="soporteContainer">
+            <!-- Los contactos se generarán dinámicamente -->
+          </div>
+        </div>
+        <div class="modal-footer soporte-footer">
+          <button type="button" class="btn soporte-btn" data-bs-dismiss="modal">
+            <i class="bi bi-x-circle"></i> Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <style>
+  .soporte-content {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    overflow: hidden;
+    background-color: #f8f9fa;
+  }
+  
+  .soporte-header {
+    background: linear-gradient(135deg, #2F698F,rgb(49, 74, 156));
+    color: white;
+    border-bottom: none;
+    padding: 18px 25px;
+  }
+  
+  .soporte-header .modal-title {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 20px;
+  }
+  
+  .soporte-body {
+    padding: 30px 25px;
+    background-color: #ffffff;
+  }
+  
+  .soporte-footer {
+    border-top: 1px solid #e9ecef;
+    padding: 15px 25px;
+    background-color: #f8f9fa;
+  }
+  
+  .soporte-btn {
+    background-color: #2563eb;
+    color: white;
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .soporte-btn:hover {
+    background-color: #1e40af;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    color: white;
+  }
+  
+  .soporte-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .soporte-item {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+  }
+  
+  .soporte-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+    border-color: #d1d5db;
+  }
+  
+  .soporte-avatar {
+    margin-right: 18px;
+  }
+  
+  .avatar-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 20px;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  }
+  
+  .soporte-info {
+    flex: 1;
+  }
+  
+  .soporte-info .nombre {
+    margin-bottom: 6px;
+    font-size: 17px;
+    font-weight: 600;
+    color: #1e293b;
+  }
+  
+  .soporte-info .titulo {
+    margin-bottom: 10px;
+    color: #64748b;
+    font-size: 14px;
+  }
+  
+  .soporte-info .telefono {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #334155;
+    font-size: 15px;
+    font-weight: 500;
+    background-color: #f1f5f9;
+    padding: 6px 12px;
+    border-radius: 8px;
+    width: fit-content;
+  }
+  
+  .telefono i {
+    color: #2563eb;
+  }
+  
+  @media (max-width: 768px) {
+    .soporte-container {
+      grid-template-columns: 1fr;
+    }
+    
+    .avatar-circle {
+      width: 50px;
+      height: 50px;
+      font-size: 18px;
+    }
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .soporte-item {
+    animation: fadeIn 0.5s ease forwards;
+  }
+  
+  .soporte-item:nth-child(1) { animation-delay: 0.1s; }
+  .soporte-item:nth-child(2) { animation-delay: 0.2s; }
+  .soporte-item:nth-child(3) { animation-delay: 0.3s; }
+  .soporte-item:nth-child(4) { animation-delay: 0.4s; }
+  </style>
+  
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Asegurarse de que los íconos de Bootstrap estén cargados
+    if (!document.querySelector('link[href*="bootstrap-icons"]')) {
+      const iconLink = document.createElement('link');
+      iconLink.rel = 'stylesheet';
+      iconLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css';
+      document.head.appendChild(iconLink);
+    }
+    
+    // Datos de contacto
+    const contactos = [
+      {
+        nombre: "Dr. Juan Ramos Ramos",
+        titulo: "Doctor en Sistemas",
+        telefono: "241 114 96 22",
+        iniciales: "JR",
+        color: "#3b82f6"
+      },
+      {
+        nombre: "Ing. Arley Iván Solís Zacapantzi",
+        titulo: "Ingeniero en Sistemas",
+        telefono: "246 208 71 65",
+        iniciales: "AS",
+        color: "#8b5cf6"
+      },
+      {
+        nombre: "Ing. José Marcelino Huerta",
+        titulo: "Ingeniero en Sistemas",
+        telefono: "241 221 97 81",
+        iniciales: "JM",
+        color: "#ec4899"
+      },
+      {
+        nombre: "Ing. Adair Gustavo Montiel",
+        titulo: "Ingeniero en Sistemas",
+        telefono: "241 112 47 40",
+        iniciales: "AM",
+        color: "#10b981"
+      }
+    ];
+    
+    // Función para mezclar el array (algoritmo Fisher-Yates)
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+    
+    // Función para generar el HTML de los contactos
+    function generarContactos() {
+      const container = document.getElementById('soporteContainer');
+      if (!container) return;
+      
+      // Limpiar contenedor
+      container.innerHTML = '';
+      
+      // Mezclar los contactos
+      const contactosMezclados = shuffleArray([...contactos]);
+      
+      // Generar el HTML para cada contacto
+      contactosMezclados.forEach(contacto => {
+        const contactoHTML = `
+        <div class="soporte-item">
+          <div class="soporte-avatar">
+            <div class="avatar-circle" style="background-color: ${contacto.color}">
+              ${contacto.iniciales}
+            </div>
+          </div>
+          <div class="soporte-info">
+            <h6 class="nombre">${contacto.nombre}</h6>
+            <div class="titulo">${contacto.titulo}</div>
+            <div class="telefono">
+              <i class="bi bi-telephone-fill"></i>
+              ${contacto.telefono}
+            </div>
+          </div>
+        </div>
+        `;
+        
+        container.innerHTML += contactoHTML;
+      });
+    }
+    
+    // Generar los contactos cuando se abre el modal
+    const soporteModal = document.getElementById('soporteModal');
+    if (soporteModal) {
+      soporteModal.addEventListener('show.bs.modal', function() {
+        generarContactos();
+      });
+    }
+  });
+  </script>
