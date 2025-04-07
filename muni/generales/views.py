@@ -12,12 +12,13 @@ from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.http import require_POST
+from django.views.generic import FormView
 
 from informacion_municipal.models import Municipio, Video
 from generales.models import ContadorVisitas, SocialNetwork
 from servicios.forms import ServicioForm
 from servicios.models import Servicio
-from .forms import CustomAuthenticationForm
+from .forms import CustomAuthenticationForm, UserCreationWithGroupForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from noticias.models import Noticia, ImagenGaleria, Categoria
@@ -126,6 +127,36 @@ class UsuariosView(LoginRequiredMixin, TemplateView):
         return context
 
 
+
+
+class UsuarioCreateView(LoginRequiredMixin, FormView):
+    template_name = 'generales/usuario_create.html'
+    form_class = UserCreationWithGroupForm
+    success_url = reverse_lazy('UsuariosView')
+
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        # Puedes ajustar los permisos según tu requerimiento
+        if not (user.is_superuser or user.has_perm('auth.add_user')):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': '/admin'},
+            'child': {'name': 'Crear Usuario', 'url': ''}
+        }
+        context['sidebar'] = 'Generales'
+        context['regreso_url'] = reverse('generalesDashboard')
+        return context
+
+    def form_valid(self, form):
+        user = form.save()
+        messages.success(self.request, f"Usuario {user.username} creado correctamente.")
+        return super().form_valid(form)
+    
+    
 @login_required
 def toggle_user_status(request, user_id):
     # Obtener el usuario a modificar o devolver 404
@@ -134,7 +165,7 @@ def toggle_user_status(request, user_id):
     # Evitar que el usuario se deshabilite a sí mismo
     if user_to_toggle == request.user:
         messages.error(request, "No puedes deshabilitarte a ti mismo.")
-        return redirect(reverse('usuarios_list'))
+        return redirect(reverse('UsuariosView'))
     
     # Alternar el estado is_active
     user_to_toggle.is_active = not user_to_toggle.is_active
@@ -146,7 +177,7 @@ def toggle_user_status(request, user_id):
     else:
         messages.success(request, f"El usuario {user_to_toggle.username} ha sido deshabilitado correctamente. Ya no tendrá acceso al sistema.")
     
-    return redirect(reverse('usuarios_list'))
+    return redirect(reverse('UsuariosView'))
 
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'

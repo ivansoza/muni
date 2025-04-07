@@ -2,6 +2,9 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Div, HTML
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User, Group
+
 
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
@@ -59,3 +62,28 @@ class CustomAuthenticationForm(AuthenticationForm):
             </div>
             """)
         )
+
+
+
+class UserCreationWithGroupForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+    grupo = forms.ModelChoiceField(
+        queryset=Group.objects.all(),
+        required=False,
+        label="Grupo",
+        help_text="Selecciona un grupo para el usuario (opcional)."
+    )
+
+    class Meta:
+        model = User
+        fields = ("username", "email", "password1", "password2", "grupo")
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data["email"]
+        if commit:
+            user.save()
+            grupo = self.cleaned_data.get("grupo")
+            if grupo:
+                user.groups.add(grupo)
+        return user
