@@ -8,6 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 import json
 from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth.forms import SetPasswordForm
 
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -185,6 +186,31 @@ class UsuarioEditView(LoginRequiredMixin, UpdateView):
         messages.success(self.request, f"Usuario {self.object.username} editado correctamente.")
         return response
     
+
+class UsuarioPasswordChangeView(LoginRequiredMixin, FormView):
+    template_name = 'generales/usuario_change_password.html'
+    form_class = SetPasswordForm
+    success_url = reverse_lazy('UsuariosView')
+
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        # Verifica permisos: el usuario debe ser superusuario o tener el permiso de cambiar usuarios.
+        if not (user.is_superuser or user.has_perm('auth.change_user')):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        # Obtenemos el usuario cuyo password se va a cambiar
+        user_to_change = get_object_or_404(User, pk=self.kwargs['pk'])
+        kwargs['user'] = user_to_change
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        user_to_change = get_object_or_404(User, pk=self.kwargs['pk'])
+        messages.success(self.request, f"La contraseña del usuario {user_to_change.username} ha sido actualizada correctamente.")
+        return super().form_valid(form)
 @login_required
 def toggle_user_status(request, user_id):
     # Obtener el usuario a modificar o devolver 404

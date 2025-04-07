@@ -44,7 +44,7 @@
                     {% else %}
                         <button class="btn btn-sm btn-success toggle-user" data-url="{% url 'toggle_user_status' user.id %}" data-username="{{ user.username }}">Habilitar usuario</button>
                     {% endif %}
-                    <button class="btn btn-sm btn-secondary">Cambiar contraseña</button>
+                    <button class="btn btn-sm btn-secondary" onclick="location.href='{% url 'usuario_change_password' user.id %}'">Cambiar contraseña</button>
                 </td>
             </tr>
             {% empty %}
