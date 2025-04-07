@@ -7,6 +7,11 @@
 
 {% block content %}
 <div class="container">
+    <!-- Botón fijo en esquina superior derecha -->
+    <a href="{% url 'homeServicios' %}" class="btn btn-secondary btn-volver">
+        ← Regresar
+    </a>
+
     <!-- Encabezado del trámite -->
     <div class="header">
         <p class="breadcrumb">
@@ -21,15 +26,12 @@
     <!-- Sidebar solo con iconos en móviles -->
     <div class="sidebar responsive-sidebar">
         <ul class="menu">
-            <li class="active"><i class="fas fa-thumbtack"></i></li>
-            <li><i class="fas fa-file-alt"></i></li>
-            <li><i class="fas fa-tools"></i></li>
-            <li><i class="fas fa-map-marker-alt"></i></li>
-            <li><i class="fas fa-money-bill-wave"></i></li>
-            <li><i class="fas fa-university"></i></li>
-            <li><i class="fas fa-calendar-alt"></i></li>
-            <li><i class="fas fa-clipboard-check"></i></li>
-        </ul>
+            <li class="menu-icon active" data-seccion="seccion-consiste"><i class="fas fa-thumbtack"></i></li>
+            <li class="menu-icon" data-seccion="seccion-requisitos"><i class="fas fa-file-alt"></i></li>
+            <li class="menu-icon" data-seccion="seccion-realizo"><i class="fas fa-tools"></i></li>
+            <li class="menu-icon" data-seccion="seccion-costo"><i class="fas fa-money-bill-wave"></i></li>
+            <li class="menu-icon" data-seccion="seccion-responsable"><i class="fas fa-user"></i></li>
+        </ul>        
     </div>
 
     <!-- Contenedor de contenido principal -->
@@ -40,11 +42,8 @@
                 <li class="menu-item active" data-seccion="seccion-consiste">📌 ¿En qué consiste?</li>
                 <li class="menu-item" data-seccion="seccion-requisitos">📄 ¿Qué se requiere?</li>
                 <li class="menu-item" data-seccion="seccion-realizo">🛠️ ¿Cómo lo realizo?</li>
-                <li class="menu-item" data-seccion="seccion-presencial">📍 ¿Dónde lo realizo presencial?</li>
                 <li class="menu-item" data-seccion="seccion-costo">💰 ¿Cuánto cuesta?</li>
-                <li class="menu-item" data-seccion="seccion-pago">🏦 ¿Dónde lo pago?</li>
-                <li class="menu-item" data-seccion="seccion-plazos">📆 Plazos y criterios de resolución</li>
-                <li class="menu-item" data-seccion="seccion-inspeccion">📑 Inspección y verificación</li>
+                <li class="menu-item" data-seccion="seccion-responsable">👤 Responsable</li>
             </ul>
         </div>
 
@@ -142,39 +141,117 @@
             </ol>
             {% endif %}
         </div>
-    </div>
 
-    <!-- Botones de acción -->
-    <div class="action-buttons">
-        <a href="{% url 'homeServicios' %}" class="btn btn-secondary">← Regresar</a>
-        <a href="#" class="btn btn-warning">⚠️ Presentar una queja</a>
-    </div>    
+        <!-- Sección "¿Cuánto cuesta?" -->
+        <div id="seccion-costo" class="seccion table-container">
+            <h2>Costos</h2>
+
+            <table class="tabla-requisitos table">
+                <thead>
+                    <tr>
+                        <th>Concepto</th>
+                        <th>Notas</th>
+                        <th>Vigencia</th>
+                        <th>Tipo</th>
+                        <th>Costo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for costo in costos %}
+                    <tr>
+                        <td><strong>{{ forloop.counter }}. {{ costo.concepto }}</strong></td>
+                        <td>{{ costo.notas|default:"-" }}</td>
+                        <td>{{ costo.vigencia }}</td>
+                        <td>{{ costo.tipo }}</td>
+                        <td>{{ costo.costo|default:"No especificado" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">Este trámite no tiene costos definidos.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if costos %}
+            <div class="alert alert-info mt-3" role="alert">
+                <i class="fas fa-info-circle"></i>
+                <strong>Momento en el que se debe realizar el pago:</strong> {{ costos.0.momento_pago }}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sección "Responsable" -->
+        <div id="seccion-responsable" class="seccion table-container">
+            <h2>Responsable del Trámite</h2>
+            {% if servicio.responsable %}
+            <div class="responsable-box">
+                {% if servicio.responsable.imagen %}
+                    <img src="{{ servicio.responsable.imagen.url }}" alt="Foto del responsable" class="responsable-foto">
+                {% else %}
+                    <img src="{{ municipio.logotipo.url }}" alt="Logotipo del municipio" class="responsable-foto">
+                {% endif %}
+                <div class="responsable-info">
+                    <p><strong>Nombre:</strong> {{ servicio.responsable.nombre }}</p>
+                    <p><strong>Dependencia:</strong> {{ servicio.responsable.dependencia }}</p>
+                    <p><strong>Teléfono:</strong> {{ servicio.responsable.telefono }}</p>
+                    <p><strong>Correo electrónico:</strong> 
+                        <a href="mailto:{{ servicio.responsable.correo }}">{{ servicio.responsable.correo }}</a>
+                    </p>
+                    <p><strong>Horario de atención:</strong> {{ servicio.responsable.horario }}</p>
+                </div>
+            </div>
+            {% else %}
+            <p>No se ha asignado responsable para este trámite.</p>
+            {% endif %}
+        </div>        
+
+    </div>  
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const menuItems = document.querySelectorAll(".menu-item");
+    document.addEventListener("DOMContentLoaded", function () {
+        const desktopMenuItems = document.querySelectorAll(".menu-item");
+        const mobileMenuIcons = document.querySelectorAll(".menu-icon");
         const sections = document.querySelectorAll(".seccion");
-
-        menuItems.forEach(item => {
-            item.addEventListener("click", function() {
-                // Remover clase "active" de todos los elementos del menú
-                menuItems.forEach(i => i.classList.remove("active"));
-                this.classList.add("active");
-
-                // Ocultar todas las secciones
-                sections.forEach(sec => sec.style.display = "none");
-
-                // Mostrar la sección seleccionada
-                const seccionId = this.getAttribute("data-seccion");
-                document.getElementById(seccionId).style.display = "block";
+    
+        function mostrarSeccion(seccionId) {
+            // Oculta todas las secciones
+            sections.forEach(sec => sec.style.display = "none");
+            // Muestra solo la seleccionada
+            const target = document.getElementById(seccionId);
+            if (target) target.style.display = "block";
+        }
+    
+        function activarElemento(activos, actual) {
+            activos.forEach(i => i.classList.remove("active"));
+            actual.classList.add("active");
+        }
+    
+        // Menu de escritorio
+        desktopMenuItems.forEach(item => {
+            item.addEventListener("click", function () {
+                const seccion = this.getAttribute("data-seccion");
+                mostrarSeccion(seccion);
+                activarElemento(desktopMenuItems, this);
+                activarElemento(mobileMenuIcons, document.querySelector(`.menu-icon[data-seccion="${seccion}"]`));
             });
         });
-
-        // Mostrar solo la primera sección por defecto
-        document.getElementById("seccion-consiste").style.display = "block";
+    
+        // Menu móvil
+        mobileMenuIcons.forEach(icon => {
+            icon.addEventListener("click", function () {
+                const seccion = this.getAttribute("data-seccion");
+                mostrarSeccion(seccion);
+                activarElemento(mobileMenuIcons, this);
+                activarElemento(desktopMenuItems, document.querySelector(`.menu-item[data-seccion="${seccion}"]`));
+            });
+        });
+    
+        // Mostrar sección por defecto
+        mostrarSeccion("seccion-consiste");
     });
-</script>
+</script>    
 {% endblock %}

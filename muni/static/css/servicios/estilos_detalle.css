@@ -12,7 +12,7 @@
 .title {
     font-size: 28px;
     font-weight: bold;
-    color: #8B1E64;
+    color: black;
 }
 
 .subtitle {
@@ -69,7 +69,7 @@
 }
 
 .menu .active {
-    background: #8B1E64;
+    background: var(--color-primario);
     color: white;
     font-weight: bold;
 }
@@ -83,7 +83,7 @@
 }
 
 h2 {
-    color: #8B1E64;
+    color: var(--color-primario);
     font-size: 22px;
 }
 
@@ -117,13 +117,13 @@ h2 {
 
 /* Específicos para cada badge */
 .costo {
-    background-color: #e67e22;
-    color: white;
+    background-color: var(--color-secundario);
+    color: var(--color-primario);
 }
 
 .presencial {
-    background-color: #6c757d;
-    color: white;
+    background-color: var(--color-secundario);
+    color: var(--color-primario);
 }
 
 .economico {
@@ -136,18 +136,19 @@ h2 {
 /* Descripción */
 .descripcion {
     margin: 15px 0;
+    text-align: justify;
 }
 
 .descripcion h3 {
     font-size: 18px;
-    color: #8B1E64;
+    color: var(--color-primario);
 }
 
 /* Botones de acción */
-.action-buttons {
+/* .action-buttons {
     margin-top: 20px;
     text-align: right;
-}
+} */
 
 .btn {
     padding: 10px 20px;
@@ -159,13 +160,8 @@ h2 {
 }
 
 .btn-secondary {
-    background-color: #6c757d;
-    color: white;
-}
-
-.btn-warning {
-    background-color: #f39c12;
-    color: white;
+    background-color: var(--color-primario);
+    color: var(--color-secundario);
 }
 
 /* Sidebar en desktop */
@@ -219,7 +215,7 @@ h2 {
 
     .menu li i {
         font-size: 24px;
-        color: #8B1E64;
+        color: var(--color-iconos);
     }
 }
 
@@ -284,8 +280,8 @@ h2 {
 
 .menu-item.active {
     font-weight: bold;
-    color: #80004D;
-    border-left: 4px solid #80004D;
+    color: var(--color-secundario);
+    border-left: 4px solid var(--color-secundario);
     padding-left: 8px;
 }
 
@@ -309,4 +305,32 @@ h2 {
 
 .seccion li:last-child {
     border-bottom: none;
+}
+
+.responsable-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    background: #f9f9f9;
+}
+
+.responsable-foto {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.responsable-info p {
+    margin: 5px 0;
+}
+
+.btn-volver {
+    position: absolute;
+    top: 98px;
+    right: 55px;
+    z-index: 10;
 }
