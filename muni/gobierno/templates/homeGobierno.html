@@ -432,15 +432,20 @@
             </div>
           </div>
 
-          <div class="biografia">
-            <div class="biografia-contenido">
-              <h2>Trayectoria Profesional</h2>
-              <div class="texto-biografia">
-                {{ principal.semblanza|safe }}
+
+          
+          {% if principal.semblanza %}
+            <div class="biografia">
+              <div class="biografia-contenido">
+                <h2>Trayectoria Profesional</h2>
+                <div class="texto-biografia">
+                  {{ principal.semblanza|safe }}
+                </div>
               </div>
+              <div class="patron-decorativo"></div>
             </div>
-            <div class="patron-decorativo"></div>
-          </div>
+          {% endif %}
+        
         </div>
       {% endwith %}
 
