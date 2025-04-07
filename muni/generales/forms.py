@@ -87,3 +87,25 @@ class UserCreationWithGroupForm(UserCreationForm):
             if grupo:
                 user.groups.add(grupo)
         return user
+    
+
+class UserEditForm(forms.ModelForm):
+    email = forms.EmailField(required=True)
+    grupo = forms.ModelChoiceField(
+        queryset=Group.objects.all(),
+        required=False,
+        label="Grupo",
+        help_text="Selecciona un grupo para el usuario (opcional)."
+    )
+
+    class Meta:
+        model = User
+        fields = ("username", "email", "grupo")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Si el usuario tiene algún grupo asignado, se inicializa con el primero
+        if self.instance:
+            groups = self.instance.groups.all()
+            if groups.exists():
+                self.fields["grupo"].initial = groups.first()

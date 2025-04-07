@@ -7,7 +7,7 @@
     <a href="{% url 'usuario_create' %}" class="btn btn-primary">Crear usuario nuevo</a>
 
 
-    
+
     <table class="table table-bordered table-hover">
         <thead class="thead-dark">
             <tr>
@@ -36,7 +36,9 @@
                     {% endif %}
                 </td>
                 <td>
-                    <button class="btn btn-sm btn-primary">Editar usuario</button>
+                    <button class="btn btn-sm btn-primary" onclick="location.href='{% url 'usuario_edit' user.id %}'">Editar usuario</button>
+
+
                     {% if user.is_active %}
                         <button class="btn btn-sm btn-warning toggle-user" data-url="{% url 'toggle_user_status' user.id %}" data-username="{{ user.username }}">Inhabilitar usuario</button>
                     {% else %}

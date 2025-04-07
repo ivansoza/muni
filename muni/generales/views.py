@@ -18,7 +18,7 @@ from informacion_municipal.models import Municipio, Video
 from generales.models import ContadorVisitas, SocialNetwork
 from servicios.forms import ServicioForm
 from servicios.models import Servicio
-from .forms import CustomAuthenticationForm, UserCreationWithGroupForm
+from .forms import CustomAuthenticationForm, UserCreationWithGroupForm, UserEditForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from noticias.models import Noticia, ImagenGaleria, Categoria
@@ -156,6 +156,34 @@ class UsuarioCreateView(LoginRequiredMixin, FormView):
         messages.success(self.request, f"Usuario {user.username} creado correctamente.")
         return super().form_valid(form)
     
+
+class UsuarioEditView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = UserEditForm
+    template_name = 'generales/usuario_edit.html'
+    success_url = reverse_lazy('UsuariosView')
+
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        # Permisos para editar usuario (ajusta según tu lógica)
+        if not (user.is_superuser or user.has_perm('auth.change_user')):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': '/admin'},
+            'child': {'name': 'Editar Usuario', 'url': ''}
+        }
+        context['sidebar'] = 'Generales'
+        context['regreso_url'] = reverse('generalesDashboard')
+        return context
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, f"Usuario {self.object.username} editado correctamente.")
+        return response
     
 @login_required
 def toggle_user_status(request, user_id):

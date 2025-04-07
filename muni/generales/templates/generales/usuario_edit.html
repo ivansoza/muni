@@ -1,0 +1,38 @@
+{% extends "baseTemplate.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Editar Usuario</h2>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_username" class="form-label">Usuario</label>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <div class="text-danger">{{ form.username.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            <label for="id_email" class="form-label">Correo electrónico</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <div class="text-danger">{{ form.email.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            <label for="id_grupo" class="form-label">Grupo</label>
+            {{ form.grupo }}
+            {% if form.grupo.errors %}
+                <div class="text-danger">{{ form.grupo.errors }}</div>
+            {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        <a href="{{ regreso_url }}" class="btn btn-secondary">Regresar</a>
+    </form>
+</div>
+{% endblock %}
+
+{% block scriptcontent %}
+<!-- Scripts adicionales si se requieren -->
+{% endblock %}
