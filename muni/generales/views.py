@@ -173,7 +173,7 @@ class UsuarioCreateView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
     
 
-    
+
 class UsuarioEditView(LoginRequiredMixin, UpdateView):
     model = User
     form_class = UserEditForm
@@ -1787,3 +1787,61 @@ class GroupCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         return response
     
 
+
+
+class GroupUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    """
+    Pantalla para editar un grupo existente y sus permisos.
+    Reutiliza el mismo GroupForm que la vista de creación.
+    """
+    model = Group
+    form_class = GroupForm
+    template_name = "group_form_edit.html"      # Usa la plantilla que verás más abajo
+    success_url = reverse_lazy("GruposView")
+    permission_required = "auth.change_group"
+
+    # ——— Permisos ——————————————————————————————————————————————
+    def has_permission(self):
+        if self.request.user.is_superuser:
+            return True
+        return super().has_permission()
+
+    # ——— Datos iniciales para el formulario ————————————————
+    def get_initial(self):
+        """
+        Rellenamos el campo oculto 'permission_ids' con los permisos
+        actuales del grupo para que el JavaScript los marque como
+        seleccionados al cargar la página.
+        """
+        initial = super().get_initial()
+        ids = self.object.permissions.values_list("id", flat=True)
+        initial["permission_ids"] = ",".join(str(pk) for pk in ids)
+        return initial
+
+    # ——— Contexto para la plantilla ————————————————————————
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumb"] = {
+            "parent": {"name": "Grupos", "url": "/admin/generales/grupos/"},
+            "child": {"name": f'Editar "{self.object.name}"', "url": ""},
+        }
+        context["sidebar"] = "Generales"
+        context["regreso_url"] = reverse_lazy("GruposView")
+
+        # Todos los permisos para la columna “Disponibles”
+        context["all_permissions"] = Permission.objects.all().order_by("codename")
+
+        # IDs de los permisos ya asignados (los usará el JS)
+        context["group_permissions_ids"] = list(
+            self.object.permissions.values_list("id", flat=True)
+        )
+        return context
+
+    # ——— Mensaje de éxito ————————————————————————————————
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(
+            self.request,
+            f'El grupo "{self.object.name}" se ha actualizado correctamente.',
+        )
+        return response

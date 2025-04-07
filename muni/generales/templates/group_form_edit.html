@@ -1,0 +1,312 @@
+{# group_form_edit.html #}
+{% extends "baseTemplate.html" %}
+
+{% block content %}
+
+<style>
+    :root {
+        {% if municipio.colores.exists %}
+            --color-primario:{{ municipio.colores.first.color_primario_dark }};
+            --color-secundario:{{ municipio.colores.first.color_primario }};
+            --color-iconos:{{ municipio.colores.first.color_secundario }};
+            --color-primario-rgb: {{ municipio.colores.first.color_primario_dark_rgb }};
+            --color-secundario-rgb: {{ municipio.colores.first.color_primario_rgb }};
+        {% else %}
+            --color-primario:#1e4765;
+            --color-secundario:#295E84;
+            --color-iconos:rgb(109,109,109);
+            --color-primario-rgb:30,71,101;
+            --color-secundario-rgb:41,94,132;
+        {% endif %}
+        --color-gradiente:linear-gradient(135deg,var(--color-primario),var(--color-secundario));
+        --degradado:linear-gradient(135deg,var(--color-primario),var(--color-secundario));
+        --color-success:#10b981;
+        --color-danger:#ef4444;
+        --color-warning:#f59e0b;
+        --color-info:#3b82f6;
+        --color-light:#f3f4f6;
+        --color-dark:#1f2937;
+        --shadow-sm:0 1px 2px 0 rgba(0,0,0,.05);
+        --shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06);
+        --shadow-lg:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -2px rgba(0,0,0,.05);
+        --radius:.5rem;
+    }
+
+    /* ——— ESTILOS DEL FORMULARIO (idénticos a la versión “crear”) ——— */
+    .form-container{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:2rem;margin:2rem auto}
+    .form-header{text-align:center;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--color-light)}
+    .form-header h1{color:var(--color-primario);font-weight:600;margin-bottom:.5rem}
+    .form-card{border:1px solid rgba(var(--color-primario-rgb),.2);border-radius:var(--radius);overflow:hidden}
+    .card-header{background:rgba(var(--color-primario-rgb),.05);padding:1rem 1.5rem;border-bottom:1px solid rgba(var(--color-primario-rgb),.2)}
+    .card-header h2{color:var(--color-primario);font-size:1.25rem;margin:0}
+    .card-body{padding:1.5rem}
+    .form-floating{position:relative}
+    .form-floating label{position:absolute;top:0;left:0;height:100%;padding:1rem .75rem;pointer-events:none;border:1px solid transparent;transform-origin:0 0;transition:opacity .1s ease-in-out,transform .1s ease-in-out;color:#6c757d}
+    .form-floating input:focus~label,
+    .form-floating input:not(:placeholder-shown)~label{opacity:.65;transform:scale(.85) translateY(-.5rem) translateX(.15rem)}
+    .form-control{display:block;width:100%;padding:1rem .75rem;font-size:1rem;font-weight:400;line-height:1.5;color:#212529;background:#fff;background-clip:padding-box;border:1px solid #ced4da;appearance:none;border-radius:.375rem;transition:border-color .15s ease-in-out,box-shadow .15s ease-in-out}
+    .form-control:focus{border-color:var(--color-secundario);outline:0;box-shadow:0 0 0 .25rem rgba(var(--color-secundario-rgb),.25)}
+    .error-message{color:var(--color-danger);font-size:.875rem;margin-top:.25rem}
+
+    /* ——— Permisos ——— */
+    .permissions-container{display:flex;gap:1rem;margin-bottom:1rem}
+    .permissions-column{flex:1;display:flex;flex-direction:column;min-width:0}
+    .permissions-header{margin-bottom:.75rem}
+    .permissions-header h3{font-size:1rem;color:var(--color-primario);margin-bottom:.5rem}
+    .search-container{position:relative}
+    .search-icon{position:absolute;right:.75rem;top:50%;transform:translateY(-50%);color:#6c757d;font-style:normal}
+    .permissions-list-container{display:flex;flex-direction:column;height:100%;min-height:350px}
+    .permissions-list{flex:1;border:1px solid #ced4da;border-radius:var(--radius);padding:.5rem;overflow-y:auto;height:350px;width:100%}
+    .permissions-list option{padding:.5rem;margin-bottom:.25rem;border-radius:.25rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+    .permissions-list option:hover{background:rgba(var(--color-secundario-rgb),.1)}
+    .permissions-list option[selected]{background:rgba(var(--color-secundario-rgb),.2);color:var(--color-primario)}
+    .perm-name{font-weight:500}
+    .perm-code{color:#6c757d;font-size:.875rem}
+    .list-info{margin-top:.5rem;font-size:.875rem;color:#6c757d;text-align:right}
+    .transfer-buttons{display:flex;flex-direction:column;justify-content:center;gap:.75rem;padding:0 .5rem}
+    .transfer-btn{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;border:1px solid var(--color-secundario);background:#fff;color:var(--color-secundario);cursor:pointer;transition:all .2s ease}
+    .transfer-btn:hover{background:var(--color-secundario);color:#fff}
+    .arrow{font-size:1.2rem;font-weight:bold}
+    .selected-list{border:1px solid rgba(var(--color-secundario-rgb),.5);background:rgba(var(--color-secundario-rgb),.05)}
+
+    /* ——— Acciones ——— */
+    .form-actions{display:flex;justify-content:flex-end;gap:1rem;margin-top:2rem}
+    .btn{padding:.75rem 1.5rem;border-radius:var(--radius);font-weight:500;text-align:center;cursor:pointer;transition:all .2s ease;border:none}
+    .btn-primary{background:var(--color-gradiente);color:#fff}
+    .btn-primary:hover{box-shadow:0 0 0 .25rem rgba(var(--color-primario-rgb),.3)}
+    .btn-secondary{background:var(--color-light);color:var(--color-dark)}
+    .btn-secondary:hover{background:#e2e3e5}
+
+    @media (max-width:992px){
+        .permissions-container{flex-direction:column}
+        .transfer-buttons{flex-direction:row;padding:1rem 0}
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="form-container">
+        <div class="form-header">
+            <h1>Editar Grupo</h1>
+            <p class="text-muted">Modifica el nombre y los permisos del grupo</p>
+        </div>
+
+        <form method="post" id="groupForm">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            <!-- ——— Nombre del Grupo ——— -->
+            <div class="form-card">
+                <div class="card-header"><h2>Información del Grupo</h2></div>
+                <div class="card-body">
+                    <div class="form-floating mb-3">
+                        <input type="text"
+                               class="form-control"
+                               id="id_name"
+                               name="name"
+                               placeholder="Nombre del Grupo"
+                               value="{{ form.instance.name }}"
+                               required>
+                        <label for="id_name">Nombre del Grupo</label>
+                        {% if form.name.errors %}
+                            <div class="error-message">{{ form.name.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- ——— Permisos ——— -->
+            <div class="form-card mt-4">
+                <div class="card-header"><h2>Asignar Permisos</h2></div>
+                <div class="card-body">
+                    <div class="permissions-container">
+                        <!-- Permisos disponibles -->
+                        <div class="permissions-column">
+                            <div class="permissions-header">
+                                <h3>Permisos Disponibles</h3>
+                                <div class="search-container">
+                                    <input type="text" id="searchAvailable" placeholder="Buscar permiso..." class="form-control">
+                                    <i class="search-icon">🔍</i>
+                                </div>
+                            </div>
+                            <div class="permissions-list-container">
+                                <select id="permissionsAvailable" multiple class="permissions-list">
+                                    {% for perm in all_permissions %}
+                                        <option value="{{ perm.id }}" title="{{ perm.name }}">
+                                            <span class="perm-name">{{ perm.name }}</span>
+                                            <span class="perm-code">({{ perm.codename }})</span>
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="list-info">
+                                    <span id="availableCount">{{ all_permissions|length }}</span> permisos disponibles
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de transferencia -->
+                        <div class="transfer-buttons">
+                            <button type="button" class="transfer-btn"
+                                    onclick="moveSelected('permissionsAvailable','permissionsSelected')" title="Agregar seleccionados">
+                                <span class="arrow">→</span>
+                            </button>
+                            <button type="button" class="transfer-btn"
+                                    onclick="moveAll('permissionsAvailable','permissionsSelected')" title="Agregar todos">
+                                <span class="arrow">⇒</span>
+                            </button>
+                            <button type="button" class="transfer-btn"
+                                    onclick="moveSelected('permissionsSelected','permissionsAvailable')" title="Quitar seleccionados">
+                                <span class="arrow">←</span>
+                            </button>
+                            <button type="button" class="transfer-btn"
+                                    onclick="moveAll('permissionsSelected','permissionsAvailable')" title="Quitar todos">
+                                <span class="arrow">⇐</span>
+                            </button>
+                        </div>
+
+                        <!-- Permisos asignados -->
+                        <div class="permissions-column">
+                            <div class="permissions-header">
+                                <h3>Permisos Asignados</h3>
+                                <div class="search-container">
+                                    <input type="text" id="searchSelected" placeholder="Buscar permiso..." class="form-control">
+                                    <i class="search-icon">🔍</i>
+                                </div>
+                            </div>
+                            <div class="permissions-list-container">
+                                <select id="permissionsSelected" multiple class="permissions-list selected-list">
+                                    <!-- Se llenará vía JS -->
+                                </select>
+                                <div class="list-info">
+                                    <span id="selectedCount">0</span> permisos asignados
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campo oculto con IDs de permisos -->
+            {{ form.permission_ids }}
+
+            <div class="form-actions">
+                <a href="{{ regreso_url }}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scriptcontent %}
+{{ block.super }}
+
+{# IDs de permisos ya asignados al grupo #}
+{{ group_permissions_ids|json_script:"preselectedPerms" }}
+
+<script>
+/* ——— Funciones reutilizadas (idénticas al formulario de creación) ——— */
+document.addEventListener('DOMContentLoaded', function () {
+    updateCount('permissionsAvailable','availableCount');
+    updateCount('permissionsSelected','selectedCount');
+
+    document.getElementById('searchAvailable')
+            .addEventListener('input',() => filterOptions('permissionsAvailable',event.target.value));
+    document.getElementById('searchSelected')
+            .addEventListener('input',() => filterOptions('permissionsSelected',event.target.value));
+
+    document.getElementById('groupForm')
+            .addEventListener('submit',updatePermissionIds);
+
+    setupMultiSelect('permissionsAvailable');
+    setupMultiSelect('permissionsSelected');
+    setupDoubleClickMove('permissionsAvailable','permissionsSelected');
+    setupDoubleClickMove('permissionsSelected','permissionsAvailable');
+});
+
+/* ——— Filtro ——— */
+function filterOptions(selectId,searchText){
+    const select=document.getElementById(selectId);
+    const search=searchText.toLowerCase();
+    for(const option of select.options){
+        const text=option.text.toLowerCase();
+        option.style.display=text.includes(search)?'':'none';
+    }
+}
+
+/* ——— Mover permisos ——— */
+function moveSelected(fromId,toId){
+    const from=document.getElementById(fromId);
+    const to=document.getElementById(toId);
+    [...from.selectedOptions].forEach(opt=>to.appendChild(opt));
+    updateCount(fromId,fromId==='permissionsAvailable'?'availableCount':'selectedCount');
+    updateCount(toId,toId==='permissionsSelected'?'selectedCount':'availableCount');
+}
+function moveAll(fromId,toId){
+    const from=document.getElementById(fromId);
+    const to=document.getElementById(toId);
+    [...from.options].forEach(opt=>{
+        if(opt.style.display!=='none'){to.appendChild(opt);}
+    });
+    updateCount(fromId,fromId==='permissionsAvailable'?'availableCount':'selectedCount');
+    updateCount(toId,toId==='permissionsSelected'?'selectedCount':'availableCount');
+}
+function updateCount(selectId,countId){
+    const select=document.getElementById(selectId);
+    const count=document.getElementById(countId);
+    let visible=0;
+    for(const option of select.options){
+        if(option.style.display!=='none'){visible++;}
+    }
+    count.textContent=visible;
+}
+function updatePermissionIds(){
+    const selected=document.getElementById('permissionsSelected');
+    const hidden=document.getElementById('id_permission_ids');
+    hidden.value=[...selected.options].map(o=>o.value).join(',');
+}
+function setupMultiSelect(selectId){
+    const select=document.getElementById(selectId);
+    select.addEventListener('click',e=>{
+        if(e.ctrlKey){
+            e.preventDefault();
+            e.target.selected=!e.target.selected;
+        }else if(e.shiftKey&&select.selectedOptions.length>0){
+            e.preventDefault();
+            const options=[...select.options];
+            const first=options.findIndex(o=>o.selected);
+            const clicked=options.indexOf(e.target);
+            const [start,end]=[first,clicked].sort((a,b)=>a-b);
+            for(let i=start;i<=end;i++){
+                if(options[i].style.display!=='none'){options[i].selected=true;}
+            }
+        }
+    });
+}
+function setupDoubleClickMove(fromId,toId){
+    document.getElementById(fromId).addEventListener('dblclick',e=>{
+        const option=e.target.closest('option');
+        if(option){
+            document.getElementById(toId).appendChild(option);
+            updateCount(fromId,fromId==='permissionsAvailable'?'availableCount':'selectedCount');
+            updateCount(toId,toId==='permissionsSelected'?'selectedCount':'availableCount');
+        }
+    });
+}
+
+/* ——— Mover los permisos que ya tenía el grupo ——— */
+document.addEventListener('DOMContentLoaded',() => {
+    const preselected=JSON.parse(document.getElementById('preselectedPerms').textContent);
+    const available=document.getElementById('permissionsAvailable');
+    const selected=document.getElementById('permissionsSelected');
+
+    [...available.options].forEach(opt=>{
+        if(preselected.includes(parseInt(opt.value))){
+            selected.appendChild(opt);
+        }
+    });
+
+    updateCount('permissionsAvailable','availableCount');
+    updateCount('permissionsSelected','selectedCount');
+});
+</script>
+{% endblock scriptcontent %}
