@@ -5,28 +5,27 @@ from django.views.generic.base import TemplateView
 
 from generales.models import ContadorVisitas
 from noticias.models import Noticia
-
+from convocatorias.models import Convocatoria
 
 
 class HomePageView(TemplateView):
-    template_name = 'home/index.html'  # Ruta del template
+    template_name = 'home/index.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['sidebar'] = 'home'  # Marcar 'Inicio' como activo
-        # Cargar las últimas 3 noticias ordenadas por fecha descendente
+        context['sidebar'] = 'home'
         context['ultimas_noticias'] = Noticia.objects.order_by('-fecha')[:3]
 
+        # Agregar convocatorias (las 5 más recientes abiertas o próximas)
+        context['convocatorias'] = Convocatoria.objects.filter(
+            estado__in=['ABIERTA', 'PRÓXIMA']
+        ).order_by('-fecha_apertura')[:5]
 
-                # Manejo del contador de visitas
         if 'visita' not in self.request.session:
-            self.request.session['visita'] = True  # Marcamos que la visita es real
-
-            # Crear o actualizar el contador
-            contador, created = ContadorVisitas.objects.get_or_create(id=1)
+            self.request.session['visita'] = True
+            contador, _ = ContadorVisitas.objects.get_or_create(id=1)
             contador.visitas += 1
             contador.save()
-
 
         return context
 
