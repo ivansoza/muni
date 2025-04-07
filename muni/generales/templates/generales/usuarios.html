@@ -33,7 +33,11 @@
                 </td>
                 <td>
                     <button class="btn btn-sm btn-primary">Editar usuario</button>
-                    <button class="btn btn-sm btn-warning">Inhabilitar usuario</button>
+                    {% if user.is_active %}
+                        <button class="btn btn-sm btn-warning toggle-user" data-url="{% url 'toggle_user_status' user.id %}" data-username="{{ user.username }}">Inhabilitar usuario</button>
+                    {% else %}
+                        <button class="btn btn-sm btn-success toggle-user" data-url="{% url 'toggle_user_status' user.id %}" data-username="{{ user.username }}">Habilitar usuario</button>
+                    {% endif %}
                     <button class="btn btn-sm btn-secondary">Cambiar contraseña</button>
                 </td>
             </tr>
@@ -48,5 +52,30 @@
 {% endblock %}
 
 {% block scriptcontent %}
-<!-- Aquí podrías meter JS si necesitas -->
+<!-- Incluimos SweetAlert2 desde CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+    const toggleButtons = document.querySelectorAll(".toggle-user");
+    toggleButtons.forEach(function(button){
+        button.addEventListener("click", function(event){
+            event.preventDefault();
+            const url = button.getAttribute("data-url");
+            const username = button.getAttribute("data-username");
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: `El usuario ${username} ${button.textContent.trim().toLowerCase()} y ya no tendrá acceso al sistema si se deshabilita.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, continuar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+        });
+    });
+});
+</script>
 {% endblock %}

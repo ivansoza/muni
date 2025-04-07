@@ -38,6 +38,7 @@ from sevac.forms import CarpetaForm, ArchivoForm
 from django.db.models import Count
 from django.contrib.auth.models import User  # Asegúrate de importar el modelo User
 
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -103,32 +104,49 @@ class ReportesView(LoginRequiredMixin,TemplateView):
         context['regreso_url']= url_configuracion
         return context
     
-class UsuariosView(LoginRequiredMixin,TemplateView):
+class UsuariosView(LoginRequiredMixin, TemplateView):
     template_name = 'generales/usuarios.html'
 
     def dispatch(self, request, *args, **kwargs):
         user = request.user
-
         if not (user.is_superuser or user.has_perm('auth.add_user')):
             raise PermissionDenied  
-
         return super().dispatch(request, *args, **kwargs)
     
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context["breadcrumb"] = {
             'parent': {'name': 'Dashboard', 'url': '/admin'},
             'child': {'name': 'Reportes', 'url': ''}
         }
         context['sidebar'] = 'Generales' 
-        url_configuracion = reverse( 'generalesDashboard')
-        context['regreso_url']= url_configuracion
-
-        context['usuarios'] = User.objects.all()  # Aquí estás pasando los usuarios al template
-       
+        context['regreso_url'] = reverse('generalesDashboard')
+        # Excluir el usuario actual
+        context['usuarios'] = User.objects.exclude(pk=self.request.user.pk)
         return context
+
+
+@login_required
+def toggle_user_status(request, user_id):
+    # Obtener el usuario a modificar o devolver 404
+    user_to_toggle = get_object_or_404(User, pk=user_id)
+    
+    # Evitar que el usuario se deshabilite a sí mismo
+    if user_to_toggle == request.user:
+        messages.error(request, "No puedes deshabilitarte a ti mismo.")
+        return redirect(reverse('usuarios_list'))
+    
+    # Alternar el estado is_active
+    user_to_toggle.is_active = not user_to_toggle.is_active
+    user_to_toggle.save()
+    
+    # Mostrar mensaje de éxito
+    if user_to_toggle.is_active:
+        messages.success(request, f"El usuario {user_to_toggle.username} ha sido habilitado correctamente.")
+    else:
+        messages.success(request, f"El usuario {user_to_toggle.username} ha sido deshabilitado correctamente. Ya no tendrá acceso al sistema.")
+    
+    return redirect(reverse('usuarios_list'))
 
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
