@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, DetailView
 from django.core.paginator import Paginator
 from django.core.exceptions import ObjectDoesNotExist
-from servicios.models import ComoLoRealizo, EnQueConsiste, QueSeRequiere, Servicio
+from servicios.models import ComoLoRealizo, CuantoCuesta, EnQueConsiste, QueSeRequiere, Servicio
 
 class HomeServiciosView(TemplateView):
     template_name = 'homeServicios.html'  # Ruta del template
@@ -56,6 +56,7 @@ class ServicioDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['sidebar'] = 'servicios'
 
         try:
             context["consiste"] = EnQueConsiste.objects.get(servicio=self.object)
@@ -72,9 +73,12 @@ class ServicioDetailView(DetailView):
                 canal_presentacion__nombre='presencial'
             ).order_by('paso')
 
+            context["costos"] = CuantoCuesta.objects.filter(servicio=self.object)
+
         except ObjectDoesNotExist:
             context["consiste"] = None
             context['requiere'] = None
             context["instrucciones_linea"] = []
             context["instrucciones_presencial"] = []
+            context['costos'] = None
         return context
