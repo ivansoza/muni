@@ -186,7 +186,11 @@
             <h2>Responsable del Trámite</h2>
             {% if servicio.responsable %}
             <div class="responsable-box">
-                <img src="{{ servicio.responsable.imagen.url }}" alt="Foto del responsable" class="responsable-foto">
+                {% if servicio.responsable.imagen %}
+                    <img src="{{ servicio.responsable.imagen.url }}" alt="Foto del responsable" class="responsable-foto">
+                {% else %}
+                    <img src="{{ municipio.logotipo.url }}" alt="Logotipo del municipio" class="responsable-foto">
+                {% endif %}
                 <div class="responsable-info">
                     <p><strong>Nombre:</strong> {{ servicio.responsable.nombre }}</p>
                     <p><strong>Dependencia:</strong> {{ servicio.responsable.dependencia }}</p>
