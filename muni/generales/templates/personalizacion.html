@@ -418,7 +418,7 @@
     position: absolute;
     top: 20px;
     right: 20px;
-    z-index: 1000;
+    z-index: 4;
     background: rgba(255, 255, 255, 0.9);
     padding: 15px;
     border-radius: 12px;
@@ -600,32 +600,41 @@
                             <!-- Texto e información -->
                             <div class="col-md-8">
                                 <div class="mb-3">
-                                    <span class="section-subtitle">Por amor a Apizaco</span>
+                                    <span class="section-subtitle">Por amor a {{municipio.nombre_municipio|default:"tu municipio" }}</span>
                                 </div>
-                                <h2 class="display-4 fw-bold">Alcalde de Apizaco Tlaxcala</h2>
+                                <h2 class="display-4 fw-bold">Alcalde de {{municipio.nombre_municipio|default:"tu municipio" }} Tlaxcala</h2>
                                     <p class="lead text-muted">
-                                        <i class="fa fa-quote-left me-2"></i>Apizaco, Ciudad Heroica y en Crecimiento. Tierra Brava y Ferrocarrilera.<i class="fa fa-quote-right ms-2"></i>
+                                        <i class="fa fa-quote-left me-2"></i>{{municipio.nombre_municipio|default:"tu municipio" }}, Ciudad Heroica y en Crecimiento. Tierra Brava y Ferrocarrilera.<i class="fa fa-quote-right ms-2"></i>
                                     </p> 
                                     
                                     <div class="info-box mt-4 p-4 border rounded-3 shadow-sm position-relative">
-                                        <h5 class="fw-bold">Apizaco, el corazón industrial de Tlaxcala, México.</h5>
+                                        <h5 class="fw-bold">{{municipio.nombre_municipio|default:"tu municipio" }}, el corazón industrial de Tlaxcala, México.</h5>
                                         <ul class="list-unstyled mt-3">
                                             <li><i class="fa fa-check-circle me-2" style='color: var(--secondary-color)'></i>Es una ciudad dinámica que combina desarrollo, historia y tradición.</li>
                                             <li><i class="fa fa-check-circle me-2" style='color:var(--secondary-color)'></i>Reconocida por su destacada actividad ferroviaria y su contribución al progreso regional.</li>
                                             <li><i class="fa fa-check-circle me-2" style='color:var(--secondary-color)'></i>Un crisol de cultura que se refleja en su gente trabajadora, su gastronomía y sus eventos emblemáticos.</li>
-                                            <li><i class="fa fa-check-circle me-2" style='color:var(--secondary-color)'></i>Apizaco narra un capítulo de esfuerzo y crecimiento que inspira a todos sus visitantes.</li>
+                                            <li><i class="fa fa-check-circle me-2" style='color:var(--secondary-color)'></i>{{municipio.nombre_municipio|default:"tu municipio" }} narra un capítulo de esfuerzo y crecimiento que inspira a todos sus visitantes.</li>
                                         </ul>
                                     
                                     </div>
                             </div>
                             
+
                             <!-- Imagen del alcalde y logo -->
                             <div class="col-md-4 text-center position-relative">
                                 <div class="image-wrapper">
                                     <br>
-                                    <img src="{% static 'img/alcalde.png' %}" alt="Imagen del Alcalde" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid var(--primary-color, #2196F3);">
+
+                                    <img src="
+                                    {% if municipio.logotipo %}
+                                        {{municipio.logotipo.url}}
+                                    {% else %}
+                                     {% static 'assets/images/logo/logo-new.png' %}
+                                    {% endif %}
+                                     
+                                    " alt="Imagen del Alcalde" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid var(--primary-color, #2196F3);">
                                     <div class="name-tag position-absolute text-center w-100" style="bottom: -22px;">
-                                        <h6 class="bg-light py-2 px-3 d-inline-block rounded-pill shadow-sm">Lic. Javier Rivera Bonilla</h6>
+                                        <h6 class="bg-light py-2 px-3 d-inline-block rounded-pill shadow-sm">Nombre del Presidente</h6>
                                     </div>
                                 </div>
                             </div>
@@ -636,7 +645,7 @@
 
             <!-- FOOTER -->
             <div class="footer_preview">
-                © 2024 - 2027 Gobierno Municipal de Apizaco. Todos los derechos reservados.        
+                © 2024 - 2027  {{municipio.nombre|default:"tu municipio" }}. Todos los derechos reservados.        
             </div>
             <div id="loader" style="
                 display: none;
@@ -771,49 +780,53 @@
     
         // 2. Función para GUARDAR los colores (POST)
         function saveColors() {
-            const municipalityId = municipioSelect ? municipioSelect.value : null;
-            if (!municipalityId) {
-                console.error("No se encontró ID de municipio");
-                return;
-            }
-    
-            // Obtenemos los colores actuales
-            const colorPrimario   = document.getElementById('primaryColor').value;
-            const colorSecundario = document.getElementById('secondaryColor').value;
-    
-            showLoader();  // Mostrar loader antes de la petición
-            
-            fetch('/informacion/ajax/guardar-colores/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Si usas CSRF token:
-                    // 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                },
-                body: JSON.stringify({
-                    municipio_id: municipalityId,
-                    color_primario: colorPrimario,
-                    color_secundario: colorSecundario
-                })
-            })
-            .then(response => response.json())
-            .then(respData => {
-                console.log("Respuesta al guardar colores:", respData);
-                if (respData.success) {
-                    // 3. Si el guardado fue exitoso, volvemos a llamar fetchMunicipioData 
-                    //    para recargar con los nuevos valores
-                    fetchMunicipioData(municipalityId);
-                } else {
-                    console.error("Error en respData:", respData);
-                }
-            })
-            .catch(err => {
-                console.error("Error al guardar colores:", err);
-            })
-            .finally(() => {
-                hideLoader(); // Ocultamos loader al finalizar
+    const municipalityId = municipioSelect ? municipioSelect.value : null;
+    if (!municipalityId) {
+        console.error("No se encontró ID de municipio");
+        return;
+    }
+
+    // Obtenemos los colores actuales
+    const colorPrimario   = document.getElementById('primaryColor').value;
+    const colorSecundario = document.getElementById('secondaryColor').value;
+
+    showLoader();  // Mostrar loader antes de la petición
+
+    fetch('/informacion/ajax/guardar-colores/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            // Si usas CSRF token:
+            // 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+            municipio_id: municipalityId,
+            color_primario: colorPrimario,
+            color_secundario: colorSecundario
+        })
+    })
+    .then(response => response.json())
+    .then(respData => {
+        console.log("Respuesta al guardar colores:", respData);
+        if (respData.success) {
+            // Mostrar alerta de éxito
+            Swal.fire({
+                icon: 'success',
+                title: 'Cambios realizados con éxito'
             });
+            // Volvemos a llamar fetchMunicipioData para recargar con los nuevos valores
+            fetchMunicipioData(municipalityId);
+        } else {
+            console.error("Error en respData:", respData);
         }
+    })
+    .catch(err => {
+        console.error("Error al guardar colores:", err);
+    })
+    .finally(() => {
+        hideLoader(); // Ocultamos loader al finalizar
+    });
+}
     
         // Botón de GUARDAR
         const btnSave = document.getElementById('btnSave');
