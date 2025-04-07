@@ -178,7 +178,7 @@ class UsuarioEditView(LoginRequiredMixin, UpdateView):
             'child': {'name': 'Editar Usuario', 'url': ''}
         }
         context['sidebar'] = 'Generales'
-        context['regreso_url'] = reverse('generalesDashboard')
+        context['regreso_url'] = reverse('UsuariosView')
         return context
 
     def form_valid(self, form):
@@ -213,6 +213,7 @@ class UsuarioPasswordChangeView(LoginRequiredMixin, FormView):
             'child': {'name': 'Cambiar Contraseña', 'url': ''}
         }        
         context['regreso_url'] = reverse('UsuariosView')
+        context['sidebar'] = 'Generales'
 
         context['user_to_change'] = get_object_or_404(User, pk=self.kwargs['pk'])
         return context
