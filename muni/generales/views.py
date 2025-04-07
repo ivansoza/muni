@@ -18,10 +18,10 @@ from django.views.decorators.http import require_POST
 from django.views.generic import FormView
 
 from informacion_municipal.models import Municipio, Video
-from generales.models import ContadorVisitas, SocialNetwork
+from generales.models import ContadorVisitas, Secciones, SocialNetwork
 from servicios.forms import ServicioForm
 from servicios.models import Servicio
-from .forms import CustomAuthenticationForm, GroupForm, UserCreationWithGroupForm, UserEditForm
+from .forms import CustomAuthenticationForm, GroupForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from noticias.models import Noticia, ImagenGaleria, Categoria
@@ -72,20 +72,7 @@ class VideoView(LoginRequiredMixin,TemplateView):
     
 
 
-class SeccionesView(LoginRequiredMixin,TemplateView):
-    template_name = 'generales/secciones.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["breadcrumb"] = {
-            'parent': {'name': 'Dashboard', 'url': '/admin'},
-            'child': {'name': 'Secciones del Sistema', 'url': ''}
-        }
-        context['sidebar'] = 'Generales' 
-        url_configuracion = reverse( 'generalesDashboard')
-        context['regreso_url']= url_configuracion
-        return context
-    
 class EncuestasView(LoginRequiredMixin,TemplateView):
     template_name = 'generales/encuestas.html'
 
@@ -139,7 +126,73 @@ class UsuariosView(LoginRequiredMixin, TemplateView):
         return context
 
 
+class SeccionesView(LoginRequiredMixin, TemplateView):
+    template_name = 'generales/secciones.html'
+    
+    # --- control de permisos ---
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("generales.view_secciones")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+    
+    # --- breadcrumbs, sidebar, etc. ---
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumb"] = {
+            "parent": {"name": "Dashboard", "url": "/admin"},
+            "child": {"name": "Secciones del Sistema", "url": ""},
+        }
+        context["sidebar"] = "Generales"
+        context["regreso_url"] = reverse("generalesDashboard")
+        return context
+    
+class SeccionesUpdateView(LoginRequiredMixin, UpdateView):
+    model = Secciones
+    form_class = SeccionesForm
+    template_name = 'generales/secciones_update.html'
+    success_url = reverse_lazy('secciones_update')
 
+    # --- control de permisos ---
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("generales.change_secciones")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    # --- obtenemos (o creamos) el objeto de secciones del municipio activo ---
+    def get_object(self, queryset=None):
+        try:
+            municipio = Municipio.objects.get(status='activo')
+        except Municipio.DoesNotExist:
+            messages.warning(self.request, "No se ha agregado un municipio activo.")
+            return None
+        # Si no existe la instancia de Secciones para el municipio activo, se crea.
+        obj, created = Secciones.objects.get_or_create(municipio=municipio)
+        return obj
+
+    # --- si no existe municipio activo se redirige ---
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.object is None:
+            return redirect('generalesDashboard')
+        return super().get(request, *args, **kwargs)
+
+    # --- mensaje de éxito al guardar cambios ---
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Secciones actualizadas correctamente.")
+        return response
+
+    # --- breadcrumbs, sidebar, etc. ---
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumb"] = {
+            "parent": {"name": "Generales", "url": "/admin/generales/"},
+            "child": {"name": "Habilitar/Inhabilitar Secciones", "url": ""},
+        }
+        context["sidebar"] = "Generales"
+        context["regreso_url"] = reverse_lazy("generalesDashboard")
+        return context
+    
 
 class UsuarioCreateView(LoginRequiredMixin, FormView):
     template_name = "generales/usuario_create.html"
@@ -156,11 +209,11 @@ class UsuarioCreateView(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["breadcrumb"] = {
-            "parent": {"name": "Dashboard", "url": "/admin"},
+            "parent": {"name": "Lista de Usuarios", "url": "/admin/generales/usuarios"},
             "child": {"name": "Crear Usuario", "url": ""},
         }
         context["sidebar"] = "Generales"
-        context["regreso_url"] = reverse_lazy("generalesDashboard")
+        context["regreso_url"] = reverse_lazy("UsuariosView")
         return context
 
     # --- guardado y mensaje de éxito ---

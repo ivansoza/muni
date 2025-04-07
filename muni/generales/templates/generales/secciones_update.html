@@ -1,0 +1,382 @@
+{% extends "baseTemplate.html" %}
+
+{% block content %}
+
+<style>
+    :root {
+        --color-primario: #2F698F;
+        --color-secundario: #295E84;
+        --color-iconos: rgb(109, 109, 109);
+        --color-primario-rgb: 30, 71, 101;
+        --color-secundario-rgb: 41, 94, 132;
+        --color-gradiente: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+        --degradado: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+        /* Colores adicionales para la UI */
+        --color-success: #10b981;
+        --color-danger: #ef4444;
+        --color-warning: #f59e0b;
+        --color-info: #3b82f6;
+        --color-light: #f3f4f6;
+        --color-dark: #1f2937;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --radius: 0.5rem;
+    }
+
+    .section-container {
+        margin: 0 auto;
+        padding: 2rem;
+        background-color: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+    }
+
+    .section-header {
+        margin-bottom: 2rem;
+        border-bottom: 2px solid var(--color-light);
+        padding-bottom: 1rem;
+    }
+
+    .section-header h1 {
+        color: var(--color-primario);
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .description {
+        color: var(--color-iconos);
+        font-size: 1rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-sm);
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+        border: 1px solid var(--color-light);
+    }
+
+    .form-card:hover {
+        box-shadow: var(--shadow);
+        transform: translateY(-2px);
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+    }
+
+    .icon {
+        color: var(--color-primario);
+        margin-right: 0.75rem;
+        font-size: 1.2rem;
+    }
+
+    label {
+        font-weight: 500;
+        color: var(--color-dark);
+        font-size: 1rem;
+    }
+
+    /* ---------- Toggle switch ---------- */
+    .toggle-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+    /* Ocultamos el checkbox */
+    .toggle-wrapper input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    /* El label actúa como palanca */
+    .toggle-label {
+        display: block;
+        width: 3rem;
+        height: 1.5rem;
+        border-radius: 1rem;
+        background-color: #e5e7eb;
+        cursor: pointer;
+        position: relative;
+        transition: background-color 0.3s ease;
+    }
+
+    .toggle-label::after {
+        content: '';
+        position: absolute;
+        width: 1.2rem;
+        height: 1.2rem;
+        border-radius: 50%;
+        background-color: white;
+        top: 0.15rem;
+        left: 0.15rem;
+        transition: transform 0.3s ease;
+        box-shadow: var(--shadow-sm);
+    }
+
+    /* Estado activo */
+    .toggle-wrapper input[type="checkbox"]:checked + .toggle-label {
+        background-color: var(--color-primario);
+    }
+    .toggle-wrapper input[type="checkbox"]:checked + .toggle-label::after {
+        transform: translateX(1.5rem);
+    }
+
+    .toggle-wrapper input[type="checkbox"]:focus + .toggle-label {
+        box-shadow: 0 0 0 2px rgba(var(--color-primario-rgb), 0.2);
+    }
+
+    /* ---------- Botón de enviar ---------- */
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        padding-top: 1rem;
+        border-top: 1px solid var(--color-light);
+    }
+
+    .btn-submit {
+        background: var(--color-gradiente);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow);
+    }
+
+    .btn-submit i {
+        margin-right: 0.5rem;
+    }
+
+    .btn-submit:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .section-container { padding: 1rem; }
+        .form-grid { grid-template-columns: 1fr; }
+        .form-card { padding: 1rem; }
+    }
+</style>
+
+<div class="section-container">
+    <div class="section-header">
+        <h1>Habilitar/Inhabilitar Secciones</h1>
+        <p class="description">Configure la visibilidad de las diferentes secciones del sitio</p>
+    </div>
+
+    <form method="post" class="config-form">
+        {% csrf_token %}
+
+        <div class="form-grid">
+            {# ------------------------------ NOTICIAS ------------------------------ #}
+            <div class="form-card">
+                <div class="card-header">
+                    <i class="fas fa-newspaper icon"></i>
+                    <label for="{{ form.noticias.id_for_label }}">Noticias</label>
+                </div>
+                <div class="toggle-wrapper">
+                    {{ form.noticias }}
+                    <label class="toggle-label" for="{{ form.noticias.id_for_label }}"></label>
+                </div>
+            </div>
+
+            {# ------------------------------ CONVOCATORIAS ------------------------------ #}
+            <div class="form-card">
+                <div class="card-header">
+                    <i class="fas fa-bullhorn icon"></i>
+                    <label for="{{ form.convocatorias.id_for_label }}">Convocatorias</label>
+                </div>
+                <div class="toggle-wrapper">
+                    {{ form.convocatorias }}
+                    <label class="toggle-label" for="{{ form.convocatorias.id_for_label }}"></label>
+                </div>
+            </div>
+
+            {# ------------------------------ TRANSPARENCIA ------------------------------ #}
+            <div class="form-card">
+                <div class="card-header">
+                    <i class="fas fa-search-dollar icon"></i>
+                    <label for="{{ form.transparencia.id_for_label }}">Transparencia</label>
+                </div>
+                <div class="toggle-wrapper">
+                    {{ form.transparencia }}
+                    <label class="toggle-label" for="{{ form.transparencia.id_for_label }}"></label>
+                </div>
+            </div>
+
+            {# ------------------------------ SERVICIOS ------------------------------ #}
+            <div class="form-card">
+                <div class="card-header">
+                    <i class="fas fa-concierge-bell icon"></i>
+                    <label for="{{ form.servicios.id_for_label }}">Servicios</label>
+                </div>
+                <div class="toggle-wrapper">
+                    {{ form.servicios }}
+                    <label class="toggle-label" for="{{ form.servicios.id_for_label }}"></label>
+                </div>
+            </div>
+
+            {# ------------------------------ HABLA CON TUS HIJOS ------------------------------ #}
+            <div class="form-card">
+                <div class="card-header">
+                    <i class="fas fa-comments icon"></i>
+                    <label for="{{ form.habla_con_tus_hijos.id_for_label }}">Habla con tus hijos</label>
+                </div>
+                <div class="toggle-wrapper">
+                    {{ form.habla_con_tus_hijos }}
+                    <label class="toggle-label" for="{{ form.habla_con_tus_hijos.id_for_label }}"></label>
+                </div>
+            </div>
+
+            {# ------------------------------ AVISO DE PRIVACIDAD ------------------------------ #}
+            <div class="form-card">
+                <div class="card-header">
+                    <i class="fas fa-shield-alt icon"></i>
+                    <label for="{{ form.aviso_de_privacidad.id_for_label }}">Aviso de privacidad</label>
+                </div>
+                <div class="toggle-wrapper">
+                    {{ form.aviso_de_privacidad }}
+                    <label class="toggle-label" for="{{ form.aviso_de_privacidad.id_for_label }}"></label>
+                </div>
+            </div>
+
+            {# ------------------------------ GABINETE ------------------------------ #}
+            <div class="form-card">
+                <div class="card-header">
+                    <i class="fas fa-users icon"></i>
+                    <label for="{{ form.gabinete.id_for_label }}">Gabinete</label>
+                </div>
+                <div class="toggle-wrapper">
+                    {{ form.gabinete }}
+                    <label class="toggle-label" for="{{ form.gabinete.id_for_label }}"></label>
+                </div>
+            </div>
+
+            {# ------------------------------ SEVAC ------------------------------ #}
+            <div class="form-card">
+                <div class="card-header">
+                    <i class="fas fa-chart-bar icon"></i>
+                    <label for="{{ form.sevac.id_for_label }}">Sevac</label>
+                </div>
+                <div class="toggle-wrapper">
+                    {{ form.sevac }}
+                    <label class="toggle-label" for="{{ form.sevac.id_for_label }}"></label>
+                </div>
+            </div>
+
+            {# ------------------------------ CONTACTS ------------------------------ #}
+            <div class="form-card">
+                <div class="card-header">
+                    <i class="fas fa-address-book icon"></i>
+                    <label for="{{ form.contacts.id_for_label }}">Contacts</label>
+                </div>
+                <div class="toggle-wrapper">
+                    {{ form.contacts }}
+                    <label class="toggle-label" for="{{ form.contacts.id_for_label }}"></label>
+                </div>
+            </div>
+
+            {# ------------------------------ REPORTES ------------------------------ #}
+            <div class="form-card">
+                <div class="card-header">
+                    <i class="fas fa-file-alt icon"></i>
+                    <label for="{{ form.reportes.id_for_label }}">Reportes</label>
+                </div>
+                <div class="toggle-wrapper">
+                    {{ form.reportes }}
+                    <label class="toggle-label" for="{{ form.reportes.id_for_label }}"></label>
+                </div>
+            </div>
+
+            {# ------------------------------ ENCUESTAS ------------------------------ #}
+            <div class="form-card">
+                <div class="card-header">
+                    <i class="fas fa-poll icon"></i>
+                    <label for="{{ form.encuestas.id_for_label }}">Encuestas</label>
+                </div>
+                <div class="toggle-wrapper">
+                    {{ form.encuestas }}
+                    <label class="toggle-label" for="{{ form.encuestas.id_for_label }}"></label>
+                </div>
+            </div>
+
+            {# ------------------------------ SERVICIOS EN LINEA ------------------------------ #}
+            <div class="form-card">
+                <div class="card-header">
+                    <i class="fas fa-laptop icon"></i>
+                    <label for="{{ form.servicios_en_linea.id_for_label }}">Servicios en línea</label>
+                </div>
+                <div class="toggle-wrapper">
+                    {{ form.servicios_en_linea }}
+                    <label class="toggle-label" for="{{ form.servicios_en_linea.id_for_label }}"></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-save"></i> Guardar Cambios
+            </button>
+        </div>
+    </form>
+</div>
+
+{% endblock content %}
+
+{% block scriptcontent %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animación al cambiar toggles
+        const toggles = document.querySelectorAll('.toggle-wrapper input[type="checkbox"]');
+        toggles.forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                const card = this.closest('.form-card');
+                if (this.checked) {
+                    card.style.borderColor = 'var(--color-success)';
+                    card.style.backgroundColor = 'rgba(16, 185, 129, 0.05)';
+                } else {
+                    card.style.borderColor = 'var(--color-light)';
+                    card.style.backgroundColor = 'white';
+                }
+            });
+
+            // Estado inicial
+            if (toggle.checked) {
+                const card = toggle.closest('.form-card');
+                card.style.borderColor = 'var(--color-success)';
+                card.style.backgroundColor = 'rgba(16, 185, 129, 0.05)';
+            }
+        });
+
+        // Enviar el formulario directamente sin confirmación
+        const form = document.querySelector('.config-form');
+        form.addEventListener('submit', function(e) {
+            // No se cancela el evento, simplemente se deja fluir el submit normal
+        });
+    });
+</script>
+
+{% endblock scriptcontent %}

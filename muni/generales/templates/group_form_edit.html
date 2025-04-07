@@ -5,33 +5,27 @@
 
 <style>
     :root {
-        {% if municipio.colores.exists %}
-            --color-primario:{{ municipio.colores.first.color_primario_dark }};
-            --color-secundario:{{ municipio.colores.first.color_primario }};
-            --color-iconos:{{ municipio.colores.first.color_secundario }};
-            --color-primario-rgb: {{ municipio.colores.first.color_primario_dark_rgb }};
-            --color-secundario-rgb: {{ municipio.colores.first.color_primario_rgb }};
-        {% else %}
-            --color-primario:#1e4765;
-            --color-secundario:#295E84;
-            --color-iconos:rgb(109,109,109);
-            --color-primario-rgb:30,71,101;
-            --color-secundario-rgb:41,94,132;
-        {% endif %}
-        --color-gradiente:linear-gradient(135deg,var(--color-primario),var(--color-secundario));
-        --degradado:linear-gradient(135deg,var(--color-primario),var(--color-secundario));
-        --color-success:#10b981;
-        --color-danger:#ef4444;
-        --color-warning:#f59e0b;
-        --color-info:#3b82f6;
-        --color-light:#f3f4f6;
-        --color-dark:#1f2937;
-        --shadow-sm:0 1px 2px 0 rgba(0,0,0,.05);
-        --shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06);
-        --shadow-lg:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -2px rgba(0,0,0,.05);
-        --radius:.5rem;
+        --color-primario: #2F698F;
+        --color-secundario: #295E84;
+        --color-iconos: rgb(109, 109, 109);
+        --color-primario-rgb: 30, 71, 101;
+        --color-secundario-rgb: 41, 94, 132;
+        --color-gradiente: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+        --degradado: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+        /* Colores adicionales para la UI */
+        --color-success: #10b981;
+        --color-danger: #ef4444;
+        --color-warning: #f59e0b;
+        --color-info: #3b82f6;
+        --color-light: #f3f4f6;
+        --color-dark: #1f2937;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --radius: 0.5rem;
     }
 
+    
     /* ——— ESTILOS DEL FORMULARIO (idénticos a la versión “crear”) ——— */
     .form-container{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:2rem;margin:2rem auto}
     .form-header{text-align:center;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--color-light)}

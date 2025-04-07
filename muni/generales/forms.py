@@ -6,6 +6,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
+from generales.models import Secciones
+
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
         max_length=254,
@@ -175,3 +177,13 @@ class GroupForm(forms.ModelForm):
             group.permissions.clear()
 
         return group
+    
+
+class SeccionesForm(forms.ModelForm):
+    class Meta:
+        model = Secciones
+        fields = [
+            'noticias', 'convocatorias', 'transparencia', 'servicios',
+            'habla_con_tus_hijos', 'aviso_de_privacidad', 'gabinete',
+            'sevac', 'contacts', 'reportes', 'encuestas', 'servicios_en_linea'
+        ]

@@ -6,7 +6,8 @@ class Municipio(models.Model):
         ('activo', 'Activo'),
         ('inactivo', 'Inactivo'),
     ]
-    
+    status = models.CharField("Estado", max_length=10, choices=STATUS_CHOICES, default='activo')
+
     nombre_municipio = models.CharField(
         "Nombre Municipio", 
         max_length=120, 
@@ -33,7 +34,6 @@ class Municipio(models.Model):
     descripcion = models.TextField("Descripción breve", max_length=300)
     ultima_actualizacion = models.DateTimeField("Última actualización", auto_now=True)
 
-    status = models.CharField("Estado", max_length=10, choices=STATUS_CHOICES, default='activo')
 
     class Meta:
         verbose_name = "Municipio"

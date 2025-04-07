@@ -6,22 +6,13 @@
 <style>
 
     :root {
-        {% if municipio.colores.exists %}
-            --color-primario:{{ municipio.colores.first.color_primario_dark }};
-            --color-secundario:{{ municipio.colores.first.color_primario }};
-            --color-iconos:{{municipio.colores.first.color_secundario}} ;
-            --color-primario-rgb: {{municipio.colores.first.color_primario_dark_rgb}};
-            --color-secundario-rgb: {{municipio.colores.first.color_primario_rgb}};
-        {% else %}
-            --color-primario: #1e4765;
-            --color-secundario: #295E84;
-            --color-iconos:rgb(109, 109, 109);
-            --color-primario-rgb: 30, 71, 101;
-            --color-secundario-rgb: 41, 94, 132;
-        {% endif %}
+        --color-primario: #2F698F;
+        --color-secundario: #295E84;
+        --color-iconos: rgb(109, 109, 109);
+        --color-primario-rgb: 30, 71, 101;
+        --color-secundario-rgb: 41, 94, 132;
         --color-gradiente: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
         --degradado: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
-        
         /* Colores adicionales para la UI */
         --color-success: #10b981;
         --color-danger: #ef4444;
@@ -34,6 +25,7 @@
         --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         --radius: 0.5rem;
     }
+
 
 </style>
 <div class="container-fluid mt-5">
