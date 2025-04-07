@@ -208,7 +208,12 @@ class UsuarioPasswordChangeView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Agregamos el usuario a modificar al contexto para mostrarlo en la plantilla
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': '/admin'},
+            'child': {'name': 'Cambiar Contraseña', 'url': ''}
+        }        
+        context['regreso_url'] = reverse('UsuariosView')
+
         context['user_to_change'] = get_object_or_404(User, pk=self.kwargs['pk'])
         return context
 
@@ -217,6 +222,9 @@ class UsuarioPasswordChangeView(LoginRequiredMixin, FormView):
         user_to_change = get_object_or_404(User, pk=self.kwargs['pk'])
         messages.success(self.request, f"La contraseña del usuario {user_to_change.username} ha sido actualizada correctamente.")
         return super().form_valid(form)
+    
+
+
 @login_required
 def toggle_user_status(request, user_id):
     # Obtener el usuario a modificar o devolver 404
