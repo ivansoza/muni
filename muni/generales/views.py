@@ -190,11 +190,11 @@ class UsuarioEditView(LoginRequiredMixin, UpdateView):
 class UsuarioPasswordChangeView(LoginRequiredMixin, FormView):
     template_name = 'generales/usuario_change_password.html'
     form_class = SetPasswordForm
-    success_url = reverse_lazy('UsuariosView')
+    success_url = reverse_lazy('UsuariosView')  # Ajusta el nombre de la URL según corresponda
 
     def dispatch(self, request, *args, **kwargs):
         user = request.user
-        # Verifica permisos: el usuario debe ser superusuario o tener el permiso de cambiar usuarios.
+        # Permisos: solo superusuarios o usuarios con el permiso 'auth.change_user' pueden cambiar contraseñas
         if not (user.is_superuser or user.has_perm('auth.change_user')):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
