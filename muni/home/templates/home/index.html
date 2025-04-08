@@ -308,6 +308,34 @@
                     </li>
                     {% endif %}
                 
+
+                    {% if municipio.secciones_hab and municipio.secciones_hab.transparencia %}
+                        {% if municipio.secciones_hab and municipio.secciones_hab.aviso_de_privacidad %}
+                            <!-- Si "Aviso de Privacidad" está activado, desplegar menú -->
+                            <li class="nav-item dropdown {% if sidebar == 'transparencia' %}active{% endif %}">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Transparencia <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <!-- Primer opción: Transparencia (URL habitual) -->
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'lista_transparencia' %}">Transparencia</a>
+                                    </li>
+                                    <!-- Segunda opción: Aviso de Privacidad (vista "HomePrivacidad") -->
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'HomePrivacidad' %}">Aviso de Privacidad</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <!-- Si "Aviso de Privacidad" está desactivado, enlace directo -->
+                            <li class="nav-item {% if sidebar == 'transparencia' %}active{% endif %}">
+                                <a class="nav-link" href="{% url 'lista_transparencia' %}">Transparencia</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+
+                    
                     <!-- Transparencia -->
                     {% if municipio.secciones_hab and municipio.secciones_hab.transparencia %}
                     <li class="nav-item {% if sidebar == 'transparecnia' %}active{% endif %}">
@@ -373,14 +401,8 @@
                             </li>
                             {% endif %}
                 
-                            <li><hr class="dropdown-divider"></li>
-                
-                            <!-- Aviso de privacidad -->
-                            {% if municipio.secciones_hab and municipio.secciones_hab.aviso_de_privacidad %}
-                            <li>
-                                <a class="dropdown-item" href="{% url 'HomePrivacidad' %}">Aviso de privacidad de datos personales</a>
-                            </li>
-                            {% endif %}
+                  
+         
                             {% if municipio.secciones_hab and municipio.secciones_hab.contacts %}
 
                             <li>
