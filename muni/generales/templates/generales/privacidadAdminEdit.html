@@ -2,12 +2,12 @@
 {% load static %}
 
 {% block content %}
-<h3 class="mb-3">Nuevo aviso de privacidad</h3>
+<h3 class="mb-3">Editar aviso de privacidad</h3>
 
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
 
-  <!-- ---------------- Aviso ---------------- -->
+  <!-- Datos del aviso -->
   <div class="card mb-4">
     <div class="card-header">Datos del aviso</div>
     <div class="card-body">
@@ -21,47 +21,43 @@
     </div>
   </div>
 
-  <!-- ---------------- Archivos ---------------- -->
+  <!-- Archivos relacionados -->
   <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
       <span>Archivos relacionados</span>
-      <!-- botón JS opcional para clonar formularios vacíos -->
-      <button type="button" class="btn btn-sm btn-outline-secondary"
-              id="add-file">Añadir otro archivo</button>
+      <button type="button" class="btn btn-sm btn-outline-secondary" id="add-file">Añadir otro archivo</button>
     </div>
-
     <div class="card-body" id="file-formset">
       {{ formset.management_form }}
-        {% for f in formset %}
-            <div class="border rounded p-3 mb-3 formset-form">
-                {{ f.non_field_errors }}
-                <div class="mb-2">
-                {{ f.archivo.label_tag }} {{ f.archivo }}
-                </div>
-                <div class="mb-2">
-                {{ f.descripcion.label_tag }} {{ f.descripcion }}
-                </div>
-            
-                {# El primer formulario no tendrá botón eliminar, los demás sí #}
-                {% if forloop.first %}
-                    <small class="text-muted">Formulario obligatorio</small>
-                {% else %}
-                    <button type="button" class="btn btn-sm btn-outline-danger remove-form">
-                        Quitar
-                    </button>
-                {% endif %}
+      {% for f in formset %}
+        <div class="border rounded p-3 mb-3 formset-form">
+          {# Campo oculto del id para registros ya existentes #}
+          {{ f.id }}
+          {{ f.non_field_errors }}
+          <div class="mb-2">
+            {{ f.archivo.label_tag }} {{ f.archivo }}
+          </div>
+          <div class="mb-2">
+            {{ f.descripcion.label_tag }} {{ f.descripcion }}
+          </div>
+          {# Si el formulario corresponde a un objeto existente, mostramos el campo DELETE; si es nuevo, mostramos un botón para removerlo #}
+          {% if f.instance.pk %}
+            <div class="mb-2">
+              {{ f.DELETE }} <label for="{{ f.DELETE.id_for_label }}">Eliminar archivo</label>
             </div>
-            {% endfor %}
-    
+          {% else %}
+            <button type="button" class="btn btn-sm btn-outline-danger remove-form">Quitar</button>
+          {% endif %}
+        </div>
+      {% endfor %}
     </div>
   </div>
 
   <button class="btn btn-primary" type="submit">Guardar aviso</button>
   <a href="{{ regreso_url }}" class="btn btn-secondary">Cancelar</a>
 </form>
-
-
 {% endblock content %}
+
 {% block scriptcontent %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {

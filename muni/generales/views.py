@@ -12,6 +12,7 @@ from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.models import Group
 from django.views.decorators.http import require_http_methods
 from django.forms import modelformset_factory
+from django.forms import inlineformset_factory
 
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -20,8 +21,8 @@ from django.views.generic import FormView
 
 from informacion_municipal.models import Municipio, Video
 from generales.models import ContadorVisitas, SeccionPlus, Secciones, SocialNetwork
-from privacidad.forms import ArchivoRelacionadoFormSet, AvisoDePrivacidadForm
-from privacidad.models import AvisoDePrivacidad
+from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, AvisoDePrivacidadForm
+from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
 from servicios.forms import ServicioForm
 from servicios.models import Servicio
 from .forms import CustomAuthenticationForm, GroupForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm
@@ -166,8 +167,8 @@ class AvisoDePrivacidadCreateView(LoginRequiredMixin, CreateView):
 
         # lo que ya tenías en tu TemplateView
         ctx["breadcrumb"] = {
-            'parent': {'name': 'Generales', 'url': reverse('generalesDashboard')},
-            'child':  {'name': 'Avisos de Privacidad', 'url': ''},
+            'parent': {'name': 'Avisos de Privacidad', 'url': reverse('PrivacidadView')},
+            'child':  {'name': 'Crear Aviso de Privacidad', 'url': ''},
         }
         ctx['sidebar'] = 'Generales'
         ctx['regreso_url'] = reverse('generalesDashboard')
@@ -204,6 +205,58 @@ class AvisoDePrivacidadCreateView(LoginRequiredMixin, CreateView):
         # si el formset falla volvemos a la plantilla
         return self.render_to_response(self.get_context_data(form=form))
     
+
+
+class AvisoDePrivacidadUpdateView(LoginRequiredMixin, UpdateView):
+    model = AvisoDePrivacidad
+    form_class = AvisoDePrivacidadForm
+    template_name = 'generales/privacidadAdminEdit.html'
+    success_url = reverse_lazy('PrivacidadView')  # Ajusta a tu URL correspondiente
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Si existen archivos, no mostramos formularios extra (extra=0), de lo contrario, mostramos 1 formulario extra
+        extra_value = 0 if self.object.archivos_relacionados.exists() else 1
+
+        # Configuramos el inline formset con can_delete=True para permitir la eliminación
+        ArchivoRelacionadoFormSetDynamic = inlineformset_factory(
+            AvisoDePrivacidad,
+            ArchivoRelacionado,
+            form=ArchivoRelacionadoForm,
+            extra=extra_value,
+            can_delete=True
+        )
+
+        if self.request.method == 'POST':
+            formset = ArchivoRelacionadoFormSetDynamic(
+                self.request.POST, self.request.FILES, instance=self.object
+            )
+        else:
+            formset = ArchivoRelacionadoFormSetDynamic(instance=self.object)
+
+        context['formset'] = formset
+
+        # Contexto adicional (breadcrumbs, sidebar, url de regreso)
+        context["breadcrumb"] = {
+            'parent': {'name': 'Avisos de Privacidad', 'url': reverse('PrivacidadView')},
+            'child':  {'name': 'Editar aviso de Privacidad', 'url': ''},
+        }
+        context['sidebar'] = 'Generales'
+        context['regreso_url'] = reverse('PrivacidadView')
+        return context
+
+    def form_valid(self, form):
+        self.object = form.save()
+        context = self.get_context_data()
+        formset = context['formset']
+
+        if formset.is_valid():
+            formset.instance = self.object
+            formset.save()
+            messages.success(self.request, 'Aviso de privacidad actualizado correctamente.')
+            return redirect(self.get_success_url())
+
+        return self.render_to_response(self.get_context_data(form=form))
 
 class SeccionesView(LoginRequiredMixin, TemplateView):
     template_name = 'generales/secciones.html'

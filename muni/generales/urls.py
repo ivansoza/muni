@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from .views import AvisoDePrivacidadCreateView, CrearCategoriaView, CustomLoginView, DashboardView, EncuestasView, GeneralesDashboardView, GroupCreateView, GroupUpdateView, GruposView, NewsView, PersonalizacionView, PrivacidadView, ReportesView, SeccionPlusDetailView, SeccionesNuevasView, SeccionesUpdateView, SeccionesView, ServicioCreateView, ServicioUpdateView,SocialMediaView,ServicesView, UsuarioCreateView, UsuarioEditView, UsuarioEditView, UsuarioPasswordChangeView, UsuariosView, VideoView, actualizar_video, create_social_network, custom_upload_function, agregar_categoria, delete_group, delete_social_network, editar_convocatoria, eliminar_noticia, editar_noticia, list_social_networks, toggle_favorite, toggle_user_status
+from .views import AvisoDePrivacidadCreateView, AvisoDePrivacidadUpdateView, CrearCategoriaView, CustomLoginView, DashboardView, EncuestasView, GeneralesDashboardView, GroupCreateView, GroupUpdateView, GruposView, NewsView, PersonalizacionView, PrivacidadView, ReportesView, SeccionPlusDetailView, SeccionesNuevasView, SeccionesUpdateView, SeccionesView, ServicioCreateView, ServicioUpdateView,SocialMediaView,ServicesView, UsuarioCreateView, UsuarioEditView, UsuarioEditView, UsuarioPasswordChangeView, UsuariosView, VideoView, actualizar_video, create_social_network, custom_upload_function, agregar_categoria, delete_group, delete_social_network, editar_convocatoria, eliminar_noticia, editar_noticia, list_social_networks, toggle_favorite, toggle_user_status
 from django.contrib.auth.views import LogoutView
 from .views import TransparenciaView, crear_seccion, EjercicioFiscalListView, EjercicioFiscalCreateView, DocumentoTransparenciaListView, registrar_documento, SeccionTransparenciaUpdateView, eliminar_seccion, EjercicioFiscalUpdateView, eliminar_ejercicio_fiscal, DocumentoTransparenciaUpdateView, eliminar_documento_transparencia
 from . import views
@@ -57,12 +57,18 @@ urlpatterns = [
     path('generales/grupos/nuevo/', GroupCreateView.as_view(), name='group_create'),
     path("generales/grupos/<int:pk>/editar/", GroupUpdateView.as_view(), name="GrupoEditar"),
     path('generales/secciones/habilitar/', SeccionesUpdateView.as_view(), name='secciones_update'),
+    path('generales/privacidad', PrivacidadView.as_view(), name='PrivacidadView'),
+
     path(
         'generales/privacidad/nuevo/',
         AvisoDePrivacidadCreateView.as_view(),
         name='crear_aviso_privacidad'
     ),
-
+    path(
+        'avisos/<int:pk>/editar/',
+        AvisoDePrivacidadUpdateView.as_view(),
+        name='editar_aviso_privacidad'
+    ),
     path('generales/secciones-nuevas', SeccionesNuevasView.as_view(), name='SeccionesNuevasView'),
 
 
