@@ -19,7 +19,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import FormView
 
 from informacion_municipal.models import Municipio, Video
-from generales.models import ContadorVisitas, Secciones, SocialNetwork
+from generales.models import ContadorVisitas, SeccionPlus, Secciones, SocialNetwork
 from servicios.forms import ServicioForm
 from servicios.models import Servicio
 from .forms import CustomAuthenticationForm, GroupForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm
@@ -127,6 +127,24 @@ class UsuariosView(LoginRequiredMixin, TemplateView):
         return context
 
 
+
+
+
+class PrivacidadView(LoginRequiredMixin, TemplateView):
+    template_name = 'generales/privacidad.html'
+
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumb"] = {
+            'parent': {'name': 'Generales', 'url': '/admin/generales/'},
+            'child': {'name': 'Avisos de Privacidad', 'url': ''}
+        }
+        context['sidebar'] = 'Generales' 
+        context['regreso_url'] = reverse('generalesDashboard')
+        return context
+    
+
 class SeccionesView(LoginRequiredMixin, TemplateView):
     template_name = 'generales/secciones.html'
     
@@ -142,6 +160,26 @@ class SeccionesView(LoginRequiredMixin, TemplateView):
         context["breadcrumb"] = {
             "parent": {"name": "Dashboard", "url": "/admin"},
             "child": {"name": "Secciones del Sistema", "url": ""},
+        }
+        context["sidebar"] = "Generales"
+        context["regreso_url"] = reverse("generalesDashboard")
+        return context
+    
+class SeccionesNuevasView(LoginRequiredMixin, TemplateView):
+    template_name = 'generales/seccionesNuevas.html'
+    
+    # --- control de permisos ---
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("generales.view_secciones")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+    
+    # --- breadcrumbs, sidebar, etc. ---
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumb"] = {
+            "parent": {"name": "Generales", "url": "/admin/generales/"},
+            "child": {"name": "Secciones Extras del Sistema", "url": ""},
         }
         context["sidebar"] = "Generales"
         context["regreso_url"] = reverse("generalesDashboard")
@@ -2212,3 +2250,42 @@ class GroupUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         )
         return response
 
+
+
+
+class SeccionPlusDetailView(TemplateView):
+    template_name = 'seccionplus_detail.html'
+
+    def get_object(self):
+        pk = self.kwargs.get('pk')
+        slug = self.kwargs.get('slug')
+        seccion = get_object_or_404(SeccionPlus, pk=pk, status=True)
+        # Si el slug de la URL no coincide con el del objeto, redirige a la URL correcta
+        if seccion.slug != slug:
+            return redirect('seccionplus_detail', pk=seccion.pk, slug=seccion.slug)
+        return seccion
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        seccion = self.get_object()
+        
+        
+        context['seccion'] = seccion
+        context['sidebar'] = 'mas'  
+
+        # Filtrar convocatorias por la categoría de la SeccionPlus
+        context['convocatorias_activas'] = Convocatoria.objects.filter(
+            estado__in=['ABIERTA', 'PRÓXIMA'],
+            categoria=seccion.categoria_convocatoria
+        ).order_by('-id')
+        
+        context['convocatorias_pasadas'] = Convocatoria.objects.filter(
+            estado='CERRADA',
+            categoria=seccion.categoria_convocatoria
+        ).order_by('-id')
+
+        # Filtrar y depurar la categoría
+        categorias_qs = CategoriaConvocatoria.objects.filter(pk=seccion.categoria_convocatoria.pk)
+        context['categorias'] = categorias_qs
+        
+        return context

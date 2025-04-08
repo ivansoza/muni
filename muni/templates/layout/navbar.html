@@ -1,15 +1,23 @@
 {% load static %}
+
+
+
+<style>
+
+
+
+</style>
+
+
+
 <nav class="navbar navbar-expand-lg text-white navbar-no-transparent fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="{% url "home" %}">
-            {% if  municipio.logotipo %}
-                <img src="{{municipio.logotipo.url}}" alt="Logo Municipal"  class="d-none d-md-inline-block">
-
+        <a class="navbar-brand" href="{% url 'home' %}">
+            {% if municipio.logotipo %}
+                <img src="{{ municipio.logotipo.url }}" alt="Logo Municipal" class="d-none d-md-inline-block">
             {% else %}
-                <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Logo Municipal"
-                    class="d-none d-md-inline-block">
+                <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Logo Municipal" class="d-none d-md-inline-block">
             {% endif %}
-
             <span class="brand-text">
                 {% if municipio.nombre %}
                     {{ municipio.nombre }}
@@ -17,7 +25,6 @@
                     Introducir el Nombre de tu Municipio
                 {% endif %}
             </span>
-
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
@@ -50,11 +57,30 @@
                 </li>
                 {% endif %}
             
-                <!-- "Transparencia" depende de 'transparencia' -->
                 {% if municipio.secciones_hab and municipio.secciones_hab.transparencia %}
-                <li class="nav-item {% if sidebar == 'transparencia' %}active{% endif %}">
-                    <a class="nav-link" href="{% url 'lista_transparencia' %}">Transparencia</a>
-                </li>
+                    {% if municipio.secciones_hab and municipio.secciones_hab.aviso_de_privacidad %}
+                        <!-- Si "Aviso de Privacidad" está activado, desplegar menú -->
+                        <li class="nav-item dropdown {% if sidebar == 'transparencia' %}active{% endif %}">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Transparencia <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <!-- Primer opción: Transparencia (URL habitual) -->
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'lista_transparencia' %}">Transparencia</a>
+                                </li>
+                                <!-- Segunda opción: Aviso de Privacidad (vista "HomePrivacidad") -->
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'HomePrivacidad' %}">Aviso de Privacidad</a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <!-- Si "Aviso de Privacidad" está desactivado, enlace directo -->
+                        <li class="nav-item {% if sidebar == 'transparencia' %}active{% endif %}">
+                            <a class="nav-link" href="{% url 'lista_transparencia' %}">Transparencia</a>
+                        </li>
+                    {% endif %}
                 {% endif %}
             
                 <!-- "SEVAC" depende de 'sevac' -->
@@ -73,42 +99,45 @@
             
                 <!-- Menú desplegable "Más" -->
                 <li class="nav-item dropdown {% if sidebar == 'mas' %}active{% endif %}">
-                    <a 
-                        class="nav-link dropdown-toggle d-flex align-items-center" 
-                        href="#" 
-                        role="button" 
-                        data-bs-toggle="dropdown" 
-                        aria-expanded="false"
-                    >
-                        Más
-                        <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Más <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
                     </a>
                     <ul class="dropdown-menu">
+                        {% for seccion in municipio.secciones_plus.all %}
+                            {% if seccion.status %}
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'seccionplus_detail' seccion.pk seccion.slug %}">
+                                        {{ seccion.nombre }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% empty %}
+                        {% endfor %}
+
                         <!-- "Convocatorias" depende de 'convocatorias' -->
                         {% if municipio.secciones_hab and municipio.secciones_hab.convocatorias %}
-                        <li><a class="dropdown-item" href="{% url 'HomeConvocatoriasView' %}">Convocatorias</a></li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'HomeConvocatoriasView' %}">Convocatorias</a>
+                        </li>
                         {% endif %}
             
                         <!-- "Habla con tus hijos" depende de 'habla_con_tus_hijos' -->
                         {% if municipio.secciones_hab and municipio.secciones_hab.habla_con_tus_hijos %}
-                        <li><a class="dropdown-item" href="{% url 'homeHabla' %}">Habla con tus hijos</a></li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'homeHabla' %}">Habla con tus hijos</a>
+                        </li>
                         {% endif %}
             
-                        <li><hr class="dropdown-divider"></li>
-            
-                        <!-- "Aviso de privacidad" depende de 'aviso_de_privacidad' -->
-                        {% if municipio.secciones_hab and municipio.secciones_hab.aviso_de_privacidad %}
-                        <li><a class="dropdown-item" href="{% url 'HomePrivacidad' %}">Aviso de privacidad de datos personales</a></li>
-                        {% endif %}
             
                         <!-- "Contacto" depende de 'contacts' -->
                         {% if municipio.secciones_hab and municipio.secciones_hab.contacts %}
-                        <li><a class="dropdown-item" href="{% url 'homeContacts' %}">Contacto</a></li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'homeContacts' %}">Contacto</a>
+                        </li>
                         {% endif %}
                     </ul>
                 </li>
             </ul>
-            
         </div>
     </div>
 </nav>

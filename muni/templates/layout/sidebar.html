@@ -250,7 +250,7 @@
             {% endif %}
 
             <!-- Enlace Generales (solo para superuser) -->
-            {% if is_superuser %}
+            {% if is_superuser or 'transparencia.view_secciontransparencia' in user_permissions %}
               <li class="sidebar-list {% if sidebar == 'Generales' %}active{% endif %}">
                 <a class="sidebar-link sidebar-title" href="{% url 'generalesDashboard' %}">
                   <i class="fa fa-globe" style="color:white;"></i>

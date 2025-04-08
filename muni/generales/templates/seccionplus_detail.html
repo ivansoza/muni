@@ -1,6 +1,138 @@
 {% extends "base.html" %}
+
+
+
+
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+
+    {% if seccion.banner  %}
+
+        <style>
+            .banner-convocatorias {
+                position: relative;
+                width: 100%;
+                height: 400px;
+                overflow: hidden;
+                margin-bottom: 30px;
+                margin-top: -80px;
+
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+
+
+            }
+            .banner-img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+                transition: transform 0.5s ease;
+            }
+            .banner-convocatorias:hover .banner-img {
+                transform: scale(1.05);
+            }
+            .banner-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.2) 100%);
+                z-index: 1;
+            }
+            .banner-content {
+                position: absolute;
+                top: 50%;
+                left: 50px;
+                transform: translateY(-50%);
+                color: white;
+                z-index: 2;
+                max-width: 600px;
+                padding: 20px;
+            }
+            .banner-content h1 {
+                font-size: 2.8rem;
+                margin-bottom: 15px;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+                font-weight: 700;
+            }
+            .banner-content p {
+                font-size: 1.2rem;
+                margin-bottom: 25px;
+                line-height: 1.6;
+                text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            }
+            .banner-btn {
+                display: inline-block;
+                background-color: var(--color-primario, #0056b3);
+                color: white;
+                padding: 12px 30px;
+                border-radius: 50px;
+                text-decoration: none;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                border: 2px solid transparent;
+            }
+            .banner-btn:hover {
+                background-color: var(--color-secundario, #003d7a);
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            }
+            /* Responsive styling */
+            @media (max-width: 992px) {
+                .banner-content h1 {
+                    font-size: 2.4rem;
+                }
+            }
+            @media (max-width: 768px) {
+                .banner-convocatorias {
+                    height: 350px;
+                }
+                .banner-content {
+                    left: 30px;
+                    max-width: 80%;
+                }
+                .banner-content h1 {
+                    font-size: 2rem;
+                }
+                .banner-content p {
+                    font-size: 1.1rem;
+                }
+            }
+            @media (max-width: 576px) {
+                .banner-convocatorias {
+                    height: 300px;
+                }
+                .banner-content {
+                    left: 20px;
+                    max-width: 90%;
+                }
+                .banner-content h1 {
+                    font-size: 1.8rem;
+                }
+                .banner-content p {
+                    font-size: 1rem;
+                    margin-bottom: 15px;
+                }
+                .banner-btn {
+                    padding: 10px 25px;
+                    font-size: 0.9rem;
+                }
+            }
+        </style>
+
+        <div class="banner-convocatorias">
+            <div class="banner-overlay"></div>
+            <div class="banner-content">
+                <h1>{{ seccion.nombre }}</h1>
+                {% if seccion.detalles %}
+                    <p>{{seccion.detalles}}</p>
+                {% endif %}
+            </div>
+            <img src="{{ seccion.banner.url }}" alt="Banner de Convocatorias" class="banner-img">
+        </div>  
+        {% endif %}
 
 <style>
 .container-convocatoria {
@@ -767,10 +899,18 @@
 </style>
 
 
-<div class="container-convocatoria">
 
-    <h2 class="news-title">Convocatorias
-        <span>| Programas y Proyectos</span>
+  
+
+<div class="container-convocatoria" data-seccion-pk="{{ seccion.pk }}">
+
+
+
+
+
+    
+    <h2 class="news-title">{{seccion.nombre}}
+        <span>| Convocatorias</span>
     </h2>
 
     
@@ -781,7 +921,7 @@
         </div>
         <div class="filter-group">
             <select class="filter-select" id="category-filter">
-                <option value="">Todas las categorías</option>
+                <option value="">Todas las categrorías</option>
                 {% for categoria in categorias %}
                     <option value="{{ categoria.nombre|lower }}">{{ categoria.nombre }}</option>
                 {% endfor %}
@@ -933,212 +1073,173 @@
   
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".convocatoria-description").forEach(container => {
-        const description = container.querySelector(".descripcion-texto");
-        const maxHeight = 116; // Altura máxima permitida antes de habilitar scroll
-
-        description.style.maxHeight = maxHeight + "px";
-        description.style.overflowY = "auto";
-    });
-});
-
-</script>
-<script>
-function showImageModal(src) {
-    const modal = document.getElementById("imageModal");
-    const modalImg = document.getElementById("modalImage");
-    modal.style.display = "block";
-    modalImg.src = src;
-}
-
-function closeImageModal() {
-    document.getElementById("imageModal").style.display = "none";
-}
-
-
-</script>
-<script>
-    function fetchConvocatorias(page = 1) {
-        const categoryFilter = document.getElementById("category-filter");
-        const statusFilter = document.getElementById("status-filter");
-        const dateFilter = document.getElementById("date-filter");
-        const searchInput = document.getElementById("search-input");
+    /* ---------- id de la SeccionPlus incrustado en el contenedor ---------- */
+    const SECCION_PK = document
+          .querySelector(".container-convocatoria")
+          .dataset.seccionPk;
     
-        const categoria = categoryFilter.value;
-        const estado = statusFilter.value;
-        const fecha = dateFilter.value;
-        const query = searchInput.value.toLowerCase();
-        const activeTab = window.getActiveTab(); // Obtener la pestaña activa
-        const convocatoriasContainer = document.querySelector(`#${activeTab}-tab .convocatorias-grid`);
-        const paginationContainer = document.getElementById(`pagination-${activeTab}`);
+    /* ---------- función principal con normalización de page --------------- */
+    function fetchConvocatorias(pageOrEvent = 1) {
+        // Si llega un InputEvent en vez de número, reiniciamos a 1
+        const page = (typeof pageOrEvent === "number") ? pageOrEvent : 1;
     
-        const url = `/convocatorias/filtrar_convocatorias/?categoria=${categoria}&estado=${estado}&fecha=${fecha}&pestana=${activeTab}&page=${page}&query=${encodeURIComponent(query)}`;
+        /* ---------- capturar filtros y elementos de UI ---------- */
+        const categoria = document.getElementById("category-filter").value;
+        const estado    = document.getElementById("status-filter").value;
+        const fecha     = document.getElementById("date-filter").value;
+        const query     = document.getElementById("search-input").value.toLowerCase();
+        const activeTab = window.getActiveTab();   // 'active' | 'past'
     
+        const convocatoriasContainer =
+              document.querySelector(`#${activeTab}-tab .convocatorias-grid`);
+        const paginationContainer =
+              document.getElementById(`pagination-${activeTab}`);
+    
+        /* ---------- construir URL ---------- */
+        const url =
+            `/convocatorias/filtrar_convocatorias_seccion/${SECCION_PK}/` +
+            `?categoria=${categoria}&estado=${estado}&fecha=${fecha}` +
+            `&pestana=${activeTab}&page=${page}&query=${encodeURIComponent(query)}`;
+    
+        /* ---------- petición fetch ---------- */
         fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                convocatoriasContainer.innerHTML = "";  // Limpiar contenedor antes de agregar nuevos resultados
-                paginationContainer.innerHTML = "";
+          .then(response => response.json())
+          .then(data => {
+              convocatoriasContainer.innerHTML = "";
+              paginationContainer.innerHTML    = "";
     
-                data.convocatorias.forEach(convocatoria => {
-                    const card = document.createElement("div");
-                    card.classList.add("convocatoria-card");
-                    card.innerHTML = `
-                        <div class="convocatoria-status status-${convocatoria.estado.toLowerCase()}">
-                            ${convocatoria.estado}
-                        </div>
-                        <div class="convocatoria-header">
-                            <h3 class="convocatoria-title">${convocatoria.titulo}</h3>
-                        </div>
-                        <div class="convocatoria-content">
-                            <div class="convocatoria-media-fechas">
-                                <div class="media-image">
-                                    <div class="tooltip-container">
-                                        <img src="${convocatoria.imagen}" alt="Imagen de convocatoria" class="convocatoria-image">
-                                        <div class="overlay-eye" onclick="showImageModal('${convocatoria.imagen}')">
-                                            <i class="fa-solid fa-eye"></i>
-                                        </div>
-                                    </div>
-                                </div>
+              /* ---------- pintar tarjetas ---------- */
+              data.convocatorias.forEach(c => {
+                  const card = document.createElement("div");
+                  card.classList.add("convocatoria-card");
+                  card.innerHTML = `
+                      <div class="convocatoria-status status-${c.estado.toLowerCase()}">
+                          ${c.estado}
+                      </div>
+                      <div class="convocatoria-header">
+                          <h3 class="convocatoria-title">${c.titulo}</h3>
+                      </div>
+                      <div class="convocatoria-content">
+                          <div class="convocatoria-media-fechas">
+                              <div class="media-image">
+                                  <div class="tooltip-container">
+                                      ${c.imagen ? `
+                                          <img src="${c.imagen}" class="convocatoria-image" alt="Imagen">
+                                          <div class="overlay-eye" onclick="showImageModal('${c.imagen}')">
+                                              <i class="fa-solid fa-eye"></i>
+                                          </div>` : ""}
+                                  </div>
+                              </div>
+                              <div class="media-dates">
+                                  <div class="date-group">
+                                      <div class="date-label"><i class="fa-solid fa-calendar-day"></i> Apertura</div>
+                                      <div class="date-value">${c.fecha_apertura}</div>
+                                  </div>
+                                  <div class="date-group">
+                                      <div class="date-label"><i class="fa-solid fa-calendar-check"></i> Cierre</div>
+                                      <div class="date-value">${c.fecha_cierre}</div>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="convocatoria-description">
+                              <p class="descripcion-texto" style="text-align: justify;">${c.descripcion}</p>
+                          </div>
+                      </div>
+                      <div class="convocatoria-footer">
+                          <span class="category-tag"><i class="fa-solid fa-tags"></i> ${c.categoria}</span>
+                        <a href="/convocatorias/seccion/${SECCION_PK}/detalleConvocatoria/${c.id}/"
+                        class="view-details">
+                            Ver detalles
+                        </a>
+
+                      </div>`;
+                  convocatoriasContainer.appendChild(card);
+              });
     
-                                <div class="media-dates">
-                                    <div class="date-group">
-                                        <div class="date-label">
-                                            <i class="fa-solid fa-calendar-day"></i> Fecha de apertura
-                                        </div>
-                                        <div class="date-value">${convocatoria.fecha_apertura}</div>
-                                    </div>
-                                    <div class="date-group">
-                                        <div class="date-label">
-                                            <i class="fa-solid fa-calendar-check"></i> Fecha de cierre
-                                        </div>
-                                        <div class="date-value">${convocatoria.fecha_cierre}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="convocatoria-description">
-                                <p class="descripcion-texto" style="text-align: justify;">${convocatoria.descripcion}</p>
-                            </div>
-                        </div>
-                        <div class="convocatoria-footer">
-                            <span class="category-tag">
-                                <i class="fa-solid fa-tags"></i> ${convocatoria.categoria}
-                            </span>
-                            <a href="/convocatorias/detalleConvocatoria/${convocatoria.id}/" class="view-details">
-                                Ver detalles
-                            </a>  
-                        </div>
-                    `;
-                    convocatoriasContainer.appendChild(card);
-                });
-                            // PAGINACIÓN MEJORADA
-            const totalPages = data.total_pages;
-            const currentPage = data.current_page;
-
-            const createPageButton = (page) => {
-                const button = document.createElement("button");
-                button.classList.add("page-btn");
-                if (page === currentPage) button.classList.add("active");
-                button.innerText = page;
-                button.addEventListener("click", () => fetchConvocatorias(page));
-                return button;
-            };
-
-            const addEllipsis = () => {
-                const span = document.createElement("span");
-                span.innerText = "...";
-                span.classList.add("pagination-ellipsis");
-                return span;
-            };
-
-            // Botón anterior
-            if (currentPage > 1) {
-                const prevBtn = document.createElement("button");
-                prevBtn.innerHTML = "«";
-                prevBtn.classList.add("page-btn", "arrow-btn");
-                prevBtn.addEventListener("click", () => fetchConvocatorias(currentPage - 1));
-                paginationContainer.appendChild(prevBtn);
-            }
-
-            // Mostrar máximo 5 botones
-            let startPage = Math.max(1, currentPage - 2);
-            let endPage = Math.min(totalPages, currentPage + 2);
-
-            if (currentPage <= 3) {
-                endPage = Math.min(5, totalPages);
-            }
-            if (currentPage >= totalPages - 2) {
-                startPage = Math.max(1, totalPages - 4);
-            }
-
-            // Primer botón + puntos
-            if (startPage > 1) {
-                paginationContainer.appendChild(createPageButton(1));
-                if (startPage > 2) paginationContainer.appendChild(addEllipsis());
-            }
-
-            // Botones del rango visible
-            for (let i = startPage; i <= endPage; i++) {
-                paginationContainer.appendChild(createPageButton(i));
-            }
-
-            // Último botón + puntos
-            if (endPage < totalPages) {
-                if (endPage < totalPages - 1) paginationContainer.appendChild(addEllipsis());
-                paginationContainer.appendChild(createPageButton(totalPages));
-            }
-
-            // Botón siguiente
-            if (currentPage < totalPages) {
-                const nextBtn = document.createElement("button");
-                nextBtn.innerHTML = "»";
-                nextBtn.classList.add("page-btn", "arrow-btn");
-                nextBtn.addEventListener("click", () => fetchConvocatorias(currentPage + 1));
-                paginationContainer.appendChild(nextBtn);
-            }
-
-                
-
-            })
-            .catch(error => console.error("Error al cargar convocatorias:", error));
+              /* ---------- paginación ---------- */
+              const { total_pages: total, current_page: current } = data;
+    
+              const createBtn = n => {
+                  const b = document.createElement("button");
+                  b.classList.add("page-btn");
+                  if (n === current) b.classList.add("active");
+                  b.textContent = n;
+                  b.onclick = () => fetchConvocatorias(n);
+                  return b;
+              };
+              const addDots = () => {
+                  const span = document.createElement("span");
+                  span.textContent = "...";
+                  span.classList.add("pagination-ellipsis");
+                  return span;
+              };
+    
+              if (current > 1) {
+                  const prev = document.createElement("button");
+                  prev.classList.add("page-btn","arrow-btn");
+                  prev.innerHTML = "«";
+                  prev.onclick = () => fetchConvocatorias(current - 1);
+                  paginationContainer.appendChild(prev);
+              }
+    
+              let start = Math.max(1, current - 2);
+              let end   = Math.min(total, current + 2);
+              if (current <= 3)              end   = Math.min(5, total);
+              if (current >= total - 2)      start = Math.max(1, total - 4);
+    
+              if (start > 1) {
+                  paginationContainer.appendChild(createBtn(1));
+                  if (start > 2) paginationContainer.appendChild(addDots());
+              }
+              for (let i = start; i <= end; i++) paginationContainer.appendChild(createBtn(i));
+              if (end < total) {
+                  if (end < total - 1) paginationContainer.appendChild(addDots());
+                  paginationContainer.appendChild(createBtn(total));
+              }
+    
+              if (current < total) {
+                  const next = document.createElement("button");
+                  next.classList.add("page-btn","arrow-btn");
+                  next.innerHTML = "»";
+                  next.onclick = () => fetchConvocatorias(current + 1);
+                  paginationContainer.appendChild(next);
+              }
+          })
+          .catch(err => console.error("Error al cargar convocatorias:", err));
     }
     
-    document.addEventListener("DOMContentLoaded", function () {
-        const tabs = document.querySelectorAll(".tab");
+    /* ---------- control de pestañas ---------- */
+    document.addEventListener("DOMContentLoaded", () => {
+        const tabs     = document.querySelectorAll(".tab");
         const contents = document.querySelectorAll(".tab-content");
-        let activeTab = "active";  // Por defecto, se inicia en la pestaña "activa"
+        let activeTab  = "active";
     
         tabs.forEach(tab => {
-            tab.addEventListener("click", function () {
+            tab.onclick = () => {
                 tabs.forEach(t => t.classList.remove("active"));
                 contents.forEach(c => c.style.display = "none");
-    
-                this.classList.add("active");
-                activeTab = this.getAttribute("data-tab");
-                document.getElementById(activeTab + "-tab").style.display = "block";
-    
-                fetchConvocatorias();  // Llamada válida ahora
-            });
+                tab.classList.add("active");
+                activeTab = tab.dataset.tab;
+                document.getElementById(`${activeTab}-tab`).style.display = "block";
+                fetchConvocatorias(1);
+            };
         });
-    
         window.getActiveTab = () => activeTab;
     });
     
-    document.addEventListener("DOMContentLoaded", function() {
-        const categoryFilter = document.getElementById("category-filter");
-        const statusFilter = document.getElementById("status-filter");
-        const dateFilter = document.getElementById("date-filter");
-        const searchInput = document.getElementById("search-input");
+    /* ---------- listeners de filtros (reinician a página 1) ---------- */
+    document.addEventListener("DOMContentLoaded", () => {
+        ["category-filter","status-filter","date-filter"].forEach(id =>
+            document.getElementById(id).addEventListener("change", () => fetchConvocatorias(1))
+        );
+        document.getElementById("search-input")
+                .addEventListener("input", () => fetchConvocatorias(1));
     
-        categoryFilter.addEventListener("change", fetchConvocatorias);
-        statusFilter.addEventListener("change", fetchConvocatorias);
-        dateFilter.addEventListener("change", fetchConvocatorias);
-        searchInput.addEventListener("input", fetchConvocatorias);
-    
-        fetchConvocatorias();  // Llama automáticamente al cargar la página
+        // primera carga
+        fetchConvocatorias(1);
     });
     </script>
+    
     
 
 {% endblock content %}

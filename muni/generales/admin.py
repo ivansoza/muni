@@ -1,6 +1,6 @@
 # admin.py
 from django.contrib import admin
-from .models import ContadorVisitas, MetaMunicipio, Secciones, SocialNetwork, personalizacionPlantilla
+from .models import ContadorVisitas, MetaMunicipio, SeccionPlus, Secciones, SocialNetwork, personalizacionPlantilla
 
 @admin.register(SocialNetwork)
 class SocialNetworkAdmin(admin.ModelAdmin):
@@ -31,3 +31,6 @@ class MetaMunicipioAdmin(admin.ModelAdmin):
     search_fields = ('municipio__nombre', 'meta_title')
 
 admin.site.register(MetaMunicipio, MetaMunicipioAdmin)
+
+
+admin.site.register(SeccionPlus)
