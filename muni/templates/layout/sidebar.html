@@ -1,53 +1,75 @@
 {% load static %}
 {% load sass_tags %}
-<style>
-  .stroke-icon {
-    color: #ffffff;
-    transition: transform 0.3s !important;
-    opacity: 1 !important;
-  }
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Sidebar con Clase Desactivar</title>
+  <style>
+    .stroke-icon {
+      color: #ffffff;
+      transition: transform 0.3s !important;
+      opacity: 1 !important;
+    }
 
-  .fill-icon {
-    color: #f00;
-    position: absolute;
-    top: 0;
-    left: 0;
-    opacity: 0 !important; /* Mantenemos oculto el ícono relleno */
-    transition: transform 0.3s !important;
-  }
+    .fill-icon {
+      color: #f00;
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0 !important; /* Ícono relleno inicialmente oculto */
+      transition: transform 0.3s !important;
+    }
 
-  .sidebar-link {
-    position: relative;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    color: #ffffff;
-    border-radius: 8px;
-    transition: all 0.3s !important;
-  }
+    .sidebar-link {
+      position: relative;
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: #ffffff;
+      border-radius: 8px;
+      transition: all 0.3s !important;
+    }
 
-  .sidebar-link:hover {
-    transform: scale(1.05) !important;
-  }
+    .sidebar-link:hover {
+      transform: scale(1.05) !important;
+    }
 
-  .sidebar-link:hover .stroke-icon {
-    transform: translateY(-5px) scale(1.1) !important; /* Nueva animación */
-  }
+    .sidebar-link:hover .stroke-icon {
+      transform: translateY(-5px) scale(1.1) !important;
+    }
 
-  .sidebar-link i {
-    font-size: 1.5em;
-  }
+    .sidebar-link i {
+      font-size: 1.5em;
+    }
 
-  .sidebar-link span {
-    transition: color 0.3s !important;
-  }
+    .sidebar-link span {
+      transition: color 0.3s !important;
+    }
 
+    /* Nueva clase para elementos desactivados */
+    .desactivar {
+      opacity: 0.6;              /* Menor opacidad para indicar inactividad */
+      cursor: not-allowed;       /* Cursor no permitido */
+      pointer-events: none;      /* Deshabilita cualquier interacción */
+    }
 
-</style>
-<!-- Page Sidebar Start-->
-<div class="sidebar-wrapper" data-layout="stroke-svg">
+    /* Ajuste para los íconos dentro de elementos desactivados */
+    .desactivar .stroke-icon,
+    .desactivar .fill-icon {
+      opacity: 0.4 !important;    /* Ícono aún más opaco */
+      transform: none !important; /* Se deshabilitan las transformaciones */
+    }
+  </style>
+</head>
+<body>
+  <!-- Page Sidebar Start-->
+  <div class="sidebar-wrapper" data-layout="stroke-svg">
     <div>
-      <div class="logo-wrapper"><a href="{% url "dashboard" %}"><img class="img-fluid" src="{% static 'assets/images/logo/logo-new.png' %}" alt=""></a>
+      <div class="logo-wrapper">
+        <a href="{% url 'dashboard' %}">
+          <img class="img-fluid" src="{% static 'assets/images/logo/logo-new.png' %}" alt="Logo">
+        </a>
         <div class="back-btn"><i class="fa fa-angle-left"></i></div>
       </div>
       <nav class="sidebar-main">
@@ -55,97 +77,200 @@
         <div id="sidebar-menu">
           <ul class="sidebar-links" id="simple-bar">
             <li class="back-btn">
-              <div class="mobile-back text-end"><span>Back</span><i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
+              <div class="mobile-back text-end">
+                <span>Back</span>
+                <i class="fa fa-angle-right ps-2" aria-hidden="true"></i>
+              </div>
             </li>
             <li class="pin-title sidebar-main-title">
-              <div> 
+              <div>
                 <h6>Pinned</h6>
               </div>
             </li>
+
+            <!-- Enlace Dashboard (activo) -->
             <li class="sidebar-list {% if sidebar == 'dashboard' %}active{% endif %}">
-              <a class="sidebar-link sidebar-title" href="{% url "dashboard" %}" >
+              <a class="sidebar-link sidebar-title" href="{% url 'dashboard' %}">
                 <i class="fa fa-home stroke-icon"></i>
                 <i class="fa fa-home fill-icon"></i>
                 <span>Dashboard</span>
               </a>
             </li>
-            <li class="sidebar-list {% if sidebar == 'perso' %}active{% endif %}">
-              <a class="sidebar-link sidebar-title" href="{% url "personalizacion_view" %}" >
-                <i class="fa fa-paint-brush stroke-icon"></i>
-                <i class="fa fa-paint-brush fill-icon"></i>
-                <span>Personalizar</span>
-              </a>
-            </li>
-            <li class="sidebar-list {% if sidebar == 'socialmedia' %}active{% endif %}">
-              <a class="sidebar-link sidebar-title" href="{% url "social_view" %}">
-                <i class="fa fa-share-alt stroke-icon"></i>
-                <i class="fa fa-share-alt fill-icon"></i>
-                <span>Redes Sociales</span>
-              </a>
-            </li>
-            
-            <li class="sidebar-list {% if sidebar == 'noticias' %}active{% endif %}">
-              <a class="sidebar-link sidebar-title" href="{% url "noticias_view" %}">
-                <i class="fa fa-newspaper-o stroke-icon"></i>
-                <i class="fa fa-newspaper-o fill-icon"></i>
-                <span>Noticias</span>
-              </a>
-            </li>
-          
 
-            <li class="sidebar-list {% if sidebar == 'servicios' %}active{% endif %}">
-              <a class="sidebar-link sidebar-title" href="{% url "servicios_view" %}">
-                <i class="fa fa-cogs stroke-icon"></i>
-                <i class="fa fa-cogs fill-icon"></i>
-                <span>Servicios</span>
-              </a>
-            </li>
+            <!-- Enlace Personalizar -->
+            {% if is_superuser or 'generales.view_personalizacionplantilla' in user_permissions %}
+              <li class="sidebar-list {% if sidebar == 'perso' %}active{% endif %}">
+                <a class="sidebar-link sidebar-title" href="{% url 'personalizacion_view' %}">
+                  <i class="fa fa-paint-brush stroke-icon"></i>
+                  <i class="fa fa-paint-brush fill-icon"></i>
+                  <span>Personalizar</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="sidebar-list">
+                <div class="sidebar-link sidebar-title desactivar">
+                  <i class="fa fa-paint-brush stroke-icon"></i>
+                  <i class="fa fa-paint-brush fill-icon"></i>
+                  <span>Personalizar</span>
+                </div>
+              </li>
+            {% endif %}
 
-            <li class="sidebar-list {% if sidebar == 'transparencia' %}active{% endif %}">
-              <a class="sidebar-link sidebar-title" href="{% url "lista_obligaciones" %}">
-                <i class="fa fa-folder-open" style='color:white;'></i>                
-                <i class="fa fa-cogs fill-icon"></i>
-                <span>Transparencia</span>
-              </a>
-            </li>
+            <!-- Enlace Redes Sociales -->
+            {% if is_superuser or 'generales.view_socialnetwork' in user_permissions %}
+              <li class="sidebar-list {% if sidebar == 'socialmedia' %}active{% endif %}">
+                <a class="sidebar-link sidebar-title" href="{% url 'social_view' %}">
+                  <i class="fa fa-share-alt stroke-icon"></i>
+                  <i class="fa fa-share-alt fill-icon"></i>
+                  <span>Redes Sociales</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="sidebar-list">
+                <div class="sidebar-link sidebar-title desactivar">
+                  <i class="fa fa-share-alt stroke-icon"></i>
+                  <i class="fa fa-share-alt fill-icon"></i>
+                  <span>Redes Sociales</span>
+                </div>
+              </li>
+            {% endif %}
 
-            <li class="sidebar-list {% if sidebar == 'convo' %}active{% endif %}">
-              <a class="sidebar-link sidebar-title" href="{% url "convocatorias" %}">
-                <i class="fa fa-file-photo-o" style='color:white;'></i>                
-                <i class="fa fa-cogs fill-icon"></i>
-                <span>Convocatorias</span>
-              </a>
-            </li>
+            <!-- Enlace Noticias -->
+            {% if is_superuser or 'noticias.view_noticia' in user_permissions %}
+              <li class="sidebar-list {% if sidebar == 'noticias' %}active{% endif %}">
+                <a class="sidebar-link sidebar-title" href="{% url 'noticias_view' %}">
+                  <i class="fa fa-newspaper-o stroke-icon"></i>
+                  <i class="fa fa-newspaper-o fill-icon"></i>
+                  <span>Noticias</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="sidebar-list">
+                <div class="sidebar-link sidebar-title desactivar">
+                  <i class="fa fa-newspaper-o stroke-icon"></i>
+                  <i class="fa fa-newspaper-o fill-icon"></i>
+                  <span>Noticias</span>
+                </div>
+              </li>
+            {% endif %}
 
-            <li class="sidebar-list {% if sidebar == 'sevac' %}active{% endif %}">
-              <a class="sidebar-link sidebar-title" href="{% url "listar_carpetas" %}">
-                <i class="fa fa-folder-open" style='color:white;'></i>                
-                <i class="fa fa-cogs fill-icon"></i>
-                <span>SEVAC</span>
-              </a>
-            </li>
+            <!-- Enlace Servicios -->
+            {% if is_superuser or 'servicios.view_servicio' in user_permissions %}
+              <li class="sidebar-list {% if sidebar == 'servicios' %}active{% endif %}">
+                <a class="sidebar-link sidebar-title" href="{% url 'servicios_view' %}">
+                  <i class="fa fa-cogs stroke-icon"></i>
+                  <i class="fa fa-cogs fill-icon"></i>
+                  <span>Servicios</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="sidebar-list">
+                <div class="sidebar-link sidebar-title desactivar">
+                  <i class="fa fa-cogs stroke-icon"></i>
+                  <i class="fa fa-cogs fill-icon"></i>
+                  <span>Servicios</span>
+                </div>
+              </li>
+            {% endif %}
 
-            <li class="sidebar-list {% if sidebar == 'gabinete' %}active{% endif %}">
-              <a class="sidebar-link sidebar-title" href="{% url 'ListarGabineteView' %}">
-                <i class="fa fa-university" style="color:white;"></i>                
-                <i class="fa fa-users fill-icon"></i>
-                <span>Gabinete</span>
-              </a>
-            </li>
-            
-            
-            <li class="sidebar-list {% if sidebar == 'Generales' %}active{% endif %}">
-              <a class="sidebar-link sidebar-title" href="{% url 'generalesDashboard' %}">
-                <i class="fa fa-globe" style="color:white;"></i> <!-- Ícono sugerido -->
-                <span>Generales</span>
-              </a>
-            </li>
-            
+            <!-- Enlace Transparencia -->
+            {% if is_superuser or 'transparencia.view_secciontransparencia' in user_permissions %}
+              <li class="sidebar-list {% if sidebar == 'transparencia' %}active{% endif %}">
+                <a class="sidebar-link sidebar-title" href="{% url 'lista_obligaciones' %}">
+                  <i class="fa fa-folder-open" style="color:white;"></i>
+                  <i class="fa fa-cogs fill-icon"></i>
+                  <span>Transparencia</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="sidebar-list">
+                <div class="sidebar-link sidebar-title desactivar">
+                  <i class="fa fa-folder-open" style="color:white;"></i>
+                  <i class="fa fa-cogs fill-icon"></i>
+                  <span>Transparencia</span>
+                </div>
+              </li>
+            {% endif %}
 
+            <!-- Enlace Convocatorias -->
+            {% if is_superuser or 'convocatorias.view_convocatoria' in user_permissions %}
+              <li class="sidebar-list {% if sidebar == 'convo' %}active{% endif %}">
+                <a class="sidebar-link sidebar-title" href="{% url 'convocatorias' %}">
+                  <i class="fa fa-file-photo-o" style="color:white;"></i>
+                  <i class="fa fa-cogs fill-icon"></i>
+                  <span>Convocatorias</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="sidebar-list">
+                <div class="sidebar-link sidebar-title desactivar">
+                  <i class="fa fa-file-photo-o" style="color:white;"></i>
+                  <i class="fa fa-cogs fill-icon"></i>
+                  <span>Convocatorias</span>
+                </div>
+              </li>
+            {% endif %}
+
+            <!-- Enlace SEVAC -->
+            {% if is_superuser or 'sevac.view_carpeta' in user_permissions %}
+              <li class="sidebar-list {% if sidebar == 'sevac' %}active{% endif %}">
+                <a class="sidebar-link sidebar-title" href="{% url 'listar_carpetas' %}">
+                  <i class="fa fa-folder-open" style="color:white;"></i>
+                  <i class="fa fa-cogs fill-icon"></i>
+                  <span>SEVAC</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="sidebar-list">
+                <div class="sidebar-link sidebar-title desactivar">
+                  <i class="fa fa-folder-open" style="color:white;"></i>
+                  <i class="fa fa-cogs fill-icon"></i>
+                  <span>SEVAC</span>
+                </div>
+              </li>
+            {% endif %}
+
+            <!-- Enlace Gabinete -->
+            {% if is_superuser or 'gobierno.view_miembrogabinete' in user_permissions %}
+              <li class="sidebar-list {% if sidebar == 'gabinete' %}active{% endif %}">
+                <a class="sidebar-link sidebar-title" href="{% url 'ListarGabineteView' %}">
+                  <i class="fa fa-university" style="color:white;"></i>
+                  <i class="fa fa-users fill-icon"></i>
+                  <span>Gabinete</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="sidebar-list">
+                <div class="sidebar-link sidebar-title desactivar">
+                  <i class="fa fa-university" style="color:white;"></i>
+                  <i class="fa fa-users fill-icon"></i>
+                  <span>Gabinete</span>
+                </div>
+              </li>
+            {% endif %}
+
+            <!-- Enlace Generales (solo para superuser) -->
+            {% if is_superuser %}
+              <li class="sidebar-list {% if sidebar == 'Generales' %}active{% endif %}">
+                <a class="sidebar-link sidebar-title" href="{% url 'generalesDashboard' %}">
+                  <i class="fa fa-globe" style="color:white;"></i>
+                  <span>Generales</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="sidebar-list">
+                <div class="sidebar-link sidebar-title desactivar">
+                  <i class="fa fa-globe" style="color:white;"></i>
+                  <span>Generales</span>
+                </div>
+              </li>
+            {% endif %}
           </ul>
         </div>
         <div class="right-arrow" id="right-arrow"><i data-feather="arrow-right"></i></div>
       </nav>
     </div>
-</div>
-<!-- Page Sidebar Ends-->
+  </div>
+  <!-- Page Sidebar Ends-->
+</body>
+</html>
