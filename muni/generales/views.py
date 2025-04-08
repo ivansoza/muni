@@ -499,6 +499,10 @@ from django.utils.timezone import localtime
 class NewsView(LoginRequiredMixin, TemplateView):
     template_name = "noticias.html"
     login_url = reverse_lazy('login')
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("noticias.add_noticia")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -993,8 +997,12 @@ def eliminar_documento_transparencia(request, pk):
         return redirect('documento_list', seccion_id=seccion_id, ejercicio_id=ejercicio_id)
 
 
-class CrearCarpetaView(View):
+class CrearCarpetaView(View, LoginRequiredMixin):
     template_name = 'sevac/crear_carpeta.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("sevac.add_carpeta")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = kwargs
@@ -1045,8 +1053,12 @@ class CrearCarpetaView(View):
 
     
 # Vista para editar carpeta
-class EditarCarpetaView(View):
+class EditarCarpetaView(View, LoginRequiredMixin):
     template_name = 'sevac/editar_carpeta.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("sevac.change_carpeta")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, carpeta_id, **kwargs):
         context = kwargs
@@ -1104,8 +1116,12 @@ class EditarCarpetaView(View):
 
     
 # Vista para subir archivos
-class SubirArchivoView(View):
+class SubirArchivoView(View, LoginRequiredMixin):
     template_name = 'sevac/subir_archivo.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("sevac.add_archivo")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, padre_id=None, **kwargs):
         context = kwargs
@@ -1151,8 +1167,12 @@ class SubirArchivoView(View):
         context = self.get_context_data(padre_id=padre_id, form=form)
         return render(request, self.template_name, context)
 
-class EditarArchivoView(View):
+class EditarArchivoView(View, LoginRequiredMixin):
     template_name = 'sevac/editar_archivo.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("sevac.change_archivo")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, archivo_id, **kwargs):
         context = kwargs
@@ -1204,6 +1224,10 @@ class EditarArchivoView(View):
     
 class ListarCarpetasView(LoginRequiredMixin,TemplateView):
     template_name = 'sevac/lista_archivos.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("sevac.view_carpeta")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1232,7 +1256,11 @@ class ListarCarpetasView(LoginRequiredMixin,TemplateView):
 
         return context
     
-class EliminarCarpetaView(View):
+class EliminarCarpetaView(View, LoginRequiredMixin):
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("sevac.delete_carpeta")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
     def post(self, request, carpeta_id):
         carpeta = get_object_or_404(Carpeta, id=carpeta_id)
         carpeta.delete()  # Elimina la carpeta y su contenido
@@ -1241,6 +1269,10 @@ class EliminarCarpetaView(View):
 # Vista para gestionar subcarpetas y archivos de una carpeta principal
 class GestionarCarpetaView(View):
     template_name = 'sevac/gestionar_carpetas.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("sevac.view_carpeta")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, carpeta_id, **kwargs):
         context = kwargs
@@ -1276,10 +1308,14 @@ def eliminar_archivo(request, id):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
     
-class ListaObligacionesView(ListView):
+class ListaObligacionesView(LoginRequiredMixin, ListView):
     model = ListaObligaciones
     template_name = 'transparencia2/inicioTrasnparencia.html'
     context_object_name = 'lista_obligaciones'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.view_listaobligaciones")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1304,11 +1340,15 @@ class ListaObligacionesView(ListView):
 
     
 # Vista para crear un nuevo registro de ListaObligaciones
-class ListaObligacionesCreateView(CreateView):
+class ListaObligacionesCreateView(LoginRequiredMixin, CreateView):
     model = ListaObligaciones
     form_class = ListaObligacionesForm
     template_name = 'transparencia2/crearLista.html'
     success_url = reverse_lazy('lista_obligaciones')
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.add_listaobligaciones")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         messages.success(self.request, "La lista de obligaciones se ha creado correctamente.")
@@ -1326,12 +1366,16 @@ class ListaObligacionesCreateView(CreateView):
         return context
 
 # Vista para editar un registro de ListaObligaciones
-class ListaObligacionesUpdateView(UpdateView):
+class ListaObligacionesUpdateView(LoginRequiredMixin, UpdateView):
     model = ListaObligaciones
     form_class = ListaObligacionesForm
     template_name = 'transparencia2/editarLista.html'  # Template a usar para la vista
     context_object_name = 'lista_obligaciones'  # Nombre del objeto que se pasará al contexto
     success_url = reverse_lazy('lista_obligaciones')  # URL a la que redirigir después de guardar el formulario
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.change_listaobligaciones")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         # Aquí puedes añadir lógica adicional antes de guardar, si lo necesitas
@@ -1349,7 +1393,11 @@ class ListaObligacionesUpdateView(UpdateView):
 
         return context
 
-class ListaObligacionesDeleteView(View):
+class ListaObligacionesDeleteView(LoginRequiredMixin, View):
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.delete_listaobligaciones")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
     def post(self, request, pk):
         # Obtener el objeto que se quiere eliminar
         lista_obligaciones = get_object_or_404(ListaObligaciones, pk=pk)
@@ -1361,7 +1409,11 @@ class ListaObligacionesDeleteView(View):
         return JsonResponse({'success': True, 'message': 'Lista de Obligación eliminada exitosamente.'})
     
 
-class GestionarArticulosView(View):
+class GestionarArticulosView(LoginRequiredMixin, View):
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.view_listaobligaciones")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
     def get(self, request, lista_id):
         # Obtener la lista de obligaciones
         lista_obligaciones = get_object_or_404(ListaObligaciones, pk=lista_id)
@@ -1403,10 +1455,14 @@ def actualizar_orden_articulos(request):
     return JsonResponse({"success": False, "error": "Método no permitido"})
 
 
-class CrearArticuloView(CreateView):
+class CrearArticuloView(CreateView, LoginRequiredMixin):
     model = ArticuloLiga
     form_class = ArticuloLigaForm
     template_name = 'transparencia2/crearArticulo.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.add_articuloliga")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -1449,10 +1505,14 @@ class CrearArticuloView(CreateView):
         context['regreso_url'] = reverse('gestionar_articulos', kwargs={'lista_id': lista_obligacion_id})
         return context
 
-class EditarArticuloView(UpdateView):
+class EditarArticuloView(UpdateView, LoginRequiredMixin):
     model = ArticuloLiga
     form_class = ArticuloLigaForm
     template_name = 'transparencia2/editarArticulo.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.change_articuloliga")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_object(self):
         articulo_id = self.kwargs['articulo_id']
@@ -1484,7 +1544,11 @@ class EditarArticuloView(UpdateView):
         return context
     
 
-class EliminarArticuloView(View):
+class EliminarArticuloView(View, LoginRequiredMixin):
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.delete_articuloliga")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
     def post(self, request, articulo_id):
         # Obtener el artículo que se va a eliminar
         articulo = get_object_or_404(ArticuloLiga, id=articulo_id)
@@ -1496,7 +1560,12 @@ class EliminarArticuloView(View):
         return JsonResponse({'success': True, 'message': 'Artículo eliminado con éxito'})
     
 
-class GestionarArticulosArView(View):
+class GestionarArticulosArView(View, LoginRequiredMixin):
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.view_ligaarchivo")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+    
     def get(self, request, id):
         # Obtener el artículo específico mediante su ID
         articulo = get_object_or_404(ArticuloLiga, pk=id)
@@ -1532,10 +1601,14 @@ class GestionarArticulosArView(View):
         }
 
         return render(request, 'transparencia2/gestionar_articulo.html', context)
-class CrearArticuloLigaView(CreateView):
+class CrearArticuloLigaView(CreateView, LoginRequiredMixin):
     model = LigaArchivo
     form_class = ArticuloLigaArchivoForm
     template_name = 'transparencia2/crear_articuloLA.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.add_ligaarchivo")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -1586,10 +1659,14 @@ class CrearArticuloLigaView(CreateView):
         
         return context
 
-class EditarArticuloLigaArchivoView(UpdateView):
+class EditarArticuloLigaArchivoView(UpdateView, LoginRequiredMixin):
     model = LigaArchivo
     form_class = ArticuloLigaArchivoForm
     template_name = 'transparencia2/editar_articuloLA.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.change_ligaarchivo")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
         # Obtiene el objeto LigaArchivo según el ID proporcionado en la URL
@@ -1812,8 +1889,13 @@ def actualizar_video(request):
 
     return JsonResponse({'success': True})
 
-class convocatoriaHome(TemplateView):
+class convocatoriaHome(TemplateView, LoginRequiredMixin):
     template_name = 'convocatorias/convocatoriasHome.html'
+    # --- control de permisos ---
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("convocatorias.view_convocatoria")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -2113,3 +2195,4 @@ class GroupUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
             f'El grupo "{self.object.name}" se ha actualizado correctamente.',
         )
         return response
+
