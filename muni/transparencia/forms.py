@@ -64,9 +64,16 @@ class ListaObligacionesForm(forms.ModelForm):
             'articulo': 'Título de artículo',
         }
         widgets = {
-            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
-            'articulo': forms.TextInput(attrs={'class': 'form-control'}),
+            'titulo': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ej. Obligaciones de transparencia'
+            }),
+            'articulo': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ej. Artículo 70 de la Ley General'
+            }),
         }
+
 
 class ArticuloLigaForm(forms.ModelForm):
     class Meta:

@@ -70,7 +70,11 @@ urlpatterns = [
 
     #-------------------------------TRANSPARENCIA---------------------------------------------
     path('lista-obligaciones/', ListaObligacionesView.as_view(), name='lista_obligaciones'),
+
+
     path('crear_lista_obligaciones/', ListaObligacionesCreateView.as_view(), name='crear_lista_obligaciones'),
+
+    
     path('editar_lista_obligaciones/<int:pk>/', ListaObligacionesUpdateView.as_view(), name='editar_lista_obligaciones'),
     path('eliminar_lista_obligaciones/<int:pk>/', ListaObligacionesDeleteView.as_view(), name='eliminar_lista_obligaciones'),
     path('gestionar_articulos/<int:lista_id>/', GestionarArticulosView.as_view(), name='gestionar_articulos'),

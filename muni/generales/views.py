@@ -1305,21 +1305,22 @@ class ListaObligacionesView(ListView):
 class ListaObligacionesCreateView(CreateView):
     model = ListaObligaciones
     form_class = ListaObligacionesForm
-    template_name = 'transparencia2/crearLista.html'  # Template a usar para la vista
-    success_url = reverse_lazy('lista_obligaciones')  # URL a la que redirigir después de guardar el formulario
+    template_name = 'transparencia2/crearLista.html'
+    success_url = reverse_lazy('lista_obligaciones')
 
     def form_valid(self, form):
-        # Aquí puedes añadir lógica adicional antes de guardar, si lo necesitas
+        messages.success(self.request, "La lista de obligaciones se ha creado correctamente.")
         return super().form_valid(form)
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         url_configuracion = reverse('lista_obligaciones')
         context["breadcrumb"] = {
-            'parent': {'name': 'Trasnparencia', 'url': url_configuracion},
-            'child': {'name': 'Regitro de nueva lista', 'url': ''}
+            'parent': {'name': 'Transparencia', 'url': url_configuracion},
+            'child': {'name': 'Registro de nueva lista', 'url': ''}
         }
-        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+        context['sidebar'] = 'transparencia'
+        context['regreso_url'] = reverse('lista_obligaciones')
         return context
 
 # Vista para editar un registro de ListaObligaciones
@@ -1372,8 +1373,10 @@ class GestionarArticulosView(View):
                 'parent': {'name': 'Transparencia', 'url': reverse('lista_obligaciones')},
                 'child': {'name': 'Gestión de artículos', 'url': ''}
             },
-            'sidebar': 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+            'sidebar': 'transparencia',
+            
         }
+        context['regreso_url'] = reverse('lista_obligaciones')
 
         # Renderizar la plantilla con el contexto
         return render(request, 'transparencia2/gestionarLista.html', context)
