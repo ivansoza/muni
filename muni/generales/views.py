@@ -147,6 +147,26 @@ class SeccionesView(LoginRequiredMixin, TemplateView):
         context["regreso_url"] = reverse("generalesDashboard")
         return context
     
+class SeccionesNuevasView(LoginRequiredMixin, TemplateView):
+    template_name = 'generales/seccionesNuevas.html'
+    
+    # --- control de permisos ---
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("generales.view_secciones")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+    
+    # --- breadcrumbs, sidebar, etc. ---
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumb"] = {
+            "parent": {"name": "Generales", "url": "/admin/generales/"},
+            "child": {"name": "Secciones Extras del Sistema", "url": ""},
+        }
+        context["sidebar"] = "Generales"
+        context["regreso_url"] = reverse("generalesDashboard")
+        return context
+    
 class SeccionesUpdateView(LoginRequiredMixin, UpdateView):
     model = Secciones
     form_class = SeccionesForm
