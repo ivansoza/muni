@@ -1,16 +1,48 @@
+
 {% extends "baseTemplate.html" %}
 
-
-
-
 {% block content %}
+<div class="container mt-4">
 
+    <!-- Botón para agregar nueva área -->
+    <div class="mb-3">
+        <a href="#" class="btn btn-primary">Agregar nueva área</a>
+    </div>
+
+    <!-- Verificar si existen avisos de privacidad asociados al municipio -->
+    {% if municipio.avisos_privacidad.all %}
+        <div class="row">
+            {% for aviso in municipio.avisos_privacidad.all %}
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ aviso.area }}</h5>
+                            <p class="card-text">{{ aviso.descripcion }}</p>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    Creado el: {{ aviso.fecha_creacion|date:"d/m/Y H:i" }}
+                                </small>
+                            </p>
+                            <!-- Botones para editar y eliminar -->
+                            <a href="#" class="btn btn-sm btn-secondary">Editar</a>
+                            <a href="#" class="btn btn-sm btn-danger">Eliminar</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            Aún no hay áreas con avisos de privacidad registrados.
+        </div>
+    {% endif %}
+
+</div>
 {% endblock content %}
-
-
 
 
 
 {% block scriptcontent %}
 
 {% endblock scriptcontent %}
+
