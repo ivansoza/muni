@@ -20,6 +20,8 @@ from django.views.generic import FormView
 
 from informacion_municipal.models import Municipio, Video
 from generales.models import ContadorVisitas, SeccionPlus, Secciones, SocialNetwork
+from privacidad.forms import ArchivoRelacionadoFormSet, AvisoDePrivacidadForm
+from privacidad.models import AvisoDePrivacidad
 from servicios.forms import ServicioForm
 from servicios.models import Servicio
 from .forms import CustomAuthenticationForm, GroupForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm
@@ -143,6 +145,64 @@ class PrivacidadView(LoginRequiredMixin, TemplateView):
         context['sidebar'] = 'Generales' 
         context['regreso_url'] = reverse('generalesDashboard')
         return context
+    
+
+class AvisoDePrivacidadCreateView(LoginRequiredMixin, CreateView):
+    model = AvisoDePrivacidad
+    form_class = AvisoDePrivacidadForm
+    template_name = 'generales/privacidadAdmin.html'
+    success_url = reverse_lazy('PrivacidadView')   # cambia por tu url real
+
+    # ---------- contexto ----------
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+
+        # formset: usa POST cuando volvemos con errores
+        if self.request.method == 'POST':
+            ctx['formset'] = ArchivoRelacionadoFormSet(
+                self.request.POST, self.request.FILES)
+        else:
+            ctx['formset'] = ArchivoRelacionadoFormSet()
+
+        # lo que ya tenías en tu TemplateView
+        ctx["breadcrumb"] = {
+            'parent': {'name': 'Generales', 'url': reverse('generalesDashboard')},
+            'child':  {'name': 'Avisos de Privacidad', 'url': ''},
+        }
+        ctx['sidebar'] = 'Generales'
+        ctx['regreso_url'] = reverse('generalesDashboard')
+        return ctx
+
+    # ---------- guardado ----------
+    def form_valid(self, form):
+        # 1) Buscar municipio activo
+        municipio_activo = Municipio.objects.filter(status='activo').first()
+        if not municipio_activo:
+            form.add_error(
+                None,
+                'Aún no se ha creado un municipio con estado "activo".'
+            )
+            return self.form_invalid(form)
+
+        # 2) Construir formset
+        ctx = self.get_context_data()
+        formset = ctx['formset']
+
+        # 3) Validar todo junto
+        if formset.is_valid():
+            # guardar aviso
+            form.instance.municipio = municipio_activo
+            self.object = form.save()
+
+            # ligar formset al aviso recién creado
+            formset.instance = self.object
+            formset.save()
+
+            messages.success(self.request, 'Aviso de privacidad creado correctamente.')
+            return redirect(self.get_success_url())
+
+        # si el formset falla volvemos a la plantilla
+        return self.render_to_response(self.get_context_data(form=form))
     
 
 class SeccionesView(LoginRequiredMixin, TemplateView):

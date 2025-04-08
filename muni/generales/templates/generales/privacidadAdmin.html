@@ -1,0 +1,137 @@
+{% extends "baseTemplate.html" %}
+{% load static %}
+
+{% block content %}
+<h3 class="mb-3">Nuevo aviso de privacidad</h3>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <!-- ---------------- Aviso ---------------- -->
+  <div class="card mb-4">
+    <div class="card-header">Datos del aviso</div>
+    <div class="card-body">
+      {{ form.non_field_errors }}
+      <div class="mb-3">
+        {{ form.area.label_tag }} {{ form.area }}
+      </div>
+      <div class="mb-3">
+        {{ form.descripcion.label_tag }} {{ form.descripcion }}
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------------- Archivos ---------------- -->
+  <div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span>Archivos relacionados</span>
+      <!-- botón JS opcional para clonar formularios vacíos -->
+      <button type="button" class="btn btn-sm btn-outline-secondary"
+              id="add-file">Añadir otro archivo</button>
+    </div>
+
+    <div class="card-body" id="file-formset">
+      {{ formset.management_form }}
+        {% for f in formset %}
+            <div class="border rounded p-3 mb-3 formset-form">
+                {{ f.non_field_errors }}
+                <div class="mb-2">
+                {{ f.archivo.label_tag }} {{ f.archivo }}
+                </div>
+                <div class="mb-2">
+                {{ f.descripcion.label_tag }} {{ f.descripcion }}
+                </div>
+            
+                {# El primer formulario no tendrá botón eliminar, los demás sí #}
+                {% if forloop.first %}
+                    <small class="text-muted">Formulario obligatorio</small>
+                {% else %}
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-form">
+                        Quitar
+                    </button>
+                {% endif %}
+            </div>
+            {% endfor %}
+    
+    </div>
+  </div>
+
+  <button class="btn btn-primary" type="submit">Guardar aviso</button>
+  <a href="{{ regreso_url }}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+
+{% endblock content %}
+{% block scriptcontent %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const addBtn     = document.getElementById('add-file');
+  const formsetDiv = document.getElementById('file-formset');
+  const totalInput = document.querySelector('[name$="-TOTAL_FORMS"]');
+
+  if (!addBtn || !formsetDiv || !totalInput) return;
+
+  const prefix = totalInput.id.replace(/-TOTAL_FORMS$/, '');
+
+  /* ---------- UTIL: renumera todos los formularios ---------- */
+  function reindexForms () {
+    const forms = formsetDiv.querySelectorAll('.formset-form');
+    forms.forEach((form, index) => {
+      const regex = new RegExp(`${prefix}-(\\d+)-`, 'g');
+      form.querySelectorAll('input, label').forEach(el => {
+        if (el.name)    el.name    = el.name.replace(regex, `${prefix}-${index}-`);
+        if (el.id)      el.id      = el.id.replace(regex, `${prefix}-${index}-`);
+        if (el.htmlFor) el.htmlFor = el.htmlFor.replace(regex, `${prefix}-${index}-`);
+      });
+      // mostrar / ocultar botón quitar
+      const removeBtn = form.querySelector('.remove-form');
+      if (removeBtn) removeBtn.style.display = index === 0 ? 'none' : '';
+    });
+    totalInput.value = forms.length;
+  }
+
+  /* ---------- Añadir nuevo formulario ---------- */
+  addBtn.addEventListener('click', () => {
+    const firstForm = formsetDiv.querySelector('.formset-form');
+    if (!firstForm) return;
+
+    const newForm = firstForm.cloneNode(true);
+
+    // limpiar valores visibles
+    newForm.querySelectorAll('input').forEach(inp => {
+      if (inp.type !== 'hidden') inp.value = '';
+    });
+
+    // asegurar que el botón quitar exista en el clon
+    let rmBtn = newForm.querySelector('.remove-form');
+    if (!rmBtn) {
+      rmBtn = document.createElement('button');
+      rmBtn.type  = 'button';
+      rmBtn.className = 'btn btn-sm btn-outline-danger remove-form';
+      rmBtn.textContent = 'Quitar';
+      newForm.appendChild(rmBtn);
+    }
+
+    formsetDiv.appendChild(newForm);
+    reindexForms();
+  });
+
+  /* ---------- Delegación para quitar formularios ---------- */
+  formsetDiv.addEventListener('click', (e) => {
+    if (!e.target.classList.contains('remove-form')) return;
+
+    const forms = formsetDiv.querySelectorAll('.formset-form');
+    if (forms.length <= 1) {
+      alert('Debe existir al menos un archivo.');
+      return;
+    }
+
+    e.target.closest('.formset-form').remove();
+    reindexForms();
+  });
+
+  /* estado inicial */
+  reindexForms();
+});
+</script>
+{% endblock scriptcontent %}
