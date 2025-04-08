@@ -16,6 +16,11 @@
                 {% csrf_token %}
                 {{ form.as_p }}
                 <div class="form-group text-center">
+                    {% if not form.fields.padre %} 
+                    <a href="{% url 'crear_categoria' %}" class="btn btn-primary btn-lg me-3">
+                        ➕ Crear categoría
+                    </a>
+                    {% endif %}
                     <button type="submit" class="btn btn-primary btn-lg me-3">
                         💾 {% if form.fields.padre %}Crear Subcarpeta{% else %}Crear Carpeta{% endif %}
                     </button>

@@ -293,9 +293,14 @@
                 <div class="sidebar-categorias">
                     <h5 class="mb-3">Categorias</h5>
                     <ul class="list-group"> 
+                        <li class="list-group-item {% if not categoria_seleccionada %}active{% endif %}">
+                            <a href="{% url 'homeSevac' %}" class="text-decoration-none {% if not categoria_seleccionada %}text-white{% else %}text-dark{% endif %}">Todas las categorías</a>
+                        </li>
                         {% for categorias in categorias %}
-                            <li class="list-group-item">
-                                <strong>{{ categorias.nombre }}</strong>
+                            <li class="list-group-item {% if categoria_seleccionada == categorias.id %}active{% endif %}">
+                                <a href="{% url 'homeSevac' %}?categoria={{ categorias.id }}" class="text-decoration-none {% if categoria_seleccionada == categorias.id %}text-white{% else %}text-dark{% endif %}">
+                                    <strong>{{ categorias.nombre }}</strong>
+                                </a>
                             </li>
                         {% endfor %}
                     </ul>
