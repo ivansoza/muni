@@ -5,6 +5,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
 <style>
+  /* ░░ CONTENEDOR PRINCIPAL ░░ */
   .lista-obligaciones-container {
     padding: 20px;
     background-color: #fff;
@@ -21,14 +22,13 @@
     align-items: center;
   }
 
-  /* Estilo para el ícono en el título */
   h1 i {
     font-size: 24px;
     margin-right: 10px;
     color: #3498db;
   }
 
-  /* Título de cada artículo */
+  /* ░░ LISTAS ░░ */
   .obligacion {
     padding: 15px;
     border-bottom: 2px solid #f0f0f0;
@@ -56,44 +56,37 @@
     align-items: center;
   }
 
-  /* Estilo para los iconos */
   .articulos-list i {
     font-size: 18px;
-    margin-right: 10px;  /* Espacio entre el ícono y el texto */
-    color: #000;  /* Color del ícono en negro */
+    margin-right: 10px;
+    color: #000;
     transition: color 0.3s ease;
   }
 
-  /* Hover effect para los iconos */
   .articulos-list li:hover i {
-    color: var(--color-primario);  /* Cambia el color del ícono cuando se pasa el mouse */
+    color: var(--color-primario);
   }
 
-  /* Estilo para los enlaces */
   .articulos-list a {
     font-size: 1rem;
     text-decoration: none;
-    color: #000;  /* Color negro por defecto */
+    color: #000;
     transition: color 0.3s ease;
   }
 
-  /* Hover effect para los enlaces */
   .articulos-list a:hover {
-    color: var(--color-secundario);  /* Cambia el color a var(--color-primario) cuando se pasa el mouse */
+    color: var(--color-secundario);
   }
 
-  /* Hover effect para los artículos */
   .articulos-list li:hover {
-    background-color: #f0f0f0;  /* Color de fondo cuando se pasa el mouse */
+    background-color: #f0f0f0;
   }
 
   @media (max-width: 768px) {
-    .main-container {
-      max-width: 95%;
-    }
+    .main-container { max-width: 95%; }
   }
 
-  /* Contenedor de los filtros */
+  /* ░░ FILTROS ░░ */
   .filters-container {
     display: flex;
     justify-content: space-between;
@@ -101,18 +94,7 @@
     margin-bottom: 30px;
   }
 
-  /* Estilo para el selector de año */
-  .year-filter {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-
-  .year-filter label {
-    margin-right: 10px;
-    font-weight: 500;
-    color: #333;
-  }
+  .year-filter { position: relative; display: flex; align-items: center; }
 
   #yearSelect {
     padding: 10px 15px;
@@ -120,10 +102,8 @@
     font-size: 1rem;
     border-radius: 25px;
     border: 1px solid #ccc;
-    background-color: white;
+    background-color: #fff;
     appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
     background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
     background-repeat: no-repeat;
     background-position: right 10px center;
@@ -137,10 +117,7 @@
     outline: none;
   }
 
-  /* Estilo para el input de búsqueda */
-  .search-container {
-    position: relative;
-  }
+  .search-container { position: relative; }
 
   .search-input {
     padding: 10px 15px 10px 40px;
@@ -157,7 +134,6 @@
     outline: none;
   }
 
-  /* Icono de búsqueda */
   .search-icon {
     position: absolute;
     left: 15px;
@@ -167,61 +143,42 @@
     font-size: 16px;
   }
 
-  /* Estilos responsivos para los filtros */
   @media (max-width: 768px) {
-    .filters-container {
-      flex-direction: column;
-      gap: 15px;
-    }
-    
-    .year-filter, .search-container {
-      width: 100%;
-    }
-    
-    #yearSelect, .search-input {
-      width: 100%;
-    }
+    .filters-container { flex-direction: column; gap: 15px; }
+    .year-filter, .search-container { width: 100%; }
+    #yearSelect, .search-input { width: 100%; }
   }
 
-  /* Estilos para el fondo gris claro que abarca todo el ancho */
+  /* ░░ PORTALES ░░ */
   .transparency-section {
-    background-color: #f5f5f5; /* Gris claro */
-    width: 100%; /* Abarca todo el ancho de la pantalla */
-    padding: 40px 0; /* Espacio arriba y abajo */
+    background-color: #f5f5f5;
+    width: 100%;
+    padding: 40px 0;
   }
 
-  /* Estilos de la nueva sección de accesos rápidos sin fondo blanco */
   .transparency-access {
     padding: 20px;
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
-    max-width: 1200px; /* Limitar el ancho máximo para centrar */
-    margin: 0 auto; /* Centrar la sección */
+    max-width: 1200px;
+    margin: 0 auto;
   }
 
-  .transparency-access .access-item {
-    text-align: center;
-    width: 350px;
-    margin: 10px;
-  }
+  .transparency-access .access-item { text-align: center; width: 350px; margin: 10px; }
 
-  /* Estilos para las imágenes: mismo tamaño sin recorte */
   .transparency-access .access-item img {
-    width: 300px; /* Ancho fijo para todas las imágenes */
-    height: 200px; /* Alto fijo para todas las imágenes */
-    object-fit: contain; /* Ajustar sin recortar */
-    background-color: #f5f5f5; /* Fondo blanco para los espacios vacíos */
+    width: 300px;
+    height: 200px;
+    object-fit: contain;
+    background-color: #f5f5f5;
     border-radius: 10px;
     transition: transform 0.3s ease;
     cursor: pointer;
   }
 
-  .transparency-access .access-item img:hover {
-    transform: scale(1.05);
-  }
+  .transparency-access .access-item img:hover { transform: scale(1.05); }
 
-  /* Estilo para el texto */
   .transparency-access .access-item p {
     margin-top: 10px;
     color: var(--color-primario);
@@ -229,97 +186,84 @@
     font-weight: 600;
   }
 
-  /* Definición de la animación de rebote */
   @keyframes bounce {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
   }
 
-  /* Estilos para el texto dual con barra vertical */
-  .dual-text {
-    text-align: center;
-    font-size: 22px;
-    margin-bottom: 20px;
-    color: #6b7280; /* Color gris suave para el texto claro */
-  }
-
-  .bold-text {
-    font-weight: 700; /* Negrita para el primer texto */
-    color: var(--color-primario); /* Color primario para el texto en negrita */
-  }
-
-  .light-text {
-    font-weight: 400; /* Normal para el segundo texto */
-    color: #6b7280; /* Color gris suave para el segundo texto */
-  }
+  .dual-text   { text-align: center; font-size: 22px; margin-bottom: 20px; color: #6b7280; }
+  .bold-text   { font-weight: 700; color: var(--color-primario); }
+  .light-text  { font-weight: 400; color: #6b7280; }
 </style>
 
 <div class="container">
-  <h2 class="news-title">Transparencia
-    <span>| Acceso a la Información</span>
-  </h2>
+  <h2 class="news-title">Transparencia <span>| Acceso a la Información</span></h2>
 </div>
 
-<!-- Contenedor común para el buscador y las listas -->
 <div class="container mt-4">
-  <!-- Contenedor para ambos filtros -->
   <div class="filters-container">
-    <!-- Filtro de año -->
     <div class="year-filter">
-      <select id="yearSelect" onchange="filterArticlesByYear()">
+      <select id="yearSelect" onchange="applyFilters()">
         <option value="">Todos los años</option>
         {% for year in years %}
           <option value="{{ year }}">{{ year }}</option>
         {% endfor %}
       </select>
     </div>
-    
-    <!-- Buscador -->
+
     <div class="search-container">
       <i class="fas fa-search search-icon"></i>
-      <input type="text" id="searchInput" class="search-input" placeholder="Buscar artículo..." onkeyup="filterArticles()">
+      <input id="searchInput" class="search-input"
+             type="text" placeholder="Buscar artículo…" onkeyup="applyFilters()">
     </div>
   </div>
-  
-  <!-- Contenedor de las listas de obligaciones -->
+
   <div class="lista-obligaciones-container">
     {% for lista in lista_obligaciones %}
       <div class="obligacion" id="lista-{{ lista.id }}">
         <h4>{{ lista.titulo }}</h4>
         <h5>{{ lista.articulo }}</h5>
+
         <ul class="articulos-list" id="articulosList-{{ lista.id }}">
           {% for articulo in lista.articulos_liga.all %}
-            {% if articulo.ligaarchivo_set.first %}
-              <li class="articulo-item" data-ano="{{ articulo.ligaarchivo_set.first.ano }}">
-                <a href="{% if articulo.ligaarchivo_set.first.liga %}{{ articulo.ligaarchivo_set.first.liga }}{% else %}#{% endif %}" target="_blank">
-                  <i class="fas fa-scroll"></i>
-                  {{ articulo.articulo_fraccion }}
-                  {% if articulo.ligaarchivo_set.first.archivo %}
-                    <span class="badge badge-primary">Archivo</span>
+            {% with archivo=articulo.archivos.0 %}
+              {% if archivo %}
+                <li class="articulo-item"
+                    data-ano="{{ archivo.ano }}"
+                    data-text="{{ articulo.articulo_fraccion|lower }}">
+                  {% if archivo.liga %}
+                    <a href="{{ archivo.liga }}" target="_blank" rel="noopener">
+                      <i class="fas fa-scroll"></i> {{ articulo.articulo_fraccion }}
+                    </a>
+                  {% elif archivo.archivo %}
+                    <a href="{{ archivo.archivo.url }}" download target="_blank" rel="noopener">
+                        <i class="fas fa-scroll"></i> {{ articulo.articulo_fraccion }}
+                    </a>
+                  {% else %}
+                    <span class="text-muted">
+                      <i class="fas fa-ban"></i> {{ articulo.articulo_fraccion }} — Sin documento
+                    </span>
                   {% endif %}
-                </a>
-              </li>
-            {% endif %}
+                </li>
+              {% endif %}
+            {% endwith %}
           {% endfor %}
         </ul>
       </div>
     {% endfor %}
   </div>
 </div>
+
 <br>
 
 <div class="transparency-section">
   <div class="access-item">
     <p class="dual-text">
-      <span class="bold-text">Realiza tus consultas</span> | 
+      <span class="bold-text">Realiza tus consultas</span> |
       <span class="light-text">Consulta los portales de transparencia</span>
     </p>
   </div>
-  
+
   <div class="transparency-access">
     <div class="access-item">
       <a href="https://pruebas.iaiptlaxcala.org.mx/">
@@ -340,53 +284,32 @@
 </div>
 
 <script>
-  // Función para filtrar los artículos según el año seleccionado
-  function filterArticlesByYear() {
-    const selectedYear = document.getElementById("yearSelect").value;
-    
-    // Iteramos sobre las listas y artículos
-    document.querySelectorAll(".articulos-list").forEach(function(list) {
-      list.querySelectorAll(".articulo-item").forEach(function(item) {
-        const itemYear = item.getAttribute("data-ano");
-        
-        if (selectedYear && itemYear != selectedYear) {
-          item.style.display = "none";
-        } else {
-          item.style.display = "block";
-        }
-      });
-    });
-  }
+function applyFilters() {
+  const year   = document.getElementById('yearSelect').value;
+  const search = document.getElementById('searchInput').value.toLowerCase();
 
-  function filterArticles() {
-    const input = document.getElementById('searchInput');
-    const filter = input.value.toLowerCase();
-    
-    // Iteramos sobre cada lista
-    const allLists = document.querySelectorAll('.obligacion');
+  document.querySelectorAll('.obligacion').forEach(lista => {
+    let visibleInList = false;
 
-    allLists.forEach((list) => {
-      const listItems = list.querySelectorAll('.articulo-item');
-      let hasMatch = false;
+    lista.querySelectorAll('.articulo-item').forEach(item => {
+      const itemYear = item.dataset.ano;
+      const itemText = item.dataset.text;
 
-      // Iteramos sobre los artículos dentro de la lista
-      listItems.forEach((item) => {
-        const text = item.textContent || item.innerText;
-        if (text.toLowerCase().includes(filter)) {
-          item.style.display = '';
-          hasMatch = true;
-        } else {
-          item.style.display = 'none';
-        }
-      });
+      const yearMatch   = !year || itemYear === year;
+      const searchMatch = !search || itemText.includes(search);
 
-      // Si no hay coincidencias en la lista, ocultamos el título y la lista
-      if (hasMatch) {
-        list.style.display = '';  // Muestra la lista si hay coincidencias
+      if (yearMatch && searchMatch) {
+        item.style.display = '';
+        visibleInList = true;
       } else {
-        list.style.display = 'none';  // Oculta la lista si no hay coincidencias
+        item.style.display = 'none';
       }
     });
-  }
+
+    lista.style.display = visibleInList ? '' : 'none';
+  });
+}
+
+document.addEventListener('DOMContentLoaded', applyFilters);
 </script>
 {% endblock %}

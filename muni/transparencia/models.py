@@ -150,4 +150,5 @@ class LigaArchivo(models.Model):
     def __str__(self):
         return f"ART. - {self.articuloDe} - {self.ano}"
 
-
+    class Meta:
+        ordering = ['-ano'] 
