@@ -2,6 +2,7 @@ from django.db import models
 
 from informacion_municipal.models import Municipio
 from django.db.models import Q
+from django.utils.text import slugify
 
 from convocatorias.models import Categoria
 
@@ -248,6 +249,7 @@ class SeccionPlus(models.Model):
         related_name='secciones_plus'  # Ahora es un queryset de SeccionPlus para cada Municipio
     )
     nombre = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
     categoria_convocatoria = models.ForeignKey(
         Categoria,
         on_delete=models.CASCADE,
@@ -262,3 +264,8 @@ class SeccionPlus(models.Model):
 
     def __str__(self):
         return self.nombre
+
+    def save(self, *args, **kwargs):
+        # Se actualiza el slug siempre que se guarde el objeto, en función del nombre
+        self.slug = slugify(self.nombre)
+        super().save(*args, **kwargs)

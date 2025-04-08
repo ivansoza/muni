@@ -84,6 +84,18 @@
                         <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
                     </a>
                     <ul class="dropdown-menu">
+                        {% for seccion in municipio.secciones_plus.all %}
+                            {% if seccion.status %}
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'seccionplus_detail' seccion.pk seccion.slug %}">
+                                        {{ seccion.nombre }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% empty %}
+            
+                        {% endfor %}
+
                         <!-- "Convocatorias" depende de 'convocatorias' -->
                         {% if municipio.secciones_hab and municipio.secciones_hab.convocatorias %}
                         <li><a class="dropdown-item" href="{% url 'HomeConvocatoriasView' %}">Convocatorias</a></li>

@@ -19,7 +19,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import FormView
 
 from informacion_municipal.models import Municipio, Video
-from generales.models import ContadorVisitas, Secciones, SocialNetwork
+from generales.models import ContadorVisitas, SeccionPlus, Secciones, SocialNetwork
 from servicios.forms import ServicioForm
 from servicios.models import Servicio
 from .forms import CustomAuthenticationForm, GroupForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm
@@ -2201,3 +2201,22 @@ class GroupUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         )
         return response
 
+
+
+
+class SeccionPlusDetailView(TemplateView):
+    template_name = 'seccionplus_detail.html'
+
+    def get_object(self):
+        pk = self.kwargs.get('pk')
+        slug = self.kwargs.get('slug')
+        seccion = get_object_or_404(SeccionPlus, pk=pk, status=True)
+        # Si el slug de la URL no coincide con el del objeto, redirige a la URL correcta
+        if seccion.slug != slug:
+            return redirect('seccionplus_detail', pk=seccion.pk, slug=seccion.slug)
+        return seccion
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['seccion'] = self.get_object()
+        return context

@@ -348,16 +348,17 @@
                             {% for seccion in municipio.secciones_plus.all %}
                                 {% if seccion.status %}
                                     <li>
-                                        <a class="dropdown-item" href="#">
+                                        <a class="dropdown-item" href="{% url 'seccionplus_detail' seccion.pk seccion.slug %}">
                                             {{ seccion.nombre }}
                                         </a>
                                     </li>
                                 {% endif %}
                             {% empty %}
-
-                            
-
+                       
                             {% endfor %}
+
+
+
 
                             {% if municipio.secciones_hab and municipio.secciones_hab.convocatorias %}
                             <li>
