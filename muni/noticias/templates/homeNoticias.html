@@ -559,9 +559,11 @@
     <div class="featured-news">
         {% for noticia in noticias_destacadas %}
             <div class="featured-news-card">
-                <div class="featured-news-image">
-                    <img src="{{ noticia.imagen.url }}" alt="Imagen de noticia">
-                </div>
+                {% if noticia.imagen %}
+                     <img src="{{ noticia.imagen.url }}" alt="Imagen de noticia">
+                {% else %}
+                    <img src="/ruta/a/imagen/predeterminada.jpg" alt="Imagen predeterminada">
+                {% endif %}
                 <div class="featured-news-content">
                     <h5 style="font-size:18px;">{{ noticia.titulo }}</h5>
                     <!-- Icono de fecha y la fecha de la noticia -->
@@ -601,7 +603,11 @@
             <div class="news-grid">
                 {% for noticia in noticias %}
                 <div class="news-card">
-                    <img src="{{ noticia.imagen.url }}" alt="Imagen de noticia">
+                    {% if noticia.imagen %}
+                     <img src="{{ noticia.imagen.url }}" alt="Imagen de noticia">
+                {% else %}
+                    <img src="/ruta/a/imagen/predeterminada.jpg" alt="Imagen predeterminada">
+                {% endif %}
                     <div class="news-content">
                         <p class="news-date"><i class="fas fa-calendar-alt"></i>{{ noticia.fecha|date:"d/m/Y" }}</p>
                         <div class="news-category">
@@ -657,7 +663,11 @@
             <div class="sidebar-news">
                 {% for noticia in noticias_sidebar %}
                 <div class="sidebar-news-card">
-                    <img src="{{ noticia.imagen.url }}" alt="Imagen de noticia">
+                    {% if noticia.imagen %}
+                     <img src="{{ noticia.imagen.url }}" alt="Imagen de noticia">
+                {% else %}
+                    <img src="/ruta/a/imagen/predeterminada.jpg" alt="Imagen predeterminada">
+                {% endif %}
                     <div class="sidebar-news-content">
                         <h3>{{ noticia.titulo }}</h3>
                         <a href="{% url 'detalle_noticia' noticia.id %}" class="news-link2">
