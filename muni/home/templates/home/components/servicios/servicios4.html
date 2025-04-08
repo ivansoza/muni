@@ -1,0 +1,345 @@
+{% load static %}
+<style>
+    .services-container {
+        position: relative;
+        padding: 60px 40px;
+        background: linear-gradient(to right, rgba(0, 150, 100, 0.05) 0%, rgba(0, 200, 120, 0.07) 100%);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+
+        margin-top: 2rem;
+    }
+    
+    .services-container::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, var(--color-primario), var(--color-iconos));
+    }
+    
+    .services-pattern {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background-image: radial-gradient(rgba(0, 150, 100, 0.1) 2px, transparent 2px);
+        background-size: 25px 25px;
+        z-index: 0;
+        opacity: 0.5;
+    }
+    
+    .services-header {
+        position: relative;
+        z-index: 2;
+        margin-bottom: 50px;
+        text-align: center;
+    }
+    
+    .services-badge {
+        display: inline-block;
+        padding: 8px 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: white;
+        background: var(--color-iconos);
+        border-radius: 8px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 10px rgba(0, 150, 100, 0.2);
+        letter-spacing: 1px;
+        position: relative;
+    }
+    
+    .services-badge::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 8px solid var(--color-iconos);
+    }
+    
+    .services-title {
+        font-size: 2.3rem;
+        font-weight: 700;
+        color: var(--color-primario);
+        margin-bottom: 0;
+        line-height: 1.2;
+        position: relative;
+        display: inline-block;
+    }
+    
+    .services-title::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 25%;
+        width: 50%;
+        height: 3px;
+        background: var(--color-iconos);
+        border-radius: 3px;
+    }
+    
+    .services-content {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .services-image-col {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .services-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.5s ease;
+    }
+    
+    .services-image:hover {
+        transform: scale(1.03);
+    }
+    
+    .service-box {
+        background: white;
+        border-radius: 12px;
+        padding: 30px 25px 50px 25px;
+        margin-bottom: 25px;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+        z-index: 1;
+    }
+    
+    .service-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 150, 100, 0.15);
+    }
+    
+    .service-box::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 120px;
+        height: 120px;
+        background: var(--color-primario);
+        opacity: 0.05;
+        border-radius: 0 0 0 100%;
+        z-index: -1;
+        transition: all 0.3s ease;
+    }
+    
+    .service-box:hover::before {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .service-icon-wrap {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 65px;
+        height: 65px;
+        background: rgba(0, 150, 100, 0.1);
+        border-radius: 12px;
+        margin-bottom: 20px;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
+    .service-box:hover .service-icon-wrap {
+        background: var(--color-iconos);
+        transform: rotate(10deg);
+    }
+    
+    .service-icon {
+        font-size: 1.6rem;
+        color: var(--color-iconos);
+        transition: all 0.3s ease;
+    }
+    
+    .service-box:hover .service-icon {
+        color: white;
+    }
+    
+    .service-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--color-primario);
+        margin-bottom: 15px;
+        position: relative;
+        padding-bottom: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .service-name::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 40px;
+        height: 2px;
+        background: var(--color-iconos);
+        transition: width 0.3s ease;
+    }
+    
+    .service-box:hover .service-name::after {
+        width: 80px;
+    }
+    
+    .service-text {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: #555;
+        margin-bottom: 15px;
+    }
+    
+    .service-action {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background: rgba(0, 150, 100, 0.1);
+        color: var(--color-iconos);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+    
+    .service-box:hover .service-action {
+        background: var(--color-iconos);
+        color: white;
+    }
+    
+    @media (max-width: 767px) {
+        .services-image-col {
+            display: none;
+        }
+        
+        .services-container {
+            padding: 40px 20px;
+        }
+        
+        .services-title {
+            font-size: 1.8rem;
+        }
+        
+        .service-box {
+            padding: 20px 15px 50px 15px;
+        }
+    }
+    
+    @keyframes floatAnimation {
+        0% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+        100% {
+            transform: translateY(0);
+        }
+    }
+    
+    .animation-float {
+        animation: floatAnimation 4s ease-in-out infinite;
+    }
+</style>
+
+<div class="container services-container">
+    <div class="services-pattern"></div>
+    
+    <!-- Header section -->
+    <div class="services-header">
+        <span class="services-badge">NUESTROS SERVICIOS</span>
+        <h2 class="services-title">Descubre las opciones que tenemos para ti</h2>
+    </div>
+
+    <div class="row align-items-center services-content">
+        <!-- Left column with image -->
+        <div class="col-md-4 services-image-col">
+
+
+
+            {% if municipio.cortina.fotografia_servicio %}
+                <img src="{{municipio.cortina.fotografia_servicio.url}}" alt="Persona señalando" class="services-image animation-float" style="width:700px; height: auto;">
+            {% else %}
+                <img src="{% static 'img/persona.png' %}" alt="Persona señalando" class="services-image animation-float" style="width:700px; height: auto;">
+            {% endif %}
+
+
+            
+        </div>
+
+        <!-- Right column with service cards -->
+        <div class="col-md-8">
+            <div class="row g-4">
+                {% if municipio.secciones_hab and municipio.secciones_hab.servicios_en_linea %}
+                    <div class="col-md-6">
+                        <div class="service-box">
+                            <div class="service-icon-wrap">
+                                <i class="fas fa-handshake service-icon"></i>
+                            </div>
+                            <h3 class="service-name">Pagos en linea</h3>
+                            <p class="service-text">Accede a la plataforma para pagar tu predial y órdenes de pago al instante.</p>
+                            <a href="https://zacatelco.siptlax.com/caja/linea/" class="service-action"><i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if municipio.secciones_hab and municipio.secciones_hab.servicios %}
+                    <div class="col-md-6">
+                        <div class="service-box">
+                            <div class="service-icon-wrap">
+                                <i class="fas fa-newspaper service-icon"></i>
+                            </div>
+                            <h3 class="service-name">Servicios y Trámites</h3>
+                            <p class="service-text">Conoce los trámites y servicios que ofrecemos y cómo realizarlos.</p>
+                            <a href="{% url 'homeServicios' %}" class="service-action"><i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="col-md-6">
+                    <div class="service-box">
+                        <div class="service-icon-wrap">
+                            <i class="fas fa-comments service-icon"></i>
+                        </div>
+                        <h3 class="service-name">Atención Ciudadana</h3>
+                        <p class="service-text">Canales de comunicación directa para resolver tus dudas y recibir sugerencias.</p>
+                        <a href="#atencion-ciudadana" class="service-action"><i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="service-box">
+                        <div class="service-icon-wrap">
+                            <i class="fas fa-people-arrows service-icon"></i>
+                        </div>
+                        <h3 class="service-name">Proyectos Comunitarios</h3>
+                        <p class="service-text">Explora los proyectos comunitarios que transforman nuestra ciudad.</p>
+                        <a href="#" class="service-action"><i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

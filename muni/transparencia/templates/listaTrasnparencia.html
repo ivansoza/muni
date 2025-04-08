@@ -5,7 +5,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
 <style>
-
+  /* ░░ CONTENEDOR PRINCIPAL ░░ */
   .lista-obligaciones-container {
     padding: 20px;
     background-color: #fff;
@@ -22,14 +22,13 @@
     align-items: center;
   }
 
-  /* Estilo para el ícono en el título */
   h1 i {
     font-size: 24px;
     margin-right: 10px;
     color: #3498db;
   }
 
-  /* Título de cada artículo */
+  /* ░░ LISTAS ░░ */
   .obligacion {
     padding: 15px;
     border-bottom: 2px solid #f0f0f0;
@@ -57,54 +56,72 @@
     align-items: center;
   }
 
-  /* Estilo para los iconos */
   .articulos-list i {
     font-size: 18px;
-    margin-right: 10px;  /* Espacio entre el ícono y el texto */
-    color: #000;  /* Color del ícono en negro */
+    margin-right: 10px;
+    color: #000;
     transition: color 0.3s ease;
   }
 
-  /* Hover effect para los iconos */
   .articulos-list li:hover i {
-    color: var(--color-primario);  /* Cambia el color del ícono cuando se pasa el mouse */
+    color: var(--color-primario);
   }
 
-  /* Estilo para los enlaces */
   .articulos-list a {
     font-size: 1rem;
     text-decoration: none;
-    color: #000;  /* Color negro por defecto */
+    color: #000;
     transition: color 0.3s ease;
   }
 
-  /* Hover effect para los enlaces */
   .articulos-list a:hover {
-    color: var(--color-secundario);  /* Cambia el color a var(--color-primario) cuando se pasa el mouse */
+    color: var(--color-secundario);
   }
 
-  /* Hover effect para los artículos */
   .articulos-list li:hover {
-    background-color: #f0f0f0;  /* Color de fondo cuando se pasa el mouse */
+    background-color: #f0f0f0;
   }
 
   @media (max-width: 768px) {
-    .main-container {
-      max-width: 95%;
-    }
+    .main-container { max-width: 95%; }
   }
 
-  /* Estilos para el input de búsqueda */
-  .search-container {
-    margin-bottom: 20px;
-    text-align: right;  /* Alineación del buscador a la derecha */
-    margin-top: 20px;
-    margin-bottom: 30px; /* Separación entre el buscador y las tarjetas */
+  /* ░░ FILTROS ░░ */
+  .filters-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
   }
+
+  .year-filter { position: relative; display: flex; align-items: center; }
+
+  #yearSelect {
+    padding: 10px 15px;
+    width: 180px;
+    font-size: 1rem;
+    border-radius: 25px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  #yearSelect:focus {
+    border-color: var(--color-primario);
+    box-shadow: 0 0 5px var(--color-primario);
+    outline: none;
+  }
+
+  .search-container { position: relative; }
 
   .search-input {
-    padding: 10px;
-    width: 350px;  /* Ajustado el tamaño del campo de búsqueda */
+    padding: 10px 15px 10px 40px;
+    width: 350px;
     font-size: 1rem;
     border-radius: 25px;
     border: 1px solid #ccc;
@@ -114,178 +131,209 @@
   .search-input:focus {
     border-color: var(--color-primario);
     box-shadow: 0 0 5px var(--color-primario);
+    outline: none;
   }
-/* Estilos para el fondo gris claro que abarca todo el ancho */
-.transparency-section {
-    background-color: #f5f5f5; /* Gris claro */
-    width: 100%; /* Abarca todo el ancho de la pantalla */
-    padding: 40px 0; /* Espacio arriba y abajo */
-}
 
-/* Estilos de la nueva sección de accesos rápidos sin fondo blanco */
-.transparency-access {
+  .search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #777;
+    font-size: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .filters-container { flex-direction: column; gap: 15px; }
+    .year-filter, .search-container { width: 100%; }
+    #yearSelect, .search-input { width: 100%; }
+  }
+
+  /* ░░ PORTALES ░░ */
+  .transparency-section {
+    background-color: #f5f5f5;
+    width: 100%;
+    padding: 40px 0;
+  }
+
+  .transparency-access {
     padding: 20px;
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
-    max-width: 1200px; /* Limitar el ancho máximo para centrar */
-    margin: 0 auto; /* Centrar la sección */
-}
+    max-width: 1200px;
+    margin: 0 auto;
+  }
 
-.transparency-access .access-item {
-    text-align: center;
-    width: 350px;
-    margin: 10px;
-}
+  .transparency-access .access-item { text-align: center; width: 350px; margin: 10px; }
 
-/* Estilos para las imágenes: mismo tamaño sin recorte */
-.transparency-access .access-item img {
-    width: 300px; /* Ancho fijo para todas las imágenes */
-    height: 200px; /* Alto fijo para todas las imágenes */
-    object-fit: contain; /* Ajustar sin recortar */
-    background-color: #f5f5f5; /* Fondo blanco para los espacios vacíos */
+  .transparency-access .access-item img {
+    width: 300px;
+    height: 200px;
+    object-fit: contain;
+    background-color: #f5f5f5;
     border-radius: 10px;
     transition: transform 0.3s ease;
     cursor: pointer;
-}
+  }
 
-.transparency-access .access-item img:hover {
-    transform: scale(1.05);
-}
+  .transparency-access .access-item img:hover { transform: scale(1.05); }
 
-/* Estilo para el texto */
-.transparency-access .access-item p {
+  .transparency-access .access-item p {
     margin-top: 10px;
     color: var(--color-primario);
     font-size: 14px;
     font-weight: 600;
-}
+  }
 
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+  }
 
-/* Definición de la animación de rebote */
-@keyframes bounce {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-10px);
-    }
-}
-/* Estilos para el texto dual con barra vertical */
-.dual-text {
-    text-align: center;
-    font-size: 22px;
-    margin-bottom: 20px;
-    color: #6b7280; /* Color gris suave para el texto claro */
-}
-
-.bold-text {
-    font-weight: 700; /* Negrita para el primer texto */
-    color: var(--color-primario); /* Color primario para el texto en negrita */
-}
-
-.light-text {
-    font-weight: 400; /* Normal para el segundo texto */
-    color: #6b7280; /* Color gris suave para el segundo texto */
-}
+  .dual-text   { text-align: center; font-size: 22px; margin-bottom: 20px; color: #6b7280; }
+  .bold-text   { font-weight: 700; color: var(--color-primario); }
+  .light-text  { font-weight: 400; color: #6b7280; }
 </style>
 
 <div class="container">
-    <h2 class="news-title">Transparencia
-        <span>| Acceso a la Información</span>
-    </h2>
-</div>
-
-
-
-<!-- Contenedor común para el buscador y las listas -->
-<div class="container mt-4">
-    <!-- Contenedor del buscador -->
-    <div class="search-container">
-        <input type="text" id="searchInput" class="search-input" placeholder="Buscar artículo..." onkeyup="filterArticles()">
-    </div>
-  <!-- Contenedor de las listas de obligaciones -->
-  <div class="lista-obligaciones-container">
-    {% for lista in lista_obligaciones %}
-        <div class="obligacion" id="lista-{{ lista.id }}">
-            <!-- Título con un ícono a la izquierda -->
-            <h4>{{ lista.titulo }}</h4>
-            <h5>{{ lista.articulo }}</h5>
-            <ul class="articulos-list" id="articulosList-{{ lista.id }}">
-                {% for articulo in lista.articulos_liga.all %}
-                    <li class="articulo-item">
-                        <a href="{{ articulo.liga }}" target="_blank">
-                            <!-- Ícono de archivo antes del artículo -->
-                            <i class="fas fa-scroll"></i> 
-                            {{ articulo.articulo_fraccion }}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% endfor %}
+    <h2 class="news-title">Transparencia <span>| Acceso a la Información</span></h2>
   </div>
-</div>
-<br>
-
-<div class="transparency-section">
+  <div class="container mt-4">
+    <div class="filters-container">
+      <div class="year-filter">
+        <select id="yearSelect" onchange="applyFilters()">
+          <option value="">Todos los años</option>
+          {% for year in years %}
+            <option value="{{ year }}">{{ year }}</option>
+          {% endfor %}
+        </select>
+      </div>
+  
+      <div class="search-container">
+        <i class="fas fa-search search-icon"></i>
+        <input id="searchInput" class="search-input"
+               type="text" placeholder="Buscar artículo…" onkeyup="applyFilters()">
+      </div>
+    </div>
+  
+    <div class="lista-obligaciones-container">
+      {% for lista in lista_obligaciones %}
+        <div class="obligacion" id="lista-{{ lista.id }}">
+          <h4>{{ lista.titulo }}</h4>
+          <h5>{{ lista.articulo }}</h5>
+  
+          <ul class="articulos-list" id="articulosList-{{ lista.id }}">
+            {% for articulo in lista.articulos_liga.all %}
+              {% for archivo in articulo.archivos %}
+                <li class="articulo-item"
+                    data-articulo="{{ articulo.id }}"
+                    data-ano="{{ archivo.ano }}"
+                    data-text="{{ articulo.articulo_fraccion|lower }}">
+                  {% if archivo.liga %}
+                    <a href="{{ archivo.liga }}" target="_blank" rel="noopener">
+                      <i class="fas fa-scroll"></i> {{ articulo.articulo_fraccion }}
+                    </a>
+                  {% elif archivo.archivo %}
+                    <a href="{{ archivo.archivo.url }}" download target="_blank" rel="noopener">
+                      <i class="fas fa-scroll"></i> {{ articulo.articulo_fraccion }}
+                    </a>
+                  {% else %}
+                    <span class="text-muted">
+                      <i class="fas fa-ban"></i> {{ articulo.articulo_fraccion }} — Sin documento
+                    </span>
+                  {% endif %}
+                </li>
+              {% empty %}
+                <li>Sin archivos</li>
+              {% endfor %}
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  
+  <br>
+  
+  <div class="transparency-section">
+    <!-- Se mantiene la sección de portales -->
     <div class="access-item">
-        <p class="dual-text">
-            <span class="bold-text">Realiza tus consultas</span> | 
-            <span class="light-text">Consulta los portales de transparencia</span>
-        </p>
+      <p class="dual-text">
+        <span class="bold-text">Realiza tus consultas</span> |
+        <span class="light-text">Consulta los portales de transparencia</span>
+      </p>
     </div>
-    
+  
     <div class="transparency-access">
-        <div class="access-item">
-            <a href="https://pruebas.iaiptlaxcala.org.mx/">
-                <img class="large-img" src="{% static 'img/aipi.png' %}" alt="Información Pública">
-            </a>
-        </div>
-        <div class="access-item">
-            <a href="https://www.plataformadetransparencia.org.mx/Inicio">
-                <img src="{% static 'img/Transparencia.png' %}" alt="Indicadores de Resultados">
-            </a>
-        </div>
-        <div class="access-item">
-            <a href="https://consultapublicamx.plataformadetransparencia.org.mx/vut-web/faces/view/consultaPublica.xhtml#obligaciones">
-                <img src="{% static 'img/ltaip.jpg' %}" alt="Directorio">
-            </a>
-        </div>
+      <div class="access-item">
+        <a href="https://pruebas.iaiptlaxcala.org.mx/">
+          <img class="large-img" src="{% static 'img/aipi.png' %}" alt="Información Pública">
+        </a>
+      </div>
+      <div class="access-item">
+        <a href="https://www.plataformadetransparencia.org.mx/Inicio">
+          <img src="{% static 'img/Transparencia.png' %}" alt="Indicadores de Resultados">
+        </a>
+      </div>
+      <div class="access-item">
+        <a href="https://consultapublicamx.plataformadetransparencia.org.mx/vut-web/faces/view/consultaPublica.xhtml#obligaciones">
+          <img src="{% static 'img/ltaip.jpg' %}" alt="Directorio">
+        </a>
+      </div>
     </div>
-</div>
-
-<script>
-    function filterArticles() {
-        const input = document.getElementById('searchInput');
-        const filter = input.value.toLowerCase();
-        
-        // Iteramos sobre cada lista
-        const allLists = document.querySelectorAll('.obligacion');
-
-        allLists.forEach((list) => {
-            const listItems = list.querySelectorAll('.articulo-item');
-            let hasMatch = false;
-
-            // Iteramos sobre los artículos dentro de la lista
-            listItems.forEach((item) => {
-                const text = item.textContent || item.innerText;
-                if (text.toLowerCase().includes(filter)) {
-                    item.style.display = '';
-                    hasMatch = true;
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-
-            // Si no hay coincidencias en la lista, ocultamos el título y la lista
-            if (hasMatch) {
-                list.style.display = '';  // Muestra la lista si hay coincidencias
-            } else {
-                list.style.display = 'none';  // Oculta la lista si no hay coincidencias
-            }
-        });
-    }
-</script>
-
+  </div>
+  
+  <script>
+  // Función que aplica los filtros y, luego, agrupa los archivos por artículo para mostrar solo el más reciente.
+  function applyFilters() {
+    const year   = document.getElementById('yearSelect').value;
+    const search = document.getElementById('searchInput').value.toLowerCase();
+  
+    // Primero, filtra cada <li> según año y texto.
+    document.querySelectorAll('.articulo-item').forEach(item => {
+      const itemYear = item.dataset.ano;
+      const itemText = item.dataset.text;
+      const yearMatch   = !year || itemYear === year;
+      const searchMatch = !search || itemText.includes(search);
+      if (yearMatch && searchMatch) {
+        item.style.display = '';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  
+    // Agrupar por artículo: para cada grupo, se deja visible solo el primer <li> (ya que están ordenados de forma descendente por año).
+    const grupos = {};
+    document.querySelectorAll('.articulo-item').forEach(item => {
+      // Consideramos solo los elementos que quedaron visibles tras el filtrado.
+      if (item.style.display !== 'none') {
+        const id = item.dataset.articulo;
+        if (!grupos[id]) {
+          grupos[id] = [];
+        }
+        grupos[id].push(item);
+      }
+    });
+    // Para cada grupo, dejamos visible únicamente el primer elemento y ocultamos el resto.
+    Object.keys(grupos).forEach(id => {
+      grupos[id].forEach((item, index) => {
+        if (index > 0) {
+          item.style.display = 'none';
+        }
+      });
+    });
+  
+    // Opcional: si una lista (obligación) no tiene ningún artículo visible, se oculta la caja completa.
+    document.querySelectorAll('.obligacion').forEach(lista => {
+      const visibleItems = lista.querySelectorAll('.articulo-item')
+                               .length > 0 && Array.from(lista.querySelectorAll('.articulo-item')).some(item => getComputedStyle(item).display !== 'none');
+      lista.style.display = visibleItems ? '' : 'none';
+    });
+  }
+  
+  document.addEventListener('DOMContentLoaded', applyFilters);
+  </script>
+  
+  
 {% endblock %}

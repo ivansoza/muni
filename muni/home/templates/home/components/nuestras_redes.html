@@ -1,19 +1,18 @@
 {% load static %}
-
-
 <section class="social-section">
     <div class="container">
-        <h2 class="news-title" style='text-align: left'>Síguenos en Nuestras Redes <span>| ¡Mantente informado!</span></h2>
+        <h2 class="news-title" style="text-align: left">Síguenos en Nuestras Redes <span>| ¡Mantente informado!</span></h2>
         <br>
+
         <div class="social-background">
-            <img src="static/img/emoji.png" alt="Redes sociales decorativas" class="social-bg-image floating-emojis">
+            <img src="{% static 'img/emoji.png' %}" alt="Redes sociales decorativas" class="social-bg-image floating-emojis">
         </div>
 
-        <div class="social-content">
-            <div class="social-posts">
+        <div class="social-carousel-wrapper">
+            <button class="carousel-btn left" onclick="scrollSocials(-1)">&#10094;</button>
+            <div class="social-posts" id="socialPostsContainer">
                 {% for red in municipio.redes_sociales.all %}
                     {% if red.social_type == 'facebook' %}
-                    
                         <div class="social-box">
                             <div class="fb-page" 
                                 data-href="{{ red.social_url }}"
@@ -31,6 +30,8 @@
                     <p>No hay redes sociales de Facebook disponibles.</p>
                 {% endfor %}
             </div>
+            <button class="carousel-btn right" onclick="scrollSocials(1)">&#10095;</button>
         </div>
     </div>
 </section>
+

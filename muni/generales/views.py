@@ -11,6 +11,7 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.models import Group
 from django.views.decorators.http import require_http_methods
+from django.forms import modelformset_factory
 
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -34,8 +35,8 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
-from transparencia.forms import SeccionTransparenciaForm, EjercicioFiscalForm, DocumentoTransparenciaForm, ListaObligacionesForm, ArticuloLigaForm
-from transparencia.models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga
+from transparencia.forms import SeccionTransparenciaForm, EjercicioFiscalForm, DocumentoTransparenciaForm, ListaObligacionesForm, ArticuloLigaForm, ArticuloLigaArchivoForm
+from transparencia.models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga, LigaArchivo
 from sevac.models import Carpeta, Archivo, CategoriaSevac
 from sevac.forms import CarpetaForm, ArchivoForm, CategoriaSevacForm
 # Create your views here.
@@ -46,7 +47,7 @@ from convocatorias.models import Categoria as CategoriaConvocatoria, Convocatori
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET
-from convocatorias.forms import ConvocatoriaForm, ArchivoConvocatoriaFormSet
+from convocatorias.forms import ArchivoConvocatoriaForm, ConvocatoriaForm, ArchivoConvocatoriaFormSet
 from django.contrib.auth.models import User  # Asegúrate de importar el modelo User
 
 
@@ -496,6 +497,10 @@ from django.utils.timezone import localtime
 class NewsView(LoginRequiredMixin, TemplateView):
     template_name = "noticias.html"
     login_url = reverse_lazy('login')
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("noticias.add_noticia")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -995,8 +1000,12 @@ class CrearCategoriaView(CreateView):
     template_name = 'sevac/crear_categoria.html'
     success_url = reverse_lazy('crear_carpeta') 
 
-class CrearCarpetaView(View):
+class CrearCarpetaView(View, LoginRequiredMixin):
     template_name = 'sevac/crear_carpeta.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("sevac.add_carpeta")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = kwargs
@@ -1047,8 +1056,12 @@ class CrearCarpetaView(View):
 
     
 # Vista para editar carpeta
-class EditarCarpetaView(View):
+class EditarCarpetaView(View, LoginRequiredMixin):
     template_name = 'sevac/editar_carpeta.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("sevac.change_carpeta")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, carpeta_id, **kwargs):
         context = kwargs
@@ -1106,8 +1119,12 @@ class EditarCarpetaView(View):
 
     
 # Vista para subir archivos
-class SubirArchivoView(View):
+class SubirArchivoView(View, LoginRequiredMixin):
     template_name = 'sevac/subir_archivo.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("sevac.add_archivo")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, padre_id=None, **kwargs):
         context = kwargs
@@ -1153,8 +1170,12 @@ class SubirArchivoView(View):
         context = self.get_context_data(padre_id=padre_id, form=form)
         return render(request, self.template_name, context)
 
-class EditarArchivoView(View):
+class EditarArchivoView(View, LoginRequiredMixin):
     template_name = 'sevac/editar_archivo.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("sevac.change_archivo")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, archivo_id, **kwargs):
         context = kwargs
@@ -1206,6 +1227,10 @@ class EditarArchivoView(View):
     
 class ListarCarpetasView(LoginRequiredMixin,TemplateView):
     template_name = 'sevac/lista_archivos.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("sevac.view_carpeta")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1234,7 +1259,11 @@ class ListarCarpetasView(LoginRequiredMixin,TemplateView):
 
         return context
     
-class EliminarCarpetaView(View):
+class EliminarCarpetaView(View, LoginRequiredMixin):
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("sevac.delete_carpeta")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
     def post(self, request, carpeta_id):
         carpeta = get_object_or_404(Carpeta, id=carpeta_id)
         carpeta.delete()  # Elimina la carpeta y su contenido
@@ -1243,6 +1272,10 @@ class EliminarCarpetaView(View):
 # Vista para gestionar subcarpetas y archivos de una carpeta principal
 class GestionarCarpetaView(View):
     template_name = 'sevac/gestionar_carpetas.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("sevac.view_carpeta")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, carpeta_id, **kwargs):
         context = kwargs
@@ -1278,10 +1311,14 @@ def eliminar_archivo(request, id):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
     
-class ListaObligacionesView(ListView):
+class ListaObligacionesView(LoginRequiredMixin, ListView):
     model = ListaObligaciones
     template_name = 'transparencia2/inicioTrasnparencia.html'
     context_object_name = 'lista_obligaciones'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.view_listaobligaciones")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1306,33 +1343,42 @@ class ListaObligacionesView(ListView):
 
     
 # Vista para crear un nuevo registro de ListaObligaciones
-class ListaObligacionesCreateView(CreateView):
+class ListaObligacionesCreateView(LoginRequiredMixin, CreateView):
     model = ListaObligaciones
     form_class = ListaObligacionesForm
-    template_name = 'transparencia2/crearLista.html'  # Template a usar para la vista
-    success_url = reverse_lazy('lista_obligaciones')  # URL a la que redirigir después de guardar el formulario
+    template_name = 'transparencia2/crearLista.html'
+    success_url = reverse_lazy('lista_obligaciones')
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.add_listaobligaciones")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        # Aquí puedes añadir lógica adicional antes de guardar, si lo necesitas
+        messages.success(self.request, "La lista de obligaciones se ha creado correctamente.")
         return super().form_valid(form)
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         url_configuracion = reverse('lista_obligaciones')
         context["breadcrumb"] = {
-            'parent': {'name': 'Trasnparencia', 'url': url_configuracion},
-            'child': {'name': 'Regitro de nueva lista', 'url': ''}
+            'parent': {'name': 'Transparencia', 'url': url_configuracion},
+            'child': {'name': 'Registro de nueva lista', 'url': ''}
         }
-        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+        context['sidebar'] = 'transparencia'
+        context['regreso_url'] = reverse('lista_obligaciones')
         return context
 
 # Vista para editar un registro de ListaObligaciones
-class ListaObligacionesUpdateView(UpdateView):
+class ListaObligacionesUpdateView(LoginRequiredMixin, UpdateView):
     model = ListaObligaciones
     form_class = ListaObligacionesForm
     template_name = 'transparencia2/editarLista.html'  # Template a usar para la vista
     context_object_name = 'lista_obligaciones'  # Nombre del objeto que se pasará al contexto
     success_url = reverse_lazy('lista_obligaciones')  # URL a la que redirigir después de guardar el formulario
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.change_listaobligaciones")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         # Aquí puedes añadir lógica adicional antes de guardar, si lo necesitas
@@ -1345,10 +1391,16 @@ class ListaObligacionesUpdateView(UpdateView):
             'parent': {'name': 'Trasnparencia', 'url': url_configuracion},
             'child': {'name': 'Edición de lista', 'url': ''}
         }
-        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+        context['sidebar'] = 'transparencia'
+        context['regreso_url'] = reverse('lista_obligaciones')
+
         return context
 
-class ListaObligacionesDeleteView(View):
+class ListaObligacionesDeleteView(LoginRequiredMixin, View):
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.delete_listaobligaciones")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
     def post(self, request, pk):
         # Obtener el objeto que se quiere eliminar
         lista_obligaciones = get_object_or_404(ListaObligaciones, pk=pk)
@@ -1360,7 +1412,11 @@ class ListaObligacionesDeleteView(View):
         return JsonResponse({'success': True, 'message': 'Lista de Obligación eliminada exitosamente.'})
     
 
-class GestionarArticulosView(View):
+class GestionarArticulosView(LoginRequiredMixin, View):
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.view_listaobligaciones")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
     def get(self, request, lista_id):
         # Obtener la lista de obligaciones
         lista_obligaciones = get_object_or_404(ListaObligaciones, pk=lista_id)
@@ -1376,8 +1432,10 @@ class GestionarArticulosView(View):
                 'parent': {'name': 'Transparencia', 'url': reverse('lista_obligaciones')},
                 'child': {'name': 'Gestión de artículos', 'url': ''}
             },
-            'sidebar': 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+            'sidebar': 'transparencia',
+            
         }
+        context['regreso_url'] = reverse('lista_obligaciones')
 
         # Renderizar la plantilla con el contexto
         return render(request, 'transparencia2/gestionarLista.html', context)
@@ -1400,92 +1458,100 @@ def actualizar_orden_articulos(request):
     return JsonResponse({"success": False, "error": "Método no permitido"})
 
 
-class CrearArticuloView(CreateView):
+class CrearArticuloView(CreateView, LoginRequiredMixin):
     model = ArticuloLiga
     form_class = ArticuloLigaForm
     template_name = 'transparencia2/crearArticulo.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.add_articuloliga")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         lista_obligacion_id = self.kwargs.get('lista_obligacion_id')
         kwargs['lista_obligacion_id'] = lista_obligacion_id
         return kwargs
-    
+
     def form_valid(self, form):
-        # Obtener la instancia de ListaObligaciones usando el id proporcionado
         lista_obligacion_id = self.kwargs['lista_obligacion_id']
         lista_obligacion = get_object_or_404(ListaObligaciones, pk=lista_obligacion_id)
 
-        # Asignamos la instancia de ListaObligaciones al artículo
         form.instance.lista_obligaciones = lista_obligacion
 
-        # Asignamos el número de orden automáticamente
-        ultimo_orden = ArticuloLiga.objects.filter(lista_obligaciones=lista_obligacion).aggregate(max_orden=models.Max('orden'))['max_orden']
+        # Asignar número de orden automáticamente
+        ultimo_orden = ArticuloLiga.objects.filter(lista_obligaciones=lista_obligacion).aggregate(
+            max_orden=models.Max('orden'))['max_orden']
         form.instance.orden = (ultimo_orden + 1) if ultimo_orden is not None else 1
 
-        # Guardamos el artículo y mostramos el mensaje de éxito
         response = super().form_valid(form)
         messages.success(self.request, 'Artículo creado con éxito!')
         return response
 
-
     def get_success_url(self):
-        # Redirigimos al usuario a la vista de gestión de artículos después de la creación
         return reverse_lazy('gestionar_articulos', kwargs={'lista_id': self.kwargs['lista_obligacion_id']})
 
     def get_context_data(self, **kwargs):
-        # Obtener la lista de obligaciones para pasarla al contexto
         context = super().get_context_data(**kwargs)
         lista_obligacion_id = self.kwargs['lista_obligacion_id']
         lista_obligacion = get_object_or_404(ListaObligaciones, pk=lista_obligacion_id)
-        context['lista_obligaciones'] = lista_obligacion  # Pasamos el objeto lista_obligaciones
-        url_configuracion = reverse('gestionar_articulos', kwargs={'lista_id': self.kwargs['lista_obligacion_id']})
-        context["breadcrumb"] = {
-            'parent': {'name': 'Gestión de artículos', 'url': url_configuracion},
-            'child': {'name': 'Registro de articulos en lista', 'url': ''}
+
+        context['lista_obligaciones'] = lista_obligacion
+        context['breadcrumb'] = {
+            'parent': {
+                'name': 'Gestión de artículos',
+                'url': reverse('gestionar_articulos', kwargs={'lista_id': lista_obligacion_id})
+            },
+            'child': {'name': 'Registro de artículos en lista', 'url': ''}
         }
-        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
-        
+        context['sidebar'] = 'transparencia'
+        context['regreso_url'] = reverse('gestionar_articulos', kwargs={'lista_id': lista_obligacion_id})
         return context
 
-
-class EditarArticuloView(UpdateView):
+class EditarArticuloView(UpdateView, LoginRequiredMixin):
     model = ArticuloLiga
     form_class = ArticuloLigaForm
     template_name = 'transparencia2/editarArticulo.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.change_articuloliga")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_object(self):
-        # Recuperar el artículo por su ID
         articulo_id = self.kwargs['articulo_id']
-        articulo = get_object_or_404(ArticuloLiga, pk=articulo_id)
-        return articulo
-    
+        return get_object_or_404(ArticuloLiga, pk=articulo_id)
+
     def form_valid(self, form):
-        # Al enviar el formulario correctamente, mostramos un mensaje de éxito
         messages.success(self.request, 'Artículo actualizado con éxito!')
         return super().form_valid(form)
-    
+
     def get_success_url(self):
-        # Redirigimos al usuario a la vista de gestión de artículos después de la edición
         lista_obligacion_id = self.kwargs['lista_obligacion_id']
         return reverse_lazy('gestionar_articulos', kwargs={'lista_id': lista_obligacion_id})
-    
+
     def get_context_data(self, **kwargs):
-        # Obtener la lista de obligaciones para pasarla al contexto
         context = super().get_context_data(**kwargs)
         lista_obligacion_id = self.kwargs['lista_obligacion_id']
         lista_obligacion = get_object_or_404(ListaObligaciones, pk=lista_obligacion_id)
-        context['lista_obligaciones'] = lista_obligacion  # Pasamos el objeto lista_obligaciones
-        url_configuracion = reverse('gestionar_articulos', kwargs={'lista_id': self.kwargs['lista_obligacion_id']})
-        context["breadcrumb"] = {
-            'parent': {'name': 'Gestión de artículos', 'url': url_configuracion},
-            'child': {'name': 'Editar de articulos en lista', 'url': ''}
+
+        context['lista_obligaciones'] = lista_obligacion
+        context['breadcrumb'] = {
+            'parent': {
+                'name': 'Gestión de artículos',
+                'url': reverse('gestionar_articulos', kwargs={'lista_id': lista_obligacion_id})
+            },
+            'child': {'name': 'Editar artículos en lista', 'url': ''}
         }
-        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+        context['sidebar'] = 'transparencia'
+        context['regreso_url'] = reverse('gestionar_articulos', kwargs={'lista_id': lista_obligacion_id})
         return context
     
 
-class EliminarArticuloView(View):
+class EliminarArticuloView(View, LoginRequiredMixin):
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.delete_articuloliga")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
     def post(self, request, articulo_id):
         # Obtener el artículo que se va a eliminar
         articulo = get_object_or_404(ArticuloLiga, id=articulo_id)
@@ -1497,7 +1563,160 @@ class EliminarArticuloView(View):
         return JsonResponse({'success': True, 'message': 'Artículo eliminado con éxito'})
     
 
+class GestionarArticulosArView(View, LoginRequiredMixin):
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.view_ligaarchivo")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get(self, request, id):
+        # Obtener el artículo específico mediante su ID
+        articulo = get_object_or_404(ArticuloLiga, pk=id)
 
+        # Obtener los archivos relacionados al artículo
+        archivos = LigaArchivo.objects.filter(articuloDe=articulo).order_by('-ano')
+
+        # Agrupar los archivos por año
+        articulos_por_ano = {}
+        for archivo in archivos:
+            ano = archivo.ano
+            if ano not in articulos_por_ano:
+                articulos_por_ano[ano] = []
+
+            articulos_por_ano[ano].append({
+                'articulo': articulo,
+                'tipo': 'liga' if archivo.liga else 'archivo',
+                'archivo': archivo
+            })
+
+        # Obtener el ID de la lista para el botón de regreso
+        lista_obligacion_id = articulo.lista_obligaciones.id
+
+        context = {
+            'articulo': articulo,
+            'articulos_por_ano': dict(sorted(articulos_por_ano.items(), reverse=True)),
+            'breadcrumb': {
+                'parent': {'name': 'Transparencia', 'url': reverse('lista_obligaciones')},
+                'child': {'name': 'Gestión de artículos', 'url': ''}
+            },
+            'sidebar': 'transparencia',
+            'regreso_url': reverse('gestionar_articulos', kwargs={'lista_id': lista_obligacion_id})
+        }
+
+        return render(request, 'transparencia2/gestionar_articulo.html', context)
+class CrearArticuloLigaView(CreateView, LoginRequiredMixin):
+    model = LigaArchivo
+    form_class = ArticuloLigaArchivoForm
+    template_name = 'transparencia2/crear_articuloLA.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.add_ligaarchivo")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        articulo_id = self.kwargs.get('id')
+        kwargs['articuloDe_id'] = articulo_id  # Estás pasando el 'id' correcto al formulario
+        return kwargs
+    
+    def form_valid(self, form):
+        # Obtener el articuloDe (ArticuloLiga) usando el id de la URL
+        articulo_id = self.kwargs['id']
+        articulo = get_object_or_404(ArticuloLiga, pk=articulo_id)
+        
+        # Asignamos el artículo al campo 'articuloDe' del nuevo objeto LigaArchivo
+        form.instance.articuloDe = articulo
+        
+        # Guardamos el objeto LigaArchivo con el artículo relacionado
+        response = super().form_valid(form)
+        
+        messages.success(self.request, 'Artículo creado con éxito!')
+        return response
+
+    def get_success_url(self):
+        # Redirigimos al usuario a la vista de gestión de artículos después de la creación
+        return reverse_lazy('gestionarArchivoLa', kwargs={'id': self.kwargs['id']})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Obtener el artículo utilizando el 'id' desde la URL
+        articulo_id = self.kwargs['id']
+        articulo = get_object_or_404(ArticuloLiga, pk=articulo_id)
+        context['articulo'] = articulo
+
+        # Obtener la ListaObligaciones asociada al artículo
+        lista_obligacion = articulo.lista_obligaciones
+        
+        # Pasamos la lista de obligaciones al contexto
+        context['lista_obligaciones'] = lista_obligacion
+        url_configuracion = reverse('gestionar_articulos', kwargs={'lista_id': lista_obligacion.id})
+        
+        # Crear el breadcrumb con los enlaces adecuados
+        context["breadcrumb"] = {
+            'parent': {'name': 'Gestión de artículos', 'url': url_configuracion},
+            'child': {'name': 'Registro de artículos en lista', 'url': ''}
+        }
+        
+        context['sidebar'] = 'transparencia'
+        
+        return context
+
+class EditarArticuloLigaArchivoView(UpdateView, LoginRequiredMixin):
+    model = LigaArchivo
+    form_class = ArticuloLigaArchivoForm
+    template_name = 'transparencia2/editar_articuloLA.html'
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("transparencia.change_ligaarchivo")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        # Obtiene el objeto LigaArchivo según el ID proporcionado en la URL
+        return get_object_or_404(LigaArchivo, pk=self.kwargs['pk'])
+
+    def get_context_data(self, **kwargs):
+        # Recuperar el objeto LigaArchivo
+        context = super().get_context_data(**kwargs)
+        liga_archivo = self.get_object()
+        
+        # Pasar el id de ArticuloLiga (no el id de LigaArchivo) al contexto
+        context['articulo_liga_id'] = liga_archivo.articuloDe.id
+        
+        # Crear el breadcrumb con los enlaces adecuados
+        url_configuracion = reverse('gestionarArchivoLa', kwargs={'id': liga_archivo.articuloDe.id})
+
+        context["breadcrumb"] = {
+            'parent': {'name': 'Lista de Archivos', 'url': url_configuracion},
+            'child': {'name': 'Editar Registro', 'url': ''}
+        }
+        return context
+
+    def form_valid(self, form):
+        # Llamar a la función base para guardar el formulario
+        response = super().form_valid(form)
+        # Mostrar un mensaje de éxito
+        messages.success(self.request, 'Registro actualizado con éxito!')
+        return response
+
+    def get_success_url(self):
+        # Redirige al usuario a la vista de gestión después de la edición
+        return reverse_lazy('gestionarArchivoLa', kwargs={'id': self.object.articuloDe.id})
+    
+def eliminar_articulo_liga(request, articulo_id):
+    # Obtener el objeto LigaArchivo que se desea eliminar
+    liga_archivo = get_object_or_404(LigaArchivo, pk=articulo_id)
+
+    if request.method == "POST":
+        # Eliminar el objeto
+        liga_archivo.delete()
+
+        # Responder con un mensaje de éxito
+        return JsonResponse({"success": True, "message": "Artículo eliminado exitosamente!"})
+
+    # Si no es un POST, no permitimos la eliminación
+    return JsonResponse({"success": False, "message": "Método no permitido"}, status=405)
+    
 def get_active_municipality():
     """
     Retorna el primer municipio con status='activo',
@@ -1673,8 +1892,13 @@ def actualizar_video(request):
 
     return JsonResponse({'success': True})
 
-class convocatoriaHome(TemplateView):
+class convocatoriaHome(TemplateView, LoginRequiredMixin):
     template_name = 'convocatorias/convocatoriasHome.html'
+    # --- control de permisos ---
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("convocatorias.view_convocatoria")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1768,6 +1992,77 @@ def crear_convocatoria(request):
     context.update({'form': form, 'formset': formset})
 
     return render(request, 'convocatorias/crear_convocatoria.html', context)
+
+
+
+def editar_convocatoria(request, pk):
+    convocatoria = get_object_or_404(Convocatoria, pk=pk)
+    url_configuracion = reverse('convocatorias')
+
+    # Construyendo el contexto base para el breadcrumb y la navegación
+    context = {
+        "breadcrumb": {
+            'parent': {'name': 'Convocatorias', 'url': url_configuracion},
+            'child': {'name': 'Edición de convocatoria', 'url': ''}
+        },
+        'sidebar': 'convo',
+        'regreso_url': url_configuracion,
+    }
+
+    # Obtenemos el queryset de archivos adjuntos de la convocatoria
+    qs_archivos = ArchivoConvocatoria.objects.filter(convocatoria=convocatoria)
+
+    # Determinamos el parámetro extra:
+    # Si hay al menos un archivo, no se muestra formulario extra, de lo contrario se muestra uno.
+    extra = 0 if qs_archivos.exists() else 1
+
+    # Creamos el formset utilizando el extra calculado
+    ArchivoFormSet = modelformset_factory(
+        ArchivoConvocatoria,
+        form=ArchivoConvocatoriaForm,
+        extra=extra,
+        can_delete=True
+    )
+
+    if request.method == 'POST':
+        form = ConvocatoriaForm(request.POST, request.FILES, instance=convocatoria)
+        formset = ArchivoFormSet(
+            request.POST,
+            request.FILES,
+            queryset=qs_archivos
+        )
+
+        if form.is_valid() and formset.is_valid():
+            convocatoria = form.save()
+
+            # Guarda nuevos archivos o actualiza los existentes
+            archivos = formset.save(commit=False)
+            for archivo in archivos:
+                archivo.convocatoria = convocatoria
+                archivo.save()
+
+            # Elimina los archivos marcados para borrar
+            for archivo in formset.deleted_objects:
+                archivo.delete()
+
+            messages.success(request, "Convocatoria actualizada correctamente")
+            return redirect('convocatorias')
+        else:
+            context.update({
+                'form_errors': form.errors,
+                'formset_errors': formset.errors,
+            })
+    else:
+        form = ConvocatoriaForm(instance=convocatoria)
+        formset = ArchivoFormSet(queryset=qs_archivos)
+
+    context.update({
+        'form': form,
+        'formset': formset,
+        'convocatoria': convocatoria 
+    })
+    return render(request, 'convocatorias/editar_convocatoria.html', context)
+
 @csrf_exempt
 def crear_categoria_ajax(request):
     if request.method == "POST":
@@ -1903,3 +2198,4 @@ class GroupUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
             f'El grupo "{self.object.name}" se ha actualizado correctamente.',
         )
         return response
+

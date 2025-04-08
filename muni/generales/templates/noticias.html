@@ -1,6 +1,7 @@
 {% extends "baseTemplate.html" %}
 {% load static %}
 {% load sass_tags %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 {% block header %}
@@ -413,7 +414,7 @@
         <div class="col-sm-12" id='colTabla'>
             <div class="card">
                 <div class="card-header pb-0 card-no-border">
-                    <h3 class="mb-3">Lista de Cobros Online</h3>
+                    <h3 class="mb-3">Lista de Noticias</h3>
                 </div>
                 <div class="card-body">
                     <div class="dt-ext table-responsive theme-scrollbar">
@@ -450,7 +451,7 @@
                                         data-titulo="{{ noticia.titulo }}"
                                         data-autor="{{ noticia.autor }}"
                                         data-fecha="{{ noticia.fecha|date:'d/m/Y H:i' }}"
-                                        data-imagen="{{ noticia.imagen.url }}"
+                                        data-imagen="{% if noticia.imagen %}{{ noticia.imagen.url }}{% else %}{% endif %}"
                                         title="Eliminar">
                                             <i class="fas fa-trash-alt"></i>
                                     </a>
@@ -662,7 +663,22 @@ table.on('draw', function () {
 });
 </script>
 <script src="https://cdn.ckeditor.com/ckeditor4/4.16.2/ckeditor.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelector("form").addEventListener("submit", function (e) {
+            let editorInstance = CKEDITOR.instances.id_contenido; // Obtiene la instancia del editor
+            let contenido = editorInstance.getData().trim(); // Obtiene el contenido limpio
 
+            let contenidoField = document.querySelector("#id_contenido"); // Campo original oculto
+
+            if (contenido === "" || contenido === "<p><br></p>") {
+                contenidoField.setCustomValidity("Este campo es obligatorio.");
+            } else {
+                contenidoField.setCustomValidity(""); // Limpia el error si el campo está lleno
+            }
+        });
+    });
+</script>
 <script>
     $(document).ready(function () {
         // Delegar el evento click al contenedor de la tabla
@@ -751,22 +767,7 @@ table.on('draw', function () {
         });
     }
 </script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        document.querySelector("form").addEventListener("submit", function (e) {
-            let editorInstance = CKEDITOR.instances.id_contenido; // Obtiene la instancia del editor
-            let contenido = editorInstance.getData().trim(); // Obtiene el contenido limpio
 
-            let contenidoField = document.querySelector("#id_contenido"); // Campo original oculto
-
-            if (contenido === "" || contenido === "<p><br></p>") {
-                contenidoField.setCustomValidity("Este campo es obligatorio.");
-            } else {
-                contenidoField.setCustomValidity(""); // Limpia el error si el campo está lleno
-            }
-        });
-    });
-</script>
 
 
 

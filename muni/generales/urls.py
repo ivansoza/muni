@@ -1,11 +1,11 @@
 from django.urls import path, include
 
-from .views import CrearCategoriaView, CustomLoginView, DashboardView, EncuestasView, GeneralesDashboardView, GroupCreateView, GroupUpdateView, GruposView, NewsView, PersonalizacionView, ReportesView, SeccionesUpdateView, SeccionesView, ServicioCreateView, ServicioUpdateView,SocialMediaView,ServicesView, UsuarioCreateView, UsuarioEditView, UsuarioEditView, UsuarioPasswordChangeView, UsuariosView, VideoView, actualizar_video, create_social_network, custom_upload_function, agregar_categoria, delete_group, delete_social_network, eliminar_noticia, editar_noticia, list_social_networks, toggle_favorite, toggle_user_status
+from .views import CrearCategoriaView, CustomLoginView, DashboardView, EncuestasView, GeneralesDashboardView, GroupCreateView, GroupUpdateView, GruposView, NewsView, PersonalizacionView, ReportesView, SeccionesUpdateView, SeccionesView, ServicioCreateView, ServicioUpdateView,SocialMediaView,ServicesView, UsuarioCreateView, UsuarioEditView, UsuarioEditView, UsuarioPasswordChangeView, UsuariosView, VideoView, actualizar_video, create_social_network, custom_upload_function, agregar_categoria, delete_group, delete_social_network, editar_convocatoria, eliminar_noticia, editar_noticia, list_social_networks, toggle_favorite, toggle_user_status
 from django.contrib.auth.views import LogoutView
 from .views import TransparenciaView, crear_seccion, EjercicioFiscalListView, EjercicioFiscalCreateView, DocumentoTransparenciaListView, registrar_documento, SeccionTransparenciaUpdateView, eliminar_seccion, EjercicioFiscalUpdateView, eliminar_ejercicio_fiscal, DocumentoTransparenciaUpdateView, eliminar_documento_transparencia
 from . import views
 from .views import CrearCarpetaView, SubirArchivoView, ListarCarpetasView, EditarCarpetaView, GestionarCarpetaView, EliminarCarpetaView, EditarArchivoView, eliminar_archivo
-from .views import ListaObligacionesView, ListaObligacionesCreateView, ListaObligacionesUpdateView, ListaObligacionesDeleteView, GestionarArticulosView, CrearArticuloView, EditarArticuloView, EliminarArticuloView, actualizar_orden_articulos, convocatoriaHome, filtrar_convocatorias
+from .views import ListaObligacionesView, ListaObligacionesCreateView, ListaObligacionesUpdateView, ListaObligacionesDeleteView, GestionarArticulosView, CrearArticuloView, EditarArticuloView, EliminarArticuloView, actualizar_orden_articulos, convocatoriaHome, filtrar_convocatorias, GestionarArticulosArView, CrearArticuloLigaView, EditarArticuloLigaArchivoView
 urlpatterns = [
     path("", CustomLoginView.as_view(),name='login'),
     path('logout/', LogoutView.as_view(next_page='home'),  name='logout'),      
@@ -71,7 +71,11 @@ urlpatterns = [
 
     #-------------------------------TRANSPARENCIA---------------------------------------------
     path('lista-obligaciones/', ListaObligacionesView.as_view(), name='lista_obligaciones'),
+
+
     path('crear_lista_obligaciones/', ListaObligacionesCreateView.as_view(), name='crear_lista_obligaciones'),
+
+    
     path('editar_lista_obligaciones/<int:pk>/', ListaObligacionesUpdateView.as_view(), name='editar_lista_obligaciones'),
     path('eliminar_lista_obligaciones/<int:pk>/', ListaObligacionesDeleteView.as_view(), name='eliminar_lista_obligaciones'),
     path('gestionar_articulos/<int:lista_id>/', GestionarArticulosView.as_view(), name='gestionar_articulos'),
@@ -79,6 +83,10 @@ urlpatterns = [
     path('editar_articulo/<int:lista_obligacion_id>/<int:articulo_id>/', EditarArticuloView.as_view(), name='editar_articulo'),
     path('eliminar_articulo/<int:articulo_id>/', EliminarArticuloView.as_view(), name='eliminar_articulo'),
     path('actualizar_orden/', actualizar_orden_articulos, name='actualizar_orden'),
+    path('gestionar_articulo_la/<int:id>/', GestionarArticulosArView.as_view(), name='gestionarArchivoLa'),
+    path('crear_articulo_liga/<int:id>/', CrearArticuloLigaView.as_view(), name='crear_articulo_liga'),
+    path('editar_articulo_liga/<int:pk>/', EditarArticuloLigaArchivoView.as_view(), name='editar_articulo_liga'),
+    path('eliminar_articulo_liga/<int:articulo_id>/', views.eliminar_articulo_liga, name='eliminar_articulo_liga'),
 
 
     #--------------------------------SOCIAL MEDIA ---------------------------------------------
@@ -92,6 +100,8 @@ urlpatterns = [
     path('convocatorias/', convocatoriaHome.as_view(), name='convocatorias'),
     path('filtrar/', filtrar_convocatorias, name='filtrar_convocatorias'),
     path('convocatorias/nueva/', views.crear_convocatoria, name='crear_convocatoria'),
+    path('convocatorias/editar/<int:pk>/', editar_convocatoria, name='editar_convocatoria'),
+
     path('crear-categoria/', views.crear_categoria_ajax, name='crear_categoria_ajax'),
     path('convocatorias/<int:id>/eliminar/', views.eliminar_convocatoria, name='eliminarConvocatoria'),
     path('convocatorias/<int:id>/detalle/', views.obtener_detalle_convocatoria, name='detalle_Convocatoria'),

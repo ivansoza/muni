@@ -878,9 +878,10 @@ p {
               <i class="fas fa-eye mr-2"></i> Ver
             </a>
             <div class="flex gap-2">
-              <a href="#" class="btn btn-outline btn-edit">
+              <a href="{% url 'editar_convocatoria' convocatoria.id %}" class="btn btn-outline btn-edit">
                 <i class="fas fa-edit mr-2"></i> Editar
               </a>
+              
               <form action="#" method="POST" onsubmit="return confirm('¿Eliminar esta convocatoria?')">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-destructive">
@@ -983,7 +984,7 @@ p {
                 <i class="fas fa-eye mr-2"></i> Ver
               </a>
               <div class="flex gap-2">
-                <a href="/convocatorias/${convocatoria.id}/editar/" class="btn btn-outline btn-edit">
+                <a href="/admin/convocatorias/editar/${convocatoria.id}/" class="btn btn-outline btn-edit">
                   <i class="fas fa-edit mr-2"></i> Editar
                 </a>
                 <button onclick="confirmDelete(${convocatoria.id})" class="btn btn-destructive">

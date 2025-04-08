@@ -391,98 +391,7 @@
 
         /* --------- seccion de tarjetas home 
         /* Estilo del título principal */
-        .section-header {
-            margin-bottom: 40px;
-        }
 
-        .section-subtitle {
-            display: inline-block;
-            padding: 5px 15px;
-            font-size: 0.9rem;
-            color: white;
-            background: var(--color-iconos);
-            border-radius: 20px;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-
-        .section-title {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--color-primario);
-            margin-bottom: 0;
-            line-height: 1.2;
-        }
-
-        /* Detalles en el contenedor */
-        .my-section {
-            position: relative;
-            padding: 60px;
-            background: linear-gradient(135deg, rgba(75, 0, 30, 0.05), rgba(150, 0, 60, 0.05));
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .my-section::before {
-            content: "";
-            position: absolute;
-            top: -50px;
-            left: -50px;
-            width: 200px;
-            height: 200px;
-            background: rgba(200, 0, 70, 0.1);
-            border-radius: 50%;
-            z-index: 0;
-        }
-
-        .my-section::after {
-            content: "";
-            position: absolute;
-            bottom: -50px;
-            right: -50px;
-            width: 250px;
-            height: 250px;
-            background: rgba(200, 0, 70, 0.1);
-            border-radius: 50%;
-            z-index: 0;
-        }
-
-        .my-section .row {
-            position: relative;
-            z-index: 1;
-        }
-
-       
-        .my-section img {
-            max-width: 100%; /* Asegura que la imagen sea responsiva */
-            height: auto;
-            display: block;
-            margin-bottom: 20px; /* Espaciado inferior en pantallas pequeñas */
-
-        }
-    
-        
-        @media (max-width: 767px) {
-            .imagen-tarjeta {
-                display: none; /* Oculta la imagen en pantallas pequeñas */
-            }
-            .my-section img{
-                display: none;
-            }
-        }
-
-        /* Animaciones */
-        @keyframes fadeInLogo {
-            0% {
-                opacity: 0.8;
-            }
-
-            100% {
-                opacity: 1;
-            }
-        }
-        
         /* ---------------------------------------------------------------------------------------------------- */
 
         /* Sección de contacto de lado a lado */
@@ -1037,13 +946,32 @@ p .fa-quote-right {
 
 .social-posts {
     display: flex;
-    justify-content: center;
     gap: 15px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 10px 0;
 }
-
+/* Este contenedor limita la vista visible a solo 3 ítems */
+#socialPostsContainer {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 15px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    width: 1080px; /* Mostrar exactamente 3 .social-box */
+    margin: 0 auto;
+}
+.social-posts::-webkit-scrollbar {
+    display: none;
+}
+.social-posts {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
 .social-box {
-    width: 350px;
+    width: 345px;
+    flex-shrink: 0; /* No se reduzcan */
     background: white;
     padding: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
@@ -1052,22 +980,76 @@ p .fa-quote-right {
     position: relative;
     overflow: hidden;
 }
-
+.social-carousel-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding: 20px 40px;
+    box-sizing: border-box;
+}
 .social-box:hover {
     transform: scale(1.05);
 }
-
+@media (max-width: 1200px) {
+    #socialPostsContainer {
+        width: 720px; /* Mostrar 2 cajas */
+    }
+}
 /* Responsive */
+/* Responsive: Cuando la pantalla tiene un ancho máximo de 768px (1 caja) */
 @media (max-width: 768px) {
-    .social-posts {
-        flex-direction: column;
+    #socialPostsContainer {
+        width: 360px; /* Mostrar solo 1 caja */
     }
     .social-box {
-        width: 90%;
+        width: 96%; /* Para que la caja no ocupe todo el ancho y tenga un margen */
     }
     .social-bg-image {
         width: 100%;
     }
 }
 
+/* Estilo base para los botones */
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background-color: var(--color-primario); /* color de fondo */
+    border: none;
+    color: white;
+    font-size: 2rem;
+    padding: 15px;  /* Aumentamos el padding para que sea completamente redondo */
+    border-radius: 50%; /* Hace el botón completamente redondo */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    width: 50px; /* Establecemos un ancho fijo para garantizar la forma circular */
+    height: 50px; /* Establecemos una altura fija para mantener la proporción */
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Centra el texto dentro del círculo */
+}
 
+/* Efecto hover para los botones */
+.carousel-btn:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Estilo para el botón izquierdo */
+.carousel-btn.left {
+    left: 10px;
+}
+
+/* Estilo para el botón derecho */
+.carousel-btn.right {
+    right: 10px;
+}
+
+/* Sombra sutil para el botón para hacerlo más estético */
+.carousel-btn {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.carousel-btn:hover {
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3); /* Sombra más intensa al pasar el mouse */
+}

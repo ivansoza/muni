@@ -5,16 +5,17 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 import json
 from django.views.decorators.csrf import csrf_exempt
-from .models import SeccionTransparencia
+from .models import ArticuloLiga, SeccionTransparencia
 from django.shortcuts import get_object_or_404
 from .models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia
 from collections import defaultdict
 import json  # Para visualizar los datos en la consola
+from django.db.models import Prefetch
 
 from informacion_municipal.models import Municipio
 from .models import Encuesta, Envio, Opcion, Pregunta, Respuesta
 from django.shortcuts import render
-from .models import ListaObligaciones
+from .models import ListaObligaciones, LigaArchivo
 # Create your views here.
 class HomeTransparenciaView(TemplateView):
     template_name = 'homeTransparencia.html' 
@@ -175,9 +176,35 @@ class EjerciciosPorSeccionView(TemplateView):
 
 
 
+
 def lista_obligaciones(request):
-    lista_obligaciones = ListaObligaciones.objects.all()
+    # Definimos el prefetch para ligaarchivo en el contexto de ArticuloLiga
+    liga_prefetch = Prefetch(
+        'ligaarchivo_set',
+        queryset=LigaArchivo.objects.order_by('-ano'),
+        to_attr='archivos'
+    )
+
+    # Ahora prefetch_related sobre los artículos (articulos_liga)
+    lista_obligaciones = (
+        ListaObligaciones.objects
+        .all()
+        .prefetch_related(
+            Prefetch('articulos_liga', queryset=ArticuloLiga.objects.prefetch_related(liga_prefetch))
+        )
+    )
+
+    # Obtenemos los años disponibles desde el modelo LigaArchivo
+    years = (
+        LigaArchivo.objects
+        .exclude(ano__isnull=True)
+        .values_list('ano', flat=True)
+        .distinct()
+        .order_by('-ano')
+    )
+
     return render(request, 'listaTrasnparencia.html', {
         'lista_obligaciones': lista_obligaciones,
+        'years': years,
         'sidebar': 'transparencia'
     })
