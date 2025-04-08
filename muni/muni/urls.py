@@ -31,9 +31,6 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-
-
 # Manejo de errores
 handler400 = mi_custom_error_400
 handler403 = mi_custom_error_403
