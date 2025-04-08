@@ -5,6 +5,6 @@ from .views import HomePageView
 
 urlpatterns = [
     path('', HomePageView.as_view(), name='home'),  # Homepage
-    path('seccion/<int:pk>/<slug:slug>/', SeccionPlusDetailView.as_view(), name='seccionplus_detail'),
+    path('seccion/<uuid:pk>/<slug:slug>/', SeccionPlusDetailView.as_view(), name='seccionplus_detail'),
 
 ]
