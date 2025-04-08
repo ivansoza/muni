@@ -179,70 +179,92 @@
         </a>
     </div>
 
-    <div class="row">
-        {% for carpeta in carpetas %}
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm">
-                    <div class="card-header {% if carpeta.estatus == 'I' %}bg-danger{% else %}bg-primary{% endif %} text-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0" style="color:white; font-size: 15px;">
-                            <i class="fas fa-folder"></i> {{ carpeta.nombre }}
-                        </h5>
-                        <span class="badge {% if carpeta.estatus == 'I' %}bg-warning text-dark{% else %}bg-light text-dark{% endif %}">
-                            {% if carpeta.estatus == 'I' %}Inactivo{% else %}{{ carpeta.get_estatus_display }}{% endif %}
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <h5><strong>📂 Subcarpetas:</strong></h5>
-                        <ul class="list-group mb-3">
-                            {% for subcarpeta in carpeta.subcarpetas.all %}
-                                <li class="list-group-item {% if subcarpeta.estatus == 'I' %}inactivo{% endif %}">
-                                    <i class="fas fa-folder-open text-warning"></i> 
-                                    {{ subcarpeta.nombre }} 
-                                    <span class="badge {% if subcarpeta.estatus == 'I' %}bg-warning{% else %}bg-success{% endif %}">
-                                        {% if subcarpeta.estatus == 'I' %}Inactivo{% else %}{{ subcarpeta.get_estatus_display }}{% endif %}
-                                    </span>
-                                </li>
-                            {% empty %}
-                                <li class="list-group-item text-muted">Sin subcarpetas</li>
-                            {% endfor %}
-                        </ul>
+    {% for categoria, carpetas in carpetas_agrupadas.items %}
+    <div class="col-12 mt-4 mb-2">
+        <h4 class="border-bottom pb-2 d-flex justify-content-between align-items-center">
+            📁 Categoría: {{ categoria.nombre }}
+            <button class="btn btn-sm btn-outline-primary toggle-categoria-btn" 
+                type="button" 
+                data-bs-toggle="collapse" 
+                data-bs-target="#categoria-{{ categoria.id }}" 
+                aria-expanded="true" 
+                aria-controls="categoria-{{ categoria.id }}">
+            Ocultar carpetas
+        </button>
 
-                        <h5><strong>📄 Archivos:</strong></h5>
-                        <ul class="list-group mb-3">
-                            {% for archivo in carpeta.archivos.all %}
-                                <li class="list-group-item {% if archivo.estatus == 'I' %}inactivo{% endif %}">
-                                    <a href="{{ archivo.archivo.url }}" class="text-decoration-none">
-                                        <i class="fas fa-file-alt text-info"></i> {{ archivo.nombre }}
-                                    </a>
-                                    <span class="badge {% if archivo.estatus == 'I' %}bg-warning{% else %}bg-success{% endif %}">
-                                        {% if archivo.estatus == 'I' %}Inactivo{% else %}{{ archivo.get_estatus_display }}{% endif %}
-                                    </span>
-                                </li>
-                            {% empty %}
-                                <li class="list-group-item text-muted">Sin archivos</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+        </h4>
+    </div>
 
-                    <div class="card-footer">
-                        <a href="{% url 'gestionar_carpetas' carpeta.id %}" class="btn-round btn-success" title="Gestionar">
-                            <i class="fas fa-cogs"></i>
-                        </a>
-                        <a href="{% url 'editar_carpeta' carpeta.id %}" class="btn-round btn-warning" title="Editar">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <button class="btn-round btn-danger eliminar-carpeta" data-id="{{ carpeta.id }}" data-nombre="{{ carpeta.nombre }}" title="Eliminar">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
+    <div class="collapse show" id="categoria-{{ categoria.id }}">
+        <div class="row">
+            {% for carpeta in carpetas %}
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header {% if carpeta.estatus == 'I' %}bg-danger{% else %}bg-primary{% endif %} text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0" style="font-size: 15px; color:white">
+                                <i class="fas fa-folder"></i> {{ carpeta.nombre }}
+                            </h5>
+                            <span class="badge {% if carpeta.estatus == 'I' %}bg-warning text-dark{% else %}bg-light text-dark{% endif %}">
+                                {% if carpeta.estatus == 'I' %}Inactivo{% else %}{{ carpeta.get_estatus_display }}{% endif %}
+                            </span>
+                        </div>
+
+                        <div class="card-body">
+                            <h6><strong>📂 Subcarpetas:</strong></h6>
+                            <ul class="list-group mb-3">
+                                {% for subcarpeta in carpeta.subcarpetas.all %}
+                                    <li class="list-group-item {% if subcarpeta.estatus == 'I' %}inactivo{% endif %}">
+                                        <i class="fas fa-folder-open text-warning"></i> 
+                                        {{ subcarpeta.nombre }} 
+                                        <span class="badge {% if subcarpeta.estatus == 'I' %}bg-warning{% else %}bg-success{% endif %}">
+                                            {% if subcarpeta.estatus == 'I' %}Inactivo{% else %}{{ subcarpeta.get_estatus_display }}{% endif %}
+                                        </span>
+                                    </li>
+                                {% empty %}
+                                    <li class="list-group-item text-muted">Sin subcarpetas</li>
+                                {% endfor %}
+                            </ul>
+
+                            <h6><strong>📄 Archivos:</strong></h6>
+                            <ul class="list-group mb-3">
+                                {% for archivo in carpeta.archivos.all %}
+                                    <li class="list-group-item {% if archivo.estatus == 'I' %}inactivo{% endif %}">
+                                        <a href="{{ archivo.archivo.url }}" class="text-decoration-none">
+                                            <i class="fas fa-file-alt text-info"></i> {{ archivo.nombre }}
+                                        </a>
+                                        <span class="badge {% if archivo.estatus == 'I' %}bg-warning{% else %}bg-success{% endif %}">
+                                            {% if archivo.estatus == 'I' %}Inactivo{% else %}{{ archivo.get_estatus_display }}{% endif %}
+                                        </span>
+                                    </li>
+                                {% empty %}
+                                    <li class="list-group-item text-muted">Sin archivos</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <div class="card-footer">
+                            <a href="{% url 'gestionar_carpetas' carpeta.id %}" class="btn-round btn-success" title="Gestionar">
+                                <i class="fas fa-cogs"></i>
+                            </a>
+                            <a href="{% url 'editar_carpeta' carpeta.id %}" class="btn-round btn-warning" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button class="btn-round btn-danger eliminar-carpeta" data-id="{{ carpeta.id }}" data-nombre="{{ carpeta.nombre }}" title="Eliminar">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        {% empty %}
-            <div class="col-12">
-                <div class="alert alert-warning text-center">No hay carpetas disponibles.</div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
+{% empty %}
+    <div class="col-12">
+        <div class="alert alert-warning text-center">No hay carpetas disponibles.</div>
+    </div>
+{% endfor %}
+
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -316,6 +338,36 @@
     });
 </script>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const buttons = document.querySelectorAll('.toggle-categoria-btn');
+
+        buttons.forEach(function (btn) {
+            const targetId = btn.getAttribute('data-bs-target');
+            const collapseEl = document.querySelector(targetId);
+
+            // Bootstrap collapse instance
+            const collapseInstance = bootstrap.Collapse.getOrCreateInstance(collapseEl, {
+                toggle: false
+            });
+
+            // Escuchar evento de colapso (ocultar)
+            collapseEl.addEventListener('hide.bs.collapse', function () {
+                btn.textContent = 'Mostrar carpetas';
+            });
+
+            // Escuchar evento de expansión (mostrar)
+            collapseEl.addEventListener('show.bs.collapse', function () {
+                btn.textContent = 'Ocultar carpetas';
+            });
+
+            // Evento de clic para alternar colapso
+            btn.addEventListener('click', function () {
+                collapseInstance.toggle();
+            });
+        });
+    });
+</script>
 
 
 {% endblock %}

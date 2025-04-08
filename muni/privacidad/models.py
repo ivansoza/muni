@@ -10,6 +10,8 @@ class AvisoDePrivacidad(models.Model):
     descripcion = models.CharField(max_length=200)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"Aviso de Privacidad - {self.area} ({self.municipio})"
 
 
 # Modelo para Archivos Relacionados

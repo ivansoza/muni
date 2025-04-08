@@ -8,6 +8,9 @@ class HomeSevacView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         categoria_id = self.request.GET.get('categoria')
+        if not categoria_id:
+            primera_categoria = CategoriaSevac.objects.first()
+            categoria_id = primera_categoria.id if primera_categoria else None
 
         # Obtener las carpetas principales activas
         carpetas_qs = Carpeta.objects.filter(padre=None, estatus='A').select_related('categoria')

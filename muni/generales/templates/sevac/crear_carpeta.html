@@ -12,34 +12,116 @@
             </h2>
         </div>
         <div class="card-body">
-            <form method="post">
+            <form method="post" id="carpeta-form">
                 {% csrf_token %}
-                {{ form.as_p }}
-                <div class="form-group text-center">
-                    {% if not form.fields.padre %} 
-                    <a href="{% url 'crear_categoria' %}" class="btn btn-primary btn-lg me-3">
-                        ➕ Crear categoría
-                    </a>
-                    {% endif %}
+            
+                <!-- CATEGORÍA + BOTÓN MODAL -->
+                {% if not form.fields.padre %}
+                    <div class="form-group">
+                        <label for="{{ form.categoria.id_for_label }}">{{ form.categoria.label }}</label>
+                        <div class="input-group">
+                            {{ form.categoria }}
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#crearCategoriaModal" style='color:white;'>
+                                <i class="fa-solid fa-circle-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
+            
+                <!-- NOMBRE -->
+                <div class="form-group">
+                    <label for="{{ form.nombre.id_for_label }}">{{ form.nombre.label }}</label>
+                    {{ form.nombre }}
+                </div>
+            
+                <!-- PADRE (si aplica) -->
+                {% if form.fields.padre %}
+                    <div class="form-group">
+                        <label for="{{ form.padre.id_for_label }}">{{ form.padre.label }}</label>
+                        {{ form.padre }}
+                    </div>
+                {% endif %}
+            
+                <!-- ESTATUS -->
+                <div class="form-group">
+                    <label for="{{ form.estatus.id_for_label }}">{{ form.estatus.label }}</label>
+                    {{ form.estatus }}
+                </div>
+            
+                <!-- BOTONES -->
+                <div class="form-group text-center mt-4">
                     <button type="submit" class="btn btn-primary btn-lg me-3">
                         💾 {% if form.fields.padre %}Crear Subcarpeta{% else %}Crear Carpeta{% endif %}
                     </button>
-
-                    <!-- Redirección dinámica según el tipo de carpeta -->
                     {% if form.fields.padre %}
-                        <a href="{% url 'gestionar_carpetas' carpeta_padre_id %}" class="btn btn-secondary btn-lg">
-                            ❌ Volver
-                        </a>
+                        <a href="{% url 'gestionar_carpetas' carpeta_padre_id %}" class="btn btn-secondary btn-lg">❌ Volver</a>
                     {% else %}
-                        <a href="{% url 'listar_carpetas' %}" class="btn btn-secondary btn-lg">
-                            ❌ Volver
-                        </a>
+                        <a href="{% url 'listar_carpetas' %}" class="btn btn-secondary btn-lg">❌ Volver</a>
                     {% endif %}
                 </div>
-
             </form>
+            
         </div>
     </div>
 </div>
-
+<!-- Modal: Crear nueva categoría -->
+<div class="modal fade" id="crearCategoriaModal" tabindex="-1" aria-labelledby="crearCategoriaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="form-nueva-categoria">
+          <div class="modal-header">
+            <h5 class="modal-title" id="crearCategoriaModalLabel">➕ Nueva Categoría</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="categoria-nombre">Nombre:</label>
+              <input type="text" class="form-control" id="categoria-nombre" name="nombre" required>
+              <div class="invalid-feedback">Este campo es obligatorio.</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.getElementById('form-nueva-categoria').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const nombre = document.getElementById('categoria-nombre').value.trim();
+    
+        if (!nombre) {
+            document.getElementById('categoria-nombre').classList.add('is-invalid');
+            return;
+        }
+    
+        fetch("{% url 'crear_categoria_ajax_sevac' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({ nombre: nombre })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.id) {
+                // Crear la opción nueva
+                const select = document.getElementById("id_categoria");
+                const option = new Option(data.nombre, data.id, true, true);
+                select.add(option);
+                // Cerrar modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('crearCategoriaModal'));
+                modal.hide();
+                document.getElementById('categoria-nombre').value = '';
+            } else {
+                alert("⚠️ Error al crear la categoría.");
+            }
+        });
+    });
+    </script>
+    
 {% endblock %}
