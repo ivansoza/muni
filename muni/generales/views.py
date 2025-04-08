@@ -35,8 +35,8 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
-from transparencia.forms import SeccionTransparenciaForm, EjercicioFiscalForm, DocumentoTransparenciaForm, ListaObligacionesForm, ArticuloLigaForm
-from transparencia.models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga
+from transparencia.forms import SeccionTransparenciaForm, EjercicioFiscalForm, DocumentoTransparenciaForm, ListaObligacionesForm, ArticuloLigaForm, ArticuloLigaArchivoForm
+from transparencia.models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga, LigaArchivo
 from sevac.models import Carpeta, Archivo
 from sevac.forms import CarpetaForm, ArchivoForm
 # Create your views here.
@@ -1493,7 +1493,144 @@ class EliminarArticuloView(View):
         return JsonResponse({'success': True, 'message': 'Artículo eliminado con éxito'})
     
 
+class GestionarArticulosArView(View):
+    def get(self, request, id):
+        # Obtener el artículo específico mediante su ID
+        articulo = get_object_or_404(ArticuloLiga, pk=id)
 
+        # Obtener los archivos relacionados al artículo
+        archivos = LigaArchivo.objects.filter(articuloDe=articulo).order_by('-ano')
+
+        # Diccionario que agrupa los archivos por año
+        articulos_por_ano = {}
+        for archivo in archivos:
+            ano = archivo.ano  # Año del archivo
+            if ano not in articulos_por_ano:
+                articulos_por_ano[ano] = []
+
+            articulos_por_ano[ano].append({
+                'articulo': articulo,
+                'tipo': 'liga' if archivo.liga else 'archivo',  # Aquí defines si es liga o archivo
+                'archivo': archivo  # Agregar el objeto archivo
+            })
+
+        context = {
+            'articulo': articulo,  # Pasamos el artículo específico
+            'articulos_por_ano': dict(sorted(articulos_por_ano.items(), reverse=True)),
+            'breadcrumb': {
+                'parent': {'name': 'Transparencia', 'url': reverse('lista_obligaciones')},
+                'child': {'name': 'Gestión de artículos', 'url': ''}
+            },
+            'sidebar': 'transparencia'
+        }
+
+        return render(request, 'transparencia2/gestionar_articulo.html', context)
+
+class CrearArticuloLigaView(CreateView):
+    model = LigaArchivo
+    form_class = ArticuloLigaArchivoForm
+    template_name = 'transparencia2/crear_articuloLA.html'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        articulo_id = self.kwargs.get('id')
+        kwargs['articuloDe_id'] = articulo_id  # Estás pasando el 'id' correcto al formulario
+        return kwargs
+    
+    def form_valid(self, form):
+        # Obtener el articuloDe (ArticuloLiga) usando el id de la URL
+        articulo_id = self.kwargs['id']
+        articulo = get_object_or_404(ArticuloLiga, pk=articulo_id)
+        
+        # Asignamos el artículo al campo 'articuloDe' del nuevo objeto LigaArchivo
+        form.instance.articuloDe = articulo
+        
+        # Guardamos el objeto LigaArchivo con el artículo relacionado
+        response = super().form_valid(form)
+        
+        messages.success(self.request, 'Artículo creado con éxito!')
+        return response
+
+    def get_success_url(self):
+        # Redirigimos al usuario a la vista de gestión de artículos después de la creación
+        return reverse_lazy('gestionarArchivoLa', kwargs={'id': self.kwargs['id']})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Obtener el artículo utilizando el 'id' desde la URL
+        articulo_id = self.kwargs['id']
+        articulo = get_object_or_404(ArticuloLiga, pk=articulo_id)
+        context['articulo'] = articulo
+
+        # Obtener la ListaObligaciones asociada al artículo
+        lista_obligacion = articulo.lista_obligaciones
+        
+        # Pasamos la lista de obligaciones al contexto
+        context['lista_obligaciones'] = lista_obligacion
+        url_configuracion = reverse('gestionar_articulos', kwargs={'lista_id': lista_obligacion.id})
+        
+        # Crear el breadcrumb con los enlaces adecuados
+        context["breadcrumb"] = {
+            'parent': {'name': 'Gestión de artículos', 'url': url_configuracion},
+            'child': {'name': 'Registro de artículos en lista', 'url': ''}
+        }
+        
+        context['sidebar'] = 'transparencia'
+        
+        return context
+
+class EditarArticuloLigaArchivoView(UpdateView):
+    model = LigaArchivo
+    form_class = ArticuloLigaArchivoForm
+    template_name = 'transparencia2/editar_articuloLA.html'
+
+    def get_object(self, queryset=None):
+        # Obtiene el objeto LigaArchivo según el ID proporcionado en la URL
+        return get_object_or_404(LigaArchivo, pk=self.kwargs['pk'])
+
+    def get_context_data(self, **kwargs):
+        # Recuperar el objeto LigaArchivo
+        context = super().get_context_data(**kwargs)
+        liga_archivo = self.get_object()
+        
+        # Pasar el id de ArticuloLiga (no el id de LigaArchivo) al contexto
+        context['articulo_liga_id'] = liga_archivo.articuloDe.id
+        
+        # Crear el breadcrumb con los enlaces adecuados
+        url_configuracion = reverse('gestionarArchivoLa', kwargs={'id': liga_archivo.articuloDe.id})
+
+        context["breadcrumb"] = {
+            'parent': {'name': 'Lista de Archivos', 'url': url_configuracion},
+            'child': {'name': 'Editar Registro', 'url': ''}
+        }
+        return context
+
+    def form_valid(self, form):
+        # Llamar a la función base para guardar el formulario
+        response = super().form_valid(form)
+        # Mostrar un mensaje de éxito
+        messages.success(self.request, 'Registro actualizado con éxito!')
+        return response
+
+    def get_success_url(self):
+        # Redirige al usuario a la vista de gestión después de la edición
+        return reverse_lazy('gestionarArchivoLa', kwargs={'id': self.object.articuloDe.id})
+    
+def eliminar_articulo_liga(request, articulo_id):
+    # Obtener el objeto LigaArchivo que se desea eliminar
+    liga_archivo = get_object_or_404(LigaArchivo, pk=articulo_id)
+
+    if request.method == "POST":
+        # Eliminar el objeto
+        liga_archivo.delete()
+
+        # Responder con un mensaje de éxito
+        return JsonResponse({"success": True, "message": "Artículo eliminado exitosamente!"})
+
+    # Si no es un POST, no permitimos la eliminación
+    return JsonResponse({"success": False, "message": "Método no permitido"}, status=405)
+    
 def get_active_municipality():
     """
     Retorna el primer municipio con status='activo',

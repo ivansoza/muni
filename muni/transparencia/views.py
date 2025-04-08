@@ -14,7 +14,7 @@ import json  # Para visualizar los datos en la consola
 from informacion_municipal.models import Municipio
 from .models import Encuesta, Envio, Opcion, Pregunta, Respuesta
 from django.shortcuts import render
-from .models import ListaObligaciones
+from .models import ListaObligaciones, LigaArchivo
 # Create your views here.
 class HomeTransparenciaView(TemplateView):
     template_name = 'homeTransparencia.html' 
@@ -177,7 +177,12 @@ class EjerciciosPorSeccionView(TemplateView):
 
 def lista_obligaciones(request):
     lista_obligaciones = ListaObligaciones.objects.all()
+
+    # Obtener los años únicos de los registros en LigaArchivo
+    years = LigaArchivo.objects.values_list('ano', flat=True).distinct()
+
     return render(request, 'listaTrasnparencia.html', {
         'lista_obligaciones': lista_obligaciones,
+        'years': years,
         'sidebar': 'transparencia'
     })

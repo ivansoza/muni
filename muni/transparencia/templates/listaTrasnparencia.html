@@ -200,6 +200,15 @@
 
 <!-- Contenedor común para el buscador y las listas -->
 <div class="container mt-4">
+  <div class="year-selector-container">
+    <label for="yearSelect">Seleccionar Año:</label>
+    <select id="yearSelect" onchange="filterArticlesByYear()">
+        <option value="">Seleccione un año</option>
+        {% for year in years %}
+            <option value="{{ year }}">{{ year }}</option>
+        {% endfor %}
+    </select>
+</div>
     <!-- Contenedor del buscador -->
     <div class="search-container">
         <input type="text" id="searchInput" class="search-input" placeholder="Buscar artículo..." onkeyup="filterArticles()">
@@ -208,23 +217,24 @@
   <div class="lista-obligaciones-container">
     {% for lista in lista_obligaciones %}
         <div class="obligacion" id="lista-{{ lista.id }}">
-            <!-- Título con un ícono a la izquierda -->
             <h4>{{ lista.titulo }}</h4>
             <h5>{{ lista.articulo }}</h5>
             <ul class="articulos-list" id="articulosList-{{ lista.id }}">
                 {% for articulo in lista.articulos_liga.all %}
-                    <li class="articulo-item">
-                        <a href="{{ articulo.liga }}" target="_blank">
-                            <!-- Ícono de archivo antes del artículo -->
+                    <li class="articulo-item" data-ano="{{ articulo.ligaarchivo_set.first.ano }}">
+                        <a href="{% if articulo.ligaarchivo_set.first.liga %}{{ articulo.ligaarchivo_set.first.liga }}{% else %}# {% endif %}" target="_blank">
                             <i class="fas fa-scroll"></i> 
                             {{ articulo.articulo_fraccion }}
+                            {% if articulo.ligaarchivo_set.first.archivo %}
+                                <span class="badge badge-primary">Archivo</span>
+                            {% endif %}
                         </a>
                     </li>
                 {% endfor %}
             </ul>
         </div>
     {% endfor %}
-  </div>
+</div>
 </div>
 <br>
 
@@ -254,7 +264,25 @@
         </div>
     </div>
 </div>
-
+<script>
+  // Función para filtrar los artículos según el año seleccionado
+  function filterArticlesByYear() {
+      const selectedYear = document.getElementById("yearSelect").value;
+      
+      // Iteramos sobre las listas y artículos
+      document.querySelectorAll(".articulos-list").forEach(function(list) {
+          list.querySelectorAll(".articulo-item").forEach(function(item) {
+              const itemYear = item.getAttribute("data-ano");
+              
+              if (selectedYear && itemYear != selectedYear) {
+                  item.style.display = "none";
+              } else {
+                  item.style.display = "block";
+              }
+          });
+      });
+  }
+</script>
 <script>
     function filterArticles() {
         const input = document.getElementById('searchInput');

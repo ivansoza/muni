@@ -450,7 +450,7 @@
                                         data-titulo="{{ noticia.titulo }}"
                                         data-autor="{{ noticia.autor }}"
                                         data-fecha="{{ noticia.fecha|date:'d/m/Y H:i' }}"
-                                        data-imagen="{{ noticia.imagen.url }}"
+                                        data-imagen="{% if noticia.imagen %}{{ noticia.imagen.url }}{% else %}{% endif %}"
                                         title="Eliminar">
                                             <i class="fas fa-trash-alt"></i>
                                     </a>

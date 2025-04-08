@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Encuesta, Pregunta, Opcion, Envio, Respuesta
-from .models import ListaObligaciones, ArticuloLiga
+from .models import ListaObligaciones, ArticuloLiga,LigaArchivo
 
 # Inline para editar Opciones dentro de una Pregunta
 class OpcionInline(admin.TabularInline):
@@ -59,3 +59,4 @@ admin.site.register(EjercicioFiscal)
 admin.site.register(DocumentoTransparencia)
 admin.site.register(ListaObligaciones)
 admin.site.register(ArticuloLiga)
+admin.site.register(LigaArchivo)
