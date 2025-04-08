@@ -3,726 +3,185 @@
 {% block content %}
 
 <style>
-    /* Estilos generales y mejorados */
-    .container-privacidad {
-        max-width: 1000px;
-        margin: 40px auto;
-        background: #fff;
-        padding: 40px;
-        border-radius: 10px;
-        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
-        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    /* Estilos generales */
+    .avisos-list {
+        display: block; /* Cambiado de flex a block para que las tarjetas estén en una sola columna */
+        gap: 20px;
     }
 
-    .container-privacidad h1 {
-        text-align: center;
-        color: var(--color-iconos);
-        margin-bottom: 40px;
-        font-size: 32px;
-        font-weight: 600;
-        position: relative;
-        padding-bottom: 15px;
-    }
-
-    .container-privacidad h1:after {
-        content: "";
-        position: absolute;
-        width: 100px;
-        height: 4px;
-        background: var(--color-gradiente);
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        border-radius: 2px;
-    }
-
-    .intro-text {
-        text-align: center;
-        margin-bottom: 30px;
-        color: #666;
-        font-size: 17px;
-        line-height: 1.7;
-        max-width: 800px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    /* Estilo mejorado para el acordeón */
-    .accordion {
-        margin-bottom: 20px;
+    .aviso-card {
+        width: 100%;  /* Asegura que cada tarjeta ocupe el 100% del ancho */
+        max-width: 100%;  /* Elimina el máximo ancho, ahora cada tarjeta ocupará todo el espacio */
         border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         overflow: hidden;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        background-color: #fff;
+        transition: transform 0.3s ease;
+        margin-bottom: 20px;  /* Se añade un margen entre las tarjetas */
     }
 
-    .accordion:hover {
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    .aviso-card:hover {
+        transform: translateY(-5px);
     }
 
-    .accordion-header {
-        background: var(--color-gradiente);
-        color: white;
-        padding: 18px 25px;
-        cursor: pointer;
-        border-radius: 8px;
+    /* Cabecera de la tarjeta */
+    .aviso-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        padding: 10px;
+        background-color: var(--color-primario);
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .aviso-header:hover {
+        background-color: var(--color-secundario);
+    }
+
+    .aviso-header h3 {
+        margin: 0;
+        font-size: 18px;
         font-weight: 600;
-        transition: all 0.3s ease;
-        position: relative;
-        font-size: 17px;
     }
 
-    .accordion-header:hover {
-        background: var(--color-primario);
+    .toggle-btn {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 24px;
+        cursor: pointer;
+        transition: transform 0.2s ease;
     }
 
-    .accordion-icon {
-        transition: transform 0.3s ease;
-        font-size: 16px;
-        width: 20px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .toggle-btn:hover {
+        transform: rotate(45deg);
     }
 
-    .accordion-header.active {
-        border-radius: 8px 8px 0 0;
-    }
-
-    .accordion-header.active .accordion-icon {
-        transform: rotate(180deg);
-    }
-
-    .accordion-content {
-        display: none;
-        padding: 25px 30px;
-        background: #f9f9f9;
-        border: 1px solid #eee;
-        border-top: none;
-        border-radius: 0 0 8px 8px;
-        line-height: 1.7;
-        color: #444;
-        font-size: 16px;
-        transition: all 0.3s ease;
-    }
-
-    .accordion-content.show {
-        display: block;
-    }
-
-    /* Mejoras para los enlaces de descarga */
-    .download-link {
-        display: inline-flex;
-        align-items: center;
-        margin: 12px 0;
-        padding: 10px 18px;
-        background: var(--color-iconos);
-        color: white;
-        text-decoration: none;
-        border-radius: 6px;
-        transition: all 0.3s ease;
-        font-weight: 500;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .download-link:before {
-        content: "↓";
-        margin-right: 8px;
-        font-weight: bold;
-    }
-
-    .download-link:hover {
-        background: var(--color-primario);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    p {
-        margin-bottom: 18px;
-        line-height: 1.7;
-    }
-
-    ul {
-        margin-left: 25px;
-        margin-bottom: 20px;
-    }
-
-    ul li {
-        margin-bottom: 10px;
-        position: relative;
-    }
-
-    /* Separador de secciones */
-    .section-divider {
-        height: 1px;
-        background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,0.1), rgba(0,0,0,0));
-        margin: 40px 0;
-    }
-
-    /* Pie de documento mejorado */
-    .fecha-actualizacion {
-        text-align: center;
-        font-style: italic;
-        margin-top: 40px;
-        padding-top: 20px;
-        font-size: 15px;
-        color: #777;
-        border-top: 1px solid #eee;
-    }
-
-    /* Destacado para textos importantes */
-    .highlight {
-        background-color: rgba(var(--color-secundario-rgb), 0.1);
+    /* Cuerpo desplegable */
+    .aviso-body {
         padding: 20px;
-        border-radius: 6px;
-        border-left: 4px solid var(--color-secundario);
-        margin-bottom: 20px;
+        display: none;
+        background-color: #f9f9f9;
+        border-top: 1px solid #ddd;
     }
 
-    /* Indicador visual de sección activa */
-    .active-indicator {
-        position: absolute;
-        left: -5px;
-        top: 0;
-        height: 100%;
-        width: 5px;
-        background: var(--color-secundario);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .accordion-header.active .active-indicator {
-        opacity: 1;
-    }
-
-    /* Adaptación a dispositivos móviles */
-    @media (max-width: 768px) {
-        .container-privacidad {
-            padding: 25px 20px;
-            margin: 20px 10px;
-        }
-        
-        .accordion-header {
-            padding: 15px 20px;
-            font-size: 16px;
-        }
-        
-        .accordion-content {
-            padding: 20px;
-        }
-    }
-
-    /* Botón de volver arriba */
-    .back-to-top {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: var(--color-primario);
-        color: white;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        z-index: 1000;
-    }
-
-    .back-to-top.visible {
-        opacity: 1;
-    }
-
-    .back-to-top:hover {
-        background: var(--color-secundario);
-    }
-
-    /* Mejorar accesibilidad con foco en elementos */
-    .accordion-header:focus {
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(var(--color-secundario-rgb), 0.5);
-    }
-
-    /* Panel de navegación rápida */
-    .quick-nav {
-        background: var(--color-iconos);
-        color: white;
-        padding: 15px 20px;
+    /* Tarjeta interna para el municipio y la descripción */
+    .municipio-card {
+        padding: 15px;
+        background-color: #f1f1f1;
         border-radius: 8px;
-        margin-bottom: 30px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    .quick-nav-title {
-        font-weight: 600;
-        margin-bottom: 10px;
+    .municipio-card h4 {
+        font-size: 18px;
+        margin: 0;
     }
 
-    .quick-nav-items {
+    .municipio-card p {
+        margin: 10px 0;
+    }
+
+    /* Listado de archivos */
+    .archivos-list {
+        margin-top: 10px;
+    }
+
+    .archivo-item {
         display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        background-color: #fafafa;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    .quick-nav-item {
-        background: rgba(255, 255, 255, 0.2);
-        padding: 5px 10px;
-        border-radius: 4px;
-        font-size: 14px;
+    .archivo-item a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .archivo-item a:hover {
+        text-decoration: underline;
+    }
+
+    .download-btn {
+        background-color: var(--color-icono);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 5px;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: background-color 0.3s;
     }
 
-    .quick-nav-item:hover {
-        background: rgba(255, 255, 255, 0.3);
+    .download-btn:hover {
+        background-color: var(--color-secundario);
     }
-</style>
 
-
-<style>
-
-.contenido-noticia {
-    font-size: 16px;
-    line-height: 1.6;
-    color: #333;
-}
-
-/* Estilos para las tablas generadas por CKEditor */
-.contenido-noticia table {
-    width: 100%;  /* Hace que las tablas ocupen el ancho disponible */
-    border-collapse: collapse; /* Elimina espacios entre bordes */
-    margin: 20px 0;  /* Espaciado arriba y abajo */
-    background-color: #fff;
-    border: 1px solid #ddd;
-}
-
-.contenido-noticia th, 
-.contenido-noticia td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
-}
-
-/* Encabezados de tabla */
-.contenido-noticia th {
-    background-color: #f4f4f4;
-}
-
-/* Estilos para citas */
-.contenido-noticia blockquote {
-    border-left: 4px solid var(--color-secundario);
-    padding: 10px 20px;
-    margin: 20px 0;
-    background: #f8f9fa;
-    font-style: italic;
-}
-
-/* Listas dentro del contenido */
-.contenido-noticia ul, 
-.contenido-noticia ol {
-    margin: 15px 0;
-    padding-left: 20px;
-}
-
-/* Imágenes dentro del contenido */
-.contenido-noticia img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 10px auto;
-}
-
-
-
+    /* Íconos */
+    .icon {
+        margin-right: 10px;
+        font-size: 20px;
+        color:rgb(195, 189, 8);
+    }
 
 </style>
 
 <div class="container">
-
-    <h2 class="news-title">Privacidad
-        <span>| Avisos de Privacidad</span>
-    </h2>
-
-</div>
-{% if municipio.avisos_privacidad.all %}
-<ul>
-    {% for aviso in municipio.avisos_privacidad.all %}
-        <li>
-            <h2>{{ aviso.titulo }}</h2>
-            <p><strong>Fecha de creación:</strong> {{ aviso.fecha_creacion }}</p>
-
-            <div class="contenido-noticia">
-                <div>{{ aviso.contenido|safe }}</div>
+    <div class="header">
+        <h2 class="news-title">Privacidad <span>| Avisos de Privacidad</span></h2>
+        <p>Consulta los avisos de privacidad por área y accede a los documentos relacionados con cada trámite o servicio municipal.</p>
+    </div>
+    <div class="avisos-list">
+        {% for aviso in avisos %}
+            <div class="aviso-card">
+                <div class="aviso-header" onclick="toggleVisibility({{ aviso.id }})">
+                    <h3>{{ aviso.area }}</h3>
+                    <button class="toggle-btn">+</button>
+                </div>
+                <div class="aviso-body" id="body-{{ aviso.id }}">
+                    <!-- Tarjeta para mostrar el municipio y la descripción -->
+                    <div class="municipio-card">
+                        <p>{{ aviso.descripcion }}</p>
+                    </div>
+                    <!-- Listado de archivos -->
+                    <div class="archivos-list">
+                        {% for archivo in aviso.archivos_relacionados.all %}
+                            <div class="archivo-item">
+                                <div>
+                                    <i class="icon fas fa-file"></i>
+                                    <a href="{{ archivo.archivo.url }}" target="_blank">{{ archivo.descripcion|default:"Ver archivo" }}</a>
+                                </div>
+                                <div>
+                                    <a href="{{ archivo.archivo.url }}" class="download-btn" download>Descargar</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
-
-
-        </li>
-    {% endfor %}
-</ul>
-{% else %}
-<p>No hay avisos de privacidad para este municipio.</p>
-{% endif %}
-
-
-
-
-<div class="container-privacidad">
-    <h1>AVISOS DE PRIVACIDAD</h1>
-    
-    <p class="intro-text">
-        El presente documento describe cómo recopilamos, usamos y protegemos su información personal. 
-        Su privacidad es importante para nosotros, por favor tómese el tiempo de leer detenidamente estos avisos.
-    </p>
-
-    <!-- Panel de navegación rápida -->
-    <div class="quick-nav">
-        <div class="quick-nav-title">Navegación rápida:</div>
-        <div class="quick-nav-items">
-            <span class="quick-nav-item" data-section="1">Quiénes Somos</span>
-            <span class="quick-nav-item" data-section="2">Datos Personales</span>
-            <span class="quick-nav-item" data-section="3">Finalidades</span>
-            <span class="quick-nav-item" data-section="4">Transferencias</span>
-            <span class="quick-nav-item" data-section="5">Derechos ARCO</span>
-        </div>
+        {% endfor %}
     </div>
-    
-    <!-- Sección 1: Quiénes somos -->
-    <div class="accordion" id="seccion1">
-        <div class="accordion-header" tabindex="0">
-            <div class="active-indicator"></div>
-            <span>1. Quiénes Somos</span>
-            <span class="accordion-icon">▼</span>
-        </div>
-        <div class="accordion-content">
-            <div class="highlight">
-                <p>[Nombre de la Organización/Institución], con domicilio en [Dirección Completa], es el responsable del tratamiento de los datos personales que nos proporcione, los cuales serán protegidos conforme a lo dispuesto por la Ley General de Protección de Datos Personales en Posesión de Sujetos Obligados, y demás normatividad que resulte aplicable.</p>
-            </div>
-            <p><strong>Documentos relacionados:</strong></p>
-            <ul>
-                <li><a href="#" class="download-link">Acta Constitutiva (PDF)</a></li>
-                <li><a href="#" class="download-link">Registro Federal de Contribuyentes (PDF)</a></li>
-            </ul>
-        </div>
-    </div>
-    
-    <!-- Sección 2: Datos personales que solicitamos -->
-    <div class="accordion" id="seccion2">
-        <div class="accordion-header" tabindex="0">
-            <div class="active-indicator"></div>
-            <span>2. Datos Personales que Solicitamos</span>
-            <span class="accordion-icon">▼</span>
-        </div>
-        <div class="accordion-content">
-            <p>Para llevar a cabo las finalidades descritas en el presente aviso de privacidad, utilizaremos los siguientes datos personales:</p>
-            <ul>
-                <li>Datos de identificación: nombre completo, CURP, RFC, identificación oficial, firma autógrafa, fecha de nacimiento.</li>
-                <li>Datos de contacto: domicilio, teléfono particular, teléfono celular, correo electrónico.</li>
-                <li>Datos académicos: trayectoria educativa, títulos, cédula profesional, certificados.</li>
-                <li>Datos laborales: experiencia laboral, puesto, domicilio laboral, correo electrónico institucional.</li>
-                <li>Datos patrimoniales: información fiscal, historial crediticio, cuentas bancarias, ingresos y egresos (cuando aplique).</li>
-            </ul>
-            <div class="highlight">
-                <p>Además, en ciertos casos específicos, podremos solicitar datos personales sensibles como:</p>
-                <ul>
-                    <li>Datos de salud</li>
-                    <li>Características físicas</li>
-                    <li>Datos biométricos</li>
-                </ul>
-                <p>Para el tratamiento de estos datos sensibles, siempre requeriremos su consentimiento expreso y por escrito.</p>
-            </div>
-            <p><strong>Documentos relacionados:</strong></p>
-            <ul>
-                <li><a href="#" class="download-link">Formulario de Consentimiento (DOCX)</a></li>
-                <li><a href="#" class="download-link">Guía de Datos Personales (PDF)</a></li>
-            </ul>
-        </div>
-    </div>
-    
-    <!-- Sección 3: Finalidades del tratamiento -->
-    <div class="accordion" id="seccion3">
-        <div class="accordion-header" tabindex="0">
-            <div class="active-indicator"></div>
-            <span>3. Finalidades del Tratamiento</span>
-            <span class="accordion-icon">▼</span>
-        </div>
-        <div class="accordion-content">
-            <p>Los datos personales que recabamos serán utilizados para las siguientes finalidades primarias que son necesarias para el servicio solicitado:</p>
-            <ul>
-                <li>Verificar y confirmar su identidad</li>
-                <li>Gestionar y administrar los servicios solicitados</li>
-                <li>Dar cumplimiento a obligaciones contraídas con nuestros clientes</li>
-                <li>Procesar inscripciones a programas, cursos o eventos</li>
-                <li>Generar registros para seguimiento a servicios</li>
-                <li>Mantener actualizados nuestros registros para poder responder a sus consultas</li>
-                <li>Cumplir con requerimientos legales</li>
-            </ul>
-            <p>Adicionalmente, utilizaremos su información personal para las siguientes finalidades secundarias que no son necesarias para el servicio solicitado, pero que nos permiten brindarle un mejor servicio:</p>
-            <ul>
-                <li>Envío de información sobre nuevos servicios</li>
-                <li>Envío de promociones y boletines informativos</li>
-                <li>Realizar estudios sobre hábitos de consumo</li>
-                <li>Encuestas de calidad y satisfacción</li>
-            </ul>
-            <div class="highlight">
-                <p>Si no desea que sus datos personales sean tratados para estas finalidades secundarias, puede manifestarlo mediante el siguiente correo electrónico: privacidad@ejemplo.com</p>
-            </div>
-            <p><strong>Documentos relacionados:</strong></p>
-            <ul>
-                <li><a href="#" class="download-link">Políticas de Uso de Datos (PDF)</a></li>
-                <li><a href="#" class="download-link">Criterios de Conservación de Datos (PDF)</a></li>
-            </ul>
-        </div>
-    </div>
-    
-    <!-- Sección 4: Transferencia de datos -->
-    <div class="accordion" id="seccion4">
-        <div class="accordion-header" tabindex="0">
-            <div class="active-indicator"></div>
-            <span>4. Transferencia de Datos</span>
-            <span class="accordion-icon">▼</span>
-        </div>
-        <div class="accordion-content">
-            <p>Le informamos que sus datos personales pueden ser compartidos dentro y fuera del país con las siguientes personas, empresas, organizaciones o autoridades distintas a nosotros, para los siguientes fines:</p>
-            <ul>
-                <li>Instituciones bancarias: Para procesar pagos</li>
-                <li>Autoridades fiscales: Para cumplir con obligaciones fiscales</li>
-                <li>Empresas de mensajería: Para entrega de documentación</li>
-                <li>Proveedores de servicios tecnológicos: Para almacenamiento de datos</li>
-                <li>Organismos públicos: Por requerimiento legal</li>
-            </ul>
-            <div class="highlight">
-                <p>Nos comprometemos a no transferir su información personal a terceros sin su consentimiento, salvo las excepciones previstas en el artículo 22 de la Ley General de Protección de Datos Personales en Posesión de Sujetos Obligados.</p>
-            </div>
-            <p><strong>Documentos relacionados:</strong></p>
-            <ul>
-                <li><a href="#" class="download-link">Acuerdos de Confidencialidad (PDF)</a></li>
-                <li><a href="#" class="download-link">Lista de Encargados de Datos (PDF)</a></li>
-            </ul>
-        </div>
-    </div>
-    
-    <!-- Sección 5: Derechos ARCO -->
-    <div class="accordion" id="seccion5">
-        <div class="accordion-header" tabindex="0">
-            <div class="active-indicator"></div>
-            <span>5. Derechos ARCO</span>
-            <span class="accordion-icon">▼</span>
-        </div>
-        <div class="accordion-content">
-            <div class="highlight">
-                <p>Usted tiene derecho a conocer qué datos personales tenemos de usted, para qué los utilizamos y las condiciones del uso que les damos (Acceso). Asimismo, es su derecho solicitar la corrección de su información personal en caso de que esté desactualizada, sea inexacta o incompleta (Rectificación); que la eliminemos de nuestros registros o bases de datos cuando considere que la misma no está siendo utilizada adecuadamente (Cancelación); así como oponerse al uso de sus datos personales para fines específicos (Oposición). Estos derechos se conocen como derechos ARCO.</p>
-            </div>
-            <p>Para el ejercicio de cualquiera de los derechos ARCO, usted deberá presentar la solicitud respectiva a través de los siguientes medios:</p>
-            <ul>
-                <li>Correo electrónico: derechos.arco@ejemplo.com</li>
-                <li>Oficina de Privacidad: [Dirección completa]</li>
-                <li>Sitio web: www.ejemplo.com/derechos-arco</li>
-            </ul>
-            <p>La solicitud deberá contener la siguiente información:</p>
-            <ul>
-                <li>Nombre completo</li>
-                <li>Domicilio u otro medio para comunicarle la respuesta</li>
-                <li>Documentos que acrediten su identidad</li>
-                <li>Descripción clara y precisa de los datos personales respecto de los que busca ejercer sus derechos</li>
-            </ul>
-            <p><strong>Documentos relacionados:</strong></p>
-            <ul>
-                <li><a href="#" class="download-link">Formato de Solicitud de Derechos ARCO (DOCX)</a></li>
-                <li><a href="#" class="download-link">Guía para Ejercer Derechos ARCO (PDF)</a></li>
-            </ul>
-        </div>
-    </div>
-    
-    <!-- Sección 6: Medidas de seguridad -->
-    <div class="accordion" id="seccion6">
-        <div class="accordion-header" tabindex="0">
-            <div class="active-indicator"></div>
-            <span>6. Medidas de Seguridad</span>
-            <span class="accordion-icon">▼</span>
-        </div>
-        <div class="accordion-content">
-            <p>Para proteger sus datos personales hemos establecido medidas de seguridad administrativas, técnicas y físicas, para evitar su daño, pérdida, alteración, destrucción, uso, acceso o divulgación indebida.</p>
-            <p>Estas medidas incluyen, pero no se limitan a:</p>
-            <ul>
-                <li>Políticas y procedimientos de privacidad</li>
-                <li>Cláusulas contractuales con nuestro personal y proveedores</li>
-                <li>Controles de acceso a sistemas de información</li>
-                <li>Cifrado de datos sensibles</li>
-                <li>Instalaciones con medidas de seguridad física</li>
-                <li>Programas de concientización en seguridad para personal</li>
-            </ul>
-            <div class="highlight">
-                <p>En caso de que detecte alguna vulneración relacionada con sus datos personales, le notificaremos de inmediato para que pueda tomar las medidas pertinentes.</p>
-            </div>
-            <p><strong>Documentos relacionados:</strong></p>
-            <ul>
-                <li><a href="#" class="download-link">Política de Seguridad de la Información (PDF)</a></li>
-                <li><a href="#" class="download-link">Procedimientos ante Vulneraciones (PDF)</a></li>
-            </ul>
-        </div>
-    </div>
-    
-    <!-- Sección 7: Uso de cookies y tecnologías similares -->
-    <div class="accordion" id="seccion7">
-        <div class="accordion-header" tabindex="0">
-            <div class="active-indicator"></div>
-            <span>7. Uso de Cookies y Tecnologías Similares</span>
-            <span class="accordion-icon">▼</span>
-        </div>
-        <div class="accordion-content">
-            <p>Nuestro sitio web utiliza cookies, web beacons y otras tecnologías similares para mejorar su experiencia de navegación y recopilar información sobre cómo interactúa con nuestro sitio. Estas tecnologías nos permiten:</p>
-            <ul>
-                <li>Reconocer su navegador y sus preferencias</li>
-                <li>Realizar análisis estadísticos del uso del sitio</li>
-                <li>Personalizar contenidos según sus preferencias</li>
-                <li>Optimizar la funcionalidad del sitio</li>
-            </ul>
-            <div class="highlight">
-                <p>La mayoría de los navegadores están configurados para aceptar cookies. Sin embargo, usted puede configurar su navegador para rechazar todas las cookies o para que le avise cuando se envía una cookie. Es posible que algunas funciones de nuestro sitio web no funcionen correctamente si rechaza las cookies.</p>
-            </div>
-            <p><strong>Documentos relacionados:</strong></p>
-            <ul>
-                <li><a href="#" class="download-link">Política de Cookies (PDF)</a></li>
-                <li><a href="#" class="download-link">Guía para Deshabilitar Cookies (PDF)</a></li>
-            </ul>
-        </div>
-    </div>
-    
-    <!-- Sección 8: Cambios al aviso de privacidad -->
-    <div class="accordion" id="seccion8">
-        <div class="accordion-header" tabindex="0">
-            <div class="active-indicator"></div>
-            <span>8. Cambios al Aviso de Privacidad</span>
-            <span class="accordion-icon">▼</span>
-        </div>
-        <div class="accordion-content">
-            <p>Nos reservamos el derecho de efectuar en cualquier momento modificaciones o actualizaciones al presente aviso de privacidad, para la atención de:</p>
-            <ul>
-                <li>Novedades legislativas</li>
-                <li>Políticas internas</li>
-                <li>Nuevos requerimientos para la prestación u ofrecimiento de nuestros servicios</li>
-                <li>Prácticas del mercado</li>
-            </ul>
-            <div class="highlight">
-                <p>Estas modificaciones estarán disponibles al público a través de los siguientes medios:</p>
-                <ul>
-                    <li>Anuncios visibles en nuestras instalaciones</li>
-                    <li>En nuestra página de Internet [sección aviso de privacidad]</li>
-                    <li>A través de correo electrónico, en caso de que lo hayamos proporcionado</li>
-                </ul>
-            </div>
-            <p><strong>Documentos relacionados:</strong></p>
-            <ul>
-                <li><a href="#" class="download-link">Historial de Cambios al Aviso de Privacidad (PDF)</a></li>
-                <li><a href="#" class="download-link">Procedimiento de Notificación de Cambios (PDF)</a></li>
-            </ul>
-        </div>
-    </div>
-    
-    <!-- Sección 9: Contacto -->
-    <div class="accordion" id="seccion9">
-        <div class="accordion-header" tabindex="0">
-            <div class="active-indicator"></div>
-            <span>9. Contacto</span>
-            <span class="accordion-icon">▼</span>
-        </div>
-        <div class="accordion-content">
-            <p>Si usted tiene alguna duda sobre el presente aviso de privacidad, puede dirigirla a:</p>
-            <ul>
-                <li>La dirección electrónica: privacidad@ejemplo.com</li>
-                <li>Al teléfono: (55) 1234-5678, con el Departamento de Protección de Datos</li>
-                <li>O visitar nuestra página de Internet: www.ejemplo.com</li>
-            </ul>
-            <div class="highlight">
-                <p>Asimismo, ponemos a su disposición nuestro Aviso de Privacidad Integral en el siguiente enlace:</p>
-                <p><a href="#" class="download-link">Aviso de Privacidad Integral (PDF)</a></p>
-            </div>
-        </div>
-    </div>
-    
-    <div class="fecha-actualizacion">
-        Última actualización: Febrero de 2024
-    </div>
-
-    <!-- Botón de volver arriba -->
-    <div class="back-to-top">↑</div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Funcionalidad de acordeón
-        const accordionHeaders = document.querySelectorAll('.accordion-header');
-        
-        accordionHeaders.forEach(header => {
-            header.addEventListener('click', function() {
-                this.classList.toggle('active');
-                const content = this.nextElementSibling;
-                
-                if (content.style.display === 'block') {
-                    content.style.display = 'none';
-                } else {
-                    content.style.display = 'block';
-                }
-            });
-
-            // Agregar soporte para navegación con teclado
-            header.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    this.click();
-                }
-            });
-        });
-
-        // Funcionalidad de botón volver arriba
-        const backToTopButton = document.querySelector('.back-to-top');
-        
-        window.addEventListener('scroll', function() {
-            if (window.pageYOffset > 300) {
-                backToTopButton.classList.add('visible');
-            } else {
-                backToTopButton.classList.remove('visible');
-            }
-        });
-        
-        backToTopButton.addEventListener('click', function() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-
-        // Navegación rápida
-        const quickNavItems = document.querySelectorAll('.quick-nav-item');
-        
-        quickNavItems.forEach(item => {
-            item.addEventListener('click', function() {
-                const sectionNumber = this.getAttribute('data-section');
-                const section = document.getElementById('seccion' + sectionNumber);
-                
-                if (section) {
-                    // Desplazamiento suave a la sección
-                    section.scrollIntoView({ behavior: 'smooth' });
-                    
-                    // Abrir la sección si está cerrada
-                    const header = section.querySelector('.accordion-header');
-                    const content = section.querySelector('.accordion-content');
-                    
-                    if (content.style.display !== 'block') {
-                        setTimeout(() => {
-                            header.click();
-                        }, 500);
-                    }
-                }
-            });
-        });
-    });
+    function toggleVisibility(id) {
+        const body = document.getElementById('body-' + id);
+        const button = body.previousElementSibling.querySelector('.toggle-btn');
+        if (body.style.display === "none" || body.style.display === "") {
+            body.style.display = "block";
+            button.textContent = "-";
+        } else {
+            body.style.display = "none";
+            button.textContent = "+";
+        }
+    }
 </script>
 
-{% endblock content %}
+{% endblock %}
