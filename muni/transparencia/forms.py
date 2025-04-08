@@ -80,14 +80,19 @@ class ArticuloLigaForm(forms.ModelForm):
         model = ArticuloLiga
         fields = ['lista_obligaciones', 'articulo_fraccion']
         widgets = {
-            'lista_obligaciones': forms.Select(attrs={'class': 'form-control'}),
-            'articulo_fraccion': forms.TextInput(attrs={'class': 'form-control'}),
+            'lista_obligaciones': forms.Select(attrs={
+                'class': 'form-control',
+            }),
+            'articulo_fraccion': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ej. Artículo 70 Fracción I'
+            }),
         }
-    
+
     def __init__(self, *args, **kwargs):
         lista_obligacion_id = kwargs.pop('lista_obligacion_id', None)
         super().__init__(*args, **kwargs)
-        
+
         if lista_obligacion_id:
             self.fields['lista_obligaciones'].queryset = ListaObligaciones.objects.filter(id=lista_obligacion_id)
             self.fields['lista_obligaciones'].initial = lista_obligacion_id

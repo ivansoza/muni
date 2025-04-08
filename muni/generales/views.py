@@ -1411,44 +1411,41 @@ class CrearArticuloView(CreateView):
         lista_obligacion_id = self.kwargs.get('lista_obligacion_id')
         kwargs['lista_obligacion_id'] = lista_obligacion_id
         return kwargs
-    
+
     def form_valid(self, form):
-        # Obtener la instancia de ListaObligaciones usando el id proporcionado
         lista_obligacion_id = self.kwargs['lista_obligacion_id']
         lista_obligacion = get_object_or_404(ListaObligaciones, pk=lista_obligacion_id)
 
-        # Asignamos la instancia de ListaObligaciones al artículo
         form.instance.lista_obligaciones = lista_obligacion
 
-        # Asignamos el número de orden automáticamente
-        ultimo_orden = ArticuloLiga.objects.filter(lista_obligaciones=lista_obligacion).aggregate(max_orden=models.Max('orden'))['max_orden']
+        # Asignar número de orden automáticamente
+        ultimo_orden = ArticuloLiga.objects.filter(lista_obligaciones=lista_obligacion).aggregate(
+            max_orden=models.Max('orden'))['max_orden']
         form.instance.orden = (ultimo_orden + 1) if ultimo_orden is not None else 1
 
-        # Guardamos el artículo y mostramos el mensaje de éxito
         response = super().form_valid(form)
         messages.success(self.request, 'Artículo creado con éxito!')
         return response
 
-
     def get_success_url(self):
-        # Redirigimos al usuario a la vista de gestión de artículos después de la creación
         return reverse_lazy('gestionar_articulos', kwargs={'lista_id': self.kwargs['lista_obligacion_id']})
 
     def get_context_data(self, **kwargs):
-        # Obtener la lista de obligaciones para pasarla al contexto
         context = super().get_context_data(**kwargs)
         lista_obligacion_id = self.kwargs['lista_obligacion_id']
         lista_obligacion = get_object_or_404(ListaObligaciones, pk=lista_obligacion_id)
-        context['lista_obligaciones'] = lista_obligacion  # Pasamos el objeto lista_obligaciones
-        url_configuracion = reverse('gestionar_articulos', kwargs={'lista_id': self.kwargs['lista_obligacion_id']})
-        context["breadcrumb"] = {
-            'parent': {'name': 'Gestión de artículos', 'url': url_configuracion},
-            'child': {'name': 'Registro de articulos en lista', 'url': ''}
-        }
-        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
-        
-        return context
 
+        context['lista_obligaciones'] = lista_obligacion
+        context['breadcrumb'] = {
+            'parent': {
+                'name': 'Gestión de artículos',
+                'url': reverse('gestionar_articulos', kwargs={'lista_id': lista_obligacion_id})
+            },
+            'child': {'name': 'Registro de artículos en lista', 'url': ''}
+        }
+        context['sidebar'] = 'transparencia'
+        context['regreso_url'] = reverse('gestionar_articulos', kwargs={'lista_id': lista_obligacion_id})
+        return context
 
 class EditarArticuloView(UpdateView):
     model = ArticuloLiga
@@ -1456,33 +1453,32 @@ class EditarArticuloView(UpdateView):
     template_name = 'transparencia2/editarArticulo.html'
 
     def get_object(self):
-        # Recuperar el artículo por su ID
         articulo_id = self.kwargs['articulo_id']
-        articulo = get_object_or_404(ArticuloLiga, pk=articulo_id)
-        return articulo
-    
+        return get_object_or_404(ArticuloLiga, pk=articulo_id)
+
     def form_valid(self, form):
-        # Al enviar el formulario correctamente, mostramos un mensaje de éxito
         messages.success(self.request, 'Artículo actualizado con éxito!')
         return super().form_valid(form)
-    
+
     def get_success_url(self):
-        # Redirigimos al usuario a la vista de gestión de artículos después de la edición
         lista_obligacion_id = self.kwargs['lista_obligacion_id']
         return reverse_lazy('gestionar_articulos', kwargs={'lista_id': lista_obligacion_id})
-    
+
     def get_context_data(self, **kwargs):
-        # Obtener la lista de obligaciones para pasarla al contexto
         context = super().get_context_data(**kwargs)
         lista_obligacion_id = self.kwargs['lista_obligacion_id']
         lista_obligacion = get_object_or_404(ListaObligaciones, pk=lista_obligacion_id)
-        context['lista_obligaciones'] = lista_obligacion  # Pasamos el objeto lista_obligaciones
-        url_configuracion = reverse('gestionar_articulos', kwargs={'lista_id': self.kwargs['lista_obligacion_id']})
-        context["breadcrumb"] = {
-            'parent': {'name': 'Gestión de artículos', 'url': url_configuracion},
-            'child': {'name': 'Editar de articulos en lista', 'url': ''}
+
+        context['lista_obligaciones'] = lista_obligacion
+        context['breadcrumb'] = {
+            'parent': {
+                'name': 'Gestión de artículos',
+                'url': reverse('gestionar_articulos', kwargs={'lista_id': lista_obligacion_id})
+            },
+            'child': {'name': 'Editar artículos en lista', 'url': ''}
         }
-        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+        context['sidebar'] = 'transparencia'
+        context['regreso_url'] = reverse('gestionar_articulos', kwargs={'lista_id': lista_obligacion_id})
         return context
     
 
@@ -1506,31 +1502,34 @@ class GestionarArticulosArView(View):
         # Obtener los archivos relacionados al artículo
         archivos = LigaArchivo.objects.filter(articuloDe=articulo).order_by('-ano')
 
-        # Diccionario que agrupa los archivos por año
+        # Agrupar los archivos por año
         articulos_por_ano = {}
         for archivo in archivos:
-            ano = archivo.ano  # Año del archivo
+            ano = archivo.ano
             if ano not in articulos_por_ano:
                 articulos_por_ano[ano] = []
 
             articulos_por_ano[ano].append({
                 'articulo': articulo,
-                'tipo': 'liga' if archivo.liga else 'archivo',  # Aquí defines si es liga o archivo
-                'archivo': archivo  # Agregar el objeto archivo
+                'tipo': 'liga' if archivo.liga else 'archivo',
+                'archivo': archivo
             })
 
+        # Obtener el ID de la lista para el botón de regreso
+        lista_obligacion_id = articulo.lista_obligaciones.id
+
         context = {
-            'articulo': articulo,  # Pasamos el artículo específico
+            'articulo': articulo,
             'articulos_por_ano': dict(sorted(articulos_por_ano.items(), reverse=True)),
             'breadcrumb': {
                 'parent': {'name': 'Transparencia', 'url': reverse('lista_obligaciones')},
                 'child': {'name': 'Gestión de artículos', 'url': ''}
             },
-            'sidebar': 'transparencia'
+            'sidebar': 'transparencia',
+            'regreso_url': reverse('gestionar_articulos', kwargs={'lista_id': lista_obligacion_id})
         }
 
         return render(request, 'transparencia2/gestionar_articulo.html', context)
-
 class CrearArticuloLigaView(CreateView):
     model = LigaArchivo
     form_class = ArticuloLigaArchivoForm
