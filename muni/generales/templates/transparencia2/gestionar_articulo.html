@@ -71,27 +71,33 @@
                                 –
                                 <span class="badge bg-primary">
                                     {% if archivo_info.tipo == 'liga' %}
-                                    <i class="fas fa-link"></i> Liga
+                                        <i class="fas fa-link"></i> Liga
                                     {% else %}
-                                    <i class="fas fa-file-pdf"></i>  Archivo
+                                        <i class="fas fa-file-pdf"></i> Archivo
                                     {% endif %}
                                 </span>
                                 <br>
                             </div>
                             <div class="actions">
                                 {% if archivo_info.tipo == 'liga' %}
-                                    <a href="{{ archivo_info.archivo.liga }}" class="btn-round btn-primary" title="Ir al Artículo" target="_blank">
-                                        <i class="fas fa-link"></i>
-                                    </a>
+                                    {% if archivo_info.archivo and archivo_info.archivo.liga %}
+                                        <a href="{{ archivo_info.archivo.liga }}" class="btn-round btn-primary" title="Ir al Artículo" target="_blank">
+                                            <i class="fas fa-link"></i>
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">No hay documento</span>
+                                    {% endif %}
                                 {% else %}
-                                    {% if archivo_info.archivo %}
-                                    <a href="{{archivo_info.archivo.archivo.url }}" class="btn-round btn-success" title="Ver Documento" target="_blank">
-                                        <i class="fas fa-file-pdf"></i> <!-- o otro ícono dependiendo del tipo de archivo -->
-                                    </a>
+                                    {% if archivo_info.archivo and archivo_info.archivo.archivo %}
+                                        <a href="{{ archivo_info.archivo.archivo.url }}" class="btn-round btn-success" title="Ver Documento" target="_blank">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">No hay documento</span>
                                     {% endif %}
                                 {% endif %}
 
-                                <a href="{% url "editar_articulo_liga" archivo_info.archivo.id %}" class="btn-round btn-warning" title="Editar">
+                                <a href="{% url 'editar_articulo_liga' archivo_info.archivo.id %}" class="btn-round btn-warning" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <button class="btn-round btn-danger eliminar-articulo" data-id="{{ archivo_info.archivo.id }}" data-ano="{{ archivo_info.archivo.ano }}" title="Eliminar">
@@ -105,6 +111,7 @@
         </div>
     </div>
 </div>
+
 
 <br>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

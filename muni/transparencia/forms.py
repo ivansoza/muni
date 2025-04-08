@@ -115,3 +115,22 @@ class ArticuloLigaArchivoForm(forms.ModelForm):
         if articulo_id:
             self.fields['articuloDe'].queryset = ArticuloLiga.objects.filter(id=articulo_id)
             self.fields['articuloDe'].initial = articulo_id
+        
+        # Hacemos que el campo "ano" sea obligatorio en el formulario
+        self.fields['ano'].required = True
+
+    def clean(self):
+        cleaned_data = super().clean()
+        liga = cleaned_data.get('liga')
+        archivo = cleaned_data.get('archivo')
+        ano = cleaned_data.get('ano')
+
+        # Verificamos que se ingrese al menos un enlace o un archivo
+        if not liga and not archivo:
+            raise forms.ValidationError("Debe ingresar al menos un enlace o un archivo.")
+
+        # Verificamos que se ingrese el año fiscal
+        if not ano:
+            raise forms.ValidationError("El año fiscal es obligatorio.")
+
+        return cleaned_data
