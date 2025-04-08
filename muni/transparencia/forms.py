@@ -1,5 +1,5 @@
 from django import forms
-from .models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga
+from .models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga, LigaArchivo
 
 class SeccionTransparenciaForm(forms.ModelForm):
     class Meta:
@@ -71,11 +71,10 @@ class ListaObligacionesForm(forms.ModelForm):
 class ArticuloLigaForm(forms.ModelForm):
     class Meta:
         model = ArticuloLiga
-        fields = ['lista_obligaciones', 'articulo_fraccion', 'liga']
+        fields = ['lista_obligaciones', 'articulo_fraccion']
         widgets = {
             'lista_obligaciones': forms.Select(attrs={'class': 'form-control'}),
             'articulo_fraccion': forms.TextInput(attrs={'class': 'form-control'}),
-            'liga': forms.URLInput(attrs={'class': 'form-control'}),
         }
     
     def __init__(self, *args, **kwargs):
@@ -85,3 +84,22 @@ class ArticuloLigaForm(forms.ModelForm):
         if lista_obligacion_id:
             self.fields['lista_obligaciones'].queryset = ListaObligaciones.objects.filter(id=lista_obligacion_id)
             self.fields['lista_obligaciones'].initial = lista_obligacion_id
+
+class ArticuloLigaArchivoForm(forms.ModelForm):
+    class Meta:
+        model = LigaArchivo
+        fields = ['articuloDe', 'ano', 'liga', 'archivo']
+        widgets = {
+            'articuloDe': forms.Select(attrs={'class': 'form-control'}),
+            'ano': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Año fiscal', 'min': 1900, 'max': 2100}),
+            'liga': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el enlace completo del artículo'}),
+            'archivo': forms.ClearableFileInput(attrs={'class': 'custom-file-input', 'id': 'customFile'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        articulo_id = kwargs.pop('articuloDe_id', None)  # Asegúrate de que esto coincida con la clave pasada en kwargs
+        super().__init__(*args, **kwargs)
+        
+        if articulo_id:
+            self.fields['articuloDe'].queryset = ArticuloLiga.objects.filter(id=articulo_id)
+            self.fields['articuloDe'].initial = articulo_id

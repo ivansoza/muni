@@ -4,7 +4,7 @@ from django.contrib.auth.views import LogoutView
 from .views import TransparenciaView, crear_seccion, EjercicioFiscalListView, EjercicioFiscalCreateView, DocumentoTransparenciaListView, registrar_documento, SeccionTransparenciaUpdateView, eliminar_seccion, EjercicioFiscalUpdateView, eliminar_ejercicio_fiscal, DocumentoTransparenciaUpdateView, eliminar_documento_transparencia
 from . import views
 from .views import CrearCarpetaView, SubirArchivoView, ListarCarpetasView, EditarCarpetaView, GestionarCarpetaView, EliminarCarpetaView, EditarArchivoView, eliminar_archivo
-from .views import ListaObligacionesView, ListaObligacionesCreateView, ListaObligacionesUpdateView, ListaObligacionesDeleteView, GestionarArticulosView, CrearArticuloView, EditarArticuloView, EliminarArticuloView, actualizar_orden_articulos, convocatoriaHome, filtrar_convocatorias
+from .views import ListaObligacionesView, ListaObligacionesCreateView, ListaObligacionesUpdateView, ListaObligacionesDeleteView, GestionarArticulosView, CrearArticuloView, EditarArticuloView, EliminarArticuloView, actualizar_orden_articulos, convocatoriaHome, filtrar_convocatorias, GestionarArticulosArView, CrearArticuloLigaView, EditarArticuloLigaArchivoView
 urlpatterns = [
     path("", CustomLoginView.as_view(),name='login'),
     path('logout/', LogoutView.as_view(next_page='home'),  name='logout'),      
@@ -78,6 +78,10 @@ urlpatterns = [
     path('editar_articulo/<int:lista_obligacion_id>/<int:articulo_id>/', EditarArticuloView.as_view(), name='editar_articulo'),
     path('eliminar_articulo/<int:articulo_id>/', EliminarArticuloView.as_view(), name='eliminar_articulo'),
     path('actualizar_orden/', actualizar_orden_articulos, name='actualizar_orden'),
+    path('gestionar_articulo_la/<int:id>/', GestionarArticulosArView.as_view(), name='gestionarArchivoLa'),
+    path('crear_articulo_liga/<int:id>/', CrearArticuloLigaView.as_view(), name='crear_articulo_liga'),
+    path('editar_articulo_liga/<int:pk>/', EditarArticuloLigaArchivoView.as_view(), name='editar_articulo_liga'),
+    path('eliminar_articulo_liga/<int:articulo_id>/', views.eliminar_articulo_liga, name='eliminar_articulo_liga'),
 
 
     #--------------------------------SOCIAL MEDIA ---------------------------------------------

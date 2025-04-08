@@ -50,57 +50,62 @@
 
 <!-- Botones para agregar o editar -->
 <div class="d-flex justify-content-start mb-4">
-    <a href="{% url 'crear_articulo' lista_obligaciones.id %}" class="btn btn-sm btn-primary" style="margin-bottom: 20px; border-radius: 10px; padding: 12px 20px; font-size: 16px;">
-        <i class="fas fa-plus"></i> Crear Artículo
+    <a href="{% url 'crear_articulo_liga' articulo.id %}" class="btn btn-sm btn-primary" style="margin-bottom: 20px; border-radius: 10px; padding: 12px 20px; font-size: 16px;">
+        <i class="fas fa-plus"></i> Crear registro de año
     </a>
 </div>
 
 <div class="container-fluid">
-    <!-- Formulario de búsqueda -->
-    <!-- <div class="d-flex justify-content-start mb-4">
-        <input type="text" id="searchInput" class="form-control" placeholder="Buscar Artículos..." onkeyup="filterArticles()">
-    </div>-->
-
-    <!-- Contenedor para los artículos de la lista -->
     <div class="card">
         <div class="card-header">
-            <i class="fas fa-list"></i>  <!-- Icono de lista -->
-            Artículos de la Lista: <strong>{{ lista_obligaciones.titulo }}</strong>
+            <i class="fas fa-list"></i>  
+            Lista: <strong>{{ articulo.lista_obligaciones.titulo }}</strong> – Fracción: <strong>{{ articulo.articulo_fraccion }}</strong>
         </div>
         <div class="card-body">
-            <ul class="list-group" id="articulosList">
-                {% for articulo in articulos %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center articulo-item articulo" data-id="{{ articulo.id }}" draggable="true">
-                        <div>
-                            <i class="fas fa-scroll text-warning"></i> <strong>{{ articulo.articulo_fraccion }}</strong>
-                        </div>
-                        <div class="actions">
-                            <i class="fas fa-arrows-alt"></i> <!-- Icono de mover -->
+            <ul class="list-group articulo-container">
+                {% for ano, archivos in articulos_por_ano.items %}
+                    {% for archivo_info in archivos %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center articulo-item articulo" data-id="{{ archivo_info.articulo.id }}" draggable="true">
+                            <div>
+                                <i class="fas fa-calendar-alt text-secondary"></i> <strong>{{ ano }}</strong>
+                                –
+                                <span class="badge bg-primary">
+                                    {% if archivo_info.tipo == 'liga' %}
+                                    <i class="fas fa-link"></i> Liga
+                                    {% else %}
+                                    <i class="fas fa-file-pdf"></i>  Archivo
+                                    {% endif %}
+                                </span>
+                                <br>
+                            </div>
+                            <div class="actions">
+                                {% if archivo_info.tipo == 'liga' %}
+                                    <a href="{{ archivo_info.archivo.liga }}" class="btn-round btn-primary" title="Ir al Artículo" target="_blank">
+                                        <i class="fas fa-link"></i>
+                                    </a>
+                                {% else %}
+                                    {% if archivo_info.archivo %}
+                                    <a href="{{archivo_info.archivo.archivo.url }}" class="btn-round btn-success" title="Ver Documento" target="_blank">
+                                        <i class="fas fa-file-pdf"></i> <!-- o otro ícono dependiendo del tipo de archivo -->
+                                    </a>
+                                    {% endif %}
+                                {% endif %}
 
-                           <!-- Botón Editar -->
-                           <a href="{% url 'gestionarArchivoLa' id=articulo.id %}" class="btn-round btn-primary" title="Gestionar">
-                                <i class="fa fa-hand-o-up"></i>
-                            </a>
-                            <!-- Botón Editar -->
-                            <a href="{% url 'editar_articulo' lista_obligacion_id=articulo.lista_obligaciones.id articulo_id=articulo.id %}" class="btn-round btn-warning" title="Editar">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            
-
-                            <!-- Botón Eliminar -->
-                            <button class="btn-round btn-danger eliminar-articulo" data-id="{{ articulo.id }}" data-nombre="{{ articulo.articulo_fraccion }}" title="Eliminar">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                            
-                        </div>
-                    </li>
-                {% empty %}
-                    <li class="list-group-item text-muted">No hay artículos disponibles en esta lista.</li>
+                                <a href="{% url "editar_articulo_liga" archivo_info.archivo.id %}" class="btn-round btn-warning" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button class="btn-round btn-danger eliminar-articulo" data-id="{{ archivo_info.archivo.id }}" data-ano="{{ archivo_info.archivo.ano }}" title="Eliminar">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </li>
+                    {% endfor %}
                 {% endfor %}
             </ul>
         </div>
     </div>
 </div>
+
 <br>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -147,13 +152,13 @@
         deleteButtons.forEach(button => {
             button.addEventListener("click", function() {
                 const articuloId = this.getAttribute("data-id");
-                const articuloNombre = this.getAttribute("data-nombre");
+                const articuloNombre = this.getAttribute("data-ano");
     
                 // Mostrar alerta de confirmación antes de eliminar
                 Swal.fire({
-                    title: "🗑️ Eliminar Artículo: " + articuloNombre,
+                    title: "🗑️ Eliminar Documento o Enlace",
                     html: `
-                        <p>Esta acción eliminará el artículo <strong>${articuloNombre}</strong>.</p>
+                        <p>Esta acción eliminará el enlace o documento relacionado al año <strong>${articuloNombre}</strong>.</p>
                         <p><strong>Esta acción no se puede deshacer.</strong></p>
                         <p>¿Deseas continuar?</p>
                     `,
@@ -166,7 +171,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         // Usar Fetch API para eliminar el artículo
-                        fetch(`/admin/eliminar_articulo/${articuloId}/`, {
+                        fetch(`/admin/eliminar_articulo_liga/${articuloId}/`, {
                             method: "POST",
                             headers: {
                                 "X-CSRFToken": "{{ csrf_token }}",
@@ -211,67 +216,5 @@
     });
     
 </script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const lista = document.getElementById("articulosList");
-        let draggingItem = null;
-    
-        document.querySelectorAll(".articulo").forEach(item => {
-            item.setAttribute("draggable", "true"); // Asegurar que sea arrastrable
-    
-            item.addEventListener("dragstart", function(e) {
-                draggingItem = this;
-                e.dataTransfer.effectAllowed = "move";
-            });
-    
-            item.addEventListener("dragend", function() {
-                draggingItem = null; // Resetear después del arrastre
-            });
-    
-            item.addEventListener("dragover", function(e) {
-                e.preventDefault();
-                this.style.borderTop = "2px solid blue"; // Indicar la posición
-            });
-    
-            item.addEventListener("dragleave", function() {
-                this.style.borderTop = "none";
-            });
-    
-            item.addEventListener("drop", function(e) {
-                e.preventDefault();
-                this.style.borderTop = "none";
-    
-                if (draggingItem && draggingItem !== this) {
-                    lista.insertBefore(draggingItem, this);
-                    actualizarOrden();
-                }
-            });
-        });
-    
-        function actualizarOrden() {
-            let orden = [];
-            document.querySelectorAll(".articulo").forEach((item, index) => {
-                orden.push({ id: item.getAttribute("data-id"), orden: index + 1 });
-            });
-    
-            fetch("{% url 'actualizar_orden' %}", {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": "{{ csrf_token }}",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ orden: orden })
-            }).then(response => response.json())
-              .then(data => {
-                  if (!data.success) {
-                      alert("Error al actualizar el orden.");
-                  }
-              });
-        }
-    });
-    
-    </script>
-    
-
 
 {% endblock %}

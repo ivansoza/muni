@@ -1,0 +1,39 @@
+{% extends "baseTemplate.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+<div class="container-fluid">
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h2 class="mb-0">
+                <h3 class="mb-4">📄 Editar registro de año para: <strong>{{ lista_obligaciones.articulo }} - Fracción {{ articulo.articulo_fraccion }}</strong></h3>
+            </h2>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Usamos crispy_forms para aplicar los estilos automáticamente -->
+                {{ form|crispy }}
+                
+                <!-- Personalización del campo de archivo -->
+               
+                
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary btn-lg me-3">
+                        💾 Guardar Cambios
+                    </button>
+                    <!-- Redirección dinámica según el tipo de carpeta -->
+                    <a href="{% url 'gestionarArchivoLa' id=articulo_liga_id %}" class="btn btn-secondary btn-lg">
+                        ❌ Volver
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
