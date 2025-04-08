@@ -1342,7 +1342,9 @@ class ListaObligacionesUpdateView(UpdateView):
             'parent': {'name': 'Trasnparencia', 'url': url_configuracion},
             'child': {'name': 'Edición de lista', 'url': ''}
         }
-        context['sidebar'] = 'transparencia'  # Asegura que el sidebar resalte la sección de Transparencia
+        context['sidebar'] = 'transparencia'
+        context['regreso_url'] = reverse('lista_obligaciones')
+
         return context
 
 class ListaObligacionesDeleteView(View):
