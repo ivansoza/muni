@@ -120,6 +120,7 @@ urlpatterns = [
     path('convocatorias/<int:id>/eliminar/', views.eliminar_convocatoria, name='eliminarConvocatoria'),
     path('convocatorias/<int:id>/detalle/', views.obtener_detalle_convocatoria, name='detalle_Convocatoria'),
 
+    path('aviso/<int:pk>/eliminar/', views.eliminar_aviso_privacidad, name='eliminar_aviso_privacidad'),
 
     
 

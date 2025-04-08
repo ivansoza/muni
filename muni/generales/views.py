@@ -2391,3 +2391,10 @@ class SeccionPlusDetailView(TemplateView):
         context['categorias'] = categorias_qs
         
         return context
+
+def eliminar_aviso_privacidad(request, pk):
+    aviso = get_object_or_404(AvisoDePrivacidad, pk=pk)
+    if request.method == 'POST':
+        aviso.delete()
+        messages.success(request, "El aviso de privacidad se ha eliminado correctamente.")
+    return redirect(reverse_lazy('PrivacidadView'))

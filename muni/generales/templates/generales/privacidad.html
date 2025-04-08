@@ -1,15 +1,12 @@
-
 {% extends "baseTemplate.html" %}
 
 {% block content %}
 <div class="container mt-4">
-
     <!-- Botón para agregar nueva área -->
     <div class="mb-3">
-        <a href="{% url "crear_aviso_privacidad" %}" class="btn btn-primary">Agregar nueva área</a>
+        <a href="{% url 'crear_aviso_privacidad' %}" class="btn btn-primary">Agregar nueva área</a>
     </div>
 
-    <!-- Verificar si existen avisos de privacidad asociados al municipio -->
     {% if municipio.avisos_privacidad.all %}
         <div class="row">
             {% for aviso in municipio.avisos_privacidad.all %}
@@ -25,9 +22,9 @@
                             </p>
                             <!-- Botones para editar y eliminar -->
                             <a href="{% url 'editar_aviso_privacidad' aviso.pk %}" class="btn btn-sm btn-secondary">Editar</a>
-
                             
-                            <a href="#" class="btn btn-sm btn-danger">Eliminar</a>
+                            <!-- Se añade data-url con la URL hacia la vista de eliminación -->
+                            <a href="#" data-url="{% url 'eliminar_aviso_privacidad' aviso.pk %}" class="btn btn-sm btn-danger btn-eliminar">Eliminar</a>
                         </div>
                     </div>
                 </div>
@@ -38,13 +35,46 @@
             Aún no hay áreas con avisos de privacidad registrados.
         </div>
     {% endif %}
-
 </div>
 {% endblock content %}
 
-
-
 {% block scriptcontent %}
-
+<!-- Asegúrate de incluir SweetAlert; aquí se usa la versión alojada en CDN -->
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const botonesEliminar = document.querySelectorAll('.btn-eliminar');
+    botonesEliminar.forEach(function(boton) {
+        boton.addEventListener('click', function(e) {
+            e.preventDefault();
+            const url = boton.getAttribute('data-url');
+            swal({
+                title: "¿Estás seguro?",
+                text: "¿Deseas eliminar este aviso de privacidad?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    // Crea un formulario dinámico para enviar el POST de eliminación
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = url;
+                    
+                    // Agrega el token CSRF
+                    const csrfToken = '{{ csrf_token }}';
+                    const inputCsrf = document.createElement('input');
+                    inputCsrf.type = 'hidden';
+                    inputCsrf.name = 'csrfmiddlewaretoken';
+                    inputCsrf.value = csrfToken;
+                    form.appendChild(inputCsrf);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        });
+    });
+});
+</script>
 {% endblock scriptcontent %}
-
