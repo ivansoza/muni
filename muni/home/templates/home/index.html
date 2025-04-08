@@ -688,6 +688,31 @@
     });
 
     </script>
+
+    <script>
+        function scrollSocials(direction) {
+            const container = document.getElementById('socialPostsContainer');
+            const containerWidth = container.offsetWidth;
+            const scrollAmount = containerWidth; // desplazamiento igual al ancho visible (1 tarjeta en móvil)
+        
+            const maxScrollLeft = container.scrollWidth - container.clientWidth;
+            const newScrollLeft = container.scrollLeft + (direction * scrollAmount);
+        
+            // Evitar que se pase del máximo o del mínimo
+            if (newScrollLeft < 0) {
+                container.scrollTo({ left: 0, behavior: 'smooth' });
+            } else if (newScrollLeft > maxScrollLeft) {
+                container.scrollTo({ left: maxScrollLeft, behavior: 'smooth' });
+            } else {
+                container.scrollBy({
+                    left: direction * scrollAmount,
+                    behavior: 'smooth'
+                });
+            }
+        }
+        
+    </script>
+    
     <script>
         document.addEventListener("DOMContentLoaded", function () {
     const slider = document.querySelector(".social-slider");

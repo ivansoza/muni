@@ -946,13 +946,32 @@ p .fa-quote-right {
 
 .social-posts {
     display: flex;
-    justify-content: center;
     gap: 15px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 10px 0;
 }
-
+/* Este contenedor limita la vista visible a solo 3 ítems */
+#socialPostsContainer {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 15px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    width: 1080px; /* Mostrar exactamente 3 .social-box */
+    margin: 0 auto;
+}
+.social-posts::-webkit-scrollbar {
+    display: none;
+}
+.social-posts {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
 .social-box {
-    width: 350px;
+    width: 345px;
+    flex-shrink: 0; /* No se reduzcan */
     background: white;
     padding: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
@@ -961,22 +980,76 @@ p .fa-quote-right {
     position: relative;
     overflow: hidden;
 }
-
+.social-carousel-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding: 20px 40px;
+    box-sizing: border-box;
+}
 .social-box:hover {
     transform: scale(1.05);
 }
-
+@media (max-width: 1200px) {
+    #socialPostsContainer {
+        width: 720px; /* Mostrar 2 cajas */
+    }
+}
 /* Responsive */
+/* Responsive: Cuando la pantalla tiene un ancho máximo de 768px (1 caja) */
 @media (max-width: 768px) {
-    .social-posts {
-        flex-direction: column;
+    #socialPostsContainer {
+        width: 360px; /* Mostrar solo 1 caja */
     }
     .social-box {
-        width: 90%;
+        width: 96%; /* Para que la caja no ocupe todo el ancho y tenga un margen */
     }
     .social-bg-image {
         width: 100%;
     }
 }
 
+/* Estilo base para los botones */
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background-color: var(--color-primario); /* color de fondo */
+    border: none;
+    color: white;
+    font-size: 2rem;
+    padding: 15px;  /* Aumentamos el padding para que sea completamente redondo */
+    border-radius: 50%; /* Hace el botón completamente redondo */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    width: 50px; /* Establecemos un ancho fijo para garantizar la forma circular */
+    height: 50px; /* Establecemos una altura fija para mantener la proporción */
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Centra el texto dentro del círculo */
+}
 
+/* Efecto hover para los botones */
+.carousel-btn:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Estilo para el botón izquierdo */
+.carousel-btn.left {
+    left: 10px;
+}
+
+/* Estilo para el botón derecho */
+.carousel-btn.right {
+    right: 10px;
+}
+
+/* Sombra sutil para el botón para hacerlo más estético */
+.carousel-btn {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.carousel-btn:hover {
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3); /* Sombra más intensa al pasar el mouse */
+}
