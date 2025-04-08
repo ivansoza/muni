@@ -249,6 +249,8 @@ class UsuarioEditView(LoginRequiredMixin, UpdateView):
             'child': {'name': 'Editar Usuario', 'url': ''}
         }
         context['regreso_url'] = reverse('UsuariosView')
+        context["sidebar"] = "Generales"
+
         return context
 
     def form_valid(self, form):
