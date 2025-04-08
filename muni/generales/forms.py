@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
-from generales.models import Secciones
+from generales.models import SeccionPlus, Secciones
 
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
@@ -187,3 +187,15 @@ class SeccionesForm(forms.ModelForm):
             'habla_con_tus_hijos', 'aviso_de_privacidad', 'gabinete',
             'sevac', 'contacts', 'reportes', 'encuestas', 'servicios_en_linea'
         ]
+
+class SeccionPlusForm(forms.ModelForm):
+    class Meta:
+        model = SeccionPlus
+        fields = ['categoria_convocatoria', 'nombre', 'banner', 'status', 'detalles']
+        widgets = {
+            'categoria_convocatoria': forms.Select(attrs={'class': 'form-control'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'banner': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'status': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'detalles': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+        }

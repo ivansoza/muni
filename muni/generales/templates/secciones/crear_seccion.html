@@ -1,0 +1,53 @@
+{% extends "baseTemplate.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h2 class="mb-0">
+                📄 {% if form.instance.pk %}Editar Sección{% else %}Crear Sección{% endif %}
+            </h2>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="form-group mb-3">
+                    <label for="id_categoria_convocatoria">Categoría</label>
+                    {{ form.categoria_convocatoria}}
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="id_nombre">Nombre</label>
+                    {{ form.nombre }}
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="id_banner">Banner</label>
+                    {{ form.banner }}
+                </div>
+
+                <div class="form-group form-check mb-3">
+                    {{ form.status }}
+                    <label class="form-check-label" for="id_status">Activa</label>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label for="id_detalles">Detalles</label>
+                    {{ form.detalles }}
+                </div>
+
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary btn-lg me-3">
+                        💾 {% if form.instance.pk %}Guardar Cambios{% else %}Crear Sección{% endif %}
+                    </button>                    
+                    <a href="{% url 'SeccionesNuevasView' %}" class="btn btn-secondary btn-lg">
+                        ❌ Volver
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

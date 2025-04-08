@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 
 from informacion_municipal.models import Municipio
@@ -238,11 +239,8 @@ class MetaMunicipio(models.Model):
         # URL estática de respaldo si no hay ninguna imagen
         return '/static/assets/images/logo/logo-new.png'
     
-
-
-
-
 class SeccionPlus(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     categoria_convocatoria = models.ForeignKey(
         Categoria,
         on_delete=models.CASCADE,

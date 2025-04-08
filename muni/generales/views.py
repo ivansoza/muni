@@ -25,7 +25,7 @@ from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, 
 from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
 from servicios.forms import ServicioForm
 from servicios.models import Servicio
-from .forms import CustomAuthenticationForm, GroupForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm
+from .forms import CustomAuthenticationForm, GroupForm, SeccionPlusForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from noticias.models import Noticia, ImagenGaleria, Categoria
@@ -296,7 +296,56 @@ class SeccionesNuevasView(LoginRequiredMixin, TemplateView):
         }
         context["sidebar"] = "Generales"
         context["regreso_url"] = reverse("generalesDashboard")
+
+        # Consulta desde el modelo
+        context["secciones"] = SeccionPlus.objects.filter(status=True)
+
         return context
+    
+class CrearSeccionPlusView(LoginRequiredMixin, CreateView):
+    model = SeccionPlus
+    form_class = SeccionPlusForm
+    template_name = 'secciones/crear_seccion.html'
+    success_url = reverse_lazy('SeccionesNuevasView')  # O el nombre de la vista principal
+
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("generales.add_seccionplus")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+    
+    def form_valid(self, form):
+        municipio_activo = Municipio.objects.filter(status='activo').first()
+        if municipio_activo:
+            form.instance.municipio = municipio_activo
+        else:
+            form.add_error(None, "No hay un municipio activo disponible.")
+            return self.form_invalid(form)
+        return super().form_valid(form)
+    
+class EditarSeccionPlusView(LoginRequiredMixin, UpdateView):
+    model = SeccionPlus
+    form_class = SeccionPlusForm
+    template_name = 'secciones/crear_seccion.html'  # usamos la misma
+    success_url = reverse_lazy('SeccionesNuevasView')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("generales.change_seccionplus")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        # El municipio ya está asignado en la instancia existente, no es necesario modificarlo
+        return super().form_valid(form)
+    
+class EliminarSeccionPlusView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        if not (request.user.is_superuser or request.user.has_perm("generales.delete_seccionplus")):
+            raise PermissionDenied
+
+        seccion = get_object_or_404(SeccionPlus, pk=pk)
+        seccion.delete()
+        messages.success(request, f"La sección '{seccion.nombre}' ha sido eliminada.")
+        return redirect('SeccionesNuevasView')
     
 class SeccionesUpdateView(LoginRequiredMixin, UpdateView):
     model = Secciones
