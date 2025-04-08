@@ -56,7 +56,6 @@ urlpatterns = [
     path('generales/grupos/nuevo/', GroupCreateView.as_view(), name='group_create'),
     path("generales/grupos/<int:pk>/editar/", GroupUpdateView.as_view(), name="GrupoEditar"),
     path('generales/secciones/habilitar/', SeccionesUpdateView.as_view(), name='secciones_update'),
-    path('seccion/<int:pk>/<slug:slug>/', SeccionPlusDetailView.as_view(), name='seccionplus_detail'),
 
 
     #----------------------------------SEVAC-------------------------------------------------
