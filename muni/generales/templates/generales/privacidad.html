@@ -1,67 +1,164 @@
 {% extends "baseTemplate.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <!-- Botón para agregar nueva área -->
-    <div class="mb-3">
-        <a href="{% url 'crear_aviso_privacidad' %}" class="btn btn-primary">Agregar nueva área</a>
+<style>
+    :root {
+        --color-primario: #2F698F;
+        --color-secundario: #295E84;
+        --color-iconos: rgb(109, 109, 109);
+        --color-primario-rgb: 30, 71, 101;
+        --color-secundario-rgb: 41, 94, 132;
+        --color-gradiente: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+        --degradado: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+        /* Colores adicionales para la UI */
+        --color-success: #10b981;
+        --color-danger: #ef4444;
+        --color-warning: #f59e0b;
+        --color-info: #3b82f6;
+        --color-light: #f3f4f6;
+        --color-dark: #1f2937;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --radius: 0.5rem;
+    }
+
+    /* Estilos personalizados */
+    .text-primary {
+        color: var(--color-primario) !important;
+    }
+    
+    .btn-primary {
+        background: var(--color-gradiente);
+        border-color: var(--color-secundario);
+    }
+    
+    .btn-primary:hover {
+        background: var(--color-secundario);
+        border-color: var(--color-secundario);
+    }
+    
+    .hover-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg) !important;
+    }
+    
+    .card-title {
+        color: var(--color-primario);
+    }
+    
+    .btn-outline-secondary {
+        color: var(--color-iconos);
+        border-color: #e5e7eb;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: var(--color-light);
+        color: var(--color-dark);
+    }
+    
+    .btn-outline-danger:hover {
+        color: white;
+        background-color: var(--color-danger);
+    }
+</style>
+
+
+
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="fw-bold text-primary">Avisos de Privacidad</h2>
+            <p class="text-muted">Gestiona los avisos de privacidad por área para el municipio</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'crear_aviso_privacidad' %}" class="btn btn-primary shadow-sm">
+                <i class="fas fa-plus-circle me-2"></i>Agregar nueva área
+            </a>
+        </div>
     </div>
 
     {% if municipio.avisos_privacidad.all %}
         <div class="row">
             {% for aviso in municipio.avisos_privacidad.all %}
-                <div class="col-md-4">
-                    <div class="card mb-4">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm hover-card" style="border-radius: var(--radius);">
+                        <div class="card-header border-0 bg-white" style="border-top-left-radius: var(--radius); border-top-right-radius: var(--radius);">
+                            <h5 class="card-title mb-0 py-2 fw-bold text-primary">{{ aviso.area }}</h5>
+                        </div>
                         <div class="card-body">
-                            <h5 class="card-title">{{ aviso.area }}</h5>
                             <p class="card-text">{{ aviso.descripcion }}</p>
-                            <p class="card-text">
-                                <small class="text-muted">
-                                    Creado el: {{ aviso.fecha_creacion|date:"d/m/Y H:i" }}
-                                </small>
-                            </p>
-                            <!-- Botones para editar y eliminar -->
-                            <a href="{% url 'editar_aviso_privacidad' aviso.pk %}" class="btn btn-sm btn-secondary">Editar</a>
-                            
-                            <!-- Se añade data-url con la URL hacia la vista de eliminación -->
-                            <a href="#" data-url="{% url 'eliminar_aviso_privacidad' aviso.pk %}" class="btn btn-sm btn-danger btn-eliminar">Eliminar</a>
+                        </div>
+                        <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center" style="border-bottom-left-radius: var(--radius); border-bottom-right-radius: var(--radius);">
+                            <small class="text-muted">
+                                <i class="far fa-calendar-alt me-1"></i> {{ aviso.fecha_creacion|date:"d/m/Y H:i" }}
+                            </small>
+                            <div class="btn-group">
+                                <a href="{% url 'editar_aviso_privacidad' aviso.pk %}" 
+                                   class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-edit me-1"></i>Editar
+                                </a>
+                                <a href="#" 
+                                   data-url="{% url 'eliminar_aviso_privacidad' aviso.pk %}" 
+                                   class="btn btn-sm btn-outline-danger btn-eliminar">
+                                    <i class="fas fa-trash-alt me-1"></i>Eliminar
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <div class="alert alert-info" role="alert">
-            Aún no hay áreas con avisos de privacidad registrados.
+        <div class="card border-0 shadow-sm" style="border-radius: var(--radius);">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-info-circle fa-3x text-info mb-3"></i>
+                <h5>Aún no hay áreas con avisos de privacidad registrados.</h5>
+                <p class="text-muted mb-0">Comienza agregando una nueva área con el botón superior.</p>
+            </div>
         </div>
     {% endif %}
 </div>
 {% endblock content %}
 
 {% block scriptcontent %}
-<!-- Asegúrate de incluir SweetAlert; aquí se usa la versión alojada en CDN -->
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<!-- SweetAlert CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Font Awesome para iconos -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const botonesEliminar = document.querySelectorAll('.btn-eliminar');
+    
     botonesEliminar.forEach(function(boton) {
         boton.addEventListener('click', function(e) {
             e.preventDefault();
             const url = boton.getAttribute('data-url');
-            swal({
-                title: "¿Estás seguro?",
-                text: "¿Deseas eliminar este aviso de privacidad?",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-            }).then((willDelete) => {
-                if (willDelete) {
-                    // Crea un formulario dinámico para enviar el POST de eliminación
+            
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: '¿Deseas eliminar este aviso de privacidad?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'var(--color-danger)',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                borderRadius: 'var(--radius)',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Crear formulario para enviar POST
                     const form = document.createElement('form');
                     form.method = 'POST';
                     form.action = url;
                     
-                    // Agrega el token CSRF
+                    // Agregar token CSRF
                     const csrfToken = '{{ csrf_token }}';
                     const inputCsrf = document.createElement('input');
                     inputCsrf.type = 'hidden';
