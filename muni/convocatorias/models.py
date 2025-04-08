@@ -9,6 +9,8 @@ class Categoria(models.Model):
         return self.nombre
 
 class Convocatoria(models.Model):
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, related_name='convocatorias')
+
     ESTADO_CHOICES = [
         ('ABIERTA', 'ABIERTA'),
         ('PRÓXIMA', 'PRÓXIMA'),
@@ -16,7 +18,6 @@ class Convocatoria(models.Model):
     ]
     
     titulo = models.CharField(max_length=255)
-    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, related_name='convocatorias')
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='proxima')
     imagen = models.ImageField(upload_to='convocatorias/', null=True, blank=True)
     fecha_apertura = models.DateField()

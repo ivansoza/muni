@@ -243,6 +243,11 @@ class MetaMunicipio(models.Model):
 
 
 class SeccionPlus(models.Model):
+    categoria_convocatoria = models.ForeignKey(
+        Categoria,
+        on_delete=models.CASCADE,
+        related_name='secciones_plus'
+    )
     municipio = models.ForeignKey(
         Municipio,
         on_delete=models.CASCADE,
@@ -250,11 +255,7 @@ class SeccionPlus(models.Model):
     )
     nombre = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True, blank=True)
-    categoria_convocatoria = models.ForeignKey(
-        Categoria,
-        on_delete=models.CASCADE,
-        related_name='secciones_plus'
-    )
+
     banner = models.ImageField(
         upload_to='banners_secciones/',
         blank=True,

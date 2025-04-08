@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.views.generic.base import TemplateView
+
+from generales.models import SeccionPlus
 from .models import Convocatoria, Categoria
 from datetime import date, timedelta
 from django.db.models import Q
@@ -89,6 +91,93 @@ def filtrar_convocatorias(request):
     }
     return JsonResponse(data)
 
+
+
+def filtrar_convocatorias_seccion_plus(request, seccion_pk):
+    """
+    Devuelve (en JSON) las convocatorias que pertenecen a la misma categoría que la SeccionPlus
+    indicada y que cumplen los filtros recibidos por GET.
+    """
+    # ------------------------------------------------------------------ Sección
+    seccion = get_object_or_404(SeccionPlus, pk=seccion_pk, status=True)
+    convocatorias = Convocatoria.objects.filter(
+        categoria=seccion.categoria_convocatoria
+    )
+
+    # ------------------------------------------------------------------ Filtros
+    query        = request.GET.get("query", "").strip().lower()
+    categoria    = request.GET.get("categoria", "").strip()
+    estado       = request.GET.get("estado", "").strip()
+    fecha_filtro = request.GET.get("fecha", "").strip()
+    pestana      = request.GET.get("pestana", "active").strip()
+
+    # Page y per_page robustos
+    page_param     = request.GET.get("page", "1")
+    per_page_param = request.GET.get("per_page", "6")
+    try:
+        page = int(page_param)
+    except ValueError:
+        page = 1
+    try:
+        per_page = int(per_page_param)
+    except ValueError:
+        per_page = 6
+
+    if query:
+        convocatorias = convocatorias.filter(titulo__icontains=query)
+
+    if categoria:
+        convocatorias = convocatorias.filter(categoria__nombre__icontains=categoria)
+
+    if estado:
+        estados_dict = {"active": "ABIERTA", "upcoming": "PRÓXIMA", "closed": "CERRADA"}
+        if estado in estados_dict:
+            convocatorias = convocatorias.filter(estado=estados_dict[estado])
+
+    from datetime import timedelta
+    today = timezone.now().date()
+    if fecha_filtro == "this-week":
+        end_date = today + timedelta(days=7)
+        convocatorias = convocatorias.filter(fecha_apertura__range=(today, end_date))
+    elif fecha_filtro == "this-month":
+        start_date = today.replace(day=1)
+        end_date = (start_date + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+        convocatorias = convocatorias.filter(fecha_apertura__range=(start_date, end_date))
+    elif fecha_filtro == "next-month":
+        start_date = (today.replace(day=1) + timedelta(days=32)).replace(day=1)
+        end_date = (start_date + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+        convocatorias = convocatorias.filter(fecha_apertura__range=(start_date, end_date))
+
+    if pestana == "active":
+        convocatorias = convocatorias.filter(estado__in=["ABIERTA", "PRÓXIMA"])
+    elif pestana == "past":
+        convocatorias = convocatorias.filter(estado="CERRADA")
+
+    # ------------------------------------------------------------------ Paginación
+    convocatorias = convocatorias.order_by("-id")
+    paginator     = Paginator(convocatorias, per_page)
+    page_obj      = paginator.get_page(page)
+
+    # ------------------------------------------------------------------ Serialización de respuesta
+    data = {
+        "convocatorias": [
+            {
+                "id": conv.id,
+                "titulo": conv.titulo,
+                "estado": conv.estado,
+                "categoria": conv.categoria.nombre,
+                "descripcion": conv.descripcion,
+                # Se comprueba si hay imagen, en caso contrario se asigna cadena vacía
+                "imagen": conv.imagen.url if conv.imagen else "",
+                "fecha_apertura": conv.fecha_apertura.strftime("%d/%m/%Y"),
+                "fecha_cierre": conv.fecha_cierre.strftime("%d/%m/%Y"),
+            }
+            for conv in page_obj
+        ],
+        "total_pages": paginator.num_pages,
+        "current_page": page_obj.number,
+    }
+    return JsonResponse(data)
 
 class detalleConvocatoria(TemplateView):
     template_name = 'detalleConvocatoria.html'

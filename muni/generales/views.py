@@ -2218,5 +2218,25 @@ class SeccionPlusDetailView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['seccion'] = self.get_object()
+        seccion = self.get_object()
+        
+        
+        context['seccion'] = seccion
+        context['sidebar'] = 'mas'  
+
+        # Filtrar convocatorias por la categoría de la SeccionPlus
+        context['convocatorias_activas'] = Convocatoria.objects.filter(
+            estado__in=['ABIERTA', 'PRÓXIMA'],
+            categoria=seccion.categoria_convocatoria
+        ).order_by('-id')
+        
+        context['convocatorias_pasadas'] = Convocatoria.objects.filter(
+            estado='CERRADA',
+            categoria=seccion.categoria_convocatoria
+        ).order_by('-id')
+
+        # Filtrar y depurar la categoría
+        categorias_qs = CategoriaConvocatoria.objects.filter(pk=seccion.categoria_convocatoria.pk)
+        context['categorias'] = categorias_qs
+        
         return context
