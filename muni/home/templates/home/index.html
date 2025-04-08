@@ -46,7 +46,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- Estilos personalizados -->
-     <link rel="stylesheet" href="{% static "css/stylos.css" %}?v1.1333">
+     <link rel="stylesheet" href="{% static "css/stylos.css" %}?v1.h1h1">
      <script async defer src="https://connect.facebook.net/es_LA/sdk.js#xfbml=1&version=v15.0"></script>
      <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatable-extension.css' %}">    
@@ -452,7 +452,22 @@
 
 
                         {% if seccion.nombre == 'servicios' %}
-                            {% include "home/components/nuestros_servicios.html" %}
+                            {% if municipio.cortina %}
+                                {% if municipio.cortina.servicios == "servicios1" %}
+                                    {% include "home/components/servicios/servicios1.html" %}
+                                {% elif municipio.cortina.servicios == "servicios2" %}
+                                    {% include "home/components/servicios/servicios2.html" %}
+                                {% elif municipio.cortina.servicios == "servicios3" %}
+                                    {% include "home/components/servicios/servicios3.html" %}
+                                {% elif municipio.cortina.servicios == "servicios4" %}
+                                    {% include "home/components/servicios/servicios4.html" %}
+                                {% elif municipio.cortina.servicios == "sinservicio" %}
+                                {% else %}
+                                    {% include "home/components/servicios/servicios1.html" %}
+                                {% endif %}
+                            {% else %}
+                                {% include "home/components/servicios/servicios1.html" %}
+                            {% endif %}
 
                             {% if municipio.secciones_hab and municipio.secciones_hab.encuestas %}
                                 {% include "home/components/encuestas.html" %}
@@ -484,8 +499,22 @@
                 {% endfor %}
             {% else %}
                 {# Orden predeterminado si no hay secciones definidas #}
-                {% include "home/components/nuestros_servicios.html" %}
-
+                {% if municipio.cortina %}
+                    {% if municipio.cortina.servicios == "servicios1" %}
+                        {% include "home/components/servicios/servicios1.html" %}
+                    {% elif municipio.cortina.servicios == "servicios2" %}
+                        {% include "home/components/servicios/servicios2.html" %}
+                    {% elif municipio.cortina.servicios == "servicios3" %}
+                        {% include "home/components/servicios/servicios3.html" %}
+                    {% elif municipio.cortina.servicios == "servicios4" %}
+                        {% include "home/components/servicios/servicios4.html" %}
+                    {% elif municipio.cortina.servicios == "sinservicio" %}
+                    {% else %}
+                        {% include "home/components/servicios/servicios1.html" %}
+                    {% endif %}
+                {% else %}
+                    {% include "home/components/servicios/servicios1.html" %}
+                {% endif %}
 
                 {% if municipio.secciones_hab and municipio.secciones_hab.encuestas %}
                     {% include "home/components/encuestas.html" %}

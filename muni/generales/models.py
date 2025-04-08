@@ -133,6 +133,26 @@ class personalizacionPlantilla(models.Model):
         default='hero1'  # Primera opción como predeterminada
     )
 
+    SERVICIOS_CHOICES = [
+        ('servicios1', 'Servicios 1'),
+        ('servicios2', 'Servicios 2'),
+        ('servicios3', 'Servicios 3'),
+        ('servicios4', 'Servicios 4'),
+        ('sinservicio', 'Sin Servicio'),
+    ]
+    servicios = models.CharField(
+        max_length=50,
+        choices=SERVICIOS_CHOICES,
+        default='servicios1'  # Primera opción como predeterminada
+    )
+
+    fotografia_servicio = models.ImageField(
+        upload_to='fotografias_servicios/',
+        blank=True,
+        null=True,
+        verbose_name="Fotografía servicio"
+    )
+
     def __str__(self):
         return f"{self.municipio} - {self.get_entrada_display()}"
     

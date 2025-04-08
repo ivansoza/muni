@@ -11,6 +11,7 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.models import Group
 from django.views.decorators.http import require_http_methods
+from django.forms import modelformset_factory
 
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -46,7 +47,7 @@ from convocatorias.models import Categoria as CategoriaConvocatoria, Convocatori
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET
-from convocatorias.forms import ConvocatoriaForm, ArchivoConvocatoriaFormSet
+from convocatorias.forms import ArchivoConvocatoriaForm, ConvocatoriaForm, ArchivoConvocatoriaFormSet
 from django.contrib.auth.models import User  # Asegúrate de importar el modelo User
 
 
@@ -1763,6 +1764,77 @@ def crear_convocatoria(request):
     context.update({'form': form, 'formset': formset})
 
     return render(request, 'convocatorias/crear_convocatoria.html', context)
+
+
+
+def editar_convocatoria(request, pk):
+    convocatoria = get_object_or_404(Convocatoria, pk=pk)
+    url_configuracion = reverse('convocatorias')
+
+    # Construyendo el contexto base para el breadcrumb y la navegación
+    context = {
+        "breadcrumb": {
+            'parent': {'name': 'Convocatorias', 'url': url_configuracion},
+            'child': {'name': 'Edición de convocatoria', 'url': ''}
+        },
+        'sidebar': 'convo',
+        'regreso_url': url_configuracion,
+    }
+
+    # Obtenemos el queryset de archivos adjuntos de la convocatoria
+    qs_archivos = ArchivoConvocatoria.objects.filter(convocatoria=convocatoria)
+
+    # Determinamos el parámetro extra:
+    # Si hay al menos un archivo, no se muestra formulario extra, de lo contrario se muestra uno.
+    extra = 0 if qs_archivos.exists() else 1
+
+    # Creamos el formset utilizando el extra calculado
+    ArchivoFormSet = modelformset_factory(
+        ArchivoConvocatoria,
+        form=ArchivoConvocatoriaForm,
+        extra=extra,
+        can_delete=True
+    )
+
+    if request.method == 'POST':
+        form = ConvocatoriaForm(request.POST, request.FILES, instance=convocatoria)
+        formset = ArchivoFormSet(
+            request.POST,
+            request.FILES,
+            queryset=qs_archivos
+        )
+
+        if form.is_valid() and formset.is_valid():
+            convocatoria = form.save()
+
+            # Guarda nuevos archivos o actualiza los existentes
+            archivos = formset.save(commit=False)
+            for archivo in archivos:
+                archivo.convocatoria = convocatoria
+                archivo.save()
+
+            # Elimina los archivos marcados para borrar
+            for archivo in formset.deleted_objects:
+                archivo.delete()
+
+            messages.success(request, "Convocatoria actualizada correctamente")
+            return redirect('convocatorias')
+        else:
+            context.update({
+                'form_errors': form.errors,
+                'formset_errors': formset.errors,
+            })
+    else:
+        form = ConvocatoriaForm(instance=convocatoria)
+        formset = ArchivoFormSet(queryset=qs_archivos)
+
+    context.update({
+        'form': form,
+        'formset': formset,
+        'convocatoria': convocatoria 
+    })
+    return render(request, 'convocatorias/editar_convocatoria.html', context)
+
 @csrf_exempt
 def crear_categoria_ajax(request):
     if request.method == "POST":
