@@ -851,7 +851,12 @@ body {
           <div class="card poster-card">
             <div class="poster-container">
               <div class="poster-wrapper">
+
+                {% if convocatoria.imagen  %}
+                
                 <img src="{{convocatoria.imagen.url}}" alt="Póster de la convocatoria" class="poster-image">
+                {% endif %}
+    
               </div>
             </div>
             
@@ -1060,7 +1065,13 @@ body {
 <div id="poster-modal" class="image-modal">
     <span class="close-modal" id="close-poster-modal">&times;</span>
     <div class="modal-wrapper">
+
+
+      {% if convocatoria.imagen %}
+      
       <img src="{{convocatoria.imagen.url}}" alt="Póster de la convocatoria" class="modal-poster-image">
+
+      {% endif %}
     </div>
   </div>
 
