@@ -1056,7 +1056,16 @@ class CrearCarpetaView(View, LoginRequiredMixin):
         context = self.get_context_data(form=form)
         return render(request, self.template_name, context)
 
-    
+@csrf_exempt
+def crear_categoria_ajax_sevac(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        nombre = data.get('nombre')
+        if nombre:
+            categoria, created = CategoriaSevac.objects.get_or_create(nombre=nombre)
+            return JsonResponse({'id': categoria.id, 'nombre': categoria.nombre})
+    return JsonResponse({'error': 'Error al procesar'}, status=400)
+
 # Vista para editar carpeta
 class EditarCarpetaView(View, LoginRequiredMixin):
     template_name = 'sevac/editar_carpeta.html'
@@ -1233,33 +1242,35 @@ class ListarCarpetasView(LoginRequiredMixin,TemplateView):
         if not (request.user.is_superuser or request.user.has_perm("sevac.view_carpeta")):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['carpetas'] = Carpeta.objects.filter(padre=None)
-                # Total de carpetas activas (sin subcarpetas)
+
+        # Agrupar carpetas principales por categoría
+        carpetas_agrupadas = {}
+        categorias = CategoriaSevac.objects.all()
+        for categoria in categorias:
+            carpetas_categoria = Carpeta.objects.filter(categoria=categoria, padre=None)
+            if carpetas_categoria.exists():
+                carpetas_agrupadas[categoria] = carpetas_categoria
+
+        context['carpetas_agrupadas'] = carpetas_agrupadas
+        context['categorias'] = categorias  # si necesitas en otros lugares
+
+        # Tus otros contextos los dejamos igual
         context['total_carpetas'] = Carpeta.objects.filter(estatus='A', padre=None).count()
-
-        # Total de archivos registrados
         context['total_archivos'] = Archivo.objects.filter(estatus='A').count()
-
-        # Última carpeta creada
         context['ultima_carpeta'] = Carpeta.objects.filter(estatus='A').order_by('-id').first()
-
-        # Total de subcarpetas
         context['total_subcarpetas'] = Carpeta.objects.filter(estatus='A').exclude(padre=None).count()
-
-        # Total de archivos inactivos
         context['total_archivos_inactivos'] = Archivo.objects.filter(estatus='I').count()
         context["breadcrumb"] = {
             'parent': {'name': 'Dashboard', 'url': '/index'},
             'child': {'name': 'SEVAC - Carpetas y Archivos', 'url': ''}
         }
-        context['sidebar'] = 'sevac'  # Asegura que el sidebar resalte la sección de Transparencia
-        url_configuracion = reverse("dashboard")
-        context['regreso_url'] = url_configuracion
+        context['sidebar'] = 'sevac'
+        context['regreso_url'] = reverse("dashboard")
 
         return context
+
     
 class EliminarCarpetaView(View, LoginRequiredMixin):
     def dispatch(self, request, *args, **kwargs):

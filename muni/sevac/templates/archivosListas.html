@@ -266,6 +266,17 @@
     font-weight: 400; /* Normal para el segundo texto */
     color: #6b7280; /* Color gris suave para el segundo texto */
 }
+.sidebar-wrapper {
+    background-color: #fffbfb;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.list-group-item.active {
+    background-color: var(--color-primario) !important;
+    border-color: var(--color-primario) !important;
+    color: white !important;
+}
 </style>
 
 <div class="container mt-4">
@@ -288,24 +299,23 @@
 
         <!-- Nueva fila con sidebar y contenido -->
         <div class="row">
-            <!-- sidebar  -->
+            <!-- sidebar -->
             <div class="col-md-3">
-                <div class="sidebar-categorias">
-                    <h5 class="mb-3">Categorias</h5>
-                    <ul class="list-group"> 
-                        <li class="list-group-item {% if not categoria_seleccionada %}active{% endif %}">
-                            <a href="{% url 'homeSevac' %}" class="text-decoration-none {% if not categoria_seleccionada %}text-white{% else %}text-dark{% endif %}">Todas las categorías</a>
-                        </li>
-                        {% for categorias in categorias %}
-                            <li class="list-group-item {% if categoria_seleccionada == categorias.id %}active{% endif %}">
-                                <a href="{% url 'homeSevac' %}?categoria={{ categorias.id }}" class="text-decoration-none {% if categoria_seleccionada == categorias.id %}text-white{% else %}text-dark{% endif %}">
-                                    <strong>{{ categorias.nombre }}</strong>
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
+                <div class="sidebar-wrapper p-3"> <!-- Aquí aplicamos el padding visual -->
+                    <div class="sidebar-categorias">
+                        <ul class="list-group"> 
+                            {% for categorias in categorias %}
+                                <li class="list-group-item {% if categoria_seleccionada == categorias.id %}active{% endif %}">
+                                    <a href="{% url 'homeSevac' %}?categoria={{ categorias.id }}" class="text-decoration-none {% if categoria_seleccionada == categorias.id %}text-white{% else %}text-dark{% endif %}">
+                                        <strong>{{ categorias.nombre }}</strong>
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
             </div>
+
 
             <!-- Card de Archivos -->
             <div class="col-md-9">
@@ -459,6 +469,7 @@
 </div>
 
     </div>
+    <br>
     <div class="transparency-section">
         <div class="access-item">
             <p class="dual-text">

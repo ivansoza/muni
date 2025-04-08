@@ -68,6 +68,7 @@ urlpatterns = [
     path('editar-archivo/<int:archivo_id>/', EditarArchivoView.as_view(), name='editar_archivo'),
     path('eliminar-archivo/<int:id>/', eliminar_archivo, name='eliminar_archivo'),
     path('sevac/categorias/nueva/', CrearCategoriaView.as_view(), name='crear_categoria'),
+    path('categorias/crear/ajax/', views.crear_categoria_ajax_sevac, name='crear_categoria_ajax_sevac'),
 
     #-------------------------------TRANSPARENCIA---------------------------------------------
     path('lista-obligaciones/', ListaObligacionesView.as_view(), name='lista_obligaciones'),
