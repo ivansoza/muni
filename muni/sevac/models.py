@@ -1,7 +1,15 @@
-# models.py
 from django.db import models
 import os
 from django.utils.text import slugify
+
+class CategoriaSevac(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+
+    class Meta:
+        ordering = ['nombre']
+
+    def __str__(self):
+        return self.nombre
 
 class Carpeta(models.Model):
     ESTATUS_CHOICES = [
@@ -10,6 +18,7 @@ class Carpeta(models.Model):
     ]
 
     nombre = models.CharField(max_length=255)
+    categoria = models.ForeignKey(CategoriaSevac, on_delete=models.SET_NULL, null=True, blank=True)
     padre = models.ForeignKey(
         'self',
         null=True,
@@ -29,6 +38,7 @@ class Carpeta(models.Model):
         if self.padre:
             return f"{self.padre.ruta_completa()}/{slugify(self.nombre)}"
         return slugify(self.nombre)
+    
 def archivo_upload_to(instance, filename):
     nombre_archivo, extension = os.path.splitext(filename)
     slug = slugify(nombre_archivo)

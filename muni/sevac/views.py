@@ -1,15 +1,19 @@
-
 from django.shortcuts import render
-from .models import Carpeta, Archivo
+from .models import Carpeta, Archivo, CategoriaSevac
 from django.views.generic import TemplateView
+
 class HomeSevacView(TemplateView):
     template_name = 'archivosListas.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        categoria_id = self.request.GET.get('categoria')
 
         # Obtener las carpetas principales activas
-        carpetas = Carpeta.objects.filter(padre=None, estatus='A')
+        carpetas_qs = Carpeta.objects.filter(padre=None, estatus='A').select_related('categoria')
+
+        if categoria_id:
+            carpetas_qs = carpetas_qs.filter(categoria__id=categoria_id)
 
         # Ordenar carpetas según los criterios especificados
         def ordenar_carpetas(carpeta):
@@ -23,7 +27,7 @@ class HomeSevacView(TemplateView):
                 return (0, nombre.lower())  # Orden alfabético para letras
 
         # Aplicar el orden a las carpetas principales
-        carpetas_ordenadas = sorted(carpetas, key=ordenar_carpetas)
+        carpetas_ordenadas = sorted(carpetas_qs, key=ordenar_carpetas)
 
         # Ordenar recursivamente las subcarpetas
         def ordenar_subcarpetas(carpeta):
@@ -40,7 +44,8 @@ class HomeSevacView(TemplateView):
 
         # Añadir las carpetas ordenadas al contexto
         context['carpetas'] = carpetas_ordenadas
-
+        context['categorias'] = CategoriaSevac.objects.all()
+        context['categoria_seleccionada'] = int(categoria_id) if categoria_id else None
         context['sidebar'] = "sevac"
 
         return context

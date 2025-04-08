@@ -1,5 +1,18 @@
 from django import forms
-from .models import Carpeta, Archivo
+from .models import Carpeta, Archivo, CategoriaSevac
+from django.urls import reverse_lazy
+from django.views.generic.edit import CreateView
+
+class CategoriaSevacForm(forms.ModelForm):
+    class Meta:
+        model = CategoriaSevac
+        fields = ['nombre']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'nombre': 'Nombre de la categoría',
+        }
 
 # Función recursiva para obtener todas las subcarpetas de forma anidada
 def obtener_subcarpetas(carpeta_id):
@@ -12,13 +25,15 @@ def obtener_subcarpetas(carpeta_id):
 class CarpetaForm(forms.ModelForm):
     class Meta:
         model = Carpeta
-        fields = ['nombre', 'padre', 'estatus']
+        fields = ['categoria', 'nombre', 'padre', 'estatus']
         widgets = {
+            'categoria': forms.Select(attrs={'class': 'form-control'}),
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'padre': forms.Select(attrs={'class': 'form-control'}),
             'estatus': forms.Select(attrs={'class': 'form-control'}),
         }
         labels = {
+            'categoria': 'Categoria',
             'nombre': 'Nombre de la Carpeta',
             'padre': 'Carpeta Padre',
             'estatus': 'Estatus',
@@ -29,15 +44,15 @@ class CarpetaForm(forms.ModelForm):
         es_subcarpeta = kwargs.pop('es_subcarpeta', False)
         super().__init__(*args, **kwargs)
 
-        if not es_subcarpeta:
-            self.fields.pop('padre')  # Ocultar el campo 'padre' si no es subcarpeta
-        else:
+        if es_subcarpeta:
+            self.fields.pop('categoria')  # Ocultar campo 'categoria' si es subcarpeta
             if padre_id:
-                # Filtrar el campo 'padre' para mostrar la carpeta padre y todas sus subcarpetas anidadas
                 subcarpetas = obtener_subcarpetas(padre_id)
                 self.fields['padre'].queryset = Carpeta.objects.filter(id=padre_id) | Carpeta.objects.filter(id__in=[c.id for c in subcarpetas])
             else:
-                self.fields['padre'].queryset = Carpeta.objects.none()  # Si no hay ID, dejar vacío
+                self.fields['padre'].queryset = Carpeta.objects.none()
+        else:
+            self.fields.pop('padre')  # Ocultar campo 'padre' si no es subcarpeta
 
 class ArchivoForm(forms.ModelForm):
     class Meta:

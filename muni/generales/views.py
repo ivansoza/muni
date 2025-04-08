@@ -37,8 +37,8 @@ from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
 from transparencia.forms import SeccionTransparenciaForm, EjercicioFiscalForm, DocumentoTransparenciaForm, ListaObligacionesForm, ArticuloLigaForm, ArticuloLigaArchivoForm
 from transparencia.models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga, LigaArchivo
-from sevac.models import Carpeta, Archivo
-from sevac.forms import CarpetaForm, ArchivoForm
+from sevac.models import Carpeta, Archivo, CategoriaSevac
+from sevac.forms import CarpetaForm, ArchivoForm, CategoriaSevacForm
 # Create your views here.
 from django.db.models import Count
 from django.db import models
@@ -995,7 +995,12 @@ def eliminar_documento_transparencia(request, pk):
         documento.delete()
         messages.success(request, "Documento eliminado exitosamente.")
         return redirect('documento_list', seccion_id=seccion_id, ejercicio_id=ejercicio_id)
-
+    
+class CrearCategoriaView(CreateView):
+    model = CategoriaSevac
+    form_class = CategoriaSevacForm
+    template_name = 'sevac/crear_categoria.html'
+    success_url = reverse_lazy('crear_carpeta') 
 
 class CrearCarpetaView(View, LoginRequiredMixin):
     template_name = 'sevac/crear_carpeta.html'
