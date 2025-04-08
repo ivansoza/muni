@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from .views import CrearCategoriaView, CustomLoginView, DashboardView, EncuestasView, GeneralesDashboardView, GroupCreateView, GroupUpdateView, GruposView, NewsView, PersonalizacionView, ReportesView, SeccionPlusDetailView, SeccionesNuevasView, SeccionesUpdateView, SeccionesView, ServicioCreateView, ServicioUpdateView,SocialMediaView,ServicesView, UsuarioCreateView, UsuarioEditView, UsuarioEditView, UsuarioPasswordChangeView, UsuariosView, VideoView, actualizar_video, create_social_network, custom_upload_function, agregar_categoria, delete_group, delete_social_network, editar_convocatoria, eliminar_noticia, editar_noticia, list_social_networks, toggle_favorite, toggle_user_status
+from .views import CrearCategoriaView, CustomLoginView, DashboardView, EncuestasView, GeneralesDashboardView, GroupCreateView, GroupUpdateView, GruposView, NewsView, PersonalizacionView, PrivacidadView, ReportesView, SeccionPlusDetailView, SeccionesNuevasView, SeccionesUpdateView, SeccionesView, ServicioCreateView, ServicioUpdateView,SocialMediaView,ServicesView, UsuarioCreateView, UsuarioEditView, UsuarioEditView, UsuarioPasswordChangeView, UsuariosView, VideoView, actualizar_video, create_social_network, custom_upload_function, agregar_categoria, delete_group, delete_social_network, editar_convocatoria, eliminar_noticia, editar_noticia, list_social_networks, toggle_favorite, toggle_user_status
 from django.contrib.auth.views import LogoutView
 from .views import TransparenciaView, crear_seccion, EjercicioFiscalListView, EjercicioFiscalCreateView, DocumentoTransparenciaListView, registrar_documento, SeccionTransparenciaUpdateView, eliminar_seccion, EjercicioFiscalUpdateView, eliminar_ejercicio_fiscal, DocumentoTransparenciaUpdateView, eliminar_documento_transparencia
 from . import views
@@ -44,6 +44,7 @@ urlpatterns = [
 
     path('generales/encuestas', EncuestasView.as_view(), name='EncuestasView'),
     path('generales/usuarios', UsuariosView.as_view(), name='UsuariosView'),
+    path('generales/privacidad', PrivacidadView.as_view(), name='PrivacidadView'),
 
     path('generales/reportes', ReportesView.as_view(), name='ReportesView'),
     path('actualizar_video/', actualizar_video, name='actualizar_video'),

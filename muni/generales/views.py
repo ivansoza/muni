@@ -127,6 +127,24 @@ class UsuariosView(LoginRequiredMixin, TemplateView):
         return context
 
 
+
+
+
+class PrivacidadView(LoginRequiredMixin, TemplateView):
+    template_name = 'generales/privacidad.html'
+
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumb"] = {
+            'parent': {'name': 'Generales', 'url': '/admin/generales/'},
+            'child': {'name': 'Avisos de Privacidad', 'url': ''}
+        }
+        context['sidebar'] = 'Generales' 
+        context['regreso_url'] = reverse('generalesDashboard')
+        return context
+    
+
 class SeccionesView(LoginRequiredMixin, TemplateView):
     template_name = 'generales/secciones.html'
     
