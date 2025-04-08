@@ -823,10 +823,13 @@
                 <div class="convocatoria-media-fechas">
                     <div class="media-image">
                         <div class="tooltip-container">
-                            <img src="{{ convocatoria.imagen.url }}" alt="Imagen de convocatoria" class="convocatoria-image">
-                            <div class="overlay-eye" onclick="showImageModal('{{ convocatoria.imagen.url }}')">
-                                <i class="fa-solid fa-eye"></i>
-                            </div>
+                            {% if convocatoria.imagen %}
+                                <img src="{{ convocatoria.imagen.url }}" alt="Imagen de convocatoria" class="convocatoria-image">
+                                <div class="overlay-eye" onclick="showImageModal('{{ convocatoria.imagen.url }}')">
+                                    <i class="fa-solid fa-eye"></i>
+                                </div>
+                            {% endif %}
+                        
                         </div>
                     </div>
                     <div class="media-dates">

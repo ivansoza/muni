@@ -252,16 +252,20 @@
                     {% for convocatoria in convocatorias|slice:"1:" %}
                     <div class="col-md-6">
                         <div class="convocatoria-pequena">
-                            <img src="{{ convocatoria.imagen.url }}" alt="{{ convocatoria.titulo }}" class="img-fluid">
+                            {% if convocatoria.imagen %}
+                                <img src="{{ convocatoria.imagen.url }}" alt="{{ convocatoria.titulo }}" class="img-fluid">
+                            {% else %}
+                            {% endif %}
                             <div class="convocatoria-text">
-                                <h5>{{ convocatoria.titulo|truncatewords:6  }}</h5>
+                                <h5>{{ convocatoria.titulo|truncatewords:6 }}</h5>
                                 <a href="{% url 'detalleConvocatoria' convocatoria.id %}" class="btn-convocatoria btn-sm">
                                     <i class="fas fa-arrow-right"></i> Ver más
                                 </a>
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
+                {% endfor %}
+                
                 </div>
             </div>            
         </div>
@@ -283,17 +287,21 @@
             {% for convocatoria in convocatorias %}
             <div class="carousel-item {% if forloop.first %}active{% endif %}">
                 <div class="convocatoria-carousel">
-                    <img src="{{ convocatoria.imagen.url }}" alt="{{ convocatoria.titulo }}" class="d-block w-100">
+                    {% if convocatoria.imagen %}
+                        <img src="{{ convocatoria.imagen.url }}" alt="{{ convocatoria.titulo }}" class="d-block w-100">
+                    {% else %}
+                    {% endif %}
                     <div class="carousel-caption">
                         <h4>{{ convocatoria.titulo }}</h4>
                         {% if convocatoria.descripcion %}
-                        <p>{{ convocatoria.descripcion|truncatewords:20 }}</p>
+                            <p>{{ convocatoria.descripcion|truncatewords:20 }}</p>
                         {% endif %}
                         <a href="{% url 'detalleConvocatoria' convocatoria.id %}" class="btn-convocatoria">Más información</a>
                     </div>
                 </div>
             </div>
-            {% endfor %}
+        {% endfor %}
+        
         </div>
 
         <!-- Controles -->
