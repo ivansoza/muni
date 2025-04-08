@@ -343,6 +343,22 @@
                         </a>
                         <ul class="dropdown-menu">
                             <!-- Convocatorias -->
+
+
+                            {% for seccion in municipio.secciones_plus.all %}
+                                {% if seccion.status %}
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            {{ seccion.nombre }}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            {% empty %}
+
+                            
+
+                            {% endfor %}
+
                             {% if municipio.secciones_hab and municipio.secciones_hab.convocatorias %}
                             <li>
                                 <a class="dropdown-item" href="{% url 'HomeConvocatoriasView' %}">Convocatorias</a>

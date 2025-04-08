@@ -3,6 +3,8 @@ from django.db import models
 from informacion_municipal.models import Municipio
 from django.db.models import Q
 
+from convocatorias.models import Categoria
+
 # Create your models here.
 
 
@@ -234,3 +236,29 @@ class MetaMunicipio(models.Model):
             return self.municipio.logotipo.url
         # URL estática de respaldo si no hay ninguna imagen
         return '/static/assets/images/logo/logo-new.png'
+    
+
+
+
+
+class SeccionPlus(models.Model):
+    municipio = models.ForeignKey(
+        Municipio,
+        on_delete=models.CASCADE,
+        related_name='secciones_plus'  # Ahora es un queryset de SeccionPlus para cada Municipio
+    )
+    nombre = models.CharField(max_length=255)
+    categoria_convocatoria = models.ForeignKey(
+        Categoria,
+        on_delete=models.CASCADE,
+        related_name='secciones_plus'
+    )
+    banner = models.ImageField(
+        upload_to='banners_secciones/',
+        blank=True,
+        null=True  # Banner opcional
+    )
+    status = models.BooleanField(default=True)  # True = activo, False = inactivo
+
+    def __str__(self):
+        return self.nombre
