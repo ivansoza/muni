@@ -266,8 +266,6 @@
     font-weight: 400; /* Normal para el segundo texto */
     color: #6b7280; /* Color gris suave para el segundo texto */
 }
-
-
 </style>
 
 <div class="container mt-4">
@@ -287,153 +285,172 @@
             <h2 class="header-title">Carpetas y Archivos</h2>
             <p class="header-description">SEVAC es el sistema de gestión de carpetas y archivos que contiene información pública relacionada con las obras y proyectos del gobierno. A través de este sistema, podrás acceder a documentos, reportes, informes y otros archivos relevantes sobre la transparencia y gestión de los recursos públicos.</p>
         </div>
-    
-        <!-- Card para los archivos -->
-        <div class="card-accordion">
-            <div class="accordion" id="carpetasAccordion">
-                {% for carpeta in carpetas %}
-                    <!-- Mostrar solo las carpetas activas -->
-                    {% if carpeta.estatus == 'A' %}
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="heading{{ carpeta.id }}">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapse{{ carpeta.id }}" aria-expanded="false" aria-controls="collapse{{ carpeta.id }}">
-                                    <i class="fas fa-folder me-2"></i> <strong>{{ carpeta.nombre }}</strong>
-                                </button>
-                            </h2>
-                            <div id="collapse{{ carpeta.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ carpeta.id }}" data-bs-parent="#carpetasAccordion">
-                                <div class="accordion-body">
-                                    {% if not carpeta.archivos.all and not carpeta.subcarpetas.all %}
-                                        <div class="empty-folder">
-                                            Esta carpeta está vacía.
-                                        </div>
-                                    {% else %}
-                                        <!-- Mostrar los archivos de la carpeta principal -->
-                                        <div class="files-grid">
-                                            {% for archivo in carpeta.archivos.all %}
-                                                {% if archivo.estatus == 'A' %}
-                                                    <div class="file-item">
-                                                        <i class="fas 
-                                                            {% if archivo.archivo.url|lower|slice:'-4:' == '.pdf' %}
-                                                                fa-file-pdf
-                                                            {% elif archivo.archivo.url|lower|slice:'-5:' == '.docx' or archivo.archivo.url|lower|slice:'-4:' == '.doc' %}
-                                                                fa-file-word
-                                                            {% elif archivo.archivo.url|lower|slice:'-5:' == '.xlsx' or archivo.archivo.url|lower|slice:'-4:' == '.xls' %}
-                                                                fa-file-excel
-                                                            {% elif archivo.archivo.url|lower|slice:'-5:' == '.pptx' or archivo.archivo.url|lower|slice:'-4:' == '.ppt' %}
-                                                                fa-file-powerpoint
-                                                            {% elif archivo.archivo.url|lower|slice:'-4:' == '.jpg' or archivo.archivo.url|lower|slice:'-4:' == '.png' or archivo.archivo.url|lower|slice:'-4:' == '.gif' %}
-                                                                fa-image
-                                                            {% else %}
-                                                                fa-file-alt
-                                                            {% endif %}
-                                                        "></i>
-                                                        <a href="{{ archivo.archivo.url }}" class="text-dark text-decoration-none" target="_blank">
-                                                            {{ archivo.nombre }}
-                                                        </a>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-        
-                                    <!-- Mostrar subcarpetas de esta carpeta -->
-                                    {% for subcarpeta in carpeta.subcarpetas_ordenadas %}
-                                    {% if subcarpeta.estatus == 'A' %}
-                                            <div class="accordion-item mt-3">
-                                                <h2 class="accordion-header" id="headingSubcarpeta{{ subcarpeta.id }}">
-                                                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                                        data-bs-target="#collapseSubcarpeta{{ subcarpeta.id }}" aria-expanded="false" aria-controls="collapseSubcarpeta{{ subcarpeta.id }}">
-                                                        <i class="fas fa-folder-open text-warning me-2"></i> {{ subcarpeta.nombre }}
-                                                    </button>
-                                                </h2>
-                                                <div id="collapseSubcarpeta{{ subcarpeta.id }}" class="accordion-collapse collapse" aria-labelledby="headingSubcarpeta{{ subcarpeta.id }}" data-bs-parent="#collapse{{ carpeta.id }}">
-                                                    <div class="accordion-body">
-                                                        <!-- Mostrar los archivos de la subcarpeta -->
-                                                        <div class="files-grid">
-                                                            {% for archivo in subcarpeta.archivos.all %}
-                                                                {% if archivo.estatus == 'A' %}
-                                                                    <div class="file-item">
-                                                                        <i class="fas 
-                                                                            {% if archivo.archivo.url|lower|slice:'-4:' == '.pdf' %}
-                                                                                fa-file-pdf
-                                                                            {% elif archivo.archivo.url|lower|slice:'-5:' == '.docx' or archivo.archivo.url|lower|slice:'-4:' == '.doc' %}
-                                                                                fa-file-word
-                                                                            {% elif archivo.archivo.url|lower|slice:'-5:' == '.xlsx' or archivo.archivo.url|lower|slice:'-4:' == '.xls' %}
-                                                                                fa-file-excel
-                                                                            {% elif archivo.archivo.url|lower|slice:'-5:' == '.pptx' or archivo.archivo.url|lower|slice:'-4:' == '.ppt' %}
-                                                                                fa-file-powerpoint
-                                                                            {% elif archivo.archivo.url|lower|slice:'-4:' == '.jpg' or archivo.archivo.url|lower|slice:'-4:' == '.png' or archivo.archivo.url|lower|slice:'-4:' == '.gif' %}
-                                                                                fa-image
-                                                                            {% else %}
-                                                                                fa-file-alt
-                                                                            {% endif %}
-                                                                        "></i>
-                                                                        <a href="{{ archivo.archivo.url }}" class="text-dark text-decoration-none" target="_blank">
-                                                                            {{ archivo.nombre }}
-                                                                        </a>
-                                                                    </div>
-                                                                {% endif %}
-                                                            {% endfor %}
-                                                        </div>
-        
-                                                        <!-- Llamada recursiva para las subcarpetas dentro de la subcarpeta -->
-                                                        {% for subsubcarpeta in subcarpeta.subcarpetas.all %}
-                                                            {% if subsubcarpeta.estatus == 'A' %}
-                                                                <div class="accordion-item mt-3">
-                                                                    <h2 class="accordion-header" id="headingSubsubcarpeta{{ subsubcarpeta.id }}">
-                                                                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                                                            data-bs-target="#collapseSubsubcarpeta{{ subsubcarpeta.id }}" aria-expanded="false" aria-controls="collapseSubsubcarpeta{{ subsubcarpeta.id }}">
-                                                                            <i class="fas fa-folder-open text-success me-2"></i> {{ subsubcarpeta.nombre }}
-                                                                        </button>
-                                                                    </h2>
-                                                                    <div id="collapseSubsubcarpeta{{ subsubcarpeta.id }}" class="accordion-collapse collapse" aria-labelledby="headingSubsubcarpeta{{ subsubcarpeta.id }}" data-bs-parent="#collapse{{ subcarpeta.id }}">
-                                                                        <div class="accordion-body">
-                                                                            <!-- Mostrar los archivos de la subsubcarpeta -->
-                                                                            <div class="files-grid">
-                                                                                {% for archivo in subsubcarpeta.archivos.all %}
-                                                                                    {% if archivo.estatus == 'A' %}
-                                                                                        <div class="file-item">
-                                                                                            <i class="fas 
-                                                                                                {% if archivo.archivo.url|lower|slice:'-4:' == '.pdf' %}
-                                                                                                    fa-file-pdf
-                                                                                                {% elif archivo.archivo.url|lower|slice:'-5:' == '.docx' or archivo.archivo.url|lower|slice:'-4:' == '.doc' %}
-                                                                                                    fa-file-word
-                                                                                                {% elif archivo.archivo.url|lower|slice:'-5:' == '.xlsx' or archivo.archivo.url|lower|slice:'-4:' == '.xls' %}
-                                                                                                    fa-file-excel
-                                                                                                {% elif archivo.archivo.url|lower|slice:'-5:' == '.pptx' or archivo.archivo.url|lower|slice:'-4:' == '.ppt' %}
-                                                                                                    fa-file-powerpoint
-                                                                                                {% elif archivo.archivo.url|lower|slice:'-4:' == '.jpg' or archivo.archivo.url|lower|slice:'-4:' == '.png' or archivo.archivo.url|lower|slice:'-4:' == '.gif' %}
-                                                                                                    fa-image
-                                                                                                {% else %}
-                                                                                                    fa-file-alt
-                                                                                                {% endif %}
-                                                                                            "></i>
-                                                                                            <a href="{{ archivo.archivo.url }}" class="text-dark text-decoration-none" target="_blank">
-                                                                                                {{ archivo.nombre }}
-                                                                                            </a>
-                                                                                        </div>
+
+        <!-- Nueva fila con sidebar y contenido -->
+        <div class="row">
+            <!-- sidebar  -->
+            <div class="col-md-3">
+                <div class="sidebar-categorias">
+                    <h5 class="mb-3">Categorias</h5>
+                    <ul class="list-group"> 
+                        {% for categorias in categorias %}
+                            <li class="list-group-item">
+                                <strong>{{ categorias.nombre }}</strong>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card de Archivos -->
+            <div class="col-md-9">
+                <div class="card-accordion">
+                    <div class="accordion" id="carpetasAccordion">
+                        {% for carpeta in carpetas %}
+                            <!-- Mostrar solo las carpetas activas -->
+                            {% if carpeta.estatus == 'A' %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading{{ carpeta.id }}">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapse{{ carpeta.id }}" aria-expanded="false" aria-controls="collapse{{ carpeta.id }}">
+                                            <i class="fas fa-folder me-2"></i> <strong>{{ carpeta.nombre }}</strong>
+                                        </button>
+                                    </h2>
+                                    <div id="collapse{{ carpeta.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ carpeta.id }}" data-bs-parent="#carpetasAccordion">
+                                        <div class="accordion-body">
+                                            {% if not carpeta.archivos.all and not carpeta.subcarpetas.all %}
+                                                <div class="empty-folder">
+                                                    Esta carpeta está vacía.
+                                                </div>
+                                            {% else %}
+                                                <!-- Mostrar los archivos de la carpeta principal -->
+                                                <div class="files-grid">
+                                                    {% for archivo in carpeta.archivos.all %}
+                                                        {% if archivo.estatus == 'A' %}
+                                                            <div class="file-item">
+                                                                <i class="fas 
+                                                                    {% if archivo.archivo.url|lower|slice:'-4:' == '.pdf' %}
+                                                                        fa-file-pdf
+                                                                    {% elif archivo.archivo.url|lower|slice:'-5:' == '.docx' or archivo.archivo.url|lower|slice:'-4:' == '.doc' %}
+                                                                        fa-file-word
+                                                                    {% elif archivo.archivo.url|lower|slice:'-5:' == '.xlsx' or archivo.archivo.url|lower|slice:'-4:' == '.xls' %}
+                                                                        fa-file-excel
+                                                                    {% elif archivo.archivo.url|lower|slice:'-5:' == '.pptx' or archivo.archivo.url|lower|slice:'-4:' == '.ppt' %}
+                                                                        fa-file-powerpoint
+                                                                    {% elif archivo.archivo.url|lower|slice:'-4:' == '.jpg' or archivo.archivo.url|lower|slice:'-4:' == '.png' or archivo.archivo.url|lower|slice:'-4:' == '.gif' %}
+                                                                        fa-image
+                                                                    {% else %}
+                                                                        fa-file-alt
+                                                                    {% endif %}
+                                                                "></i>
+                                                                <a href="{{ archivo.archivo.url }}" class="text-dark text-decoration-none" target="_blank">
+                                                                    {{ archivo.nombre }}
+                                                                </a>
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                
+                                            <!-- Mostrar subcarpetas de esta carpeta -->
+                                            {% for subcarpeta in carpeta.subcarpetas_ordenadas %}
+                                            {% if subcarpeta.estatus == 'A' %}
+                                                    <div class="accordion-item mt-3">
+                                                        <h2 class="accordion-header" id="headingSubcarpeta{{ subcarpeta.id }}">
+                                                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                                                data-bs-target="#collapseSubcarpeta{{ subcarpeta.id }}" aria-expanded="false" aria-controls="collapseSubcarpeta{{ subcarpeta.id }}">
+                                                                <i class="fas fa-folder-open text-warning me-2"></i> {{ subcarpeta.nombre }}
+                                                            </button>
+                                                        </h2>
+                                                        <div id="collapseSubcarpeta{{ subcarpeta.id }}" class="accordion-collapse collapse" aria-labelledby="headingSubcarpeta{{ subcarpeta.id }}" data-bs-parent="#collapse{{ carpeta.id }}">
+                                                            <div class="accordion-body">
+                                                                <!-- Mostrar los archivos de la subcarpeta -->
+                                                                <div class="files-grid">
+                                                                    {% for archivo in subcarpeta.archivos.all %}
+                                                                        {% if archivo.estatus == 'A' %}
+                                                                            <div class="file-item">
+                                                                                <i class="fas 
+                                                                                    {% if archivo.archivo.url|lower|slice:'-4:' == '.pdf' %}
+                                                                                        fa-file-pdf
+                                                                                    {% elif archivo.archivo.url|lower|slice:'-5:' == '.docx' or archivo.archivo.url|lower|slice:'-4:' == '.doc' %}
+                                                                                        fa-file-word
+                                                                                    {% elif archivo.archivo.url|lower|slice:'-5:' == '.xlsx' or archivo.archivo.url|lower|slice:'-4:' == '.xls' %}
+                                                                                        fa-file-excel
+                                                                                    {% elif archivo.archivo.url|lower|slice:'-5:' == '.pptx' or archivo.archivo.url|lower|slice:'-4:' == '.ppt' %}
+                                                                                        fa-file-powerpoint
+                                                                                    {% elif archivo.archivo.url|lower|slice:'-4:' == '.jpg' or archivo.archivo.url|lower|slice:'-4:' == '.png' or archivo.archivo.url|lower|slice:'-4:' == '.gif' %}
+                                                                                        fa-image
+                                                                                    {% else %}
+                                                                                        fa-file-alt
                                                                                     {% endif %}
-                                                                                {% endfor %}
+                                                                                "></i>
+                                                                                <a href="{{ archivo.archivo.url }}" class="text-dark text-decoration-none" target="_blank">
+                                                                                    {{ archivo.nombre }}
+                                                                                </a>
+                                                                            </div>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </div>
+                
+                                                                <!-- Llamada recursiva para las subcarpetas dentro de la subcarpeta -->
+                                                                {% for subsubcarpeta in subcarpeta.subcarpetas.all %}
+                                                                    {% if subsubcarpeta.estatus == 'A' %}
+                                                                        <div class="accordion-item mt-3">
+                                                                            <h2 class="accordion-header" id="headingSubsubcarpeta{{ subsubcarpeta.id }}">
+                                                                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                                                                    data-bs-target="#collapseSubsubcarpeta{{ subsubcarpeta.id }}" aria-expanded="false" aria-controls="collapseSubsubcarpeta{{ subsubcarpeta.id }}">
+                                                                                    <i class="fas fa-folder-open text-success me-2"></i> {{ subsubcarpeta.nombre }}
+                                                                                </button>
+                                                                            </h2>
+                                                                            <div id="collapseSubsubcarpeta{{ subsubcarpeta.id }}" class="accordion-collapse collapse" aria-labelledby="headingSubsubcarpeta{{ subsubcarpeta.id }}" data-bs-parent="#collapse{{ subcarpeta.id }}">
+                                                                                <div class="accordion-body">
+                                                                                    <!-- Mostrar los archivos de la subsubcarpeta -->
+                                                                                    <div class="files-grid">
+                                                                                        {% for archivo in subsubcarpeta.archivos.all %}
+                                                                                            {% if archivo.estatus == 'A' %}
+                                                                                                <div class="file-item">
+                                                                                                    <i class="fas 
+                                                                                                        {% if archivo.archivo.url|lower|slice:'-4:' == '.pdf' %}
+                                                                                                            fa-file-pdf
+                                                                                                        {% elif archivo.archivo.url|lower|slice:'-5:' == '.docx' or archivo.archivo.url|lower|slice:'-4:' == '.doc' %}
+                                                                                                            fa-file-word
+                                                                                                        {% elif archivo.archivo.url|lower|slice:'-5:' == '.xlsx' or archivo.archivo.url|lower|slice:'-4:' == '.xls' %}
+                                                                                                            fa-file-excel
+                                                                                                        {% elif archivo.archivo.url|lower|slice:'-5:' == '.pptx' or archivo.archivo.url|lower|slice:'-4:' == '.ppt' %}
+                                                                                                            fa-file-powerpoint
+                                                                                                        {% elif archivo.archivo.url|lower|slice:'-4:' == '.jpg' or archivo.archivo.url|lower|slice:'-4:' == '.png' or archivo.archivo.url|lower|slice:'-4:' == '.gif' %}
+                                                                                                            fa-image
+                                                                                                        {% else %}
+                                                                                                            fa-file-alt
+                                                                                                        {% endif %}
+                                                                                                    "></i>
+                                                                                                    <a href="{{ archivo.archivo.url }}" class="text-dark text-decoration-none" target="_blank">
+                                                                                                        {{ archivo.nombre }}
+                                                                                                    </a>
+                                                                                                </div>
+                                                                                            {% endif %}
+                                                                                        {% endfor %}
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
-                                                                </div>
-                                                            {% endif %}
-                                                        {% endfor %}
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
+        
+                                                    {% endif %}
+                                                {% endfor %}
                                             </div>
-
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
+                                        </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            </div>
         </div>
-    </div>
 </div>
 
     </div>
