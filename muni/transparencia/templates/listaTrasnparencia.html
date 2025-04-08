@@ -197,38 +197,37 @@
 </style>
 
 <div class="container">
-  <h2 class="news-title">Transparencia <span>| Acceso a la Información</span></h2>
-</div>
-
-<div class="container mt-4">
-  <div class="filters-container">
-    <div class="year-filter">
-      <select id="yearSelect" onchange="applyFilters()">
-        <option value="">Todos los años</option>
-        {% for year in years %}
-          <option value="{{ year }}">{{ year }}</option>
-        {% endfor %}
-      </select>
-    </div>
-
-    <div class="search-container">
-      <i class="fas fa-search search-icon"></i>
-      <input id="searchInput" class="search-input"
-             type="text" placeholder="Buscar artículo…" onkeyup="applyFilters()">
-    </div>
+    <h2 class="news-title">Transparencia <span>| Acceso a la Información</span></h2>
   </div>
-
-  <div class="lista-obligaciones-container">
-    {% for lista in lista_obligaciones %}
-      <div class="obligacion" id="lista-{{ lista.id }}">
-        <h4>{{ lista.titulo }}</h4>
-        <h5>{{ lista.articulo }}</h5>
-
-        <ul class="articulos-list" id="articulosList-{{ lista.id }}">
-          {% for articulo in lista.articulos_liga.all %}
-            {% with archivo=articulo.archivos.0 %}
-              {% if archivo %}
+  <div class="container mt-4">
+    <div class="filters-container">
+      <div class="year-filter">
+        <select id="yearSelect" onchange="applyFilters()">
+          <option value="">Todos los años</option>
+          {% for year in years %}
+            <option value="{{ year }}">{{ year }}</option>
+          {% endfor %}
+        </select>
+      </div>
+  
+      <div class="search-container">
+        <i class="fas fa-search search-icon"></i>
+        <input id="searchInput" class="search-input"
+               type="text" placeholder="Buscar artículo…" onkeyup="applyFilters()">
+      </div>
+    </div>
+  
+    <div class="lista-obligaciones-container">
+      {% for lista in lista_obligaciones %}
+        <div class="obligacion" id="lista-{{ lista.id }}">
+          <h4>{{ lista.titulo }}</h4>
+          <h5>{{ lista.articulo }}</h5>
+  
+          <ul class="articulos-list" id="articulosList-{{ lista.id }}">
+            {% for articulo in lista.articulos_liga.all %}
+              {% for archivo in articulo.archivos %}
                 <li class="articulo-item"
+                    data-articulo="{{ articulo.id }}"
                     data-ano="{{ archivo.ano }}"
                     data-text="{{ articulo.articulo_fraccion|lower }}">
                   {% if archivo.liga %}
@@ -237,7 +236,7 @@
                     </a>
                   {% elif archivo.archivo %}
                     <a href="{{ archivo.archivo.url }}" download target="_blank" rel="noopener">
-                        <i class="fas fa-scroll"></i> {{ articulo.articulo_fraccion }}
+                      <i class="fas fa-scroll"></i> {{ articulo.articulo_fraccion }}
                     </a>
                   {% else %}
                     <span class="text-muted">
@@ -245,71 +244,96 @@
                     </span>
                   {% endif %}
                 </li>
-              {% endif %}
-            {% endwith %}
-          {% endfor %}
-        </ul>
+              {% empty %}
+                <li>Sin archivos</li>
+              {% endfor %}
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  
+  <br>
+  
+  <div class="transparency-section">
+    <!-- Se mantiene la sección de portales -->
+    <div class="access-item">
+      <p class="dual-text">
+        <span class="bold-text">Realiza tus consultas</span> |
+        <span class="light-text">Consulta los portales de transparencia</span>
+      </p>
+    </div>
+  
+    <div class="transparency-access">
+      <div class="access-item">
+        <a href="https://pruebas.iaiptlaxcala.org.mx/">
+          <img class="large-img" src="{% static 'img/aipi.png' %}" alt="Información Pública">
+        </a>
       </div>
-    {% endfor %}
-  </div>
-</div>
-
-<br>
-
-<div class="transparency-section">
-  <div class="access-item">
-    <p class="dual-text">
-      <span class="bold-text">Realiza tus consultas</span> |
-      <span class="light-text">Consulta los portales de transparencia</span>
-    </p>
-  </div>
-
-  <div class="transparency-access">
-    <div class="access-item">
-      <a href="https://pruebas.iaiptlaxcala.org.mx/">
-        <img class="large-img" src="{% static 'img/aipi.png' %}" alt="Información Pública">
-      </a>
-    </div>
-    <div class="access-item">
-      <a href="https://www.plataformadetransparencia.org.mx/Inicio">
-        <img src="{% static 'img/Transparencia.png' %}" alt="Indicadores de Resultados">
-      </a>
-    </div>
-    <div class="access-item">
-      <a href="https://consultapublicamx.plataformadetransparencia.org.mx/vut-web/faces/view/consultaPublica.xhtml#obligaciones">
-        <img src="{% static 'img/ltaip.jpg' %}" alt="Directorio">
-      </a>
+      <div class="access-item">
+        <a href="https://www.plataformadetransparencia.org.mx/Inicio">
+          <img src="{% static 'img/Transparencia.png' %}" alt="Indicadores de Resultados">
+        </a>
+      </div>
+      <div class="access-item">
+        <a href="https://consultapublicamx.plataformadetransparencia.org.mx/vut-web/faces/view/consultaPublica.xhtml#obligaciones">
+          <img src="{% static 'img/ltaip.jpg' %}" alt="Directorio">
+        </a>
+      </div>
     </div>
   </div>
-</div>
-
-<script>
-function applyFilters() {
-  const year   = document.getElementById('yearSelect').value;
-  const search = document.getElementById('searchInput').value.toLowerCase();
-
-  document.querySelectorAll('.obligacion').forEach(lista => {
-    let visibleInList = false;
-
-    lista.querySelectorAll('.articulo-item').forEach(item => {
+  
+  <script>
+  // Función que aplica los filtros y, luego, agrupa los archivos por artículo para mostrar solo el más reciente.
+  function applyFilters() {
+    const year   = document.getElementById('yearSelect').value;
+    const search = document.getElementById('searchInput').value.toLowerCase();
+  
+    // Primero, filtra cada <li> según año y texto.
+    document.querySelectorAll('.articulo-item').forEach(item => {
       const itemYear = item.dataset.ano;
       const itemText = item.dataset.text;
-
       const yearMatch   = !year || itemYear === year;
       const searchMatch = !search || itemText.includes(search);
-
       if (yearMatch && searchMatch) {
         item.style.display = '';
-        visibleInList = true;
       } else {
         item.style.display = 'none';
       }
     });
-
-    lista.style.display = visibleInList ? '' : 'none';
-  });
-}
-
-document.addEventListener('DOMContentLoaded', applyFilters);
-</script>
+  
+    // Agrupar por artículo: para cada grupo, se deja visible solo el primer <li> (ya que están ordenados de forma descendente por año).
+    const grupos = {};
+    document.querySelectorAll('.articulo-item').forEach(item => {
+      // Consideramos solo los elementos que quedaron visibles tras el filtrado.
+      if (item.style.display !== 'none') {
+        const id = item.dataset.articulo;
+        if (!grupos[id]) {
+          grupos[id] = [];
+        }
+        grupos[id].push(item);
+      }
+    });
+    // Para cada grupo, dejamos visible únicamente el primer elemento y ocultamos el resto.
+    Object.keys(grupos).forEach(id => {
+      grupos[id].forEach((item, index) => {
+        if (index > 0) {
+          item.style.display = 'none';
+        }
+      });
+    });
+  
+    // Opcional: si una lista (obligación) no tiene ningún artículo visible, se oculta la caja completa.
+    document.querySelectorAll('.obligacion').forEach(lista => {
+      const visibleItems = lista.querySelectorAll('.articulo-item')
+                               .length > 0 && Array.from(lista.querySelectorAll('.articulo-item')).some(item => getComputedStyle(item).display !== 'none');
+      lista.style.display = visibleItems ? '' : 'none';
+    });
+  }
+  
+  document.addEventListener('DOMContentLoaded', applyFilters);
+  </script>
+  
+  
 {% endblock %}
