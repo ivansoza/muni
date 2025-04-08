@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.utils import timezone
 from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, reverse
 from datetime import datetime
 
 # Create your views here.
@@ -187,6 +187,7 @@ class detalleConvocatoria(TemplateView):
         convocatoria_id = self.kwargs.get('id')
         convocatoria = get_object_or_404(Convocatoria, id=convocatoria_id)
 
+        # Cálculos de fechas y avance
         fecha_apertura = convocatoria.fecha_apertura
         fecha_cierre = convocatoria.fecha_cierre
         fecha_actual = datetime.now().date()
@@ -202,9 +203,22 @@ class detalleConvocatoria(TemplateView):
         # Evitar valores negativos o mayores a 100
         porcentaje_avance = max(0, min(porcentaje_avance, 100))
 
+        # Asignación de variables en el contexto
         context['convocatoria'] = convocatoria
         context['tiempo_restante'] = dias_restantes if dias_restantes > 0 else 0
         context['porcentaje_avance'] = porcentaje_avance
         context['dias_totales'] = dias_totales
+
+        # Si se recibe seccion_id (desde la URL anidada) se configura la URL de regreso
+        seccion_id = self.kwargs.get('seccion_id')
+        if seccion_id:
+            seccion = get_object_or_404(SeccionPlus, id=seccion_id)
+            context['seccion_origen'] = seccion
+            # Aquí se construye la URL para volver a la sección correspondiente,
+            # asumiendo que tienes una ruta con nombre 'seccionplus_detail'
+            context['url_volver'] = reverse('seccionplus_detail', kwargs={'pk': seccion.pk, 'slug': seccion.slug})
+        else:
+            # Si no viene seccion_id, se regresa al listado general de convocatorias
+            context['url_volver'] = reverse('HomeConvocatoriasView')
 
         return context

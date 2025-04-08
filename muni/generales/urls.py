@@ -107,4 +107,7 @@ urlpatterns = [
     path('convocatorias/<int:id>/detalle/', views.obtener_detalle_convocatoria, name='detalle_Convocatoria'),
 
 
+    
+
+
 ]

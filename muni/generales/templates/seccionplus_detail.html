@@ -1147,7 +1147,11 @@
                       </div>
                       <div class="convocatoria-footer">
                           <span class="category-tag"><i class="fa-solid fa-tags"></i> ${c.categoria}</span>
-                          <a href="/convocatorias/detalleConvocatoria/${c.id}/" class="view-details">Ver detalles</a>
+                        <a href="/convocatorias/seccion/${SECCION_PK}/detalleConvocatoria/${c.id}/"
+                        class="view-details">
+                            Ver detalles
+                        </a>
+
                       </div>`;
                   convocatoriasContainer.appendChild(card);
               });

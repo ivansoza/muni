@@ -836,12 +836,13 @@ body {
     <div class="container">
       <!-- Header con navegación -->
       <div class="header">
-        <a href="/convocatorias" class="back-link">
-            <br>
-
+        <a href="{{ url_volver }}" class="back-link">
           <i data-lucide="arrow-left"></i>
-          Volver a convocatorias
-        </a>
+          {% if seccion_origen %}Volver a {{ seccion_origen.nombre }}
+          {% else %}Volver a convocatorias
+          {% endif %}
+      </a>
+      
         <h1 class="title">{{convocatoria.titulo}}</h1>
       </div>
 
