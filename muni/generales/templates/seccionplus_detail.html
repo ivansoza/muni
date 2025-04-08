@@ -1,6 +1,138 @@
 {% extends "base.html" %}
+
+
+
+
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+
+    {% if seccion.banner  %}
+
+        <style>
+            .banner-convocatorias {
+                position: relative;
+                width: 100%;
+                height: 400px;
+                overflow: hidden;
+                margin-bottom: 30px;
+                margin-top: -80px;
+
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+
+
+            }
+            .banner-img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+                transition: transform 0.5s ease;
+            }
+            .banner-convocatorias:hover .banner-img {
+                transform: scale(1.05);
+            }
+            .banner-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.2) 100%);
+                z-index: 1;
+            }
+            .banner-content {
+                position: absolute;
+                top: 50%;
+                left: 50px;
+                transform: translateY(-50%);
+                color: white;
+                z-index: 2;
+                max-width: 600px;
+                padding: 20px;
+            }
+            .banner-content h1 {
+                font-size: 2.8rem;
+                margin-bottom: 15px;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+                font-weight: 700;
+            }
+            .banner-content p {
+                font-size: 1.2rem;
+                margin-bottom: 25px;
+                line-height: 1.6;
+                text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            }
+            .banner-btn {
+                display: inline-block;
+                background-color: var(--color-primario, #0056b3);
+                color: white;
+                padding: 12px 30px;
+                border-radius: 50px;
+                text-decoration: none;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                border: 2px solid transparent;
+            }
+            .banner-btn:hover {
+                background-color: var(--color-secundario, #003d7a);
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            }
+            /* Responsive styling */
+            @media (max-width: 992px) {
+                .banner-content h1 {
+                    font-size: 2.4rem;
+                }
+            }
+            @media (max-width: 768px) {
+                .banner-convocatorias {
+                    height: 350px;
+                }
+                .banner-content {
+                    left: 30px;
+                    max-width: 80%;
+                }
+                .banner-content h1 {
+                    font-size: 2rem;
+                }
+                .banner-content p {
+                    font-size: 1.1rem;
+                }
+            }
+            @media (max-width: 576px) {
+                .banner-convocatorias {
+                    height: 300px;
+                }
+                .banner-content {
+                    left: 20px;
+                    max-width: 90%;
+                }
+                .banner-content h1 {
+                    font-size: 1.8rem;
+                }
+                .banner-content p {
+                    font-size: 1rem;
+                    margin-bottom: 15px;
+                }
+                .banner-btn {
+                    padding: 10px 25px;
+                    font-size: 0.9rem;
+                }
+            }
+        </style>
+
+        <div class="banner-convocatorias">
+            <div class="banner-overlay"></div>
+            <div class="banner-content">
+                <h1>{{ seccion.nombre }}</h1>
+                {% if seccion.detalles %}
+                    <p>{{seccion.detalles}}</p>
+                {% endif %}
+            </div>
+            <img src="{{ seccion.banner.url }}" alt="Banner de Convocatorias" class="banner-img">
+        </div>  
+        {% endif %}
 
 <style>
 .container-convocatoria {
@@ -767,8 +899,16 @@
 </style>
 
 
+
+  
+
 <div class="container-convocatoria" data-seccion-pk="{{ seccion.pk }}">
 
+
+
+
+
+    
     <h2 class="news-title">{{seccion.nombre}}
         <span>| Convocatorias</span>
     </h2>

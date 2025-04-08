@@ -251,7 +251,7 @@ class SeccionPlus(models.Model):
     municipio = models.ForeignKey(
         Municipio,
         on_delete=models.CASCADE,
-        related_name='secciones_plus'  # Ahora es un queryset de SeccionPlus para cada Municipio
+        related_name='secciones_plus'
     )
     nombre = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True, blank=True)
@@ -259,14 +259,19 @@ class SeccionPlus(models.Model):
     banner = models.ImageField(
         upload_to='banners_secciones/',
         blank=True,
-        null=True  # Banner opcional
+        null=True
     )
-    status = models.BooleanField(default=True)  # True = activo, False = inactivo
+    status = models.BooleanField(default=True)
+
+    detalles = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Campo opcional para agregar detalles adicionales de la sección."
+    )
 
     def __str__(self):
         return self.nombre
 
     def save(self, *args, **kwargs):
-        # Se actualiza el slug siempre que se guarde el objeto, en función del nombre
         self.slug = slugify(self.nombre)
         super().save(*args, **kwargs)
