@@ -407,7 +407,14 @@
                 {% if principal.imagen %}
                   <img src="{{ principal.imagen.url }}" alt="{{ principal.nombre }}">
                 {% else %}
-                  <img src="{{ municipio.logotipo.url }}" alt="{{ principal.nombre }}">
+
+                  {% if municipio.logotipo_claro %}
+                    <img src="{{ municipio.logotipo_claro.url }}" alt="{{ principal.nombre }}">
+                  {% else %}
+                    <img src="{{ municipio.logotipo.url }}" alt="{{ principal.nombre }}">
+                  {% endif %}
+
+
                 {% endif %}
               </div>
               <div class="decoracion-bg"></div> <!-- Esta clase no tiene estilos, pero existe en HTML -->
@@ -462,9 +469,18 @@
                            src="{{ miembro.imagen.url }}"
                            alt="{{ miembro.nombre }}">
                     {% else %}
-                      <img style="margin-top:1rem; width:130px; height:auto;"
-                           src="{{ municipio.logotipo.url }}"
-                           alt="{{ miembro.nombre }}">
+                      {% if municipio.logotipo_claro %}
+                        
+                        <img style="margin-top:1rem; width:130px; height:auto;"
+                        src="{{ municipio.logotipo_claro.url }}"
+                        alt="{{ miembro.nombre }}">
+
+                      {% else %}
+                        <img style="margin-top:1rem; width:130px; height:auto;"
+                            src="{{ municipio.logotipo.url }}"
+                            alt="{{ miembro.nombre }}">
+                      {% endif %}
+
                     {% endif %}
                     <div class="overlay">Ver</div>
                   </div>
