@@ -1,7 +1,8 @@
-
 from django.shortcuts import render
 from .models import Carpeta, Archivo
 from django.views.generic import TemplateView
+from collections import defaultdict
+
 class HomeSevacView(TemplateView):
     template_name = 'archivosListas.html'
 
@@ -38,9 +39,15 @@ class HomeSevacView(TemplateView):
         for carpeta in carpetas_ordenadas:
             carpeta.subcarpetas_ordenadas = ordenar_subcarpetas(carpeta)
 
+        # Agrupar carpetas por objeto categoria
+        categorias = defaultdict(list)
+        for carpeta in carpetas_ordenadas:
+            if carpeta.categoria:
+                categorias[carpeta.categoria].append(carpeta)
+
         # Añadir las carpetas ordenadas al contexto
         context['carpetas'] = carpetas_ordenadas
-
+        context['categorias'] = dict(categorias)
         context['sidebar'] = "sevac"
 
         return context
