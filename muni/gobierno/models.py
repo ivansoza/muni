@@ -68,3 +68,135 @@ class MiembroGabinete(models.Model):
 
     def __str__(self):
         return f"{self.orden} - {self.nombre} ({self.cargo})"
+
+
+
+class MiembroGabineteRegidores(models.Model):
+    STATUS_CHOICES = [
+        ('activo', 'Activo'),
+        ('inactivo', 'Inactivo'),
+    ]
+
+    municipio = models.ForeignKey(
+        Municipio, 
+        on_delete=models.CASCADE, 
+        related_name="gabinete_regidores",
+        verbose_name="Municipio"
+    )
+    nombre = models.CharField("Nombre", max_length=255)
+    cargo = models.CharField("Cargo", max_length=255)
+    semblanza = models.TextField("Semblanza", blank=True, null=True)
+    numero_contacto = models.CharField("Número de Contacto", max_length=20, blank=True, null=True)
+    correo_electronico = models.EmailField("Correo Electrónico", blank=True, null=True)
+    pagina_web = models.URLField("Página Web", blank=True, null=True)
+    
+    imagen = models.ImageField(
+        "Fotografía del Miembro",
+        upload_to='gabinete/',
+        blank=True,
+        null=True,
+        help_text="Carga la fotografía del miembro (opcional)."
+    )
+    
+    orden = models.PositiveIntegerField(
+        "Orden", 
+        default=1, 
+        help_text="El miembro con orden 1 será considerado el principal."
+    )
+    status = models.CharField(
+        "Estado", 
+        max_length=10, 
+        choices=STATUS_CHOICES, 
+        default='activo'
+    )
+    
+    # Nuevos campos:
+    telefono = models.CharField("Teléfono", max_length=20, blank=True, null=True)
+    horario = models.CharField("Horario de Atención", max_length=255, blank=True, null=True)
+    formacion_academica = models.TextField("Formación Académica", blank=True, null=True)
+    experiencia = models.TextField("Experiencia en el Servicio Público", blank=True, null=True)
+    area = models.CharField("Área de Trabajo", max_length=255, blank=True, null=True)
+    descripcion_area = models.TextField("Descripción del Área de Trabajo", blank=True, null=True)
+    
+    # Relación con Dependencia
+    dependencia = models.ForeignKey(
+        Dependencia, 
+        on_delete=models.CASCADE, 
+        related_name="miembros_regidores", 
+        verbose_name="Dependencia",
+        blank=True,  # Permite que este campo quede vacío en formularios
+        null=True    # Permite que este campo sea nulo en la base de datos
+    )
+    class Meta:
+        ordering = ['orden']
+        verbose_name = "Miembro del Gabinete"
+        verbose_name_plural = "Miembros del Gabinete"
+
+    def __str__(self):
+        return f"{self.orden} - {self.nombre} ({self.cargo})"
+
+
+
+class MiembroGabineteDirectores(models.Model):
+    STATUS_CHOICES = [
+        ('activo', 'Activo'),
+        ('inactivo', 'Inactivo'),
+    ]
+
+    municipio = models.ForeignKey(
+        Municipio, 
+        on_delete=models.CASCADE, 
+        related_name="gabinete_directores",
+        verbose_name="Municipio"
+    )
+    nombre = models.CharField("Nombre", max_length=255)
+    cargo = models.CharField("Cargo", max_length=255)
+    semblanza = models.TextField("Semblanza", blank=True, null=True)
+    numero_contacto = models.CharField("Número de Contacto", max_length=20, blank=True, null=True)
+    correo_electronico = models.EmailField("Correo Electrónico", blank=True, null=True)
+    pagina_web = models.URLField("Página Web", blank=True, null=True)
+    
+    imagen = models.ImageField(
+        "Fotografía del Miembro",
+        upload_to='gabinete/',
+        blank=True,
+        null=True,
+        help_text="Carga la fotografía del miembro (opcional)."
+    )
+    
+    orden = models.PositiveIntegerField(
+        "Orden", 
+        default=1, 
+        help_text="El miembro con orden 1 será considerado el principal."
+    )
+    status = models.CharField(
+        "Estado", 
+        max_length=10, 
+        choices=STATUS_CHOICES, 
+        default='activo'
+    )
+    
+    # Nuevos campos:
+    telefono = models.CharField("Teléfono", max_length=20, blank=True, null=True)
+    horario = models.CharField("Horario de Atención", max_length=255, blank=True, null=True)
+    formacion_academica = models.TextField("Formación Académica", blank=True, null=True)
+    experiencia = models.TextField("Experiencia en el Servicio Público", blank=True, null=True)
+    area = models.CharField("Área de Trabajo", max_length=255, blank=True, null=True)
+    descripcion_area = models.TextField("Descripción del Área de Trabajo", blank=True, null=True)
+    
+    # Relación con Dependencia
+    dependencia = models.ForeignKey(
+        Dependencia, 
+        on_delete=models.CASCADE, 
+        related_name="miembros_directores", 
+        verbose_name="Dependencia",
+        blank=True,  # Permite que este campo quede vacío en formularios
+        null=True    # Permite que este campo sea nulo en la base de datos
+    )
+    class Meta:
+        ordering = ['orden']
+        verbose_name = "Miembro del Gabinete"
+        verbose_name_plural = "Miembros del Gabinete"
+
+    def __str__(self):
+        return f"{self.orden} - {self.nombre} ({self.cargo})"

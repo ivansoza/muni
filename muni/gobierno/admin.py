@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import MiembroGabinete, Dependencia
+from .models import MiembroGabinete, Dependencia, MiembroGabineteDirectores, MiembroGabineteRegidores
 
 class MiembroGabineteInline(admin.TabularInline):
     model = MiembroGabinete
@@ -33,3 +33,9 @@ class MiembroGabineteAdmin(admin.ModelAdmin):
             'fields': ('nombre', 'cargo', 'municipio', 'orden', 'status', 'telefono', 'horario', 'formacion_academica', 'experiencia', 'area', 'descripcion_area', 'dependencia')
         }),
     )
+
+
+
+admin.site.register(MiembroGabineteDirectores)
+
+admin.site.register(MiembroGabineteRegidores)
