@@ -31,16 +31,21 @@ class HomeGobiernoView(TemplateView):
         # 2. Si hay municipio activo, obtenemos sus miembros activos y ordenados
         if municipio_activo:
             miembros_activos = municipio_activo.gabinete.filter(status='activo').order_by('orden')
+            regidores_activos = municipio_activo.gabinete_regidores.filter(status='activo').order_by('orden')
+            directores_activos = municipio_activo.gabinete_directores.filter(status='activo').order_by('orden')
         else:
             miembros_activos = None
+            regidores_activos = None
+            directores_activos = None
 
-        # 3. Agregamos al contexto
+        # 3. Agregamos los datos al contexto
         context['municipio'] = municipio_activo
         context['miembros'] = miembros_activos
+        context['regidores'] = regidores_activos
+        context['directores'] = directores_activos
         context['sidebar'] = 'gobierno'  # Marcar 'Inicio' como activo
 
         return context
-    
 class SemblanzaHomeView(TemplateView):
     template_name = 'homeSemblanza.html'
 
