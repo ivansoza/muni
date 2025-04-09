@@ -384,11 +384,25 @@
       gap: 2rem;
     }
   }
+
+
+  /* ========================
+   MEDIA QUERY TELÉFONOS
+   ======================== */
+@media (max-width: 576px) {      /* 576 px ≈ Bootstrap “sm”. Ajusta si lo necesitas */
+  .miembros-principales {
+    grid-template-columns: 1fr; /* Una sola columna */
+    gap: 1.5rem;                /* Opcional: un poco menos de espacio vertical */
+  }
+}
+
+
+
 </style>
 
 <div class="container">
     <h2 class="news-title">Gobierno 
-        <span>| Gabinete
+        <span>| Directorio
             </span>
     </h2>
 </div>
@@ -433,7 +447,7 @@
             {% if miembros|length > 1 %}
             <div class="gabinete">
               {% comment %} <h2>Equipo de Gobierno</h2> {% endcomment %}
-              <div class="miembros-gabinete">
+              <div class="miembros-gabinete miembros-principales">
                 {% for miembro in miembros|slice:"1:" %}
                   <div class="miembro">
                     <a href="#">
@@ -479,7 +493,7 @@
     {% endif %}
 
       
-    {% if regidores|length > 1 %}
+    {% if regidores %}
       <div class="gabinete">
         <h2>Regidores</h2>
         <div class="miembros-gabinete">
@@ -517,7 +531,7 @@
     {% endif %}
 
 
-    {% if directores|length > 1 %}
+    {% if directores%}
       <div class="gabinete">
         <h2>Directores</h2>
         <div class="miembros-gabinete">
