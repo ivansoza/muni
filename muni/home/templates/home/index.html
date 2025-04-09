@@ -336,13 +336,7 @@
                     {% endif %}
 
                     
-                    <!-- Transparencia -->
-                    {% if municipio.secciones_hab and municipio.secciones_hab.transparencia %}
-                    <li class="nav-item {% if sidebar == 'transparecnia' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'lista_transparencia' %}">Transparencia</a>
-                    </li>
-                    {% endif %}
-                
+
                     <!-- SEVAC -->
                     {% if municipio.secciones_hab and municipio.secciones_hab.sevac %}
                     <li class="nav-item {% if sidebar == 'sevac' %}active{% endif %}">
