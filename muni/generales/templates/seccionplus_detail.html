@@ -995,7 +995,7 @@
                 <span class="category-tag">
                     <i class="fa-solid fa-tags"></i> {{ convocatoria.categoria.nombre }}
                 </span>
-                <a href="{% url 'detalleConvocatoria' convocatoria.id %}" style="text-decoration: none; color: inherit;">
+                <a href="{% url 'detalleConvocatoria' convocatoria.id %}" class="view-details"  style="text-decoration: none; color: white;">
                     Ver detalles
                 </a>   
             </div>
@@ -1073,6 +1073,18 @@
   
 
 <script>
+
+    function showImageModal(src) {
+        const modal = document.getElementById("imageModal");
+        const modalImg = document.getElementById("modalImage");
+        modal.style.display = "block";
+        modalImg.src = src;
+    }
+
+    function closeImageModal() {
+        document.getElementById("imageModal").style.display = "none";
+    }
+    
     /* ---------- id de la SeccionPlus incrustado en el contenedor ---------- */
     const SECCION_PK = document
           .querySelector(".container-convocatoria")
@@ -1152,6 +1164,7 @@
                             Ver detalles
                         </a>
 
+                        
                       </div>`;
                   convocatoriasContainer.appendChild(card);
               });
