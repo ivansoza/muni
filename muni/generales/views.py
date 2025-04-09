@@ -171,7 +171,7 @@ class AvisoDePrivacidadCreateView(LoginRequiredMixin, CreateView):
             'child':  {'name': 'Crear Aviso de Privacidad', 'url': ''},
         }
         ctx['sidebar'] = 'Generales'
-        ctx['regreso_url'] = reverse('generalesDashboard')
+        ctx['regreso_url'] = reverse('PrivacidadView')
         return ctx
 
     # ---------- guardado ----------

@@ -2,66 +2,511 @@
 {% load static %}
 
 {% block content %}
-<h3 class="mb-3">Nuevo aviso de privacidad</h3>
-
-<form method="post" enctype="multipart/form-data">
-  {% csrf_token %}
-
-  <!-- ---------------- Aviso ---------------- -->
-  <div class="card mb-4">
-    <div class="card-header">Datos del aviso</div>
-    <div class="card-body">
-      {{ form.non_field_errors }}
-      <div class="mb-3">
-        {{ form.area.label_tag }} {{ form.area }}
-      </div>
-      <div class="mb-3">
-        {{ form.descripcion.label_tag }} {{ form.descripcion }}
-      </div>
-    </div>
-  </div>
-
-  <!-- ---------------- Archivos ---------------- -->
-  <div class="card mb-4">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <span>Archivos relacionados</span>
-      <!-- botón JS opcional para clonar formularios vacíos -->
-      <button type="button" class="btn btn-sm btn-outline-secondary"
-              id="add-file">Añadir otro archivo</button>
-    </div>
-
-    <div class="card-body" id="file-formset">
-      {{ formset.management_form }}
-        {% for f in formset %}
-            <div class="border rounded p-3 mb-3 formset-form">
-                {{ f.non_field_errors }}
-                <div class="mb-2">
-                {{ f.archivo.label_tag }} {{ f.archivo }}
-                </div>
-                <div class="mb-2">
-                {{ f.descripcion.label_tag }} {{ f.descripcion }}
-                </div>
-            
-                {# El primer formulario no tendrá botón eliminar, los demás sí #}
-                {% if forloop.first %}
-                    <small class="text-muted">Formulario obligatorio</small>
-                {% else %}
-                    <button type="button" class="btn btn-sm btn-outline-danger remove-form">
-                        Quitar
-                    </button>
-                {% endif %}
-            </div>
-            {% endfor %}
+<style>
+  :root {
+    --color-primario: #2F698F;
+    --color-secundario: #295E84;
+    --color-iconos: rgb(109, 109, 109);
+    --color-primario-rgb: 47, 105, 143;
+    --color-secundario-rgb: 41, 94, 132;
+    --color-gradiente: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+    --degradado: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+    /* Colores mejorados para la UI */
+    --color-success: #10b981;
+    --color-danger: #ef4444;
+    --color-warning: #f59e0b;
+    --color-info: #3b82f6;
+    --color-light: #f8fafc;
+    --color-dark: #1e293b;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --radius-sm: 0.25rem;
+    --radius: 0.5rem;
+    --radius-lg: 0.75rem;
     
+    /* Variables mejoradas */
+    --color-bg-light: #f9fafb;
+    --color-border: #e2e8f0;
+    --color-border-focus: #bfdbfe;
+    --color-text: #334155;
+    --color-text-muted: #64748b;
+    --color-text-light: #94a3b8;
+    --transition-speed: 0.3s;
+    --form-control-height: 46px;
+    --header-bg: #f1f5f9;
+}
+
+/* Estilos generales para la página de avisos de privacidad */
+body {
+    color: var(--color-text);
+    background-color: #f5f7fa;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.privacy-notice-container {
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.section-title {
+    color: var(--color-primario);
+    font-weight: 700;
+    margin-bottom: 1.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-secundario);
+    position: relative;
+    font-size: 1.5rem;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 60px;
+    height: 4px;
+    background-color: var(--color-primario);
+    border-radius: var(--radius);
+}
+
+/* Estilos para las tarjetas mejoradas */
+.custom-card {
+    border: none;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    transition: all var(--transition-speed);
+    overflow: hidden;
+    margin-bottom: 2rem;
+    background-color: white;
+}
+
+.custom-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    background: var(--header-bg);
+    color: var(--color-dark);
+    font-weight: 600;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-header i {
+    color: var(--color-primario);
+    margin-right: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.card-body {
+    padding: 1.75rem;
+    background-color: white;
+}
+
+/* Estilos mejorados para los formularios */
+.privacy-notice-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.privacy-notice-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--color-dark);
+    font-size: 0.95rem;
+}
+
+.input-container, .file-input-container {
+    position: relative;
+}
+
+.privacy-notice-form input[type="text"],
+.privacy-notice-form textarea,
+.privacy-notice-form select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    transition: all var(--transition-speed);
+    font-size: 1rem;
+    background-color: var(--color-light);
+    color: var(--color-dark);
+    box-shadow: var(--shadow-sm);
+    line-height: 1.5;
+}
+
+.privacy-notice-form input[type="file"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius);
+    background-color: var(--color-light);
+    transition: all var(--transition-speed);
+    cursor: pointer;
+}
+
+.privacy-notice-form input[type="file"]:hover {
+    border-color: var(--color-primario);
+    background-color: rgba(var(--color-primario-rgb), 0.05);
+}
+
+.privacy-notice-form input[type="text"]:focus,
+.privacy-notice-form textarea:focus,
+.privacy-notice-form select:focus {
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px rgba(var(--color-primario-rgb), 0.2);
+    outline: none;
+}
+
+/* Contenedor de formulario de archivos mejorado */
+.file-form-container {
+    background-color: white;
+    border: 1px solid var(--color-border) !important;
+    border-radius: var(--radius);
+    padding: 1.5rem !important;
+    transition: all var(--transition-speed);
+    position: relative;
+    margin-bottom: 1.25rem !important;
+}
+
+.file-form-container:hover {
+    border-color: var(--color-primario) !important;
+    box-shadow: var(--shadow);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.required-notice {
+    color: var(--color-text-muted);
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+}
+
+.required-notice i {
+    color: var(--color-warning);
+    margin-right: 0.35rem;
+}
+
+/* Estilos mejorados para botones */
+.btn {
+    padding: 0.65rem 1.5rem;
+    border-radius: var(--radius);
+    font-weight: 500;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+    border: none;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.btn i {
+    margin-right: 0.5rem;
+}
+
+.btn-primary {
+    background-color: var(--color-primario);
+    border-color: var(--color-primario);
+    color: white;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: var(--color-secundario);
+    border-color: var(--color-secundario);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.btn-secondary {
+    background-color: #64748b;
+    border-color: #64748b;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #475569;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.btn-danger {
+    background-color: var(--color-danger);
+    border-color: var(--color-danger);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.btn-add {
+    border-radius: var(--radius);
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    background-color: rgba(var(--color-primario-rgb), 0.1);
+    color: var(--color-primario);
+    border: 1px solid rgba(var(--color-primario-rgb), 0.2);
+}
+
+.btn-add:hover {
+    background-color: var(--color-primario);
+    color: white;
+}
+
+.form-actions-container {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2.5rem;
+    justify-content: flex-end;
+}
+
+.btn-save, .btn-cancel {
+    padding: 0.75rem 1.75rem;
+    font-weight: 500;
+    min-width: 160px;
+}
+
+/* Animaciones para añadir/quitar formularios */
+@keyframes formFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes formFadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+}
+
+.form-added {
+    animation: formFadeIn 0.5s ease forwards;
+}
+
+.form-removed {
+    animation: formFadeOut 0.4s ease forwards;
+}
+
+/* Estilos para las notificaciones mejoradas */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    background-color: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-xl);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s ease;
+    max-width: 350px;
+    min-width: 280px;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.notification-content i {
+    font-size: 1.25rem;
+}
+
+.notification-info {
+    border-left: 4px solid var(--color-info);
+}
+
+.notification-info i {
+    color: var(--color-info);
+}
+
+.notification-warning {
+    border-left: 4px solid var(--color-warning);
+}
+
+.notification-warning i {
+    color: var(--color-warning);
+}
+
+.notification-success {
+    border-left: 4px solid var(--color-success);
+}
+
+.notification-success i {
+    color: var(--color-success);
+}
+
+.notification-danger {
+    border-left: 4px solid var(--color-danger);
+}
+
+.notification-danger i {
+    color: var(--color-danger);
+}
+
+/* Decoradores y elementos visuales */
+.form-header-decoration {
+    width: 30px;
+    height: 5px;
+    background: var(--color-gradiente);
+    border-radius: var(--radius-sm);
+    margin-bottom: 15px;
+}
+
+.file-number-badge {
+    position: absolute;
+    top: -12px;
+    left: 15px;
+    background: var(--color-gradiente);
+    color: white;
+    border-radius: 15px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Responsividad mejorada */
+@media (max-width: 768px) {
+    .privacy-notice-container {
+        padding: 0 0.75rem;
+    }
+    
+    .card-body {
+        padding: 1.25rem;
+    }
+    
+    .form-actions-container {
+        flex-direction: column;
+    }
+    
+    .btn-save, .btn-cancel {
+        width: 100%;
+    }
+}
+</style>
+
+<div class="privacy-notice-container">
+  <h3 class="section-title">Nuevo aviso de privacidad</h3>
+
+  <form method="post" enctype="multipart/form-data" class="privacy-notice-form">
+    {% csrf_token %}
+
+    <!-- ---------------- Aviso ---------------- -->
+    <div class="card custom-card">
+      <div class="card-header">
+        <div>
+          <i class="fa fa-info-circle"></i>Datos del aviso
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="form-header-decoration"></div>
+        {{ form.non_field_errors }}
+        <div class="form-group">
+          {{ form.area.label_tag }} 
+          <div class="input-container">
+            {{ form.area }}
+          </div>
+        </div>
+        <div class="form-group">
+          {{ form.descripcion.label_tag }} 
+          <div class="input-container">
+            {{ form.descripcion }}
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <button class="btn btn-primary" type="submit">Guardar aviso</button>
-  <a href="{{ regreso_url }}" class="btn btn-secondary">Cancelar</a>
-</form>
+    <!-- ---------------- Archivos ---------------- -->
+    <div class="card custom-card">
+      <div class="card-header">
+        <div>
+          <i class="fas fa-file-alt"></i>Archivos relacionados
+        </div>
+        <button type="button" class="btn btn-add" id="add-file">
+          <i class="fa fa-plus"></i>Añadir archivo
+        </button>
+      </div>
 
+      <div class="card-body" id="file-formset">
+        {{ formset.management_form }}
+        {% for f in formset %}
+        <div class="file-form-container formset-form">
+          <div class="file-number-badge">Archivo {% if forloop.first %}principal{% else %}{{ forloop.counter }}{% endif %}</div>
+          {{ f.non_field_errors }}
+          <div class="form-group">
+            {{ f.archivo.label_tag }} 
+            <div class="file-input-container">
+              {{ f.archivo }}
+            </div>
+          </div>
+          <div class="form-group">
+            {{ f.descripcion.label_tag }} 
+            <div class="input-container">
+              {{ f.descripcion }}
+            </div>
+          </div>
+      
+          <div class="form-actions">
+            {% if forloop.first %}
+              <small class="required-notice"><i class="fa fa-exclamation-circle"></i>Formulario obligatorio</small>
+            {% else %}
+              <button type="button" class="btn btn-danger remove-form">
+                <i class="fas fa-trash-alt"></i>Quitar
+              </button>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
 
+    <div class="form-actions-container">
+      <a href="{{ regreso_url }}" class="btn btn-secondary btn-cancel">
+        <i class="fa fa-times"></i>Cancelar
+      </a>
+      <button class="btn btn-primary btn-save" type="submit">
+        <i class="fa fa-save"></i>Guardar aviso
+      </button>
+    </div>
+  </form>
+</div>
 {% endblock content %}
+
 {% block scriptcontent %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -85,13 +530,19 @@
               if (el.id) el.id = el.id.replace(regex, `${prefix}-${index}-`);
               if (el.htmlFor) el.htmlFor = el.htmlFor.replace(regex, `${prefix}-${index}-`);
             });
+            
+            // Actualizar el número de archivo en el badge
+            const badge = form.querySelector('.file-number-badge');
+            if (badge) {
+              badge.textContent = index === 0 ? 'Archivo principal' : `Archivo ${index + 1}`;
+            }
+
             const removeBtn = form.querySelector('.remove-form');
             if (removeBtn) removeBtn.style.display = index === 0 ? 'none' : '';
           });
           totalInput.value = forms.length;
         }
       
-        // Resto del código sin cambios...
         /* ---------- Añadir nuevo formulario ---------- */
         addBtn.addEventListener('click', () => {
           const firstForm = formsetDiv.querySelector('.formset-form');
@@ -106,28 +557,71 @@
           if (!rmBtn) {
             rmBtn = document.createElement('button');
             rmBtn.type = 'button';
-            rmBtn.className = 'btn btn-sm btn-outline-danger remove-form';
-            rmBtn.textContent = 'Quitar';
-            newForm.appendChild(rmBtn);
+            rmBtn.className = 'btn btn-danger remove-form';
+            rmBtn.innerHTML = '<i class="fas fa-trash-alt"></i>Quitar';
+            
+            // Reemplazar el aviso de "Formulario obligatorio" con el botón de quitar
+            const requiredNotice = newForm.querySelector('.required-notice');
+            if (requiredNotice) {
+                requiredNotice.parentNode.replaceChild(rmBtn, requiredNotice);
+            } else {
+                newForm.querySelector('.form-actions').appendChild(rmBtn);
+            }
           }
       
           formsetDiv.appendChild(newForm);
           reindexForms();
+
+          // Efecto de aparición con animación
+          newForm.classList.add('form-added');
+          setTimeout(() => newForm.classList.remove('form-added'), 500);
         });
       
         /* ---------- Delegación para quitar formularios ---------- */
         formsetDiv.addEventListener('click', (e) => {
-          if (!e.target.classList.contains('remove-form')) return;
+          if (!e.target.classList.contains('remove-form') && !e.target.closest('.remove-form')) return;
       
           const forms = formsetDiv.querySelectorAll('.formset-form');
           if (forms.length <= 1) {
-            alert('Debe existir al menos un archivo.');
+            showNotification('Debe existir al menos un archivo.', 'warning');
             return;
           }
       
-          e.target.closest('.formset-form').remove();
-          reindexForms();
+          const formToRemove = e.target.closest('.formset-form');
+          
+          // Efecto de desaparición con animación
+          formToRemove.classList.add('form-removed');
+          setTimeout(() => {
+            formToRemove.remove();
+            reindexForms();
+          }, 300);
         });
+
+        // Función para mostrar notificaciones
+        function showNotification(message, type = 'info') {
+          const notification = document.createElement('div');
+          notification.className = `notification notification-${type}`;
+          notification.innerHTML = `
+            <div class="notification-content">
+              <i class="fa fa-${type === 'info' ? 'info-circle' : 
+                               type === 'warning' ? 'exclamation-triangle' : 
+                               type === 'success' ? 'check-circle' : 
+                               'exclamation-circle'}"></i>
+              <span>${message}</span>
+            </div>
+          `;
+          
+          document.body.appendChild(notification);
+          
+          setTimeout(() => {
+            notification.classList.add('show');
+          }, 10);
+          
+          setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+          }, 3000);
+        }
       
         reindexForms();
       });

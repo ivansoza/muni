@@ -1,0 +1,320 @@
+{% extends "baseTemplate.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+  /* Estilos personalizados para el formulario de privacidad */
+  :root {
+      --color-primario: #2F698F;
+      --color-secundario: #295E84;
+      --color-iconos: rgb(109, 109, 109);
+      --color-primario-rgb: 30, 71, 101;
+      --color-secundario-rgb: 41, 94, 132;
+      --color-gradiente: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+      --degradado: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+      /* Colores adicionales para la UI */
+      --color-success: #10b981;
+      --color-danger: #ef4444;
+      --color-warning: #f59e0b;
+      --color-info: #3b82f6;
+      --color-light: #f3f4f6;
+      --color-dark: #1f2937;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --radius: 0.5rem;
+  }
+
+  .text-color-primario {
+      color: var(--color-primario);
+  }
+
+  .bg-gradient {
+      background: var(--degradado);
+  }
+
+  .card {
+      transition: all 0.3s ease;
+  }
+
+  .card:hover {
+      box-shadow: var(--shadow-lg);
+  }
+
+  .card-header {
+      border-bottom: none;
+      padding: 1rem 1.5rem;
+  }
+
+  .file-form {
+      background-color: rgba(var(--color-primario-rgb), 0.03);
+      transition: all 0.2s ease;
+  }
+
+  .file-form:hover {
+      background-color: rgba(var(--color-primario-rgb), 0.05);
+  }
+
+  .btn-primary {
+      background-color: var(--color-primario);
+      border-color: var(--color-primario);
+  }
+
+  .btn-primary:hover {
+      background-color: var(--color-secundario);
+      border-color: var(--color-secundario);
+  }
+
+  /* Mejorar inputs */
+  .form-floating {
+      position: relative;
+  }
+
+  .form-floating input, 
+  .form-floating textarea,
+  .form-floating select {
+      height: auto;
+      padding: 1rem;
+      border-radius: var(--radius);
+      border: 1px solid #ced4da;
+      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+
+  .form-floating input:focus,
+  .form-floating textarea:focus,
+  .form-floating select:focus {
+      border-color: var(--color-primario);
+      box-shadow: 0 0 0 0.25rem rgba(var(--color-primario-rgb), 0.25);
+  }
+
+  .form-floating input:not(:placeholder-shown) ~ label,
+  .form-floating textarea:not(:placeholder-shown) ~ label,
+  .form-floating select:not(:placeholder-shown) ~ label {
+      opacity: 0.65;
+      transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+  }
+
+  /* Estilos para los botones */
+  .btn {
+      border-radius: var(--radius);
+      padding: 0.5rem 1.25rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+  }
+
+  .btn-sm {
+      padding: 0.25rem 0.75rem;
+      font-size: 0.875rem;
+  }
+
+  /* Animaciones y transiciones */
+  .privacy-form .formset-form {
+      animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Toast personalizado */
+  .toast-container {
+      z-index: 1050;
+  }
+
+  .toast {
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+  }
+</style>
+
+
+<div class="container py-4">
+  <div class="row">
+    <div class="col-12">
+      <h3 class="mb-4 text-color-primario fw-bold">Nuevo aviso de privacidad</h3>
+      
+      <form method="post" enctype="multipart/form-data" class="privacy-form">
+        {% csrf_token %}
+
+        <!-- Datos del aviso -->
+        <div class="card shadow-sm mb-4 border-0 rounded-3">
+          <div class="card-header bg-gradient text-white fw-bold rounded-top">
+            <i class="fas fa-file-alt me-2"></i> Datos del aviso
+          </div>
+          <div class="card-body p-4">
+            {{ form.non_field_errors }}
+            <div class="mb-4 form-floating">
+              {{ form.area }}
+              {{ form.area.label_tag }}
+            </div>
+            <div class="mb-3 form-floating">
+              {{ form.descripcion }}
+              {{ form.descripcion.label_tag }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Archivos relacionados -->
+        <div class="card shadow-sm mb-4 border-0 rounded-3">
+          <div class="card-header bg-gradient text-white rounded-top d-flex justify-content-between align-items-center">
+            <span class="fw-bold"><i class="fas fa-paperclip me-2"></i> Archivos relacionados</span>
+            <button type="button" class="btn btn-light btn-sm" id="add-file">
+              <i class="fas fa-plus me-1"></i> Añadir archivo
+            </button>
+          </div>
+
+          <div class="card-body p-4" id="file-formset">
+            {{ formset.management_form }}
+            {% for f in formset %}
+              <div class="file-form formset-form mb-4 p-3 border rounded-3 position-relative">
+                {{ f.non_field_errors }}
+                
+                <div class="mb-3 form-floating">
+                  {{ f.archivo }}
+                  {{ f.archivo.label_tag }}
+                </div>
+                
+                <div class="mb-3 form-floating">
+                  {{ f.descripcion }}
+                  {{ f.descripcion.label_tag }}
+                </div>
+                
+                {% if forloop.first %}
+                  <div class="badge bg-light text-dark position-absolute top-0 end-0 m-2">
+                    <i class="fas fa-info-circle me-1"></i> Obligatorio
+                  </div>
+                {% else %}
+                  <button type="button" class="btn btn-sm btn-danger remove-form position-absolute top-0 end-0 m-2">
+                    <i class="fas fa-times"></i>
+                  </button>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+          <a href="{{ regreso_url }}" class="btn btn-outline-secondary me-2">
+            <i class="fas fa-times me-1"></i> Cancelar
+          </a>
+          <button class="btn btn-primary shadow-sm" type="submit">
+            <i class="fas fa-save me-1"></i> Guardar aviso
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block scriptcontent %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const addBtn = document.getElementById('add-file');
+        const formsetDiv = document.getElementById('file-formset');
+        const totalInput = document.querySelector('[name$="-TOTAL_FORMS"]');
+      
+        if (!addBtn || !formsetDiv || !totalInput) return;
+      
+        // Obtener el prefijo del atributo 'name' en lugar del 'id'
+        const totalInputName = totalInput.getAttribute('name');
+        const prefix = totalInputName.replace(/-TOTAL_FORMS$/, '');
+      
+        /* ---------- UTIL: renumera todos los formularios ---------- */
+        function reindexForms() {
+          const forms = formsetDiv.querySelectorAll('.formset-form');
+          forms.forEach((form, index) => {
+            const regex = new RegExp(`${prefix}-(\\d+)-`, 'g');
+            form.querySelectorAll('input, label').forEach(el => {
+              if (el.name) el.name = el.name.replace(regex, `${prefix}-${index}-`);
+              if (el.id) el.id = el.id.replace(regex, `${prefix}-${index}-`);
+              if (el.htmlFor) el.htmlFor = el.htmlFor.replace(regex, `${prefix}-${index}-`);
+            });
+            const removeBtn = form.querySelector('.remove-form');
+            if (removeBtn) removeBtn.style.display = index === 0 ? 'none' : '';
+          });
+          totalInput.value = forms.length;
+        }
+      
+        /* ---------- Añadir nuevo formulario ---------- */
+        addBtn.addEventListener('click', () => {
+          const firstForm = formsetDiv.querySelector('.formset-form');
+          if (!firstForm) return;
+      
+          const newForm = firstForm.cloneNode(true);
+          newForm.querySelectorAll('input').forEach(inp => {
+            if (inp.type !== 'hidden') inp.value = '';
+          });
+      
+          let rmBtn = newForm.querySelector('.remove-form');
+          if (!rmBtn) {
+            rmBtn = document.createElement('button');
+            rmBtn.type = 'button';
+            rmBtn.className = 'btn btn-sm btn-danger remove-form position-absolute top-0 end-0 m-2';
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-times';
+            rmBtn.appendChild(icon);
+            newForm.appendChild(rmBtn);
+          }
+      
+          formsetDiv.appendChild(newForm);
+          reindexForms();
+        });
+      
+        /* ---------- Delegación para quitar formularios ---------- */
+        formsetDiv.addEventListener('click', (e) => {
+          if (!e.target.classList.contains('remove-form') && !e.target.closest('.remove-form')) return;
+      
+          const forms = formsetDiv.querySelectorAll('.formset-form');
+          if (forms.length <= 1) {
+            showToast('Debe existir al menos un archivo.', 'warning');
+            return;
+          }
+      
+          e.target.closest('.formset-form').remove();
+          reindexForms();
+          showToast('Archivo eliminado correctamente', 'success');
+        });
+      
+        function showToast(message, type) {
+          const toastContainer = document.getElementById('toast-container') || createToastContainer();
+          const toast = document.createElement('div');
+          toast.className = `toast align-items-center text-white bg-${type} border-0`;
+          toast.setAttribute('role', 'alert');
+          toast.setAttribute('aria-live', 'assertive');
+          toast.setAttribute('aria-atomic', 'true');
+          
+          toast.innerHTML = `
+            <div class="d-flex">
+              <div class="toast-body">
+                ${message}
+              </div>
+              <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+          `;
+          
+          toastContainer.appendChild(toast);
+          const bsToast = new bootstrap.Toast(toast);
+          bsToast.show();
+          
+          // Auto-remove after shown
+          toast.addEventListener('hidden.bs.toast', () => {
+            toast.remove();
+          });
+        }
+        
+        function createToastContainer() {
+          const container = document.createElement('div');
+          container.id = 'toast-container';
+          container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+          document.body.appendChild(container);
+          return container;
+        }
+      
+        reindexForms();
+    });
+</script>
+{% endblock scriptcontent %}
+
