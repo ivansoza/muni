@@ -29,7 +29,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 10px;
+        padding: 7px;
         background-color: var(--color-primario);
         color: #fff;
         cursor: pointer;
@@ -41,23 +41,34 @@
     }
 
     .aviso-header h3 {
-        margin: 0;
+        margin-left: 25px;
+        margin-top: 5px;
         font-size: 18px;
         font-weight: 600;
     }
 
     .toggle-btn {
-        background: none;
-        border: none;
-        color: #fff;
-        font-size: 24px;
-        cursor: pointer;
-        transition: transform 0.2s ease;
-    }
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    font-size: 20px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
 
-    .toggle-btn:hover {
-        transform: rotate(45deg);
-    }
+.toggle-btn:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+    transform: rotate(90deg);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
 
     /* Cuerpo desplegable */
     .aviso-body {
@@ -71,9 +82,13 @@
     .municipio-card {
         padding: 15px;
         background-color: #f1f1f1;
-        border-radius: 8px;
+        border-radius: 10px;
+        border-left: 5px solid var(--color-primario);
+
         margin-bottom: 15px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-left: 5px solid var(--color-primario);
+
     }
 
     .municipio-card h4 {
@@ -87,49 +102,71 @@
 
     /* Listado de archivos */
     .archivos-list {
-        margin-top: 10px;
-    }
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
 
-    .archivo-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-        background-color: #fafafa;
-        padding: 10px;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
+.archivo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 18px;
+    background: linear-gradient(to right, #ffffff, #f4f4f4);
+    border-left: 5px solid var(--color-primario);
+    border-radius: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
-    .archivo-item a {
-        color: #007bff;
-        text-decoration: none;
-    }
+}
 
-    .archivo-item a:hover {
-        text-decoration: underline;
-    }
+.archivo-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
 
-    .download-btn {
-        background-color: var(--color-icono);
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
+.archivo-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #333;
+    font-size: 15px;
+}
 
-    .download-btn:hover {
-        background-color: var(--color-secundario);
-    }
+.icon {
+    font-size: 22px;
+    color: #555;
+}
 
-    /* Íconos */
-    .icon {
-        margin-right: 10px;
-        font-size: 20px;
-        color:rgb(195, 189, 8);
-    }
+.archivo-info a {
+    color: #1d3557;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.archivo-info a:hover {
+    text-decoration: underline;
+}
+
+.download-btn {
+    color: var(--color-primario);
+    border: none;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-decoration: none; /* 👈 elimina la línea debajo del texto */
+
+}
+
+.download-btn:hover {
+    background-color: var(--color-secundario);
+    color: white;
+}
+
 
 </style>
 
@@ -142,28 +179,45 @@
         {% for aviso in avisos %}
             <div class="aviso-card">
                 <div class="aviso-header" onclick="toggleVisibility({{ aviso.id }})">
-                    <h3>{{ aviso.area }}</h3>
+                    <h3><i class="fa-solid fa-laptop"></i>   {{ aviso.area }}</h3>
                     <button class="toggle-btn">+</button>
                 </div>
                 <div class="aviso-body" id="body-{{ aviso.id }}">
                     <!-- Tarjeta para mostrar el municipio y la descripción -->
+                    {% if aviso.descripcion  %}
                     <div class="municipio-card">
                         <p>{{ aviso.descripcion }}</p>
                     </div>
+                    {% endif %}
                     <!-- Listado de archivos -->
                     <div class="archivos-list">
                         {% for archivo in aviso.archivos_relacionados.all %}
                             <div class="archivo-item">
-                                <div>
-                                    <i class="icon fas fa-file"></i>
-                                    <a href="{{ archivo.archivo.url }}" target="_blank">{{ archivo.descripcion|default:"Ver archivo" }}</a>
+                                <div class="archivo-info">
+                                    {% with archivo.archivo.name|lower as filename %}
+                                        {% if ".pdf" in filename %}
+                                            <i class="icon fas fa-file-pdf" style="color:#e74c3c;"></i>
+                                        {% elif ".doc" in filename or ".docx" in filename %}
+                                            <i class="icon fas fa-file-word" style="color:#3498db;"></i>
+                                        {% elif ".xls" in filename or ".xlsx" in filename %}
+                                            <i class="icon fas fa-file-excel" style="color:#2ecc71;"></i>
+                                        {% elif ".ppt" in filename or ".pptx" in filename %}
+                                            <i class="icon fas fa-file-powerpoint" style="color:#e67e22;"></i>
+                                        {% elif ".zip" in filename or ".rar" in filename %}
+                                            <i class="icon fas fa-file-archive" style="color:#f1c40f;"></i>
+                                        {% else %}
+                                            <i class="icon fas fa-file" style="color:#7f8c8d;"></i>
+                                        {% endif %}
+                                    {% endwith %}
+                                    <a href="{{ archivo.archivo.url }}" target="_blank"> 
+                                        {{ archivo.descripcion|default:archivo.archivo.name|cut:"media/" }}
+                                    </a>
                                 </div>
-                                <div>
-                                    <a href="{{ archivo.archivo.url }}" class="download-btn" download>Descargar</a>
-                                </div>
+                                <a href="{{ archivo.archivo.url }}" class="download-btn" download><i class="fa-solid fa-download"></i> Descargar</a>
                             </div>
                         {% endfor %}
                     </div>
+                    
                 </div>
             </div>
         {% endfor %}
