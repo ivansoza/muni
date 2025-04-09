@@ -72,6 +72,8 @@
         display: flex;
         flex-direction: column;
         min-height: 180px;
+        height: 100%; /* 🔥 Esto hace que se ajuste a la altura que le da el grid */
+
     }
     .ag-card:hover {
         box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
@@ -261,6 +263,33 @@
         color: #FF69B4;
         border-color: #FF69B4;
     }
+
+    /* Tarjeta: Avisos de Privacidad */
+.ag-card.ag-privacidad .ag-card-icon {
+    background-color: #E3F2FD;  /* celeste suave */
+}
+
+.ag-card.ag-privacidad svg {
+    stroke: #1976D2;  /* azul marino */
+    fill: none;       /* aseguramos que no rellene el ícono, usa solo el trazo */
+}
+
+.ag-card.ag-privacidad .ag-btn-see-more {
+    color: #1976D2;
+    border-color: #1976D2;
+}
+.ag-card.ag-privacidad .ag-card-icon {
+    background-color: #E3F2FD;
+    color: #1976D2;  /* ← Esto sí controla el color del trazo */
+}
+
+.ag-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    align-items: stretch; /* 🔥 Esto fuerza que todas las celdas del grid tengan el mismo alto */
+}
+
 
 
 </style>
@@ -453,74 +482,67 @@
             
 
                 {# Nueva Tarjeta Secciones Nuevas #}
-                {# Nueva Tarjeta Secciones Nuevas #}
-                {% if is_superuser %}
-                    <a href="{% url 'SeccionesNuevasView' %}"
-                    class="ag-card-link"
-                    data-keywords="grupos roles permisos seguridad administración">
-                        <div class="ag-card ag-grupos">
-                            <div class="ag-card-icon">
-                                <!-- Icono de Secciones Nuevas: Documento con signo de más -->
-                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <!-- Contorno del documento -->
-                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/>
-                                    <!-- Línea vertical del signo más -->
-                                    <line x1="12" y1="8" x2="12" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                    <!-- Línea horizontal del signo más -->
-                                    <line x1="8" y1="12" x2="16" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                </svg>
-                            </div>
-                            <div class="ag-card-content">
-                                <h3 class="ag-card-title">Secciones Nuevas</h3>
-                                <p class="ag-card-text">Crea y gestiona secciones extras al sistema.</p>
-                                <div class="ag-card-footer">
-                                    <button class="ag-btn-see-more">
-                                        <span>Ver más</span>
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M5 12H19" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                    </button>
-                                </div>
+                {% if is_superuser  %}
+                <a href="{% url "SeccionesNuevasView" %}"
+                class="ag-card-link"
+                data-keywords="secciones nuevas contenido gestión administración">
+                    <div class="ag-card ag-secciones-nuevas">
+                        <div class="ag-card-icon">
+                            <!-- Icono personalizado para secciones nuevas -->
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 13h2v-2H3v2zm4 0h14v-2H7v2zm-4 4h2v-2H3v2zm4 0h14v-2H7v2zM3 9h2V7H3v2zm4 0h14V7H7v2z"/>
+                            </svg>
+                        </div>
+                        <div class="ag-card-content">
+                            <h3 class="ag-card-title">Secciones Nuevas</h3>
+                            <p class="ag-card-text">
+                                Administra las nuevas secciones del sitio y su contenido.
+                            </p>
+                            <div class="ag-card-footer">
+                                <button class="ag-btn-see-more">
+                                    <span>Ver más</span>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5 12H19" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
                             </div>
                         </div>
-                    </a>
-                {% endif %}
+                    </div>
+                </a>
+            {% endif %}
+            
 
 
 
-                {% if is_superuser or 'transparencia.view_secciontransparencia' in user_permissions %}
+            {% if is_superuser or 'transparencia.view_secciontransparencia' in user_permissions %}
                 <a href="{% url 'PrivacidadView' %}"
-                   class="ag-card-link"
-                   data-keywords="grupos roles permisos seguridad administración">
-                    <div class="ag-card ag-grupos">
+                class="ag-card-link"
+                data-keywords="privacidad avisos seguridad datos personales">
+                    <div class="ag-card ag-privacidad">
                         <div class="ag-card-icon">
                             <!-- Icono de Avisos de Privacidad: Escudo con candado -->
                             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <!-- Escudo -->
                                 <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" fill="none" stroke="currentColor" stroke-width="2"/>
-                                <!-- Candado: arco -->
                                 <path d="M9 11V8a3 3 0 0 1 6 0v3" fill="none" stroke="currentColor" stroke-width="2"/>
-                                <!-- Candado: cuerpo -->
                                 <rect x="9" y="11" width="6" height="4" rx="1" ry="1" fill="none" stroke="currentColor" stroke-width="2"/>
                             </svg>
                         </div>
                         <div class="ag-card-content">
                             <h3 class="ag-card-title">Avisos de Privacidad</h3>
                             <p class="ag-card-text">Crea y gestiona los archivos de privacidad.</p>
-            
                             <div class="ag-card-footer">
                                 <button class="ag-btn-see-more">
                                     <span>Ver más</span>
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                         xmlns="http://www.w3.org/2000/svg">
+                                        xmlns="http://www.w3.org/2000/svg">
                                         <path d="M5 12H19" stroke="currentColor" stroke-width="2"
-                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                            stroke-linecap="round" stroke-linejoin="round"/>
                                         <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2"
-                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                            stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
                                 </button>
                             </div>
