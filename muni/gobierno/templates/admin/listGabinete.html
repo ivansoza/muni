@@ -92,77 +92,6 @@
     }
 
 </style>
-<div class="container-fluid mt-5">
-
-    <div class="dashboard">
-        <!-- Tarjeta: Total de Secciones -->
-        <div class="row justify-content-end">
-            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="cardash">
-                    <div class="cardash-header">
-                        <span class="cardash-title">Total de Miembros</span>
-                        <div class="cardash-icon">
-                            <span class="emoji-transition">📁</span>
-                        </div>
-                    </div>
-                    <div class="cardash-content" style="font-size: 30px;">
-                        {{ contacts_data.contador_miembros_activos }}
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        
-
-    </div>
-
-
-    <div class="row">
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <a href="{% url 'gabinete_create' %}" class="btn btn-add w-100" style="margin-bottom: 20px; border-radius: 10px; padding: 12px 20px; font-size: 16px;">
-                <i class="fa fa-user-plus"></i> Agregar nuevo miembro
-            </a>
-        </div>
-    </div>
-    
-     
-
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h2 class="mb-0">Miembros del Gabinete</h2>
-            <div class="drag-hint">
-                <i class="fa fa-info-circle me-2"></i>
-                <span>Arrastra las filas para reorganizar</span>
-            </div>
-        </div>
-        
-        <div class="card-body">
-
-            
-            <div class="table-responsive">
-                <table class="table table-hover" id="gabineteTable">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="border-0">Nombre</th>
-                            <th class="border-0">Cargo</th>
-                            <th class="border-0">Área</th>
-                            <th class="border-0">Estado</th>
-                            <th class="border-0 text-center">Posición</th>
-                            <th class="border-0 text-center">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="gabineteTableBody" class="sortable-table">
-                        <!-- Aquí se cargarán las filas dinámicamente mediante AJAX -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
-        <div class="card-footer text-muted">
-            <div id="statusMessage" class="text-center"></div>
-        </div>
-    </div>
-</div>
 
 <!-- CSS personalizado -->
 <style>
@@ -208,6 +137,179 @@
         animation-delay: 3s;
     }
 </style>
+
+
+<div class="container-fluid mt-5">
+
+    <div class="dashboard">
+        <!-- Tarjeta: Total de Secciones -->
+        <div class="row ">
+            <div class="col-12 col-sm-4 col-md-4 col-lg-4">
+                <div class="cardash">
+                    <div class="cardash-header">
+                        <span class="cardash-title">Principales</span>
+                        <div class="cardash-icon">
+                            <span class="emoji-transition">📁</span>
+                        </div>
+                    </div>
+                    <div class="cardash-content" style="font-size: 30px;">
+                        {{ contacts_data.gabinete }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-4 col-md-4 col-lg-4">
+                <div class="cardash">
+                    <div class="cardash-header">
+                        <span class="cardash-title">Regidores</span>
+                        <div class="cardash-icon">
+                            <span class="emoji-transition">📁</span>
+                        </div>
+                    </div>
+                    <div class="cardash-content" style="font-size: 30px;">
+                        {{ contacts_data.regidores }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-4 col-md-4 col-lg-4">
+                <div class="cardash">
+                    <div class="cardash-header">
+                        <span class="cardash-title">Directores</span>
+                        <div class="cardash-icon">
+                            <span class="emoji-transition">📁</span>
+                        </div>
+                    </div>
+                    <div class="cardash-content" style="font-size: 30px;">
+                        {{ contacts_data.directores }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+
+    </div>
+
+
+    <div class="row">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <a href="{% url 'gabinete_create' %}" class="btn btn-add w-100" style="margin-bottom: 20px; border-radius: 10px; padding: 12px 20px; font-size: 16px;">
+                <i class="fa fa-user-plus"></i> Agregar nuevo miembro
+            </a>
+        </div>
+    </div>
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">Miembros del Gabinete</h2>
+            <div class="drag-hint">
+                <i class="fa fa-info-circle me-2"></i>
+                <span>Arrastra las filas para reorganizar</span>
+            </div>
+        </div>
+        
+        <div class="card-body">
+
+            
+            <div class="table-responsive">
+                <table class="table table-hover" id="gabineteTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="border-0">Nombre</th>
+                            <th class="border-0">Cargo</th>
+                            <th class="border-0">Área</th>
+                            <th class="border-0">Estado</th>
+                            <th class="border-0 text-center">Posición</th>
+                            <th class="border-0 text-center">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gabineteTableBody" class="sortable-table">
+                        <!-- Aquí se cargarán las filas dinámicamente mediante AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card-footer text-muted">
+            <div id="statusMessage" class="text-center"></div>
+        </div>
+    </div>
+</div>
+
+
+<div class="col-12 col-sm-6 col-md-4 col-lg-3">
+    <a href="{% url 'regidor_create' %}" class="btn btn-add w-100 mb-3">
+        <i class="fa fa-user-plus"></i> Agregar regidor
+    </a>
+</div>
+<div class="card shadow">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">Regidores</h2>
+        <div class="drag-hint">
+            <i class="fa fa-info-circle me-2"></i>
+            <span>Arrastra las filas para reorganizar</span>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover" id="regidoresTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nombre</th><th>Cargo</th><th>Área</th>
+                        <th>Estado</th><th class="text-center">Posición</th>
+                        <th class="text-center">Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="regidoresTableBody" class="sortable-table"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card-footer text-muted">
+        <div id="statusMessageRegidores" class="text-center"></div>
+    </div>
+</div>
+
+
+
+    <!-- Botón Director -->
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <a href="{% url 'director_create' %}" class="btn btn-add w-100 mb-3">
+            <i class="fa fa-user-plus"></i> Agregar director
+        </a>
+    </div>
+
+<div class="card shadow">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">Directores</h2>
+        <div class="drag-hint">
+            <i class="fa fa-info-circle me-2"></i>
+            <span>Arrastra las filas para reorganizar</span>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover" id="directoresTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nombre</th><th>Cargo</th><th>Área</th>
+                        <th>Estado</th><th class="text-center">Posición</th>
+                        <th class="text-center">Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="directoresTableBody" class="sortable-table"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card-footer text-muted">
+        <div id="statusMessageDirectores" class="text-center"></div>
+    </div>
+</div>
+
+
 
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -336,4 +438,109 @@
         }
     });
 </script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+    
+        /* ---------- CONFIGURACIÓN PARA CADA TABLA ---------- */
+        /* ---------- CONFIGURACIÓN ---------- */
+        const tablas = [
+        {
+            tbodyId:  "regidoresTableBody",
+            statusId: "statusMessageRegidores",
+            listUrl:  "{% url 'regidores_list_api' %}",
+            orderUrl: "{% url 'regidores_update_order_api' %}",
+            editUrlPattern: "{% url 'regidor_edit' 99999 %}",   // ← marcador
+        },
+        {
+            tbodyId:  "directoresTableBody",
+            statusId: "statusMessageDirectores",
+            listUrl:  "{% url 'directores_list_api' %}",
+            orderUrl: "{% url 'directores_update_order_api' %}",
+            editUrlPattern: "{% url 'director_edit' 99999 %}",  // ← marcador
+        },
+        ];
+
+    
+        /* ---------- INICIALIZAR CADA TABLA ---------- */
+        tablas.forEach(cfg => {
+            fetchAndRender(cfg);
+        });
+    
+        /* ---------- FUNCIONES ---------- */
+        function fetchAndRender(cfg){
+            fetch(cfg.listUrl)
+                .then(r => r.json())
+                .then(json => renderRows(json.miembros, cfg))
+                .then(()  => initSortable(cfg))
+                .catch(()  => showStatus("Error al cargar datos", "danger", cfg));
+        }
+    
+        function renderRows(rows, cfg){
+            const tbody = document.getElementById(cfg.tbodyId);
+            tbody.innerHTML = "";
+          
+            rows.forEach(m => {
+              const tr = document.createElement("tr");
+              tr.dataset.id = m.id;
+          
+              const stClass = m.status === "Activo" ? "text-success" : "text-danger";
+              const editUrl = cfg.editUrlPattern.replace("99999", m.id);  // ← aquí
+          
+              tr.innerHTML = `
+                <td>${m.nombre}</td>
+                <td>${m.cargo}</td>
+                <td>${m.area}</td>
+                <td><span class="${stClass}">${m.status}</span></td>
+                <td class="text-center">${m.orden}</td>
+                <td class="text-center">
+                    <a href="${editUrl}" class="me-2"><i class="fa fa-edit"></i></a>
+                    <div class="drag-handle d-inline-block"><i class="fa fa-th"></i></div>
+                </td>`;
+              tbody.appendChild(tr);
+            });
+          }
+          
+    
+        function initSortable(cfg){
+            new Sortable(document.getElementById(cfg.tbodyId), {
+                animation:150,
+                handle:'.drag-handle',
+                onEnd: () => updateOrder(cfg)
+            });
+        }
+    
+        function updateOrder(cfg){
+            const ids = [...document.getElementById(cfg.tbodyId).querySelectorAll("tr")]
+                        .map(tr => tr.dataset.id);
+            const params = new URLSearchParams();
+            ids.forEach(id => params.append('order[]', id));
+    
+            showStatus("Actualizando posiciones...", "info", cfg);
+    
+            fetch(cfg.orderUrl, {
+                method:'POST',
+                headers:{
+                    "X-CSRFToken":"{{ csrf_token }}",
+                    "Content-Type":"application/x-www-form-urlencoded"
+                },
+                body: params
+            })
+            .then(r => r.json())
+            .then(j => {
+                showStatus(j.message, "success", cfg);
+                fetchAndRender(cfg);          // <‑‑ vuelve a pintar la tabla
+            })
+            .catch(() => showStatus("Error al actualizar", "danger", cfg));
+        }
+    
+        function showStatus(msg, type, cfg){
+            const div = document.getElementById(cfg.statusId);
+            div.innerHTML = `<div class="alert alert-${type} py-2 mb-0">${msg}</div>`;
+            setTimeout(() => div.innerHTML = "", 4000);
+        }
+    });
+    </script>
+    
 {% endblock content %}
