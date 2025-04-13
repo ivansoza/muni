@@ -42,7 +42,6 @@ urlpatterns = [
     path('generales/video', VideoView.as_view(), name='VideoView'),
     path('generales/secciones', SeccionesView.as_view(), name='SeccionesView'),
 
-    path('generales/encuestas', EncuestasView.as_view(), name='EncuestasView'),
     path('generales/usuarios', UsuariosView.as_view(), name='UsuariosView'),
     path('generales/privacidad', PrivacidadView.as_view(), name='PrivacidadView'),
 
@@ -125,6 +124,12 @@ urlpatterns = [
     path('convocatorias/<int:id>/detalle/', views.obtener_detalle_convocatoria, name='detalle_Convocatoria'),
 
     path('aviso/<int:pk>/eliminar/', views.eliminar_aviso_privacidad, name='eliminar_aviso_privacidad'),
+
+
+    #---------------------------------  ENCUESTAS ----------------------------------------
+    path('generales/encuestas', EncuestasView.as_view(), name='EncuestasView'),
+
+    path('encuestas/create-ajax/', views.encuesta_create_ajax, name='encuesta_create_ajax'),
 
     
 

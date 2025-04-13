@@ -39,7 +39,7 @@ from django.core.files.base import ContentFile
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
 from transparencia.forms import SeccionTransparenciaForm, EjercicioFiscalForm, DocumentoTransparenciaForm, ListaObligacionesForm, ArticuloLigaForm, ArticuloLigaArchivoForm
-from transparencia.models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga, LigaArchivo
+from transparencia.models import Encuesta, Opcion, Pregunta, SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga, LigaArchivo
 from sevac.models import Carpeta, Archivo, CategoriaSevac
 from sevac.forms import CarpetaForm, ArchivoForm, CategoriaSevacForm
 # Create your views here.
@@ -2489,3 +2489,70 @@ def eliminar_aviso_privacidad(request, pk):
         aviso.delete()
         messages.success(request, "El aviso de privacidad se ha eliminado correctamente.")
     return redirect(reverse_lazy('PrivacidadView'))
+
+
+
+@login_required
+def encuesta_create_ajax(request):
+    """
+    Vista que maneja la creación de Encuesta + Preguntas + Opciones vía AJAX.
+    Solo para superusuarios o quienes tengan el permiso 'transparencia.add_encuesta'.
+    """
+    user = request.user
+    # Validación manual de permisos
+    if not (user.is_superuser or user.has_perm('transparencia.add_encuesta')):
+        return JsonResponse({'success': False, 'error': 'No tienes permiso para crear encuestas.'}, status=403)
+
+    if request.method == 'GET':
+        return render(request, 'generales/encuesta_create_ajax.html')
+
+    elif request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+
+            # Forzar el primer municipio activo
+            municipio_activo = Municipio.objects.filter(status='activo').first()
+            if not municipio_activo:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'No existe un municipio activo para asociar la encuesta.'
+                }, status=400)
+
+            titulo = data.get('titulo', '')
+            descripcion = data.get('descripcion', '')
+
+            # Crear la encuesta con estado por defecto 'activo'
+            encuesta = Encuesta.objects.create(
+                municipio=municipio_activo,
+                titulo=titulo,
+                descripcion=descripcion,
+                estado='activo'  # Forzado a 'activo'
+            )
+
+            # Procesar preguntas
+            preguntas_data = data.get('preguntas', [])
+            for p_data in preguntas_data:
+                texto_pregunta = p_data.get('texto', '')
+                orden = p_data.get('orden', 0)
+
+                pregunta = Pregunta.objects.create(
+                    encuesta=encuesta,
+                    texto=texto_pregunta,
+                    orden=orden
+                )
+
+                # Procesar opciones
+                opciones_data = p_data.get('opciones', [])
+                for op_texto in opciones_data:
+                    Opcion.objects.create(
+                        pregunta=pregunta,
+                        texto=op_texto
+                    )
+
+            return JsonResponse({'success': True, 'encuesta_id': encuesta.id}, status=200)
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+    else:
+        return JsonResponse({'error': 'Método no permitido'}, status=405)

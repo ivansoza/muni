@@ -1,0 +1,249 @@
+{% extends "baseTemplate.html" %}
+
+{% block content %}
+<h1>Crear nueva encuesta (vía AJAX)</h1>
+
+<label>Título de la encuesta:</label>
+<input type="text" id="encuestaTitulo" placeholder="Título"><br><br>
+
+<label>Descripción de la encuesta:</label>
+<textarea id="encuestaDescripcion" placeholder="Descripción"></textarea><br><br>
+
+<!-- Input oculto para municipio si lo requieres; 
+     aquí lo ignoraremos pues forzaremos en el backend. -->
+<input type="hidden" id="municipioId" value="{{ municipio_activo.id|default:'' }}">
+
+<hr>
+
+<div id="preguntasContainer">
+    <h2>Preguntas</h2>
+    <!-- Se inyectarán las preguntas en tiempo real -->
+</div>
+
+<button id="btnAddQuestion">Agregar nueva pregunta</button>
+
+<hr>
+
+<button id="btnGuardarEncuesta">Guardar Encuesta</button>
+{% endblock content %}
+
+
+{% block scriptcontent %}
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const csrfToken = getCookie('csrftoken');
+
+// Array de preguntas
+let preguntas = [];
+let preguntaIndex = 1;  // Para numerar las preguntas
+
+const preguntasContainer = document.getElementById('preguntasContainer');
+const btnAddQuestion = document.getElementById('btnAddQuestion');
+const btnGuardarEncuesta = document.getElementById('btnGuardarEncuesta');
+
+// 1. Agrega una pregunta vacía
+function addQuestion() {
+    const nuevaPregunta = {
+        idLocal: Date.now(),
+        texto: '',
+        orden: preguntaIndex,
+        opciones: []
+    };
+    preguntas.push(nuevaPregunta);
+    preguntaIndex++;
+    renderPreguntas();
+}
+
+// 2. Renderizar todas las preguntas y opciones
+function renderPreguntas() {
+    preguntasContainer.innerHTML = ''; // Limpia el contenedor
+
+    preguntas.forEach((preg, index) => {
+        // Contenedor principal de la pregunta
+        const preguntaDiv = document.createElement('div');
+        preguntaDiv.style.border = '1px solid #000';
+        preguntaDiv.style.margin = '10px 0';
+        preguntaDiv.style.padding = '10px';
+
+        // Etiqueta "Texto de la pregunta"
+        const labelPregunta = document.createElement('label');
+        labelPregunta.textContent = "Texto de la pregunta:";
+
+        // Input para texto de la pregunta
+        const inputPregunta = document.createElement('input');
+        inputPregunta.type = 'text';
+        inputPregunta.value = preg.texto;
+        inputPregunta.oninput = (e) => {
+            preguntas[index].texto = e.target.value;
+        };
+
+        // Etiqueta "Orden"
+        const labelOrden = document.createElement('label');
+        labelOrden.textContent = " Orden: ";
+
+        // Input para orden
+        const inputOrden = document.createElement('input');
+        inputOrden.type = 'number';
+        inputOrden.value = preg.orden;
+        inputOrden.oninput = (e) => {
+            preguntas[index].orden = parseInt(e.target.value);
+        };
+
+        // Contenedor de opciones
+        const opcionesDiv = document.createElement('div');
+        opcionesDiv.style.marginTop = '10px';
+
+        const opcionesTitulo = document.createElement('p');
+        opcionesTitulo.textContent = "Opciones:";
+        opcionesDiv.appendChild(opcionesTitulo);
+
+        // Render de cada opción
+        preg.opciones.forEach((op, opIndex) => {
+            const opcionRow = document.createElement('div');
+            opcionRow.style.marginBottom = '5px';
+
+            // Input de la opción
+            const opInput = document.createElement('input');
+            opInput.type = 'text';
+            opInput.value = op;
+            opInput.oninput = (e) => {
+                preguntas[index].opciones[opIndex] = e.target.value;
+            };
+
+            // Botón para eliminar esta opción
+            const btnRemoveOption = document.createElement('button');
+            btnRemoveOption.textContent = "Eliminar opción";
+            btnRemoveOption.style.marginLeft = '5px';
+            btnRemoveOption.onclick = () => {
+                // Remueve la opción del array
+                preguntas[index].opciones.splice(opIndex, 1);
+                renderPreguntas();
+            };
+
+            // Agregar input y botón al contenedor
+            opcionRow.appendChild(opInput);
+            opcionRow.appendChild(btnRemoveOption);
+
+            opcionesDiv.appendChild(opcionRow);
+        });
+
+        // Botón para añadir opción
+        const btnAddOption = document.createElement('button');
+        btnAddOption.textContent = "Agregar opción";
+        btnAddOption.onclick = () => {
+            preguntas[index].opciones.push(''); // Opción vacía
+            renderPreguntas();
+        };
+
+        opcionesDiv.appendChild(btnAddOption);
+
+        // Botón para eliminar la pregunta completa
+        const btnRemoveQuestion = document.createElement('button');
+        btnRemoveQuestion.textContent = "Eliminar pregunta";
+        btnRemoveQuestion.style.marginLeft = '10px';
+        btnRemoveQuestion.onclick = () => {
+            preguntas = preguntas.filter(p => p.idLocal !== preg.idLocal);
+            renderPreguntas();
+        };
+
+        // Construir el bloque de la pregunta
+        preguntaDiv.appendChild(labelPregunta);
+        preguntaDiv.appendChild(inputPregunta);
+        preguntaDiv.appendChild(document.createElement('br'));
+
+        preguntaDiv.appendChild(labelOrden);
+        preguntaDiv.appendChild(inputOrden);
+        preguntaDiv.appendChild(document.createElement('br'));
+
+        preguntaDiv.appendChild(opcionesDiv);
+        preguntaDiv.appendChild(btnRemoveQuestion);
+
+        preguntasContainer.appendChild(preguntaDiv);
+    });
+}
+
+// 3. Botón para agregar preguntas
+btnAddQuestion.addEventListener('click', () => {
+    addQuestion();
+});
+
+// 4. Botón para guardar
+btnGuardarEncuesta.addEventListener('click', () => {
+    const titulo = document.getElementById('encuestaTitulo').value.trim();
+    const descripcion = document.getElementById('encuestaDescripcion').value.trim();
+
+    // Validaciones
+    if (!titulo) {
+        alert("El título de la encuesta es obligatorio.");
+        return;
+    }
+
+    if (preguntas.length < 1) {
+        alert("Debes agregar al menos una pregunta.");
+        return;
+    }
+
+    for (let i = 0; i < preguntas.length; i++) {
+        const p = preguntas[i];
+        if (!p.texto.trim()) {
+            alert(`La pregunta #${i+1} está vacía. Escribe algún texto.`);
+            return;
+        }
+        if (p.opciones.length < 1) {
+            alert(`La pregunta #${i+1} no tiene ninguna opción.`);
+            return;
+        }
+    }
+
+    // Construir objeto final
+    const data = {
+        titulo: titulo,
+        descripcion: descripcion,
+        // Como ya no necesitamos estado, no lo mandamos o lo puedes mandar fijo
+        // estado: 'activo',
+        preguntas: preguntas.map(p => ({
+            texto: p.texto,
+            orden: p.orden,
+            opciones: p.opciones
+        }))
+    };
+
+    // Enviar
+    fetch("{% url 'encuesta_create_ajax' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(respData => {
+        if (respData.success) {
+            alert("Encuesta creada con ID: " + respData.encuesta_id);
+            window.location.href = "{% url 'EncuestasView' %}";
+        } else {
+            alert("Error al crear la encuesta: " + respData.error);
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        alert("Ocurrió un error en la petición AJAX.");
+    });
+});
+</script>
+{% endblock scriptcontent %}
