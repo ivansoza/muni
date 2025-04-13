@@ -77,9 +77,15 @@ class VideoView(LoginRequiredMixin,TemplateView):
 
 
 
-class EncuestasView(LoginRequiredMixin,TemplateView):
+class EncuestasView(LoginRequiredMixin, TemplateView):
     template_name = 'generales/encuestas.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        if not (user.is_superuser or user.has_perm('transparencia.view_encuesta')):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -88,9 +94,34 @@ class EncuestasView(LoginRequiredMixin,TemplateView):
             'child': {'name': 'Encuestas', 'url': ''}
         }
         context['sidebar'] = 'Generales' 
-        url_configuracion = reverse( 'generalesDashboard')
-        context['regreso_url']= url_configuracion
+        url_configuracion = reverse('generalesDashboard')
+        context['regreso_url'] = url_configuracion
+        
+        # -- Aquí buscamos el primer municipio activo
+        municipio_activo = Municipio.objects.filter(status='activo').first()
+        if municipio_activo:
+            # Tomamos las encuestas de ese municipio
+            encuestas = municipio_activo.encuestas.all()
+            total_activas = encuestas.filter(estado='activo').count()
+            total_inactivas = encuestas.filter(estado='inactivo').count()
+        else:
+            # No hay municipio activo -> no hay encuestas
+            encuestas = None
+            total_activas = 0
+            total_inactivas = 0
+        
+        # Enviamos todo lo que necesitamos al contexto
+        context['municipio_activo'] = municipio_activo
+        context['encuestas'] = encuestas
+        
+        # Guardamos los totales dentro de 'data' para facilidad en la plantilla
+        context['data'] = {
+            'total_activas': total_activas,
+            'total_inactivas': total_inactivas
+        }
+
         return context
+
 
 
 class ReportesView(LoginRequiredMixin,TemplateView):
@@ -599,7 +630,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
 class GeneralesDashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'generales.html'
-    login_url = reverse_lazy('login')  # Redirige al login si no está autenticado
+    login_url = reverse_lazy('login') 
 
 
     def get_context_data(self, **kwargs):

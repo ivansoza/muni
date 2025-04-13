@@ -46,7 +46,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- Estilos personalizados -->
-     <link rel="stylesheet" href="{% static "css/stylos.css" %}?v1.h1h1">
+     <link rel="stylesheet" href="{% static "css/stylos.css" %}?v1.h1rh1">
      <script async defer src="https://connect.facebook.net/es_LA/sdk.js#xfbml=1&version=v15.0"></script>
      <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatable-extension.css' %}">    
@@ -515,7 +515,23 @@
                         {% elif seccion.nombre == 'convocatorias' %}
 
                             {% if municipio.secciones_hab and municipio.secciones_hab.convocatorias %}
-                                {% include "home/components/ultimas_convocatorias.html" %}
+                                    {% if municipio.cortina %}
+                                        {% if municipio.cortina.convocatorias == "convocatorias1" %}
+                                            {% include "home/components/convocatorias/convocatorias1.html" %}
+                                        {% elif municipio.cortina.convocatorias == "convocatorias2" %}
+                                            {% include "home/components/convocatorias/convocatorias2.html" %}
+                                        {% elif municipio.cortina.convocatorias == "convocatorias3" %}
+                                            {% include "home/components/convocatorias/convocatorias3.html" %}
+                                        {% elif municipio.cortina.convocatorias == "convocatorias4" %}
+                                            {% include "home/components/convocatorias/convocatorias4.html" %}
+                                        {% elif municipio.cortina.convocatorias == "sinconvocatoria" %}
+
+                                        {% else %}
+                                            {% include "home/components/convocatorias/convocatorias1.html" %}
+                                        {% endif %}
+                                    {% else %}
+                                        {% include "home/components/convocatorias/convocatorias1.html" %}
+                                    {% endif %}
                             {% endif %}
 
                         {% elif seccion.nombre == 'redes_sociales' %}
@@ -559,7 +575,25 @@
                 {% endif %}
 
                 {% if municipio.secciones_hab and municipio.secciones_hab.convocatorias %}
-                    {% include "home/components/ultimas_convocatorias.html" %}
+
+                    {% if municipio.cortina %}
+                        {% if municipio.cortina.convocatorias == "convocatorias1" %}
+                            {% include "home/components/convocatorias/convocatorias1.html" %}
+                        {% elif municipio.cortina.convocatorias == "convocatorias2" %}
+                            {% include "home/components/convocatorias/convocatorias2.html" %}
+                        {% elif municipio.cortina.convocatorias == "convocatorias3" %}
+                            {% include "home/components/convocatorias/convocatorias3.html" %}
+                        {% elif municipio.cortina.convocatorias == "convocatorias4" %}
+                            {% include "home/components/convocatorias/convocatorias4.html" %}
+                        {% elif municipio.cortina.convocatorias == "sinconvocatoria" %}
+
+                        {% else %}
+                            {% include "home/components/convocatorias/convocatorias1.html" %}
+                        {% endif %}
+                    {% else %}
+                        {% include "home/components/convocatorias/convocatorias1.html" %}
+                    {% endif %}
+
                 {% endif %}
 
 
@@ -670,57 +704,7 @@
     });
     </script>
     
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-        let grande = document.querySelector(".convocatoria-grande");
-        let pequenas = document.querySelectorAll(".convocatoria-pequena");
 
-        function rotarConvocatorias() {
-            // Seleccionamos la primera convocatoria pequeña para intercambiarla con la grande
-            let nuevaGrande = pequenas[0];
-
-            // Clonamos el contenido de la grande antes de intercambiar
-            let grandeClone = {
-                imgSrc: grande.querySelector("img").src,
-                title: grande.querySelector("h3").innerText,
-                desc: grande.querySelector("p").innerText,
-                link: grande.querySelector(".btn-convocatoria").href,
-            };
-
-            // Clonamos el contenido de la pequeña para hacer el swap
-            let pequenaClone = {
-                imgSrc: nuevaGrande.querySelector("img").src,
-                title: nuevaGrande.querySelector("h4").innerText,
-                link: nuevaGrande.querySelector(".news-link").href,
-            };
-
-            // Intercambiamos los datos
-            grande.querySelector("img").src = pequenaClone.imgSrc;
-            grande.querySelector("h3").innerText = pequenaClone.title;
-            grande.querySelector("p").innerText = ""; // No tienen descripción las pequeñas
-            grande.querySelector(".btn-convocatoria").href = pequenaClone.link;
-
-            nuevaGrande.querySelector("img").src = grandeClone.imgSrc;
-            nuevaGrande.querySelector("h4").innerText = grandeClone.title;
-            nuevaGrande.querySelector(".news-link").href = grandeClone.link;
-
-            // Reordenamos el array de pequeñas (mueve la primera al final)
-            pequenas = Array.from(pequenas).slice(1).concat(pequenas[0]);
-        }
-
-        // Rotar cada 5 segundos
-        let intervaloConvocatoria = setInterval(rotarConvocatorias, 5000);
-
-        // Detener la rotación si el usuario interactúa con la convocatoria
-        document.querySelector(".convocatorias-section").addEventListener("mouseover", () => {
-            clearInterval(intervaloConvocatoria);
-        });
-        document.querySelector(".convocatorias-section").addEventListener("mouseleave", () => {
-            intervaloConvocatoria = setInterval(rotarConvocatorias, 5000);
-        });
-    });
-
-    </script>
 
     <script>
         function scrollSocials(direction) {

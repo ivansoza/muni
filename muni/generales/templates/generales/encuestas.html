@@ -1,13 +1,43 @@
 {% extends "baseTemplate.html" %}
 
-
-
-
 {% block content %}
+    <h1>Encuestas del primer municipio activo</h1>
 
+    <!-- Resumen de encuestas -->
+    <p>Total encuestas activas: {{ data.total_activas }}</p>
+    <p>Total encuestas inactivas: {{ data.total_inactivas }}</p>
+
+    <!-- Botón para agregar nueva encuesta -->
+    <p>
+        <a href="#">Agregar nueva encuesta</a>
+    </p>
+
+    <!-- Tabla de encuestas -->
+    {% if encuestas %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre de la Encuesta</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for encuesta in encuestas %}
+                    <tr>
+                        <td>{{ encuesta.titulo }}</td>
+                        <td>
+                            <a href="#">Ver información</a> |
+                            <a href="#">Editar</a> |
+                            <a href="#">Eliminar</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No se encontraron encuestas para el primer municipio activo.</p>
+    {% endif %}
 {% endblock content %}
 
-
 {% block scriptcontent %}
-
 {% endblock scriptcontent %}

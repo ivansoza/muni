@@ -157,6 +157,21 @@ class personalizacionPlantilla(models.Model):
         verbose_name="Fotografía servicio"
     )
 
+
+    CONVOCATORIAS_CHOICES = [
+        ('convocatorias1', 'Convocatorias 1'),
+        ('convocatorias2', 'Convocatorias 2'),
+        ('convocatorias3', 'Convocatorias 3'),
+        ('sinconvocatoria', 'Sin Convocatoria'),
+    ]
+    convocatorias = models.CharField(
+        max_length=50,
+        choices=CONVOCATORIAS_CHOICES,
+        default='convocatorias1'  # Primera opción como predeterminada
+    )
+
+
+
     def __str__(self):
         return f"{self.municipio} - {self.get_entrada_display()}"
     
