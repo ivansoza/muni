@@ -262,6 +262,7 @@ textarea:focus {
 .error-msg i {
     margin-right: 0.35rem;
 }
+
 .error-field {
     border-color: var(--color-danger) !important;
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
@@ -274,12 +275,8 @@ textarea:focus {
 }
 </style>
 
-<!-- ======================================= -->
-<!-- AQUI COMIENZA EL CUERPO DEL FORMULARIO -->
-<!-- ======================================= -->
-
 <div class="privacy-notice-container">
-  <h3 class="section-title">Crear nueva encuesta </h3>
+  <h3 class="section-title">Crear nueva encuesta</h3>
 
   <!-- Card para los datos generales de la encuesta -->
   <div class="card custom-card">
@@ -297,7 +294,6 @@ textarea:focus {
         <label for="encuestaDescripcion">Descripción de la encuesta:</label>
         <textarea id="encuestaDescripcion" placeholder="Descripción"></textarea>
       </div>
-      <!-- Input oculto para municipio si se requiere -->
       <input type="hidden" id="municipioId" value="{{ municipio_activo.id|default:'' }}">
     </div>
   </div>
@@ -308,17 +304,15 @@ textarea:focus {
       <div>
         <i class="fa fa-question-circle"></i> Preguntas
       </div>
-      <!-- Botón "Agregar pregunta" con la clase .btn-add -->
       <button type="button" class="btn btn-add" id="btnAddQuestion">
         <i class="fa fa-plus"></i>Agregar nueva pregunta
       </button>
     </div>
     <div class="card-body" id="preguntasContainer">
-      <!-- Aquí se inyectan las preguntas dinámicamente -->
+      <!-- Aquí se inyectan dinámicamente las preguntas -->
     </div>
   </div>
 
-  <!-- Contenedor de acciones finales -->
   <div class="form-actions-container">
     <button type="button" class="btn btn-primary btn-save" id="btnGuardarEncuesta">
       <i class="fa fa-save"></i>Guardar Encuesta
@@ -326,7 +320,6 @@ textarea:focus {
   </div>
 </div>
 {% endblock content %}
-
 
 {% block scriptcontent %}
 <script>
@@ -348,45 +341,38 @@ const csrfToken = getCookie('csrftoken');
 
 // Array de preguntas
 let preguntas = [];
-let preguntaIndex = 1;  // Para numerar las preguntas
+let preguntaIndex = 1;
 
 const preguntasContainer = document.getElementById('preguntasContainer');
 const btnAddQuestion = document.getElementById('btnAddQuestion');
 const btnGuardarEncuesta = document.getElementById('btnGuardarEncuesta');
 
-/* 
- * Función para quitar todos los mensajes de error previos.
+/*
+ * Limpia todos los mensajes de error
  */
 function clearErrors() {
-    // Remueve todos los divs con clase .error-msg
     document.querySelectorAll('.error-msg').forEach(el => el.remove());
-    // Quita la clase .error-field de todos los inputs/textarea
     document.querySelectorAll('.error-field').forEach(el => el.classList.remove('error-field'));
 }
 
 /*
- * Función para mostrar un mensaje de error debajo de un campo
- * fieldId: string con el ID del input/label
- * msg: mensaje a mostrar
+ * Muestra un error junto a un campo
  */
 function showFieldError(fieldId, msg) {
     const field = document.getElementById(fieldId);
     if (!field) return;
-    
-    // Agregamos la clase .error-field (si quieres resaltar el input)
+
     field.classList.add('error-field');
 
-    // Creamos el div que contendrá el mensaje
     const errorDiv = document.createElement('div');
     errorDiv.className = 'error-msg';
     errorDiv.innerHTML = `<i class="fa fa-exclamation-circle"></i> ${msg}`;
-    
-    // Lo insertamos justo debajo del campo
-    // "afterend" => inmediatamente después del input o label
     field.insertAdjacentElement('afterend', errorDiv);
 }
 
-// 1. Agrega una pregunta vacía
+/*
+ * Añadir una pregunta vacía
+ */
 function addQuestion() {
     const nuevaPregunta = {
         idLocal: Date.now(),
@@ -399,24 +385,22 @@ function addQuestion() {
     renderPreguntas();
 }
 
-// 2. Renderizar todas las preguntas y opciones
+/*
+ * Re-renderiza todas las preguntas y sus opciones
+ */
 function renderPreguntas() {
-    preguntasContainer.innerHTML = ''; // Limpia el contenedor
+    preguntasContainer.innerHTML = '';
 
     preguntas.forEach((preg, index) => {
-        // Contenedor principal de la pregunta con clase question-card
         const preguntaDiv = document.createElement('div');
         preguntaDiv.className = 'question-card';
 
         // Encabezado de la pregunta
         const questionHeader = document.createElement('div');
         questionHeader.className = 'question-header';
-        questionHeader.innerHTML = `
-            <span>Pregunta #${index + 1}</span>
-        `;
-        preguntaDiv.appendChild(questionHeader);
+        questionHeader.innerHTML = `<span>Pregunta #${index + 1}</span>`;
 
-        // Botón para eliminar la pregunta completa
+        // Botón para eliminar la pregunta
         const btnRemoveQuestion = document.createElement('button');
         btnRemoveQuestion.textContent = "Eliminar pregunta";
         btnRemoveQuestion.className = "btn btn-danger";
@@ -426,22 +410,23 @@ function renderPreguntas() {
         };
         questionHeader.appendChild(btnRemoveQuestion);
 
-        // Campo "Texto de la pregunta"
+        preguntaDiv.appendChild(questionHeader);
+
+        // Texto de la pregunta
         const labelPregunta = document.createElement('label');
         labelPregunta.textContent = "Texto de la pregunta:";
         preguntaDiv.appendChild(labelPregunta);
 
-        // Asignamos un id único a este input para mostrar errores
         const inputPregunta = document.createElement('input');
         inputPregunta.type = 'text';
-        inputPregunta.id = `preguntaTexto-${index}`;  // <-- ID único
+        inputPregunta.id = `preguntaTexto-${index}`;
         inputPregunta.value = preg.texto;
-        inputPregunta.oninput = (e) => {
+        inputPregunta.oninput = e => {
             preguntas[index].texto = e.target.value;
         };
         preguntaDiv.appendChild(inputPregunta);
 
-        // Campo "Orden"
+        // Orden de la pregunta
         const labelOrden = document.createElement('label');
         labelOrden.textContent = "Orden de la pregunta:";
         preguntaDiv.appendChild(labelOrden);
@@ -451,7 +436,7 @@ function renderPreguntas() {
         inputOrden.id = `preguntaOrden-${index}`;
         inputOrden.value = preg.orden;
         inputOrden.style.width = '100px';
-        inputOrden.oninput = (e) => {
+        inputOrden.oninput = e => {
             preguntas[index].orden = parseInt(e.target.value);
         };
         preguntaDiv.appendChild(inputOrden);
@@ -460,106 +445,121 @@ function renderPreguntas() {
         const opcionesDiv = document.createElement('div');
         opcionesDiv.className = 'question-options';
 
-        const opcionesTitulo = document.createElement('label');
-        opcionesTitulo.textContent = "Opciones:";
-        // Le ponemos un id para mostrar error si no hay opciones
-        opcionesTitulo.id = `preguntaOpcionesLabel-${index}`;
-        opcionesDiv.appendChild(opcionesTitulo);
+        // Solo muestra el label "Opciones:" si hay al menos una opción
+        if (preg.opciones.length > 0) {
+            const opcionesLabel = document.createElement('label');
+            opcionesLabel.id = `preguntaOpcionesLabel-${index}`;
+            opcionesLabel.textContent = "Opciones:";
+            opcionesDiv.appendChild(opcionesLabel);
 
-        // Render de cada opción
-        preg.opciones.forEach((op, opIndex) => {
-            const opcionRow = document.createElement('div');
-            opcionRow.className = 'option-row';
+            // Render de cada opción
+            preg.opciones.forEach((op, opIndex) => {
+                const opcionRow = document.createElement('div');
+                opcionRow.className = 'option-row';
 
-            // Input de la opción
-            const opInput = document.createElement('input');
-            opInput.type = 'text';
-            opInput.value = op;
-            opInput.oninput = (e) => {
-                preguntas[index].opciones[opIndex] = e.target.value;
-            };
+                const opInput = document.createElement('input');
+                opInput.type = 'text';
+                opInput.value = op;
+                opInput.oninput = e => {
+                    preguntas[index].opciones[opIndex] = e.target.value;
+                };
 
-            // Botón para eliminar esta opción
-            const btnRemoveOption = document.createElement('button');
-            btnRemoveOption.textContent = "Eliminar opción";
-            btnRemoveOption.className = "btn btn-danger";
-            btnRemoveOption.style.marginLeft = '0.5rem';
-            btnRemoveOption.onclick = () => {
-                preguntas[index].opciones.splice(opIndex, 1);
-                renderPreguntas();
-            };
+                const btnRemoveOption = document.createElement('button');
+                btnRemoveOption.textContent = "Eliminar opción";
+                btnRemoveOption.className = "btn btn-danger";
+                btnRemoveOption.style.marginLeft = '0.5rem';
+                btnRemoveOption.onclick = () => {
+                    preguntas[index].opciones.splice(opIndex, 1);
+                    renderPreguntas();
+                };
 
-            opcionRow.appendChild(opInput);
-            opcionRow.appendChild(btnRemoveOption);
-            opcionesDiv.appendChild(opcionRow);
-        });
+                opcionRow.appendChild(opInput);
+                opcionRow.appendChild(btnRemoveOption);
+                opcionesDiv.appendChild(opcionRow);
+            });
+        }
 
-        // Botón para añadir opción
+        // Botón "Agregar opción"
         const btnAddOption = document.createElement('button');
         btnAddOption.textContent = "Agregar opción";
         btnAddOption.className = "btn btn-add";
         btnAddOption.onclick = () => {
-            preguntas[index].opciones.push(''); // Opción vacía
+            // Insertamos una opción vacía en el array
+            preguntas[index].opciones.push('');
             renderPreguntas();
         };
         opcionesDiv.appendChild(btnAddOption);
 
         preguntaDiv.appendChild(opcionesDiv);
-
-        // Finalmente, añadir todo al contenedor principal
         preguntasContainer.appendChild(preguntaDiv);
     });
 }
 
-// 3. Botón para agregar preguntas
+/*
+ * Agregar pregunta al hacer clic
+ */
 btnAddQuestion.addEventListener('click', () => {
     addQuestion();
 });
 
-// 4. Botón para guardar
+/*
+ * Botón "Guardar Encuesta"
+ */
 btnGuardarEncuesta.addEventListener('click', () => {
-    // Limpia los errores anteriores
     clearErrors();
 
     const titulo = document.getElementById('encuestaTitulo').value.trim();
     const descripcion = document.getElementById('encuestaDescripcion').value.trim();
 
-    // Aquí almacenaremos los errores (sin usar alert)
     let errorCount = 0;
 
-    // Validaciones campo Título
+    // Validar título
     if (!titulo) {
         showFieldError('encuestaTitulo', 'El título de la encuesta es obligatorio.');
         errorCount++;
     }
 
-    // Validaciones del array de preguntas
+    // Validar que haya al menos una pregunta
     if (preguntas.length < 1) {
-        // Mostramos error en la zona de "Preguntas" (p. ej., su cabecera)
         showFieldError('preguntasContainer', 'Debes agregar al menos una pregunta.');
         errorCount++;
     }
 
+    // Validar cada pregunta
     preguntas.forEach((p, i) => {
+        // El texto de la pregunta
         if (!p.texto.trim()) {
             showFieldError(`preguntaTexto-${i}`, `La pregunta #${i+1} está vacía. Escribe algún texto.`);
             errorCount++;
         }
+        // Al menos 1 opción
         if (p.opciones.length < 1) {
-            showFieldError(`preguntaOpcionesLabel-${i}`, `La pregunta #${i+1} no tiene ninguna opción.`);
+            // Si no hay opciones, error en la zona de las preguntas
+            showFieldError('preguntasContainer', `La pregunta #${i+1} no tiene ninguna opción.`);
             errorCount++;
+        } else {
+            // Verificar que ninguna opción sea vacía
+            p.opciones.forEach((op, opIndex) => {
+                if (!op.trim()) {
+                    // Error en la zona de las preguntas (o podrías ubicar un ID distinto)
+                    showFieldError('preguntasContainer', 
+                        `La opción #${opIndex+1} de la pregunta #${i+1} está vacía. Por favor, escribe algo o elimínala.`
+                    );
+                    errorCount++;
+                }
+            });
         }
     });
 
-    // Si hay errores, detenemos el envío
+    // Detener envío si hay errores
     if (errorCount > 0) {
         return;
     }
 
-    // Si no hubo errores, construimos objeto final y enviamos
+    // Construir objeto final
     const data = {
-        titulo: titulo,
-        descripcion: descripcion,
+        titulo,
+        descripcion,
         preguntas: preguntas.map(p => ({
             texto: p.texto,
             orden: p.orden,
@@ -579,8 +579,6 @@ btnGuardarEncuesta.addEventListener('click', () => {
     .then(response => response.json())
     .then(respData => {
         if (respData.success) {
-            // TODO: Aquí podrías mostrar un mensaje de éxito estilizado,
-            // en lugar de un alert genérico.
             alert("Encuesta creada con ID: " + respData.encuesta_id);
             window.location.href = "{% url 'EncuestasView' %}";
         } else {
@@ -593,7 +591,7 @@ btnGuardarEncuesta.addEventListener('click', () => {
     });
 });
 
-// Inicialmente, si quieres empezar con 1 pregunta por defecto:
+// Inicialmente, si quieres empezar con 1 pregunta de ejemplo
 addQuestion();
 </script>
 {% endblock scriptcontent %}
