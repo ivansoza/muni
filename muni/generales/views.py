@@ -2589,8 +2589,8 @@ def encuesta_create_ajax(request):
 
     if request.method == 'GET':
         breadcrumb = {
-            'parent': {'name': 'Dashboard', 'url': '/admin'},
-            'child': {'name': 'Encuestas', 'url': ''}
+            'parent': {'name': 'Encuestas', 'url': '/admin/generales/encuestas'},
+            'child': {'name': 'Crear Encuesta', 'url': ''}
         }
         sidebar = 'Generales'
         url_configuracion = reverse('EncuestasView')
@@ -2701,8 +2701,8 @@ def encuesta_update_ajax(request, encuesta_id):
         }
 
         breadcrumb = {
-            'parent': {'name': 'Dashboard', 'url': '/admin'},
-            'child': {'name': 'Encuestas', 'url': ''}
+            'parent': {'name': 'Encuestas', 'url': '/admin/generales/encuestas'},
+            'child': {'name': 'Editar Encuesta', 'url': ''}
         }
         sidebar = 'Generales'
         regreso_url = reverse('EncuestasView')
