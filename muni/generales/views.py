@@ -55,7 +55,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import Group, Permission
 
 from django.contrib.auth.mixins import  PermissionRequiredMixin
-
+from noticias.forms import ImagenGaleriaForm
 class VideoView(LoginRequiredMixin,TemplateView):
     template_name = 'generales/video.html'
 
@@ -629,6 +629,89 @@ class NewsView(LoginRequiredMixin, TemplateView):
             return redirect('noticias_view')
 
         return self.get(request, *args, **kwargs)
+
+def crear_noticia(request):
+    if request.method == 'POST':
+        form = NoticiaForm(request.POST, request.FILES)
+        imagenes_formset = ImagenGaleriaFormSet(request.POST, request.FILES, queryset=ImagenGaleria.objects.none())
+
+        if form.is_valid() and imagenes_formset.is_valid():
+            noticia = form.save()
+            for form_img in imagenes_formset:
+                if form_img.cleaned_data:
+                    imagen = form_img.save(commit=False)
+                    imagen.noticia = noticia
+                    imagen.save()
+            return redirect('noticias_view')
+    else:
+        form = NoticiaForm()
+        imagenes_formset = ImagenGaleriaFormSet(queryset=ImagenGaleria.objects.none())
+
+    # Aquí se arma el contexto adicional
+    url_configuracion = reverse('noticias_view')
+    context = {
+        'form': form,
+        'imagenes_formset': imagenes_formset,
+        'breadcrumb': {
+            'parent': {'name': 'Noticias', 'url': url_configuracion},
+            'child': {'name': 'Registro de noticia', 'url': ''}
+        },
+        'sidebar': 'noticias',
+        'regreso_url': url_configuracion
+    }
+
+    return render(request, 'crear_noticia.html', context)
+
+
+def editar_noticia_nueva(request, pk):
+    noticia = get_object_or_404(Noticia, pk=pk)
+    form = NoticiaForm(request.POST or None, request.FILES or None, instance=noticia)
+
+    ImagenGaleriaFormSet = modelformset_factory(
+        ImagenGaleria,
+        form=ImagenGaleriaForm,
+        extra=0,
+        can_delete=True
+    )
+
+    formset = ImagenGaleriaFormSet(
+        request.POST or None,
+        request.FILES or None,
+        queryset=ImagenGaleria.objects.filter(noticia=noticia)
+    )
+
+    if request.method == 'POST':
+        if form.is_valid() and formset.is_valid():
+            noticia = form.save()
+
+            for f in formset:
+                if f.cleaned_data.get('DELETE'):
+                    f.instance.delete()
+                elif f.has_changed():
+                    imagen = f.save(commit=False)
+                    imagen.noticia = noticia
+                    imagen.save()
+
+            return redirect('noticias_view')
+        else:
+            print("Errores del form:", form.errors)
+            print("Errores del formset:", formset.errors)
+
+    # Agregamos el contexto extra para breadcrumb, sidebar y regreso
+    url_configuracion = reverse('noticias_view')
+    context = {
+        'form': form,
+        'formset': formset,
+        'noticia': noticia,
+        'breadcrumb': {
+            'parent': {'name': 'Noticias', 'url': url_configuracion},
+            'child': {'name': 'Editar noticia', 'url': ''}
+        },
+        'sidebar': 'noticias',
+        'regreso_url': url_configuracion
+    }
+
+    return render(request, 'editar_noticia.html', context)
 
 
     

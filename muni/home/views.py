@@ -6,6 +6,7 @@ from django.views.generic.base import TemplateView
 from generales.models import ContadorVisitas
 from noticias.models import Noticia
 from convocatorias.models import Convocatoria
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class HomePageView(TemplateView):
@@ -26,6 +27,13 @@ class HomePageView(TemplateView):
             contador, _ = ContadorVisitas.objects.get_or_create(id=1)
             contador.visitas += 1
             contador.save()
+        try:
+            # Intentar obtener el contador de visitas
+            contador = ContadorVisitas.objects.get(id=1)
+            context['contador_visitas'] = contador.visitas
+        except ObjectDoesNotExist:
+            # Si no existe, asignamos 0 como valor por defecto
+            context['contador_visitas'] = 0
 
         return context
 

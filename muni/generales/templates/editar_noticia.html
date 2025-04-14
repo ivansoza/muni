@@ -1,0 +1,285 @@
+{% extends "baseTemplate.html" %}
+{% load static %}
+{% load sass_tags %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+{% block header %}
+{{ form.media }}
+{% endblock %}
+<style>
+    /* Ya estaba definido */
+    .custom-formset-card {
+        background-color: #f8fafd;
+        border: 2px solid #d2e3f3;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease-in-out;
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .formset-form.fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.5s ease forwards;
+    }
+    
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .badge-label {
+        background-color: #2b6cb0;
+        color: white;
+        padding: 4px 12px;
+        font-size: 0.85rem;
+        border-radius: 10px 10px 10px 10px;
+        margin-top: -2.5rem;
+        margin-bottom: 10rem;
+        width: 100px;
+    }
+    
+    .remove-form-btn {
+        position: absolute;
+        right: 1rem;
+        bottom: .3rem;
+    }
+    
+    #formset-container input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px dashed #cbd5e0;
+    border-radius: 8px;
+    background-color: #ffffff;
+    font-size: 0.95rem;
+}
+
+    </style>
+<div>
+    <div class="card">
+        <div class="card-body">
+            <h2 class="mb-4">Editar Noticia</h2>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.media }}
+
+                <div class="mb-3">
+                    <label class="form-label">Título:</label>
+                    {{ form.titulo }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Contenido de la Nota:</label>
+                    {{ form.contenido }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label">Autor:</label>
+                        {{ form.autor }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Categoría:</label>
+                        <div class="input-group">
+                            {{ form.categoria }}
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoriaModal">
+                                +
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="mb-3">
+                    <label class="form-label">Imagen de Portada:</label>
+                    {{ form.imagen }}
+                </div>
+                <!-- Galería de imágenes -->
+                <h3>Imágenes de la galería</h3>
+                <div class="d-flex justify-content-end mb-3">
+                    <button id="add-image" type="button" class="btn btn-primary">+ Añadir imagen</button>
+                </div>
+                <div id="formset-container" class="row">
+                    {{ formset.management_form }}
+
+                    {% for form in formset %}
+                        <div class="col-md-12 mb-4 formset-form">
+                            <div class="custom-formset-card position-relative p-4">
+                                <div class="badge-label mb-3">
+                                    Imagen {{ forloop.counter }}
+                                </div>
+
+                                {{ form.id }}  {# <-- CAMPO OCULTO NECESARIO #}
+
+                                <div class="form-group mb-3">
+                                    {{ form.imagen.label_tag }}
+                                    {{ form.imagen }}
+                                </div>
+
+                                {% if not forloop.first %}
+                                    <button type="button" class="btn btn-danger btn-sm remove-form-btn">Quitar</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para agregar categoría -->
+<div class="modal fade" id="categoriaModal" tabindex="-1" aria-labelledby="categoriaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Nueva Categoría</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="categoriaForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="categoriaNombre" class="form-label">Nombre de la Categoría</label>
+                        <input type="text" class="form-control" id="categoriaNombre" name="nombre" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("categoriaForm").addEventListener("submit", function(event) {
+        event.preventDefault();  // Evita recargar la página
+        
+        let formData = new FormData(this);
+
+        fetch("{% url 'agregar_categoria' %}", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                let select = document.getElementById("id_categoria");
+                let nuevaOpcion = document.createElement("option");
+                nuevaOpcion.value = data.id;
+                nuevaOpcion.textContent = data.nombre;
+                nuevaOpcion.selected = true;
+                select.appendChild(nuevaOpcion);
+
+                // Cerrar modal
+                let modal = bootstrap.Modal.getInstance(document.getElementById("categoriaModal"));
+                modal.hide();
+
+                // Limpiar campo del formulario
+                document.getElementById("categoriaNombre").value = "";
+            } else {
+                alert(data.error);
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
+});
+
+</script>
+<script src="https://cdn.ckeditor.com/ckeditor4/4.16.2/ckeditor.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelector("form").addEventListener("submit", function (e) {
+            let editorInstance = CKEDITOR.instances.id_contenido; // Obtiene la instancia del editor
+            let contenido = editorInstance.getData().trim(); // Obtiene el contenido limpio
+
+            let contenidoField = document.querySelector("#id_contenido"); // Campo original oculto
+
+            if (contenido === "" || contenido === "<p><br></p>") {
+                contenidoField.setCustomValidity("Este campo es obligatorio.");
+            } else {
+                contenidoField.setCustomValidity(""); // Limpia el error si el campo está lleno
+            }
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const addButton = document.getElementById('add-image');
+        const formsetContainer = document.getElementById('formset-container');
+        const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+    
+        function updateTotalForms() {
+            const forms = document.querySelectorAll('.formset-form');
+            totalForms.value = forms.length;
+    
+            forms.forEach((form, index) => {
+                const badge = form.querySelector('.badge-label');
+                if (badge) {
+                    badge.textContent = index === 0 ? 'Imagen 1' : `Imagen ${index + 1}`;
+                }
+    
+                const removeBtn = form.querySelector('.remove-form-btn');
+                if (removeBtn) {
+                    if (index === 0) {
+                        removeBtn.style.display = 'none';
+                    } else {
+                        removeBtn.style.display = 'inline-block';
+                    }
+                }
+            });
+        }
+    
+        function addRemoveButton(formElement) {
+            const removeBtn = formElement.querySelector('.remove-form-btn');
+            if (removeBtn) {
+                removeBtn.addEventListener('click', () => {
+                    formElement.remove();
+                    updateTotalForms();
+                });
+            }
+        }
+    
+        addButton.addEventListener('click', function () {
+            const formCount = parseInt(totalForms.value);
+            const lastForm = formsetContainer.querySelector('.formset-form:last-child');
+            const newForm = lastForm.cloneNode(true);
+
+            const regex = new RegExp(`form-(\\d+)-`, 'g');
+            newForm.innerHTML = newForm.innerHTML.replace(regex, `form-${formCount}-`);
+
+            // Limpia el valor del input file
+            const input = newForm.querySelector('input[type="file"]');
+            if (input) input.value = '';
+
+            // Asegura que tenga el efecto al aparecer
+            newForm.classList.add('fade-in');
+
+            // Asegura que tenga botón de quitar si no es el primero
+            let removeBtn = newForm.querySelector('.remove-form-btn');
+            if (!removeBtn) {
+                removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'btn btn-danger btn-sm remove-form-btn';
+                removeBtn.textContent = 'Quitar';
+
+                newForm.querySelector('.custom-formset-card').appendChild(removeBtn);
+            }
+
+            formsetContainer.appendChild(newForm);
+            addRemoveButton(newForm);
+            updateTotalForms();
+        });
+
+        document.querySelectorAll('.formset-form').forEach(addRemoveButton);
+        updateTotalForms();
+    });
+</script>    
+        
+{% endblock %}

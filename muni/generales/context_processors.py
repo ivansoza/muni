@@ -1,5 +1,6 @@
 # app_name/context_processors.py
 from informacion_municipal.models import Municipio
+from generales.models import ContadorVisitas
 
 
 def municipio(request):
@@ -25,3 +26,11 @@ def user_info(request):
 
 
     return context
+
+def contador_visitas_context(request):
+    try:
+        contador = ContadorVisitas.objects.get(id=1)
+        visitas = contador.visitas
+    except ContadorVisitas.DoesNotExist:
+        visitas = 0
+    return {'contador_visitas': visitas}

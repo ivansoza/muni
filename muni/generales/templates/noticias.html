@@ -12,26 +12,7 @@
 
 
 <style>
-    body {
-        background-color: #f8f9fa;
-    }
 
-    /* Contenedor principal ocupa el 90% del ancho */
-    .container-fluid {
-        width: 100%;
-        margin: 30px auto;
-    }
-
-    /* Columnas con tamaño dinámico */
-    .col-full {
-        width: 100%;
-        transition: width 0.4s ease-in-out;
-    }
-
-    .col-half {
-        width: 50%;
-        transition: width 0.4s ease-in-out;
-    }
 
     .card {
         border-radius: 12px;
@@ -259,24 +240,45 @@
     position: absolute;
     z-index: -1; /* Lo envía al fondo */
 }
-.btn-copiar {
-            background-color: #3E688C;
-            color: white;
-            padding: 10px 10px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-bottom: 4px;
-        }
 
-        .btn-copiar:hover {
-            background-color: #0056b3;
-        }
-        .ocultar_boton{
-            display: none;
-        }
+</style>
+<style>
+    .card-noticia {
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-noticia:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-noticia img {
+        transition: transform 0.3s ease;
+    }
+
+    .card-noticia:hover img {
+        transform: scale(1.05);
+    }
+
+    .btn-noticia-group {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .card-text small {
+        font-size: 0.8rem;
+    }
 </style>
 
 <!-- Contenedor principal -->
@@ -331,202 +333,71 @@
     
     </div>
     
-    
-    <button id="toggleFormulario" class="btn btn-add" style="width: auto; margin-bottom: 20px; border-radius: 10px; padding: 12px 20px; font-size: 16px;">
-        <i class="fa-solid fa-newspaper"></i> Agregar Noticia
-    </button>
-
-    <div class="row">
-        <!-- FORMULARIO - Lado Izquierdo (Oculto por defecto) -->
-        <div id="colFormulario" class="col-half col-sm-12">
-            <div id="formularioNoticia" class="card">
-                <h2 class="mb-3 text-start">Nueva Noticia</h2>
-                <form method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <input type="hidden" name="is_editing" id="is_editing" value="false"> <!-- Campo oculto para el estado -->
-                    <input type="hidden" id="id_noticia_id" name="noticia_id">
-
-                    <div class="mb-3">
-                        <label class="form-label">Título:</label>
-                        {{ form.titulo }}
-                    </div>
-                    <div id="contenidoTemporal"></div>
-                    <button class="btn-copiar ocultar_boton" id="ocultar_boton1" type="button" onclick="copiarContenido()">Recuperar Versión de Noticia</button>
-
-                    <div class="mb-3">
-                        <label class="form-label">Contenido de la Nota:</label>
-                        {{ form.contenido }}
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label class="form-label">Autor:</label>
-                            {{ form.autor }}
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Categoría:</label>
-                            <div class="input-group">
-                                {{ form.categoria }}
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoriaModal">
-                                    +
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Imagen de Portada:</label>
-                        {{ form.imagen }}
-                        <div class="preview-container">
-                            <img id="imagenPrincipalPreview" class="preview-image"
-                                style="display: none; width: 50%; max-height: 200px; margin-top: 10px;">
-                        </div>
-                    </div>
-
-                    <!-- Formulario de imágenes -->
-                    <div class="mb-3">
-                        <label class="form-label">Galería de Imágenes (para la galería se permiten un máximo de 4 imágenes):</label>
-                        {{ imagenes_formset.management_form }}
-                        <div class="row">
-
-                            {% for form in imagenes_formset %}
-                            <div class="col-md-6 mb-2 text-center">
-                                {{ form.imagen }}
-                                <div class="preview-container">
-                                    <img id="preview_{{ forloop.counter }}" class="preview-image"
-                                        style="display: none; width: 200px; height: 100px; object-fit: cover; margin-top: 5px;">
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-
-                    </div>
-                    <input type="hidden" name="imagenes_previas" id="imagenes_previas" value="{% for img in imagenes_formset.queryset %}{{ img.imagen.url }},{% endfor %}">
-
-
-                    <button type="submit" class="btn btn-primary w-100">Publicar Noticia</button>
-                </form>
-            </div>
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <a href="{% url 'crear_noticia' %}" class="btn btn-add" style="background:linear-gradient(90deg, #3A6284 20%, #28455E 100%) !important">
+            <i class="fa-solid fa-newspaper"></i> Agregar Noticia
+        </a>
+        <div class="input-group shadow-sm rounded" style="max-width: 300px;">
+            <span class="input-group-text text-white border-end-0" 
+                style="background:linear-gradient(90deg, #3A6284 20%, #28455E 100%) !important; border-radius: 0.375rem 0 0 0.375rem;">
+                <i class="fas fa-search"></i>
+            </span>
+            <input type="text" id="buscador-noticias" class="form-control border-start-0" placeholder="Buscar noticia..." 
+                style="border-radius: 0 0.375rem 0.375rem 0;">
         </div>
         
-
-
-        <!-- TABLA DE NOTICIAS - Lado Derecho -->
-        <div class="col-sm-12" id='colTabla'>
-            <div class="card">
-                <div class="card-header pb-0 card-no-border">
-                    <h3 class="mb-3">Lista de Noticias</h3>
-                </div>
-                <div class="card-body">
-                    <div class="dt-ext table-responsive theme-scrollbar">
-
-                    <table class="display" id="basic-2">
-                        <thead>
-                            <tr>
-                                <th>Título</th>
-                                <th>Categoría</th>
-                                <th>Autor</th>
-                                <th>Fecha</th>
-                                <th style="width: 110px;">Opciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for noticia in noticias %}
-                            <tr>
-                                <td class="text-start">{{ noticia.titulo }}</td>
-                                <td>{{ noticia.categoria }}</td>
-                                <td>{{ noticia.autor }}</td>
-                                <td>{{ noticia.fecha|date:"d/m/Y H:i" }}</td>
-                                <td>
-                                    <a href="{% url 'detalle_noticia' noticia.id %}"
-                                        class="btn btn-sm btn-primary rounded-circle p-2" title="Ver">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-sm btn-warning rounded-circle p-2 btn-editar"
-                                        data-id="{{ noticia.id }}"
-                                        title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-sm btn-danger rounded-circle p-2 btn-eliminar"
-                                        data-id="{{ noticia.id }}"
-                                        data-titulo="{{ noticia.titulo }}"
-                                        data-autor="{{ noticia.autor }}"
-                                        data-fecha="{{ noticia.fecha|date:'d/m/Y H:i' }}"
-                                        data-imagen="{% if noticia.imagen %}{{ noticia.imagen.url }}{% else %}{% endif %}"
-                                        title="Eliminar">
-                                            <i class="fas fa-trash-alt"></i>
-                                    </a>
-
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="5" class="text-center">No hay noticias publicadas</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-
-                </div>
-            </div>
-        </div>
     </div>
-    <div class="modal fade" id="categoriaModal" tabindex="-1" aria-labelledby="categoriaModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="categoriaModalLabel">Agregar Nueva Categoría</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="categoriaForm">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="categoriaNombre" class="form-label">Nombre de la Categoría</label>
-                            <input type="text" class="form-control" id="categoriaNombre" name="nombre" required>
+    
+       
+    <div class="card-body">
+        <div class="row">
+            {% for noticia in noticias %}
+            <div class="col-md-4 mb-4 tarjeta-noticia" data-titulo="{{ noticia.titulo|lower }}" data-autor="{{ noticia.autor|lower }}" data-categoria="{{ noticia.categoria|lower }}">
+                <div class="card card-noticia h-100">
+                        {% if noticia.imagen %}
+                            <img src="{{ noticia.imagen.url }}" class="card-img-top" alt="Imagen de {{ noticia.titulo }}" style="height: 200px; object-fit: cover;">
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ noticia.titulo }}</h5>
+                            <p class="card-text mb-1"><strong>Categoría:</strong> {{ noticia.categoria }}</p>
+                            <p class="card-text mb-1"><strong>Autor:</strong> {{ noticia.autor }}</p>
+                            <p class="card-text text-muted"><small><strong>Fecha:</strong> {{ noticia.fecha|date:"d/m/Y H:i" }}</small></p>
+    
+                            <div class="btn-noticia-group mt-auto">
+                                <a href="{% url 'detalle_noticia' noticia.id %}" class="btn btn-sm btn-outline-primary" title="Ver">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'edicion_noticia' noticia.id %}" class="btn btn-sm btn-outline-warning" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="#" class="btn btn-sm btn-outline-danger btn-eliminar"
+                                    data-id="{{ noticia.id }}"
+                                    data-titulo="{{ noticia.titulo }}"
+                                    data-autor="{{ noticia.autor }}"
+                                    data-fecha="{{ noticia.fecha|date:'d/m/Y H:i' }}"
+                                    data-imagen="{% if noticia.imagen %}{{ noticia.imagen.url }}{% endif %}"
+                                    title="Eliminar">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Guardar</button>
-                    </form>
+                    </div>
                 </div>
-            </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center" role="alert">
+                        No hay noticias publicadas
+                    </div>
+                </div>
+            {% endfor %}
         </div>
     </div>
 </div>
 
+ 
+    
+<br>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-
-<script>
-    $(document).ready(function () {
-        $("#toggleFormulario").click(function () {
-            if ($("#colFormulario").is(":visible")) {
-                // Ocultar el formulario con animación y mostrar la tabla después
-                $("#colFormulario").css("animation", "fadeOutScale 0.5s ease-in-out").fadeOut(400, function () {
-                    $("#colTabla").fadeIn(400).css("animation", "fadeInScale 0.5s ease-in-out");
-                    $("#toggleFormulario").removeClass("btn-danger").addClass("btn-add").html('<i class="fa-solid fa-newspaper"></i> Agregar Noticia');
-                    $("#formularioNoticia form")[0].reset();
-                    $("#ocultar_boton1").addClass('ocultar_boton');
-
-                    // Ocultar previsualización de imagen si se ha mostrado
-                    $(".preview-image").hide();
-                });
-            } else {
-                // Ocultar la tabla con fade-out y expandir el formulario correctamente
-                $("#colTabla").fadeOut(200, function () {
-                    $("#colFormulario").css({ "display": "block", "width": "100%", "opacity": "0" });
-
-                    // Esperamos 50ms para aplicar la animación y evitar parpadeos
-                    setTimeout(function () {
-                        $("#colFormulario").css("animation", "fadeInScale 0.5s ease-in-out").fadeIn(400).css("opacity", "1");
-                        $("#toggleFormulario").removeClass("btn-add").addClass("btn-danger").html('<i class="fa-solid fa-times"></i> Cerrar Formulario');
-                    }, 5);
-                });
-            }
-        });
-    });
-</script>
-
-
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -662,112 +533,29 @@ table.on('draw', function () {
     
 });
 </script>
-<script src="https://cdn.ckeditor.com/ckeditor4/4.16.2/ckeditor.js"></script>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        document.querySelector("form").addEventListener("submit", function (e) {
-            let editorInstance = CKEDITOR.instances.id_contenido; // Obtiene la instancia del editor
-            let contenido = editorInstance.getData().trim(); // Obtiene el contenido limpio
+    document.getElementById('buscador-noticias').addEventListener('input', function () {
+        const filtro = this.value.toLowerCase();
+        const tarjetas = document.querySelectorAll('.tarjeta-noticia');
 
-            let contenidoField = document.querySelector("#id_contenido"); // Campo original oculto
+        tarjetas.forEach(tarjeta => {
+            const titulo = tarjeta.getAttribute('data-titulo') || '';
+            const autor = tarjeta.getAttribute('data-autor') || '';
+            const categoria = tarjeta.getAttribute('data-categoria') || '';
 
-            if (contenido === "" || contenido === "<p><br></p>") {
-                contenidoField.setCustomValidity("Este campo es obligatorio.");
+            if (
+                titulo.includes(filtro) ||
+                autor.includes(filtro) ||
+                categoria.includes(filtro)
+            ) {
+                tarjeta.style.display = 'block';
             } else {
-                contenidoField.setCustomValidity(""); // Limpia el error si el campo está lleno
+                tarjeta.style.display = 'none';
             }
         });
     });
 </script>
-<script>
-    $(document).ready(function () {
-        // Delegar el evento click al contenedor de la tabla
-        $("table").on("click", ".btn-editar", function (e) {
-            e.preventDefault();
-            
-            $("#tituloEdicion").removeClass('titulo2');
-            $("#ocultar_boton1").removeClass('ocultar_boton');
-    
-            let noticiaId = $(this).data("id");
-    
-            // Establecer el valor del campo oculto is_editing a true
-            $("#is_editing").val("true"); 
-            $("#noticia_id").val(noticiaId);  
-    
-            // Mostrar el formulario de edición
-            $("#toggleFormulario").click();  
-    
-            // Realizar la petición AJAX para obtener los datos de la noticia
-            $.ajax({
-                url: `/admin/editar-noticia/${noticiaId}/`,
-                type: "GET",
-                success: function (response) {
-                    // Rellenar el formulario con los datos obtenidos
-                    $("#id_titulo").val(response.titulo);
-                    $("#id_autor").val(response.autor);
-                    $("#id_categoria").val(response.categoria);
-                    $("#imagenPrincipalPreview").attr("src", response.imagen).show();
-    
-                    // Almacenar imágenes de la galería en el campo oculto
-                    let imagenesPrevias = [];
-                    response.imagenes_galeria.forEach(function (imagen, index) {
-                        $("#preview_" + (index + 1)).attr("src", imagen).show();
-                        imagenesPrevias.push(imagen); // Guardar URLs de imágenes
-                    });
-    
-                    let imagenesPrevias2 = [];
-                    response.imagenes_galeria2.forEach(function (imagen, index) {
-                        imagenesPrevias2.push(imagen); // Guardar los ID de las imágenes
-                    });
-    
-                    // Pasar los ID de las imágenes previas al input oculto
-                    $("#imagenes_previas").val(imagenesPrevias2.join(',')); 
-    
-                    // Almacenar contenido
-                    $("#contenidoTemporal").html(response.contenido);
-                    $("#id_noticia_id").val(response.id);  
-    
-                },
-                error: function () {
-                    Swal.fire("Error", "No se pudo cargar la noticia para editar.", "error");
-                }
-            });
-        });
-    });
-    
-
-
-  </script>
-  
-  <script>
-    function copiarContenido() {
-        let contenido = document.getElementById("contenidoTemporal");
-
-        // Crear un nuevo elemento para copiar con estilos
-        let rango = document.createRange();
-        rango.selectNode(contenido);
-        
-        let seleccion = window.getSelection();
-        seleccion.removeAllRanges();
-        seleccion.addRange(rango);
-
-        // Copiar al portapapeles
-        document.execCommand("copy");
-
-        // Limpiar selección
-        seleccion.removeAllRanges();
-
-        // Mostrar alerta con SweetAlert
-        Swal.fire({
-            icon: 'success',
-            title: 'Versión Recuperada',
-            text: 'Debe pegarla en el área de edición.',
-            timer: 2000, // Se cierra automáticamente en 3 segundos
-            showConfirmButton: false
-        });
-    }
-</script>
-
 
 
 

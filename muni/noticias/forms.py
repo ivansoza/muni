@@ -10,7 +10,7 @@ class NoticiaForm(forms.ModelForm):
     
     class Meta:
         model = Noticia
-        fields = ['titulo', 'contenido', 'autor', 'categoria', 'imagen', 'imagenes_galeria']
+        fields = ['titulo', 'contenido', 'autor', 'categoria', 'imagen']
         widgets = {
             'titulo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Título de la noticia'}),
             'autor': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Autor'}),
@@ -26,8 +26,14 @@ class ImagenGaleriaForm(forms.ModelForm):
         model = ImagenGaleria
         fields = ['imagen']
         widgets = {
-            'imagen': forms.FileInput(attrs={'class': 'form-control'}),
+            'imagen': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
 
-# FormSet para múltiples imágenes
-ImagenGaleriaFormSet = modelformset_factory(ImagenGaleria, form=ImagenGaleriaForm, extra=4)  # Permite subir hasta 4 imágenes
+ImagenGaleriaFormSet = modelformset_factory(
+    ImagenGaleria,
+    form=ImagenGaleriaForm,
+    extra=1,
+    can_delete=True
+)
+
+

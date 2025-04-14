@@ -23,6 +23,7 @@ class HomeConvocatoriasView(TemplateView):
         context['convocatorias_activas'] = Convocatoria.objects.filter(estado__in=['ABIERTA', 'PRÓXIMA']).order_by('-id')
         context['convocatorias_pasadas'] = Convocatoria.objects.filter(estado='CERRADA').order_by('-id')
         context['categorias'] = Categoria.objects.all()  # Agrega las categorías al contexto
+        actualizar_estados_convocatorias()
 
         return context
 
@@ -91,7 +92,23 @@ def filtrar_convocatorias(request):
     }
     return JsonResponse(data)
 
+def actualizar_estados_convocatorias():
+    hoy = date.today()
+    convocatorias = Convocatoria.objects.all()
 
+    for convocatoria in convocatorias:
+        if convocatoria.fecha_apertura > hoy:
+            nuevo_estado = 'PRÓXIMA'
+        elif convocatoria.fecha_apertura <= hoy <= convocatoria.fecha_cierre:
+            nuevo_estado = 'ABIERTA'
+        elif convocatoria.fecha_cierre < hoy:
+            nuevo_estado = 'CERRADA'
+        else:
+            continue  # Si no hay cambio, pasa
+
+        if convocatoria.estado != nuevo_estado:
+            convocatoria.estado = nuevo_estado
+            convocatoria.save()
 
 def filtrar_convocatorias_seccion_plus(request, seccion_pk):
     """
