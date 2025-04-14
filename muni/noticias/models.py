@@ -13,7 +13,7 @@ class Noticia(models.Model):
     autor = models.CharField(max_length=100)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, related_name="noticias")
     imagen = models.ImageField(upload_to='noticias/imagenes/', blank=True)
-    imagenes_galeria = models.ManyToManyField('ImagenGaleria', blank=True)
 
 class ImagenGaleria(models.Model):
+    noticia = models.ForeignKey(Noticia, on_delete=models.CASCADE, related_name='imagenes_galeria', null=True, blank=True)  # 👈 Aquí está la clave
     imagen = models.ImageField(upload_to='noticias/galeria/')

@@ -6,6 +6,7 @@ from .views import TransparenciaView, crear_seccion, EjercicioFiscalListView, Ej
 from . import views
 from .views import CrearCarpetaView, SubirArchivoView, ListarCarpetasView, EditarCarpetaView, GestionarCarpetaView, EliminarCarpetaView, EditarArchivoView, eliminar_archivo
 from .views import ListaObligacionesView, ListaObligacionesCreateView, ListaObligacionesUpdateView, ListaObligacionesDeleteView, GestionarArticulosView, CrearArticuloView, EditarArticuloView, EliminarArticuloView, actualizar_orden_articulos, convocatoriaHome, filtrar_convocatorias, GestionarArticulosArView, CrearArticuloLigaView, EditarArticuloLigaArchivoView
+from .views import crear_noticia
 urlpatterns = [
     path("", CustomLoginView.as_view(),name='login'),
     path('logout/', LogoutView.as_view(next_page='home'),  name='logout'),      
@@ -133,6 +134,9 @@ urlpatterns = [
     path('encuestas/<int:pk>/eliminar/', views.encuesta_eliminar, name='encuesta_eliminar'),
 
     
+#--------------------------Nuevas Noticias---------------------------------
+    path('crear_noticia/', crear_noticia, name='crear_noticia'),
+    path('edicion_noticia/<int:pk>/', views.editar_noticia_nueva, name='edicion_noticia'),
 
 
 ]
