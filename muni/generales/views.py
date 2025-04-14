@@ -2556,3 +2556,12 @@ def encuesta_create_ajax(request):
 
     else:
         return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
+
+def encuesta_eliminar(request, pk):
+    encuesta = get_object_or_404(Encuesta, pk=pk)
+    titulo_encuesta = encuesta.titulo  # Guardamos el título para mostrar en el mensaje
+    encuesta.delete()
+    messages.success(request, f'La encuesta "{titulo_encuesta}" ha sido eliminada correctamente.')
+    # Redirige a la vista donde listamos las encuestas, ajústalo según tu proyecto
+    return redirect('EncuestasView')  # o la vista que muestre el listado de encuestas
