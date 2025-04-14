@@ -13,7 +13,7 @@
     --degradado: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
     /* Colores mejorados para la UI */
     --color-success: #10b981;
-    --color-danger: #ef4444;
+    --color-danger: #ef4444;  /* rojo */
     --color-warning: #f59e0b;
     --color-info: #3b82f6;
     --color-light: #f8fafc;
@@ -249,6 +249,24 @@ textarea:focus {
     flex: 1;
 }
 
+/* Estilos de error */
+.error-msg {
+    color: var(--color-danger);
+    font-size: 0.875rem;
+    margin-top: -0.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.error-msg i {
+    margin-right: 0.35rem;
+}
+.error-field {
+    border-color: var(--color-danger) !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
 @media (max-width: 768px) {
     .form-actions-container {
         flex-direction: column;
@@ -336,6 +354,38 @@ const preguntasContainer = document.getElementById('preguntasContainer');
 const btnAddQuestion = document.getElementById('btnAddQuestion');
 const btnGuardarEncuesta = document.getElementById('btnGuardarEncuesta');
 
+/* 
+ * Función para quitar todos los mensajes de error previos.
+ */
+function clearErrors() {
+    // Remueve todos los divs con clase .error-msg
+    document.querySelectorAll('.error-msg').forEach(el => el.remove());
+    // Quita la clase .error-field de todos los inputs/textarea
+    document.querySelectorAll('.error-field').forEach(el => el.classList.remove('error-field'));
+}
+
+/*
+ * Función para mostrar un mensaje de error debajo de un campo
+ * fieldId: string con el ID del input/label
+ * msg: mensaje a mostrar
+ */
+function showFieldError(fieldId, msg) {
+    const field = document.getElementById(fieldId);
+    if (!field) return;
+    
+    // Agregamos la clase .error-field (si quieres resaltar el input)
+    field.classList.add('error-field');
+
+    // Creamos el div que contendrá el mensaje
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-msg';
+    errorDiv.innerHTML = `<i class="fa fa-exclamation-circle"></i> ${msg}`;
+    
+    // Lo insertamos justo debajo del campo
+    // "afterend" => inmediatamente después del input o label
+    field.insertAdjacentElement('afterend', errorDiv);
+}
+
 // 1. Agrega una pregunta vacía
 function addQuestion() {
     const nuevaPregunta = {
@@ -381,8 +431,10 @@ function renderPreguntas() {
         labelPregunta.textContent = "Texto de la pregunta:";
         preguntaDiv.appendChild(labelPregunta);
 
+        // Asignamos un id único a este input para mostrar errores
         const inputPregunta = document.createElement('input');
         inputPregunta.type = 'text';
+        inputPregunta.id = `preguntaTexto-${index}`;  // <-- ID único
         inputPregunta.value = preg.texto;
         inputPregunta.oninput = (e) => {
             preguntas[index].texto = e.target.value;
@@ -396,8 +448,9 @@ function renderPreguntas() {
 
         const inputOrden = document.createElement('input');
         inputOrden.type = 'number';
+        inputOrden.id = `preguntaOrden-${index}`;
         inputOrden.value = preg.orden;
-        inputOrden.style.width = '100px'; // Un poco más angosto
+        inputOrden.style.width = '100px';
         inputOrden.oninput = (e) => {
             preguntas[index].orden = parseInt(e.target.value);
         };
@@ -409,6 +462,8 @@ function renderPreguntas() {
 
         const opcionesTitulo = document.createElement('label');
         opcionesTitulo.textContent = "Opciones:";
+        // Le ponemos un id para mostrar error si no hay opciones
+        opcionesTitulo.id = `preguntaOpcionesLabel-${index}`;
         opcionesDiv.appendChild(opcionesTitulo);
 
         // Render de cada opción
@@ -463,33 +518,45 @@ btnAddQuestion.addEventListener('click', () => {
 
 // 4. Botón para guardar
 btnGuardarEncuesta.addEventListener('click', () => {
+    // Limpia los errores anteriores
+    clearErrors();
+
     const titulo = document.getElementById('encuestaTitulo').value.trim();
     const descripcion = document.getElementById('encuestaDescripcion').value.trim();
 
-    // Validaciones
+    // Aquí almacenaremos los errores (sin usar alert)
+    let errorCount = 0;
+
+    // Validaciones campo Título
     if (!titulo) {
-        alert("El título de la encuesta es obligatorio.");
-        return;
+        showFieldError('encuestaTitulo', 'El título de la encuesta es obligatorio.');
+        errorCount++;
     }
 
+    // Validaciones del array de preguntas
     if (preguntas.length < 1) {
-        alert("Debes agregar al menos una pregunta.");
-        return;
+        // Mostramos error en la zona de "Preguntas" (p. ej., su cabecera)
+        showFieldError('preguntasContainer', 'Debes agregar al menos una pregunta.');
+        errorCount++;
     }
 
-    for (let i = 0; i < preguntas.length; i++) {
-        const p = preguntas[i];
+    preguntas.forEach((p, i) => {
         if (!p.texto.trim()) {
-            alert(`La pregunta #${i+1} está vacía. Escribe algún texto.`);
-            return;
+            showFieldError(`preguntaTexto-${i}`, `La pregunta #${i+1} está vacía. Escribe algún texto.`);
+            errorCount++;
         }
         if (p.opciones.length < 1) {
-            alert(`La pregunta #${i+1} no tiene ninguna opción.`);
-            return;
+            showFieldError(`preguntaOpcionesLabel-${i}`, `La pregunta #${i+1} no tiene ninguna opción.`);
+            errorCount++;
         }
+    });
+
+    // Si hay errores, detenemos el envío
+    if (errorCount > 0) {
+        return;
     }
 
-    // Construir objeto final
+    // Si no hubo errores, construimos objeto final y enviamos
     const data = {
         titulo: titulo,
         descripcion: descripcion,
@@ -512,6 +579,8 @@ btnGuardarEncuesta.addEventListener('click', () => {
     .then(response => response.json())
     .then(respData => {
         if (respData.success) {
+            // TODO: Aquí podrías mostrar un mensaje de éxito estilizado,
+            // en lugar de un alert genérico.
             alert("Encuesta creada con ID: " + respData.encuesta_id);
             window.location.href = "{% url 'EncuestasView' %}";
         } else {
