@@ -77,50 +77,6 @@ class VideoView(LoginRequiredMixin,TemplateView):
 
 
 
-class EncuestasView(LoginRequiredMixin, TemplateView):
-    template_name = 'generales/encuestas.html'
-
-    def dispatch(self, request, *args, **kwargs):
-        user = request.user
-        if not (user.is_superuser or user.has_perm('transparencia.view_encuesta')):
-            raise PermissionDenied
-        return super().dispatch(request, *args, **kwargs)
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context["breadcrumb"] = {
-            'parent': {'name': 'Dashboard', 'url': '/admin'},
-            'child': {'name': 'Encuestas', 'url': ''}
-        }
-        context['sidebar'] = 'Generales' 
-        url_configuracion = reverse('generalesDashboard')
-        context['regreso_url'] = url_configuracion
-        
-        # -- Aquí buscamos el primer municipio activo
-        municipio_activo = Municipio.objects.filter(status='activo').first()
-        if municipio_activo:
-            # Tomamos las encuestas de ese municipio
-            encuestas = municipio_activo.encuestas.all()
-            total_activas = encuestas.filter(estado='activo').count()
-            total_inactivas = encuestas.filter(estado='inactivo').count()
-        else:
-            # No hay municipio activo -> no hay encuestas
-            encuestas = None
-            total_activas = 0
-            total_inactivas = 0
-        
-        # Enviamos todo lo que necesitamos al contexto
-        context['municipio_activo'] = municipio_activo
-        context['encuestas'] = encuestas
-        
-        # Guardamos los totales dentro de 'data' para facilidad en la plantilla
-        context['data'] = {
-            'total_activas': total_activas,
-            'total_inactivas': total_inactivas
-        }
-
-        return context
 
 
 
@@ -2490,6 +2446,50 @@ def eliminar_aviso_privacidad(request, pk):
         messages.success(request, "El aviso de privacidad se ha eliminado correctamente.")
     return redirect(reverse_lazy('PrivacidadView'))
 
+class EncuestasView(LoginRequiredMixin, TemplateView):
+    template_name = 'generales/encuestas.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        if not (user.is_superuser or user.has_perm('transparencia.view_encuesta')):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': '/admin'},
+            'child': {'name': 'Encuestas', 'url': ''}
+        }
+        context['sidebar'] = 'Generales' 
+        url_configuracion = reverse('generalesDashboard')
+        context['regreso_url'] = url_configuracion
+        
+        # -- Aquí buscamos el primer municipio activo
+        municipio_activo = Municipio.objects.filter(status='activo').first()
+        if municipio_activo:
+            # Tomamos las encuestas de ese municipio
+            encuestas = municipio_activo.encuestas.all()
+            total_activas = encuestas.filter(estado='activo').count()
+            total_inactivas = encuestas.filter(estado='inactivo').count()
+        else:
+            # No hay municipio activo -> no hay encuestas
+            encuestas = None
+            total_activas = 0
+            total_inactivas = 0
+        
+        # Enviamos todo lo que necesitamos al contexto
+        context['municipio_activo'] = municipio_activo
+        context['encuestas'] = encuestas
+        
+        # Guardamos los totales dentro de 'data' para facilidad en la plantilla
+        context['data'] = {
+            'total_activas': total_activas,
+            'total_inactivas': total_inactivas
+        }
+
+        return context
 
 
 @login_required
@@ -2504,8 +2504,19 @@ def encuesta_create_ajax(request):
         return JsonResponse({'success': False, 'error': 'No tienes permiso para crear encuestas.'}, status=403)
 
     if request.method == 'GET':
-        return render(request, 'generales/encuesta_create_ajax.html')
-
+        breadcrumb = {
+            'parent': {'name': 'Dashboard', 'url': '/admin'},
+            'child': {'name': 'Encuestas', 'url': ''}
+        }
+        sidebar = 'Generales'
+        url_configuracion = reverse('EncuestasView')
+        regreso_url = url_configuracion
+        context = {
+            'breadcrumb': breadcrumb,
+            'sidebar': sidebar,
+            'regreso_url': regreso_url,
+        }
+        return render(request, 'generales/encuesta_create_ajax.html', context)
     elif request.method == 'POST':
         try:
             data = json.loads(request.body)
