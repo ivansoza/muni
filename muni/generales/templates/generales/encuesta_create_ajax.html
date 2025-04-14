@@ -1,30 +1,312 @@
 {% extends "baseTemplate.html" %}
+{% load static %}
 
 {% block content %}
-<h1>Crear nueva encuesta (vía AJAX)</h1>
+<style>
+  :root {
+    --color-primario: #2F698F;
+    --color-secundario: #295E84;
+    --color-iconos: rgb(109, 109, 109);
+    --color-primario-rgb: 47, 105, 143;
+    --color-secundario-rgb: 41, 94, 132;
+    --color-gradiente: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+    --degradado: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+    /* Colores mejorados para la UI */
+    --color-success: #10b981;
+    --color-danger: #ef4444;
+    --color-warning: #f59e0b;
+    --color-info: #3b82f6;
+    --color-light: #f8fafc;
+    --color-dark: #1e293b;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --radius-sm: 0.25rem;
+    --radius: 0.5rem;
+    --radius-lg: 0.75rem;
 
-<label>Título de la encuesta:</label>
-<input type="text" id="encuestaTitulo" placeholder="Título"><br><br>
+    /* Variables mejoradas */
+    --color-bg-light: #f9fafb;
+    --color-border: #e2e8f0;
+    --color-border-focus: #bfdbfe;
+    --color-text: #334155;
+    --color-text-muted: #64748b;
+    --color-text-light: #94a3b8;
+    --transition-speed: 0.3s;
+    --form-control-height: 46px;
+    --header-bg: #f1f5f9;
+}
 
-<label>Descripción de la encuesta:</label>
-<textarea id="encuestaDescripcion" placeholder="Descripción"></textarea><br><br>
+body {
+    color: var(--color-text);
+    background-color: #f5f7fa;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
 
-<!-- Input oculto para municipio si lo requieres; 
-     aquí lo ignoraremos pues forzaremos en el backend. -->
-<input type="hidden" id="municipioId" value="{{ municipio_activo.id|default:'' }}">
+.privacy-notice-container {
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
 
-<hr>
+.section-title {
+    color: var(--color-primario);
+    font-weight: 700;
+    margin-bottom: 1.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-secundario);
+    position: relative;
+    font-size: 1.5rem;
+}
 
-<div id="preguntasContainer">
-    <h2>Preguntas</h2>
-    <!-- Se inyectarán las preguntas en tiempo real -->
+.section-title::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 60px;
+    height: 4px;
+    background-color: var(--color-primario);
+    border-radius: var(--radius);
+}
+
+/* Estilos para tarjetas */
+.custom-card {
+    border: none;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    transition: all var(--transition-speed);
+    overflow: hidden;
+    margin-bottom: 2rem;
+    background-color: white;
+}
+
+.custom-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    background: var(--header-bg);
+    color: var(--color-dark);
+    font-weight: 600;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-body {
+    padding: 1.75rem;
+    background-color: white;
+}
+
+/* Estilos para formularios */
+label {
+    font-weight: 500;
+    color: var(--color-dark);
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+}
+
+input[type="text"],
+textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    transition: all var(--transition-speed);
+    font-size: 1rem;
+    background-color: var(--color-light);
+    color: var(--color-dark);
+    box-shadow: var(--shadow-sm);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px rgba(var(--color-primario-rgb), 0.2);
+    outline: none;
+}
+
+/* Botones */
+.btn {
+    padding: 0.65rem 1.5rem;
+    border-radius: var(--radius);
+    font-weight: 500;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+    border: none;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.btn i {
+    margin-right: 0.5rem;
+}
+
+.btn-primary {
+    background-color: var(--color-primario);
+    border-color: var(--color-primario);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-secundario);
+    border-color: var(--color-secundario);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.btn-add {
+    background-color: rgba(var(--color-primario-rgb), 0.1);
+    color: var(--color-primario);
+    border: 1px solid rgba(var(--color-primario-rgb), 0.2);
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.btn-add:hover {
+    background-color: var(--color-primario);
+    color: white;
+}
+
+.btn-danger {
+    background-color: var(--color-danger);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+/* Contenedor que reemplaza los <hr> y agrupa las acciones */
+.form-actions-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    justify-content: flex-start;
+}
+
+.btn-save {
+    background-color: var(--color-primario);
+    color: white;
+}
+
+.btn-save:hover {
+    background-color: var(--color-secundario);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+/* Tarjetas dinámicas para las preguntas */
+.question-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+    background-color: white;
+}
+
+.question-card:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+}
+
+.question-header {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.question-options {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.option-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.option-row input {
+    margin-right: 0.5rem;
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    .form-actions-container {
+        flex-direction: column;
+    }
+}
+</style>
+
+<!-- ======================================= -->
+<!-- AQUI COMIENZA EL CUERPO DEL FORMULARIO -->
+<!-- ======================================= -->
+
+<div class="privacy-notice-container">
+  <h3 class="section-title">Crear nueva encuesta </h3>
+
+  <!-- Card para los datos generales de la encuesta -->
+  <div class="card custom-card">
+    <div class="card-header">
+      <div>
+        <i class="fa fa-info-circle"></i> Datos de la encuesta
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <label for="encuestaTitulo">Título de la encuesta:</label>
+        <input type="text" id="encuestaTitulo" placeholder="Título de la encuesta">
+      </div>
+      <div class="form-group">
+        <label for="encuestaDescripcion">Descripción de la encuesta:</label>
+        <textarea id="encuestaDescripcion" placeholder="Descripción"></textarea>
+      </div>
+      <!-- Input oculto para municipio si se requiere -->
+      <input type="hidden" id="municipioId" value="{{ municipio_activo.id|default:'' }}">
+    </div>
+  </div>
+
+  <!-- Card para las preguntas -->
+  <div class="card custom-card">
+    <div class="card-header">
+      <div>
+        <i class="fa fa-question-circle"></i> Preguntas
+      </div>
+      <!-- Botón "Agregar pregunta" con la clase .btn-add -->
+      <button type="button" class="btn btn-add" id="btnAddQuestion">
+        <i class="fa fa-plus"></i>Agregar nueva pregunta
+      </button>
+    </div>
+    <div class="card-body" id="preguntasContainer">
+      <!-- Aquí se inyectan las preguntas dinámicamente -->
+    </div>
+  </div>
+
+  <!-- Contenedor de acciones finales -->
+  <div class="form-actions-container">
+    <button type="button" class="btn btn-primary btn-save" id="btnGuardarEncuesta">
+      <i class="fa fa-save"></i>Guardar Encuesta
+    </button>
+  </div>
 </div>
-
-<button id="btnAddQuestion">Agregar nueva pregunta</button>
-
-<hr>
-
-<button id="btnGuardarEncuesta">Guardar Encuesta</button>
 {% endblock content %}
 
 
@@ -44,7 +326,6 @@ function getCookie(name) {
     }
     return cookieValue;
 }
-
 const csrfToken = getCookie('csrftoken');
 
 // Array de preguntas
@@ -73,48 +354,67 @@ function renderPreguntas() {
     preguntasContainer.innerHTML = ''; // Limpia el contenedor
 
     preguntas.forEach((preg, index) => {
-        // Contenedor principal de la pregunta
+        // Contenedor principal de la pregunta con clase question-card
         const preguntaDiv = document.createElement('div');
-        preguntaDiv.style.border = '1px solid #000';
-        preguntaDiv.style.margin = '10px 0';
-        preguntaDiv.style.padding = '10px';
+        preguntaDiv.className = 'question-card';
 
-        // Etiqueta "Texto de la pregunta"
+        // Encabezado de la pregunta
+        const questionHeader = document.createElement('div');
+        questionHeader.className = 'question-header';
+        questionHeader.innerHTML = `
+            <span>Pregunta #${index + 1}</span>
+        `;
+        preguntaDiv.appendChild(questionHeader);
+
+        // Botón para eliminar la pregunta completa
+        const btnRemoveQuestion = document.createElement('button');
+        btnRemoveQuestion.textContent = "Eliminar pregunta";
+        btnRemoveQuestion.className = "btn btn-danger";
+        btnRemoveQuestion.onclick = () => {
+            preguntas = preguntas.filter(p => p.idLocal !== preg.idLocal);
+            renderPreguntas();
+        };
+        questionHeader.appendChild(btnRemoveQuestion);
+
+        // Campo "Texto de la pregunta"
         const labelPregunta = document.createElement('label');
         labelPregunta.textContent = "Texto de la pregunta:";
+        preguntaDiv.appendChild(labelPregunta);
 
-        // Input para texto de la pregunta
         const inputPregunta = document.createElement('input');
         inputPregunta.type = 'text';
         inputPregunta.value = preg.texto;
         inputPregunta.oninput = (e) => {
             preguntas[index].texto = e.target.value;
         };
+        preguntaDiv.appendChild(inputPregunta);
 
-        // Etiqueta "Orden"
+        // Campo "Orden"
         const labelOrden = document.createElement('label');
-        labelOrden.textContent = " Orden: ";
+        labelOrden.textContent = "Orden de la pregunta:";
+        preguntaDiv.appendChild(labelOrden);
 
-        // Input para orden
         const inputOrden = document.createElement('input');
         inputOrden.type = 'number';
         inputOrden.value = preg.orden;
+        inputOrden.style.width = '100px'; // Un poco más angosto
         inputOrden.oninput = (e) => {
             preguntas[index].orden = parseInt(e.target.value);
         };
+        preguntaDiv.appendChild(inputOrden);
 
         // Contenedor de opciones
         const opcionesDiv = document.createElement('div');
-        opcionesDiv.style.marginTop = '10px';
+        opcionesDiv.className = 'question-options';
 
-        const opcionesTitulo = document.createElement('p');
+        const opcionesTitulo = document.createElement('label');
         opcionesTitulo.textContent = "Opciones:";
         opcionesDiv.appendChild(opcionesTitulo);
 
         // Render de cada opción
         preg.opciones.forEach((op, opIndex) => {
             const opcionRow = document.createElement('div');
-            opcionRow.style.marginBottom = '5px';
+            opcionRow.className = 'option-row';
 
             // Input de la opción
             const opInput = document.createElement('input');
@@ -127,51 +427,31 @@ function renderPreguntas() {
             // Botón para eliminar esta opción
             const btnRemoveOption = document.createElement('button');
             btnRemoveOption.textContent = "Eliminar opción";
-            btnRemoveOption.style.marginLeft = '5px';
+            btnRemoveOption.className = "btn btn-danger";
+            btnRemoveOption.style.marginLeft = '0.5rem';
             btnRemoveOption.onclick = () => {
-                // Remueve la opción del array
                 preguntas[index].opciones.splice(opIndex, 1);
                 renderPreguntas();
             };
 
-            // Agregar input y botón al contenedor
             opcionRow.appendChild(opInput);
             opcionRow.appendChild(btnRemoveOption);
-
             opcionesDiv.appendChild(opcionRow);
         });
 
         // Botón para añadir opción
         const btnAddOption = document.createElement('button');
         btnAddOption.textContent = "Agregar opción";
+        btnAddOption.className = "btn btn-add";
         btnAddOption.onclick = () => {
             preguntas[index].opciones.push(''); // Opción vacía
             renderPreguntas();
         };
-
         opcionesDiv.appendChild(btnAddOption);
 
-        // Botón para eliminar la pregunta completa
-        const btnRemoveQuestion = document.createElement('button');
-        btnRemoveQuestion.textContent = "Eliminar pregunta";
-        btnRemoveQuestion.style.marginLeft = '10px';
-        btnRemoveQuestion.onclick = () => {
-            preguntas = preguntas.filter(p => p.idLocal !== preg.idLocal);
-            renderPreguntas();
-        };
-
-        // Construir el bloque de la pregunta
-        preguntaDiv.appendChild(labelPregunta);
-        preguntaDiv.appendChild(inputPregunta);
-        preguntaDiv.appendChild(document.createElement('br'));
-
-        preguntaDiv.appendChild(labelOrden);
-        preguntaDiv.appendChild(inputOrden);
-        preguntaDiv.appendChild(document.createElement('br'));
-
         preguntaDiv.appendChild(opcionesDiv);
-        preguntaDiv.appendChild(btnRemoveQuestion);
 
+        // Finalmente, añadir todo al contenedor principal
         preguntasContainer.appendChild(preguntaDiv);
     });
 }
@@ -213,8 +493,6 @@ btnGuardarEncuesta.addEventListener('click', () => {
     const data = {
         titulo: titulo,
         descripcion: descripcion,
-        // Como ya no necesitamos estado, no lo mandamos o lo puedes mandar fijo
-        // estado: 'activo',
         preguntas: preguntas.map(p => ({
             texto: p.texto,
             orden: p.orden,
@@ -222,7 +500,7 @@ btnGuardarEncuesta.addEventListener('click', () => {
         }))
     };
 
-    // Enviar
+    // Enviar vía fetch
     fetch("{% url 'encuesta_create_ajax' %}", {
         method: 'POST',
         headers: {
@@ -245,5 +523,8 @@ btnGuardarEncuesta.addEventListener('click', () => {
         alert("Ocurrió un error en la petición AJAX.");
     });
 });
+
+// Inicialmente, si quieres empezar con 1 pregunta por defecto:
+addQuestion();
 </script>
 {% endblock scriptcontent %}
