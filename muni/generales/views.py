@@ -39,7 +39,7 @@ from django.core.files.base import ContentFile
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
 from transparencia.forms import SeccionTransparenciaForm, EjercicioFiscalForm, DocumentoTransparenciaForm, ListaObligacionesForm, ArticuloLigaForm, ArticuloLigaArchivoForm
-from transparencia.models import Encuesta, Opcion, Pregunta, SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga, LigaArchivo
+from transparencia.models import Encuesta, Opcion, Pregunta, Respuesta, SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga, LigaArchivo
 from sevac.models import Carpeta, Archivo, CategoriaSevac
 from sevac.forms import CarpetaForm, ArchivoForm, CategoriaSevacForm
 # Create your views here.
@@ -52,6 +52,7 @@ from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET
 from convocatorias.forms import ArchivoConvocatoriaForm, ConvocatoriaForm, ArchivoConvocatoriaFormSet
 from django.contrib.auth.models import User  # Asegúrate de importar el modelo User
+from django.views.generic import DetailView
 
 
 from django.contrib.auth.decorators import login_required, permission_required
@@ -2574,6 +2575,80 @@ class EncuestasView(LoginRequiredMixin, TemplateView):
 
         return context
 
+
+class EncuestaDetailView(LoginRequiredMixin, DetailView):
+    model = Encuesta
+    template_name = 'generales/encuesta_detalle.html'
+    context_object_name = 'encuesta'
+
+    def dispatch(self, request, *args, **kwargs):
+        # Verificación de permiso
+        if not (request.user.is_superuser or request.user.has_perm('transparencia.view_encuesta')):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        encuesta = self.object  # La encuesta actual
+
+        # Estadísticas generales
+        total_preguntas = encuesta.preguntas.count()      # Total de preguntas
+        total_envios = encuesta.envios.count()            # Total de envíos (respuestas completas)
+        
+        # Para cada pregunta, contaremos las respuestas por opción
+        preguntas_stats = []
+        for pregunta in encuesta.preguntas.all():
+            total_respuestas_pregunta = Respuesta.objects.filter(pregunta=pregunta).count()
+            opciones_stats = []
+
+            for opcion in pregunta.opciones.all():
+                opcion_count = Respuesta.objects.filter(
+                    pregunta=pregunta,
+                    opcion=opcion
+                ).count()
+
+                # Calculamos el porcentaje
+                porcentaje_opcion = 0
+                if total_respuestas_pregunta > 0:
+                    porcentaje_opcion = (opcion_count / total_respuestas_pregunta) * 100
+
+                opciones_stats.append({
+                    'opcion_texto': opcion.texto,
+                    'opcion_count': opcion_count,
+                    'porcentaje': porcentaje_opcion
+                })
+
+            preguntas_stats.append({
+                'pregunta_texto': pregunta.texto,
+                'total_respuestas_pregunta': total_respuestas_pregunta,
+                'opciones_stats': opciones_stats
+            })
+
+        # Ejemplo de data que podrías usar en Chart.js (o la librería que desees)
+        # Podrías separar las series por pregunta o unificarlas según tu necesidad
+        # Este es solo un ejemplo conceptual
+        chart_data = []
+        for p_stat in preguntas_stats:
+            chart_data.append({
+                'pregunta': p_stat['pregunta_texto'],
+                'labels': [op['opcion_texto'] for op in p_stat['opciones_stats']],
+                'data': [op['opcion_count'] for op in p_stat['opciones_stats']],
+            })
+
+        # Incluimos todo en el contexto
+        context['breadcrumb'] = {
+            'parent': {'name': 'Encuestas', 'url': '/admin/generales/encuestas'},
+            'child': {'name': 'Ver Encuesta', 'url': ''},
+        }
+        context['sidebar'] = 'Generales'
+        context['regreso_url'] = reverse('EncuestasView')
+
+        context['total_preguntas'] = total_preguntas
+        context['total_envios'] = total_envios
+        context['preguntas_stats'] = preguntas_stats
+        context['chart_data'] = chart_data  # En caso de querer usarlo para gráficos
+
+        return context
 
 
 @login_required

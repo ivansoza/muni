@@ -64,6 +64,9 @@ class Respuesta(models.Model):
 
     def __str__(self):
         return f"{self.pregunta.texto} -> {self.opcion.texto}"
+    
+
+    
 import os
 
 class SeccionTransparencia(models.Model):

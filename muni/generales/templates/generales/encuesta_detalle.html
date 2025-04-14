@@ -1,0 +1,39 @@
+{% extends "baseTemplate.html" %}
+{% load static %}
+
+{% block content %}
+<h1>Detalle de encuesta: {{ encuesta.titulo }}</h1>
+
+<p><strong>Descripción:</strong> {{ encuesta.descripcion }}</p>
+<p><strong>Total de preguntas:</strong> {{ total_preguntas }}</p>
+<p><strong>Total de envíos (respuestas completas):</strong> {{ total_envios }}</p>
+
+<hr>
+
+{% for p_stat in preguntas_stats %}
+<div>
+    <h3>Pregunta: {{ p_stat.pregunta_texto }}</h3>
+    <p>Total de respuestas para esta pregunta: {{ p_stat.total_respuestas_pregunta }}</p>
+    <ul>
+        {% for op_stat in p_stat.opciones_stats %}
+        <li>
+            {{ op_stat.opcion_texto }}:
+            {{ op_stat.opcion_count }} respuestas
+            ({{ op_stat.porcentaje|floatformat:2 }}%)
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+<hr>
+{% endfor %}
+
+{% endblock content %}
+
+{% block scriptcontent %}
+{# 
+    Aquí podrías incluir tu código JavaScript para Chart.js
+    usando los datos de chart_data. 
+    Por ejemplo:
+    console.log(JSON.parse('{{ chart_data|safe }}'));
+#}
+{% endblock scriptcontent %}
