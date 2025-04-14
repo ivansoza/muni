@@ -70,7 +70,7 @@ body {
     border-radius: var(--radius);
 }
 
-/* Estilos para tarjetas */
+/* Tarjetas */
 .custom-card {
     border: none;
     border-radius: var(--radius-lg);
@@ -80,12 +80,10 @@ body {
     margin-bottom: 2rem;
     background-color: white;
 }
-
 .custom-card:hover {
     box-shadow: var(--shadow-lg);
     transform: translateY(-2px);
 }
-
 .card-header {
     background: var(--header-bg);
     color: var(--color-dark);
@@ -96,13 +94,12 @@ body {
     align-items: center;
     justify-content: space-between;
 }
-
 .card-body {
     padding: 1.75rem;
     background-color: white;
 }
 
-/* Estilos para formularios */
+/* Formularios */
 label {
     font-weight: 500;
     color: var(--color-dark);
@@ -110,7 +107,6 @@ label {
     margin-bottom: 0.5rem;
     display: inline-block;
 }
-
 input[type="text"],
 textarea {
     width: 100%;
@@ -125,7 +121,6 @@ textarea {
     line-height: 1.5;
     margin-bottom: 1rem;
 }
-
 input[type="text"]:focus,
 textarea:focus {
     border-color: var(--color-primario);
@@ -147,24 +142,20 @@ textarea:focus {
     font-size: 0.95rem;
     cursor: pointer;
 }
-
 .btn i {
     margin-right: 0.5rem;
 }
-
 .btn-primary {
     background-color: var(--color-primario);
     border-color: var(--color-primario);
     color: white;
 }
-
 .btn-primary:hover {
     background-color: var(--color-secundario);
     border-color: var(--color-secundario);
     transform: translateY(-2px);
     box-shadow: var(--shadow);
 }
-
 .btn-add {
     background-color: rgba(var(--color-primario-rgb), 0.1);
     color: var(--color-primario);
@@ -172,24 +163,21 @@ textarea:focus {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
 }
-
 .btn-add:hover {
     background-color: var(--color-primario);
     color: white;
 }
-
 .btn-danger {
     background-color: var(--color-danger);
     color: white;
 }
-
 .btn-danger:hover {
     background-color: #dc2626;
     transform: translateY(-2px);
     box-shadow: var(--shadow);
 }
 
-/* Contenedor que reemplaza los <hr> y agrupa las acciones */
+/* Contenedor de acciones */
 .form-actions-container {
     display: flex;
     flex-wrap: wrap;
@@ -197,12 +185,10 @@ textarea:focus {
     margin-top: 1.5rem;
     justify-content: flex-start;
 }
-
 .btn-save {
     background-color: var(--color-primario);
     color: white;
 }
-
 .btn-save:hover {
     background-color: var(--color-secundario);
     transform: translateY(-2px);
@@ -219,12 +205,10 @@ textarea:focus {
     box-shadow: var(--shadow-sm);
     background-color: white;
 }
-
 .question-card:hover {
     box-shadow: var(--shadow);
     transform: translateY(-2px);
 }
-
 .question-header {
     font-weight: 600;
     margin-bottom: 1rem;
@@ -232,18 +216,15 @@ textarea:focus {
     justify-content: space-between;
     align-items: center;
 }
-
 .question-options {
     margin-top: 0.75rem;
     margin-bottom: 0.75rem;
 }
-
 .option-row {
     display: flex;
     align-items: center;
     margin-bottom: 0.5rem;
 }
-
 .option-row input {
     margin-right: 0.5rem;
     flex: 1;
@@ -258,16 +239,32 @@ textarea:focus {
     display: flex;
     align-items: center;
 }
-
 .error-msg i {
     margin-right: 0.35rem;
 }
-
 .error-field {
     border-color: var(--color-danger) !important;
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
 }
 
+/* Nuevo: estilo para el campo de orden */
+.orden-input {
+    width: 80px !important;        /* un poco más ancho */
+    text-align: center;            /* centrar texto */
+    font-weight: 600;              /* negrita */
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius);
+    transition: all var(--transition-speed);
+    background-color: #fff;
+    box-shadow: var(--shadow-sm);
+}
+.orden-input:focus {
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px rgba(var(--color-primario-rgb), 0.2);
+    outline: none;
+}
+
+/* Responsivo */
 @media (max-width: 768px) {
     .form-actions-container {
         flex-direction: column;
@@ -395,7 +392,7 @@ function renderPreguntas() {
         const preguntaDiv = document.createElement('div');
         preguntaDiv.className = 'question-card';
 
-        // Encabezado de la pregunta
+        // Encabezado
         const questionHeader = document.createElement('div');
         questionHeader.className = 'question-header';
         questionHeader.innerHTML = `<span>Pregunta #${index + 1}</span>`;
@@ -412,7 +409,7 @@ function renderPreguntas() {
 
         preguntaDiv.appendChild(questionHeader);
 
-        // Texto de la pregunta
+        // Etiqueta + input para el texto de la pregunta
         const labelPregunta = document.createElement('label');
         labelPregunta.textContent = "Texto de la pregunta:";
         preguntaDiv.appendChild(labelPregunta);
@@ -421,12 +418,16 @@ function renderPreguntas() {
         inputPregunta.type = 'text';
         inputPregunta.id = `preguntaTexto-${index}`;
         inputPregunta.value = preg.texto;
+
+        // Agregamos el placeholder de ejemplo
+        inputPregunta.placeholder = "Ej: ¿Está usted satisfecho con los servicios públicos municipales?";
+
         inputPregunta.oninput = e => {
             preguntas[index].texto = e.target.value;
         };
         preguntaDiv.appendChild(inputPregunta);
 
-        // Orden de la pregunta
+        // Etiqueta + input para el orden, con estilo orden-input
         const labelOrden = document.createElement('label');
         labelOrden.textContent = "Orden de la pregunta:";
         preguntaDiv.appendChild(labelOrden);
@@ -435,7 +436,10 @@ function renderPreguntas() {
         inputOrden.type = 'number';
         inputOrden.id = `preguntaOrden-${index}`;
         inputOrden.value = preg.orden;
-        inputOrden.style.width = '100px';
+
+        // Aplicar estilo personalizado
+        inputOrden.classList.add('orden-input');
+
         inputOrden.oninput = e => {
             preguntas[index].orden = parseInt(e.target.value);
         };
@@ -445,14 +449,14 @@ function renderPreguntas() {
         const opcionesDiv = document.createElement('div');
         opcionesDiv.className = 'question-options';
 
-        // Solo muestra el label "Opciones:" si hay al menos una opción
+        // Mostrar label "Opciones:" solo si hay al menos una
         if (preg.opciones.length > 0) {
             const opcionesLabel = document.createElement('label');
             opcionesLabel.id = `preguntaOpcionesLabel-${index}`;
             opcionesLabel.textContent = "Opciones:";
             opcionesDiv.appendChild(opcionesLabel);
 
-            // Render de cada opción
+            // Cada opción
             preg.opciones.forEach((op, opIndex) => {
                 const opcionRow = document.createElement('div');
                 opcionRow.className = 'option-row';
@@ -484,26 +488,27 @@ function renderPreguntas() {
         btnAddOption.textContent = "Agregar opción";
         btnAddOption.className = "btn btn-add";
         btnAddOption.onclick = () => {
-            // Insertamos una opción vacía en el array
             preguntas[index].opciones.push('');
             renderPreguntas();
         };
         opcionesDiv.appendChild(btnAddOption);
 
         preguntaDiv.appendChild(opcionesDiv);
+
+        // Agregamos el bloque principal al contenedor
         preguntasContainer.appendChild(preguntaDiv);
     });
 }
 
 /*
- * Agregar pregunta al hacer clic
+ * Añadir pregunta al hacer clic en el botón
  */
 btnAddQuestion.addEventListener('click', () => {
     addQuestion();
 });
 
 /*
- * Botón "Guardar Encuesta"
+ * Guardar Encuesta
  */
 btnGuardarEncuesta.addEventListener('click', () => {
     clearErrors();
@@ -527,23 +532,18 @@ btnGuardarEncuesta.addEventListener('click', () => {
 
     // Validar cada pregunta
     preguntas.forEach((p, i) => {
-        // El texto de la pregunta
         if (!p.texto.trim()) {
             showFieldError(`preguntaTexto-${i}`, `La pregunta #${i+1} está vacía. Escribe algún texto.`);
             errorCount++;
         }
-        // Al menos 1 opción
         if (p.opciones.length < 1) {
-            // Si no hay opciones, error en la zona de las preguntas
             showFieldError('preguntasContainer', `La pregunta #${i+1} no tiene ninguna opción.`);
             errorCount++;
         } else {
-            // Verificar que ninguna opción sea vacía
             p.opciones.forEach((op, opIndex) => {
                 if (!op.trim()) {
-                    // Error en la zona de las preguntas (o podrías ubicar un ID distinto)
                     showFieldError('preguntasContainer', 
-                        `La opción #${opIndex+1} de la pregunta #${i+1} está vacía. Por favor, escribe algo o elimínala.`
+                        `La opción #${opIndex+1} de la pregunta #${i+1} está vacía. Elimínala o escribe algo.`
                     );
                     errorCount++;
                 }
@@ -551,7 +551,6 @@ btnGuardarEncuesta.addEventListener('click', () => {
         }
     });
 
-    // Detener envío si hay errores
     if (errorCount > 0) {
         return;
     }
@@ -579,7 +578,7 @@ btnGuardarEncuesta.addEventListener('click', () => {
     .then(response => response.json())
     .then(respData => {
         if (respData.success) {
-            alert("Encuesta creada con ID: " + respData.encuesta_id);
+            // Redirigimos sin mostrar alert, y pasamos ?created=1
             window.location.href = "{% url 'EncuestasView' %}";
         } else {
             alert("Error al crear la encuesta: " + respData.error);
@@ -591,7 +590,7 @@ btnGuardarEncuesta.addEventListener('click', () => {
     });
 });
 
-// Inicialmente, si quieres empezar con 1 pregunta de ejemplo
+// Inicialmente, si deseas empezar con 1 pregunta de ejemplo
 addQuestion();
 </script>
 {% endblock scriptcontent %}

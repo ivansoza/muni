@@ -2575,6 +2575,7 @@ class EncuestasView(LoginRequiredMixin, TemplateView):
         return context
 
 
+
 @login_required
 def encuesta_create_ajax(request):
     """
@@ -2643,6 +2644,9 @@ def encuesta_create_ajax(request):
                         texto=op_texto
                     )
 
+            # Aquí se establece el mensaje de éxito que se mostrará luego de redirigir
+            messages.success(request, "La encuesta se ha guardado correctamente.")
+
             return JsonResponse({'success': True, 'encuesta_id': encuesta.id}, status=200)
 
         except Exception as e:
@@ -2650,7 +2654,6 @@ def encuesta_create_ajax(request):
 
     else:
         return JsonResponse({'error': 'Método no permitido'}, status=405)
-    
 
 def encuesta_eliminar(request, pk):
     encuesta = get_object_or_404(Encuesta, pk=pk)
