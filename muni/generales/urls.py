@@ -132,6 +132,7 @@ urlpatterns = [
 
     path('encuestas/create-ajax/', views.encuesta_create_ajax, name='encuesta_create_ajax'),
     path('encuestas/<int:pk>/eliminar/', views.encuesta_eliminar, name='encuesta_eliminar'),
+    path('encuestas/<int:encuesta_id>/editar/', views.encuesta_update_ajax, name='encuesta_update_ajax'),
 
     
 #--------------------------Nuevas Noticias---------------------------------

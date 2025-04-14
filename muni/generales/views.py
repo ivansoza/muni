@@ -2662,3 +2662,141 @@ def encuesta_eliminar(request, pk):
     messages.success(request, f'La encuesta "{titulo_encuesta}" ha sido eliminada correctamente.')
     # Redirige a la vista donde listamos las encuestas, ajústalo según tu proyecto
     return redirect('EncuestasView')  # o la vista que muestre el listado de encuestas
+
+
+@login_required
+def encuesta_update_ajax(request, encuesta_id):
+    """
+    Vista que maneja la edición de Encuesta + Preguntas + Opciones vía AJAX.
+    Solo para superusuarios o quienes tengan el permiso 'transparencia.change_encuesta'.
+    """
+    user = request.user
+    # Validación manual de permisos
+    if not (user.is_superuser or user.has_perm('transparencia.change_encuesta')):
+        return JsonResponse({'success': False, 'error': 'No tienes permiso para editar encuestas.'}, status=403)
+
+    # Intentamos obtener la encuesta a editar
+    try:
+        encuesta = Encuesta.objects.get(pk=encuesta_id)
+    except Encuesta.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'La encuesta solicitada no existe.'}, status=404)
+
+    if request.method == 'GET':
+        # Construimos la data para inyectar en el template
+        preguntas_data = []
+        for pregunta in encuesta.preguntas.all().order_by('orden', 'id'):
+            opciones = list(pregunta.opciones.values_list('texto', flat=True))
+            preguntas_data.append({
+                'id': pregunta.id,
+                'texto': pregunta.texto,
+                'orden': pregunta.orden,
+                'opciones': opciones,
+            })
+
+        encuesta_data = {
+            'id': encuesta.id,
+            'titulo': encuesta.titulo,
+            'descripcion': encuesta.descripcion or '',
+            'preguntas': preguntas_data
+        }
+
+        breadcrumb = {
+            'parent': {'name': 'Dashboard', 'url': '/admin'},
+            'child': {'name': 'Encuestas', 'url': ''}
+        }
+        sidebar = 'Generales'
+        regreso_url = reverse('EncuestasView')
+        context = {
+            'breadcrumb': breadcrumb,
+            'sidebar': sidebar,
+            'regreso_url': regreso_url,
+            'encuesta_data_json': json.dumps(encuesta_data),  # Inyectamos en el template
+            'encuesta_id': encuesta.id,  # <-- Nuevo valor en el contexto
+
+        }
+        return render(request, 'generales/encuesta_edit_ajax.html', context)
+
+    elif request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+
+            titulo = data.get('titulo', '').strip()
+            descripcion = data.get('descripcion', '').strip()
+
+            # Actualizamos los campos principales de la encuesta
+            encuesta.titulo = titulo
+            encuesta.descripcion = descripcion
+            # (Opcional) podrías forzar a 'activo', o dejarlo a elección del usuario
+            encuesta.estado = 'activo'
+            encuesta.save()
+
+            # Listado de preguntas que el frontend está mandando
+            nuevas_preguntas = data.get('preguntas', [])
+
+            # IDs de preguntas *nuevas* o *existentes* (para luego saber cuáles borrar)
+            frontend_pregunta_ids = []
+
+            for p_data in nuevas_preguntas:
+                pregunta_id = p_data.get('id')  # si viene del frontend
+                texto_pregunta = p_data.get('texto', '').strip()
+                orden = p_data.get('orden', 0)
+                opciones_data = p_data.get('opciones', [])
+
+                if pregunta_id:
+                    # Pregunta existente, actualizar
+                    try:
+                        pregunta_obj = Pregunta.objects.get(pk=pregunta_id, encuesta=encuesta)
+                        pregunta_obj.texto = texto_pregunta
+                        pregunta_obj.orden = orden
+                        pregunta_obj.save()
+                    except Pregunta.DoesNotExist:
+                        # Si no existe, la creamos (o podrías ignorar)
+                        pregunta_obj = Pregunta.objects.create(
+                            encuesta=encuesta,
+                            texto=texto_pregunta,
+                            orden=orden
+                        )
+                else:
+                    # Crear nueva pregunta
+                    pregunta_obj = Pregunta.objects.create(
+                        encuesta=encuesta,
+                        texto=texto_pregunta,
+                        orden=orden
+                    )
+
+                frontend_pregunta_ids.append(pregunta_obj.id)
+
+                # Actualizar / Crear opciones
+                # Primero, obtenemos todas las opciones actuales de la pregunta
+                opciones_existentes = list(pregunta_obj.opciones.all())
+                # Convertimos a dict {texto: Opcion}
+                opciones_existentes_dict = {op.texto: op for op in opciones_existentes}
+
+                # Las opciones se identifican sólo por su texto aquí; si quisieras IDs para las opciones,
+                # deberías cambiarlos en el frontend y parsear igual.
+                nuevas_opciones_textos = [op.strip() for op in opciones_data if op.strip()]
+
+                # Eliminamos opciones que no están en la nueva lista
+                for op in opciones_existentes:
+                    if op.texto not in nuevas_opciones_textos:
+                        op.delete()
+
+                # Creamos las que no existan
+                for texto_op in nuevas_opciones_textos:
+                    if texto_op not in opciones_existentes_dict:
+                        Opcion.objects.create(
+                            pregunta=pregunta_obj,
+                            texto=texto_op
+                        )
+
+            # Borrar preguntas que ya no vienen en el JSON
+            Pregunta.objects.filter(encuesta=encuesta).exclude(id__in=frontend_pregunta_ids).delete()
+
+            messages.success(request, "La encuesta se ha actualizado correctamente.")
+            return JsonResponse({'success': True, 'encuesta_id': encuesta.id}, status=200)
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+    else:
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
