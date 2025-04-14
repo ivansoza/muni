@@ -654,13 +654,13 @@
 
 
             {% if is_superuser or 'transparencia.view_encuesta' in user_permissions %}
-                <a class="app-item" href="{% url "generalesDashboard" %}">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/generales.png' %}');"></div>
+                <a class="app-item" href="{% url "EncuestasView" %}">
+                    <div class="app-card" style="background-image: url('{% static 'img/apps/encuesta.png' %}');"></div>
                     <div class="app-name">Encuestas</div>
                 </a>
             {% else %}
                 <div class="app-item app-disabled">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/generales.png' %}');">
+                    <div class="app-card" style="background-image: url('{% static 'img/apps/encuesta.png' %}');">
                         <div class="disabled-overlay">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
@@ -671,6 +671,27 @@
                     <div class="app-name">Encuestas</div>
                 </div>
             {% endif %}
+
+
+            {% if is_superuser or 'transparencia.view_encuesta' in user_permissions %}
+                <a class="app-item" href="{% url "ReportesView" %}">
+                    <div class="app-card" style="background-image: url('{% static 'img/apps/reportes.png' %}');"></div>
+                    <div class="app-name">Reportes</div>
+                </a>
+            {% else %}
+                <div class="app-item app-disabled">
+                    <div class="app-card" style="background-image: url('{% static 'img/apps/reportes.png' %}');">
+                        <div class="disabled-overlay">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="app-name">Reportes</div>
+                </div>
+            {% endif %}
+
 
 
         </div>
