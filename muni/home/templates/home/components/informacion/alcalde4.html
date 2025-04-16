@@ -1,0 +1,269 @@
+{% load static %}
+
+<style>
+    /* Estilos Sección Alcalde - Versión Ejecutiva Profesional con Imagen Circular */
+    .alcalde-section {
+        background-color: #ffffff;
+        padding: 5rem 0;
+        position: relative;
+        margin: 4rem 0;
+        border-left: 4px solid var(--color-primario, #0d6efd);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    
+    .alcalde-section .container {
+        position: relative;
+    }
+    
+    .alcalde-section h2 {
+        color: #212529;
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 1.25rem;
+        letter-spacing: -0.5px;
+    }
+    
+    .alcalde-section .section-subtitle {
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+    
+    .alcalde-section .info-box {
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        padding: 2rem;
+        margin-top: 2rem;
+        border: 1px solid #e9ecef;
+        box-shadow: none;
+        transition: box-shadow 0.3s ease;
+    }
+    
+    .alcalde-section .info-box:hover {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    }
+    
+    .alcalde-section .info-box h5 {
+        color: #212529;
+        font-weight: 600;
+        font-size: 1.125rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 0.75rem;
+    }
+    
+    .alcalde-section ul {
+        padding-left: 0;
+    }
+    
+    .alcalde-section ul li {
+        margin-bottom: 1rem;
+        font-size: 1rem;
+        color: #495057;
+        line-height: 1.5;
+        display: flex;
+        align-items: flex-start;
+    }
+    
+    .alcalde-section ul li i {
+        color: var(--color-primario, #0d6efd);
+        font-size: 1rem;
+        margin-right: 0.75rem;
+        margin-top: 0.25rem;
+        opacity: 0.8;
+    }
+    
+    .lead.text-muted {
+        font-size: 1.125rem;
+        line-height: 1.7;
+        color: #6c757d;
+        border-left: 3px solid var(--color-primario, #0d6efd);
+        padding-left: 1.25rem;
+        margin: 1.5rem 0 2rem;
+        font-weight: 400;
+    }
+    
+    .alcalde-profile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    /* Imagen Circular */
+    .image-wrapper {
+        position: relative;
+        overflow: hidden;
+        width: 260px;
+        height: 260px;
+        border-radius: 50%;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        padding: 8px;
+        border: 1px solid #e9ecef;
+    }
+    
+    .image-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        transition: all 0.4s ease;
+    }
+    
+    .image-wrapper:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 50%;
+        border: 2px solid var(--color-primario, #0d6efd);
+        opacity: 0.3;
+    }
+    
+    .name-tag {
+        margin-top: 1.5rem;
+        text-align: center;
+        width: 100%;
+    }
+    
+    .name-tag h6 {
+        font-weight: 600;
+        font-size: 1rem;
+        color: #212529;
+        margin-bottom: 0.3rem;
+    }
+    
+    .position-tag {
+        display: inline-block;
+        font-size: 0.85rem;
+        color: #fff;
+        background-color: var(--color-primario, #0d6efd);
+        padding: 0.375rem 1rem;
+        border-radius: 30px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .content-divider {
+        height: 1px;
+        background-color: #dee2e6;
+        margin: 2rem 0;
+        width: 100%;
+    }
+    
+    .quote-icon {
+        font-size: 1rem;
+        vertical-align: super;
+        color: var(--color-primario, #0d6efd);
+        opacity: 0.6;
+    }
+    
+    @media (max-width: 991.98px) {
+        .alcalde-section {
+            padding: 4rem 0;
+        }
+        
+        .image-wrapper {
+            width: 220px;
+            height: 220px;
+            margin: 0 auto 2rem;
+        }
+    }
+    
+    @media (max-width: 767.98px) {
+        .alcalde-section {
+            padding: 3rem 0;
+            margin: 2rem 0;
+        }
+        
+        .alcalde-section h2 {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+<section class="alcalde-section">
+    <div class="container">
+        <div class="row">
+            {% if municipio.informacion_ciudad %}
+            <div class="col-lg-8 col-md-7 order-md-1 order-2">
+                {% if municipio.informacion_ciudad.subtitulo %}
+                <span class="section-subtitle">
+                    {{ municipio.informacion_ciudad.subtitulo }}
+                </span>
+                {% endif %}
+                
+                {% if municipio.informacion_ciudad.titulo %}
+                <h2>
+                    {{ municipio.informacion_ciudad.titulo }}
+                </h2>
+                {% endif %}
+                
+                {% if municipio.informacion_ciudad.lema %}
+                <p class="lead text-muted">
+                    <span class="quote-icon"><i class="fas fa-quote-left"></i></span>
+                    {{ municipio.informacion_ciudad.lema }}
+                    <span class="quote-icon"><i class="fas fa-quote-right"></i></span>
+                </p>
+                {% endif %}
+                
+                {% if municipio.informacion_ciudad.encabezado_lista or municipio.informacion_ciudad.elementos.exists %}
+                <div class="info-box">
+                    {% if municipio.informacion_ciudad.encabezado_lista %}
+                    <h5>
+                        {{ municipio.informacion_ciudad.encabezado_lista }}
+                    </h5>
+                    {% endif %}
+                    
+                    {% if municipio.informacion_ciudad.elementos.exists %}
+                    <ul class="list-unstyled">
+                        {% for elem in municipio.informacion_ciudad.elementos.all %}
+                        {% if elem.texto %}
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span>{{ elem.texto }}</span>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <div class="col-lg-4 col-md-5 order-md-2 order-1 mb-4 mb-md-0">
+                <div class="alcalde-profile">
+                    {% with municipio.gabinete.first as primer_miembro %}
+                    {% if primer_miembro %}
+                    <div class="image-wrapper">
+                        {% if primer_miembro.imagen %}
+                        <img src="{{ primer_miembro.imagen.url }}" alt="{{ primer_miembro.nombre }}">
+                        {% elif municipio.logotipo_claro %}
+                        <img src="{{ municipio.logotipo_claro.url }}" alt="Logotipo del municipio">
+                        {% else %}
+                        <img src="{{ logotipo.url }}" alt="Logotipo por defecto">
+                        {% endif %}
+                    </div>
+                    <div class="name-tag">
+                        <h6>{{ primer_miembro.nombre }}</h6>
+                        <span class="position-tag">Alcalde</span>
+                    </div>
+                    {% else %}
+                    <div class="text-center p-4 bg-light rounded">
+                        <i class="fas fa-user-tie fa-3x text-muted mb-3"></i>
+                        <p>No hay miembros del gabinete registrados.</p>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Municipio, ColoresMunicipio, GobiernoActual, MisionVision,SeccionInicio, Video
+from .models import ElementoLista, InformacionCiudad, Municipio, ColoresMunicipio, GobiernoActual, MisionVision,SeccionInicio, Video
 
 # Registro de Municipio
 @admin.register(Municipio)
@@ -198,3 +198,29 @@ class VideoAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Video, VideoAdmin)
+
+
+class ElementoListaInline(admin.TabularInline):
+    model = ElementoLista
+    extra = 1  # Número de elementos en blanco a mostrar por defecto
+    fields = ('texto',)
+    verbose_name = "Elemento de la lista"
+    verbose_name_plural = "Elementos de la lista"
+
+@admin.register(InformacionCiudad)
+class InformacionCiudadAdmin(admin.ModelAdmin):
+    list_display = ('titulo', 'municipio', 'lema')
+    search_fields = ('titulo', 'subtitulo', 'lema', 'municipio__nombre')
+    list_filter = ('municipio',)
+    inlines = [ElementoListaInline]
+    fieldsets = (
+        (None, {
+            'fields': ('municipio', 'lema', 'titulo', 'subtitulo', 'encabezado_lista')
+        }),
+    )
+
+@admin.register(ElementoLista)
+class ElementoListaAdmin(admin.ModelAdmin):
+    list_display = ('texto', 'informacion')
+    search_fields = ('texto',)
+    list_filter = ('informacion',)

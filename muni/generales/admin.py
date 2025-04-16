@@ -34,3 +34,5 @@ admin.site.register(MetaMunicipio, MetaMunicipioAdmin)
 
 
 admin.site.register(SeccionPlus)
+
+

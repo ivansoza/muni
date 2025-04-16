@@ -1,0 +1,168 @@
+{% load static %}
+
+
+
+<style>
+
+    /*Alcalde seccion*/
+    .alcalde-section {
+        background-color: #f9f9f9;
+        padding: 3rem 0;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .alcalde-section h2 {
+        color: #2c3e50;
+    }
+    
+    .alcalde-section .info-box {
+        background-color: #ffffff;
+        position: relative; /* Mantiene su posición normal */
+        z-index: 1 !important; /* Se asegura de que no cubra nada más */
+        display: inline-block;
+        width: auto; /* Asegura que no bloquee más de lo necesario */
+        max-width: 100%;
+        overflow: hidden; 
+    }
+    
+    .alcalde-section ul {
+        padding-left: 0;
+    }
+    
+    .alcalde-section ul li {
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+        color: #6c757d;
+    }
+    
+    .image-wrapper {
+        margin-top: 2rem;
+        position: relative;
+        z-index: 10; /* Asegura que la imagen esté encima */
+    }
+    
+    .name-tag h6 {
+        font-size: 0.875rem;
+        color: #495057;
+    }
+    
+    .badge {
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        letter-spacing: 0.05rem;
+    }
+    
+    .image-wrapper img {
+        transition: transform 0.3s ease, box-shadow 0.3s ease !important; /* Añadir !important si es necesario */
+    }
+    
+    .image-wrapper img:hover {
+        transform: scale(1.1) !important;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    p .fa-quote-left,
+    p .fa-quote-right {
+        color: #6c757d; /* Color gris */
+        font-size: 1.5rem; /* Tamaño de las comillas */
+        vertical-align: middle; /* Alineación con el texto */
+    }
+    
+
+</style>
+
+
+<section class="alcalde-section my-5">
+    <div class="container">
+        <div class="row align-items-center">
+            {% if municipio.informacion_ciudad %}
+            <div class="col-md-8">
+        
+                {# — SUBTÍTULO — #}
+                {% if municipio.informacion_ciudad.subtitulo %}
+                    <div class="mb-3">
+                        <span class="section-subtitle">
+                            {{ municipio.informacion_ciudad.subtitulo }}
+                        </span>
+                    </div>
+                {% endif %}
+        
+                {# — TÍTULO — #}
+                {% if municipio.informacion_ciudad.titulo %}
+                    <h2 class="display-4 fw-bold">
+                        {{ municipio.informacion_ciudad.titulo }}
+                    </h2>
+                {% endif %}
+        
+                {# — LEMA EN FORMATO CITA — #}
+                {% if municipio.informacion_ciudad.lema %}
+                    <p class="lead text-muted">
+                        <i class="fas fa-quote-left me-2"></i>
+                        {{ municipio.informacion_ciudad.lema }}
+                        <i class="fas fa-quote-right ms-2"></i>
+                    </p>
+                {% endif %}
+        
+                {# — CAJA DE INFORMACIÓN + LISTA — #}
+                {% if municipio.informacion_ciudad.encabezado_lista or municipio.informacion_ciudad.elementos.exists %}
+                    <div class="info-box mt-4 p-4 border rounded-3 shadow-sm position-relative">
+        
+                        {# Encabezado opcional antes de la lista #}
+                        {% if municipio.informacion_ciudad.encabezado_lista %}
+                            <h5 class="fw-bold">
+                                {{ municipio.informacion_ciudad.encabezado_lista }}
+                            </h5>
+                        {% endif %}
+        
+                        {# Lista de elementos; se muestra solo si hay elementos con texto #}
+                        {% if municipio.informacion_ciudad.elementos.exists %}
+                            <ul class="list-unstyled mt-3">
+                                {% for elem in municipio.informacion_ciudad.elementos.all %}
+                                    {% if elem.texto %}
+                                        <li>
+                                            <i class="fas fa-check-circle me-2"
+                                               style="color:var(--color-iconos)"></i>
+                                            {{ elem.texto }}
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+        
+                    </div>
+                {% endif %}
+        
+            </div>
+        {% endif %}
+            
+            <!-- Imagen del alcalde y logo -->
+            <div class="col-md-4 text-center position-relative">
+                <div class="image-wrapper">
+                    <br>
+                    {% with municipio.gabinete.first as primer_miembro %}
+                    {% if primer_miembro %}
+                        {% if primer_miembro.imagen %}
+                            <img src="{{ primer_miembro.imagen.url }}" alt="{{ primer_miembro.nombre }}" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid rgb(var(--color-primario-rgb));">
+                        {% elif municipio.logotipo_claro %}
+                            <img src="{{ municipio.logotipo_claro.url }}" alt="Logotipo del municipio" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid rgb(var(--color-primario-rgb));">
+                        {% else %}
+                            <img src="{{ logotipo.url }}" alt="Logotipo por defecto" class="img-fluid rounded-circle shadow-lg" style="width: 270px; height: 270px; border: 5px solid rgb(var(--color-primario-rgb));">
+                        {% endif %}
+                        <div class="name-tag position-absolute text-center w-100" style="bottom: -22px;">
+                            <h6 class="bg-light py-2 px-3 d-inline-block rounded-pill shadow-sm">
+                                {{ primer_miembro.nombre }}
+                            </h6>
+                        </div>
+                    {% else %}
+                        <p>No hay miembros del gabinete registrados.</p>
+                    {% endif %}
+                {% endwith %}
+                
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>

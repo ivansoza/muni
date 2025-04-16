@@ -43,6 +43,70 @@ class Municipio(models.Model):
         return self.nombre
 
 
+class InformacionCiudad(models.Model):
+    municipio = models.OneToOneField(  # O ForeignKey si permites más de una por municipio
+        'Municipio',
+        on_delete=models.CASCADE,
+        related_name='informacion_ciudad',
+        null=True,
+        blank=True,
+        help_text="Municipio al que pertenece esta información"
+    )
+
+    lema = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Lema o frase representativa de la ciudad"
+    )
+    titulo = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Título principal"
+    )
+    subtitulo = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Subtítulo debajo del título"
+    )
+    encabezado_lista = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Encabezado que aparece antes de la lista"
+    )
+
+    class Meta:
+        verbose_name = "Información de Ciudad"
+        verbose_name_plural = "Información de Ciudad"
+
+    def __str__(self):
+        return self.titulo or f"Información de {self.municipio.nombre}" if self.municipio else "Información Ciudad"
+
+class ElementoLista(models.Model):
+    informacion = models.ForeignKey(
+        InformacionCiudad,
+        on_delete=models.CASCADE,
+        related_name='elementos',
+        null=True,
+        blank=True
+    )
+    texto = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Texto del elemento de la lista"
+    )
+
+    class Meta:
+        verbose_name = "Elemento de Lista"
+        verbose_name_plural = "Elementos de Lista"
+
+    def __str__(self):
+        return self.texto[:50] if self.texto else "Elemento sin texto"
+    
+    
 class ColoresMunicipio(models.Model):
     municipio = models.ForeignKey(Municipio, related_name='colores', on_delete=models.CASCADE)
     color_primario = models.CharField("Color primario (HEX)", max_length=7, default='#003366')
