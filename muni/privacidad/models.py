@@ -7,7 +7,7 @@ from django_ckeditor_5.fields import CKEditor5Field
 class AvisoDePrivacidad(models.Model):
     municipio = models.ForeignKey(Municipio, related_name='avisos_privacidad', on_delete=models.CASCADE)
     area = models.CharField(max_length=200)
-    descripcion = models.CharField(max_length=200)
+    descripcion = models.CharField(max_length=200, blank=True, null=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
