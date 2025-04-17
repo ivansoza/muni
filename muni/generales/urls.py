@@ -134,7 +134,11 @@ urlpatterns = [
     path('encuestas/<int:pk>/eliminar/', views.encuesta_eliminar, name='encuesta_eliminar'),
     path('encuestas/<int:encuesta_id>/editar/', views.encuesta_update_ajax, name='encuesta_update_ajax'),
     path('encuesta/<int:pk>/', EncuestaDetailView.as_view(), name='encuesta_view'),
-
+    path(
+        "encuestas/<int:encuesta_id>/toggle/",
+        views.encuesta_toggle_estado,
+        name="encuesta_toggle_estado",
+    ),
     
 #--------------------------Nuevas Noticias---------------------------------
     path('crear_noticia/', crear_noticia, name='crear_noticia'),

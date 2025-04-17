@@ -2875,3 +2875,27 @@ def encuesta_update_ajax(request, encuesta_id):
 
     else:
         return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+
+@login_required
+@permission_required("transparencia.change_encuesta", raise_exception=True)
+def encuesta_toggle_estado(request, encuesta_id):
+    """
+    Cambia 'activo' ↔ 'inactivo' en una Encuesta y redirige
+    a la pantalla principal con un message.success.
+    """
+    encuesta = get_object_or_404(Encuesta, pk=encuesta_id)
+
+    nueva_estado = "inactivo" if encuesta.estado == "activo" else "activo"
+    encuesta.estado = nueva_estado
+    encuesta.save(update_fields=["estado"])
+
+    accion = "desactivada" if nueva_estado == "inactivo" else "activada"
+    messages.success(
+        request,
+        f'La encuesta “{encuesta.titulo}” ha sido {accion} correctamente.'
+    )
+
+    # Si llegas con ?next=/algo, respeta esa redirección
+    return redirect("EncuestasView")
