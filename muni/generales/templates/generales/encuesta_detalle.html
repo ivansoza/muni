@@ -4,197 +4,327 @@
 {% block content %}
 
 <style>
-    /* Estilos generales */
-    .encuesta-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
-        font-family: 'Poppins', sans-serif;
-        color: var(--color-text);
+    :root {
+        --color-primario: #2F698F;
+        --color-secundario: #3AB795;
+        --color-accent: #FF7E5F;
+        --color-text: #2D3748;
+        --color-text-muted: #718096;
+        --color-bg-light: #F7FAFC;
+        --color-border: #E2E8F0;
+        --degradado: linear-gradient(135deg, var(--color-primario) 0%, var(--color-secundario) 100%);
+        --radius: 12px;
+        --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        --transition-speed: 0.3s;
     }
-    
+
+    /* ======================
+       Estilos generales
+       ====================== */
+    .encuesta-container {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 2rem;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
     .encuesta-header {
-        margin-bottom: 2rem;
-        padding: 1.5rem;
-        background: var(--color-bg-light);
+        margin-bottom: 3rem;
+        padding: 3rem 2.5rem;
+        background: var(--degradado);
         border-radius: var(--radius);
         box-shadow: var(--shadow);
+        color: white;
+        position: relative;
+        overflow: hidden;
     }
-    
+    .encuesta-header::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -50px;
+        width: 200px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        pointer-events: none;
+    }
     .encuesta-title {
-        color: var(--color-primario);
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        letter-spacing: -0.05em;
     }
-    
     .encuesta-description {
-        color: var(--color-text-muted);
-        font-size: 1rem;
-        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        max-width: 800px;
+        opacity: 0.9;
     }
-    
-    /* Tarjetas de estadísticas */
+
+    /* ======================
+       Cards de estadísticas
+       ====================== */
     .stats-cards {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
         gap: 1.5rem;
-        flex-wrap: wrap;
+        margin-top: 2.5rem;
     }
-    
     .stat-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius);
+        padding: 1.5rem;
         display: flex;
         align-items: center;
-        padding: 1rem;
-        background: white;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow-sm);
-        min-width: 200px;
-        transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+        transition: transform var(--transition-speed);
+        border: 1px solid rgba(255, 255, 255, 0.15);
     }
-    
     .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow);
+        transform: translateY(-3px);
     }
-    
     .stat-icon {
-        background: var(--degradado);
-        color: white;
         width: 50px;
         height: 50px;
-        border-radius: 50%;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.2);
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-right: 1rem;
-        font-size: 1.2rem;
+        margin-right: 1.2rem;
+        font-size: 1.4rem;
     }
-    
-    .stat-content {
-        display: flex;
-        flex-direction: column;
-    }
-    
+    .stat-content { flex: 1; }
     .stat-value {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: var(--color-primario);
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
     }
-    
     .stat-label {
-        font-size: 0.85rem;
-        color: var(--color-text-muted);
+        font-size: 0.95rem;
+        opacity: 0.9;
+        font-weight: 500;
     }
-    
-    /* Navegación */
+
+    /* ======================
+       Navegación
+       ====================== */
     .navigation-controls {
-        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 3rem;
     }
-    
     .btn-return {
         display: inline-flex;
         align-items: center;
-        padding: 0.75rem 1.5rem;
+        padding: 0.75rem 1.75rem;
         background: var(--color-primario);
         color: white;
-        border-radius: var(--radius);
+        border-radius: 8px;
         text-decoration: none;
-        font-weight: 500;
-        transition: background-color var(--transition-speed);
+        font-weight: 600;
+        transition: all var(--transition-speed);
+        box-shadow: var(--shadow-sm);
+        gap: 0.75rem;
     }
-    
     .btn-return:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
         background: var(--color-secundario);
     }
-    
-    .btn-return i {
-        margin-right: 0.5rem;
-    }
-    
-    /* Tarjetas de preguntas */
+
+    /* ======================
+       Tarjetas de preguntas
+       ====================== */
     .question-card {
         background: white;
         border-radius: var(--radius);
         box-shadow: var(--shadow);
-        margin-bottom: 2rem;
+        margin-bottom: 2.5rem;
         overflow: hidden;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: cardEnter 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
     }
-    
-    .question-header {
-        padding: 1.5rem;
-        background: var(--color-gradiente);
-        color: white;
-    }
-    
-    .question-title {
-        margin: 0;
-        font-size: 1.2rem;
-        font-weight: 500;
-    }
-    
-    .question-total {
-        display: inline-block;
-        margin-top: 0.5rem;
-        font-size: 0.9rem;
-        background: rgba(255, 255, 255, 0.2);
-        padding: 0.25rem 0.75rem;
-        border-radius: 1rem;
-    }
-    
-    .question-results {
-        padding: 1.5rem;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-    }
-    
-    @media (max-width: 992px) {
-        .question-results {
-            grid-template-columns: 1fr;
+    @keyframes cardEnter {
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
     }
-    
-    .chart-container {
-        height: 300px;
-        position: relative;
+    .question-header {
+        padding: 1.5rem 2rem;
+        background: var(--color-bg-light);
+        border-bottom: 1px solid var(--color-border);
     }
-    
-    /* Tabla de resultados */
+    .question-title {
+        margin: 0;
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--color-primario);
+    }
+    .question-total {
+        display: inline-flex;
+        align-items: center;
+        margin-top: 0.75rem;
+        font-size: 0.9rem;
+        background: var(--color-secundario);
+        color: white;
+        padding: 0.35rem 1rem;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+    .question-results {
+        padding: 2rem;
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 3rem;
+    }
+
+    /* ======================
+       Gráficos y tablas
+       ====================== */
+    .chart-container {
+        position: relative;
+        height: 280px;
+    }
     .results-table {
         overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid var(--color-border);
     }
-    
     .results-table table {
         width: 100%;
         border-collapse: collapse;
+        min-width: 500px;
     }
-    
-    .results-table th, .results-table td {
-        padding: 0.75rem;
-        border-bottom: 1px solid var(--color-border);
-        text-align: left;
-    }
-    
     .results-table th {
-        font-weight: 600;
-        color: var(--color-text-muted);
-        font-size: 0.9rem;
-    }
-    
-    .progress-bar {
-        height: 8px;
         background: var(--color-bg-light);
-        border-radius: 4px;
-        overflow: hidden;
+        color: var(--color-text-muted);
+        font-weight: 600;
+        padding: 1rem;
+        text-align: left;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
     }
-    
+    .results-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--color-border);
+        font-weight: 500;
+    }
+    .results-table tr:last-child td {
+        border-bottom: none;
+    }
+    .results-table tr:hover td {
+        background: var(--color-bg-light);
+    }
+
+    /* ======================
+       Barra de progreso
+       ====================== */
+    .progress-bar {
+        height: 10px;
+        background: var(--color-border);
+        border-radius: 5px;
+        overflow: hidden;
+        position: relative;
+    }
     .progress {
         height: 100%;
         background: var(--degradado);
+        transition: width 1s ease-in-out;
     }
-    </style>
+    .progress-percent {
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
 
-    
+    /* ======================================================
+       BREAKPOINTS ADICIONALES: Tablets y móviles
+       ====================================================== */
+
+    /* Tablets (<= 768px) */
+    @media (max-width: 768px) {
+        .encuesta-container {
+            padding: 1rem;
+            margin: 1rem;
+        }
+        .encuesta-header {
+            padding: 2rem 1.5rem;
+        }
+        .encuesta-title {
+            font-size: 2rem;
+        }
+        .encuesta-description {
+            font-size: 1rem;
+        }
+        .stats-cards {
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+        }
+    }
+
+    /* Móviles pequeños (<= 576px) */
+    @media (max-width: 576px) {
+        .encuesta-header {
+            padding: 1.5rem 1rem;
+        }
+        .encuesta-title {
+            font-size: 1.6rem;
+        }
+        .encuesta-description {
+            font-size: 0.9rem;
+        }
+        .stats-cards {
+            display: flex;
+            overflow-x: auto;
+            gap: 0.75rem;
+        }
+        .stat-card {
+            flex: 0 0 200px;
+        }
+        .navigation-controls {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+        }
+        .btn-return {
+            justify-content: center;
+        }
+        .question-card {
+            margin-bottom: 1.5rem;
+        }
+        .question-results {
+            display: block;
+            padding: 1rem;
+        }
+        .chart-container {
+            width: 100%;
+            height: 200px;
+        }
+        .results-table table {
+            min-width: auto;
+        }
+        .results-table {
+            overflow-x: scroll;
+        }
+    }
+</style>
+
+
 <div class="encuesta-container">
     <div class="encuesta-header">
         <h1 class="encuesta-title">{{ encuesta.titulo }}</h1>
@@ -203,21 +333,31 @@
         <div class="stats-cards">
             <div class="stat-card">
                 <div class="stat-icon">
-                    <i class="fas fa-question-circle"></i>
+                    <i class="fa fa-bar-chart"></i>
                 </div>
                 <div class="stat-content">
                     <span class="stat-value">{{ total_preguntas }}</span>
-                    <span class="stat-label">Preguntas</span>
+                    <span class="stat-label">Preguntas en total</span>
                 </div>
             </div>
             
             <div class="stat-card">
                 <div class="stat-icon">
-                    <i class="fas fa-reply-all"></i>
+                    <i class="fa fa-users"></i>
                 </div>
                 <div class="stat-content">
                     <span class="stat-value">{{ total_envios }}</span>
-                    <span class="stat-label">Respuestas totales</span>
+                    <span class="stat-label">Respuestas recibidas</span>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fa fa-calendar"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-value">{{ encuesta.fecha_creacion|date:"d M Y" }}</span>
+                    <span class="stat-label">Fecha de creación</span>
                 </div>
             </div>
         </div>
@@ -225,16 +365,20 @@
 
     <div class="navigation-controls">
         <a href="{{ regreso_url }}" class="btn-return">
-            <i class="fas fa-arrow-left"></i> Volver a encuestas
+            <i class="fa fa-chevron-left"></i>
+            <span>Volver al listado</span>
         </a>
     </div>
 
     <div class="encuesta-results">
         {% for p_stat in preguntas_stats %}
-        <div class="question-card">
+        <div class="question-card" style="animation-delay: {{ forloop.counter0|divisibleby:2|yesno:'0.2s,0s' }}">
             <div class="question-header">
-                <h2 class="question-title">{{ p_stat.pregunta_texto }}</h2>
-                <span class="question-total">{{ p_stat.total_respuestas_pregunta }} respuestas</span>
+                <h2 class="question-title">Pregunta #{{ forloop.counter }}: {{ p_stat.pregunta_texto }}</h2>
+                <span class="question-total">
+                    <i class="fas fa-chart-bar"></i>
+                    {{ p_stat.total_respuestas_pregunta }} respuestas
+                </span>
             </div>
             
             <div class="question-results">
@@ -247,9 +391,8 @@
                         <thead>
                             <tr>
                                 <th>Opción</th>
-                                <th>Respuestas</th>
-                                <th>Porcentaje</th>
-                                <th>Visualización</th>
+                                <th style="width: 120px;">Respuestas</th>
+                                <th style="width: 150px;">Distribución</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -257,10 +400,11 @@
                             <tr>
                                 <td>{{ op_stat.opcion_texto }}</td>
                                 <td>{{ op_stat.opcion_count }}</td>
-                                <td>{{ op_stat.porcentaje|floatformat:2 }}%</td>
                                 <td>
                                     <div class="progress-bar">
-                                        <div class="progress" style="width: {{ op_stat.porcentaje }}%"></div>
+                                        <div class="progress" style="width: {{ op_stat.porcentaje }}%">
+                                            <span class="progress-percent">{{ op_stat.porcentaje|floatformat:1 }}%</span>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -273,81 +417,83 @@
         {% endfor %}
     </div>
 </div>
+
 {% endblock content %}
 
 {% block scriptcontent %}
-<!-- Incluir Chart.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const chartData = {{ chart_data|safe }};
-    const colors = [
-        'rgba(47, 105, 143, 0.8)',
-        'rgba(41, 94, 132, 0.8)',
-        'rgba(59, 130, 246, 0.8)',
-        'rgba(16, 185, 129, 0.8)',
-        'rgba(245, 158, 11, 0.8)',
-        'rgba(239, 68, 68, 0.8)',
-        'rgba(109, 109, 109, 0.8)'
+    const colorPalette = [
+        '#2F698F', '#3AB795', '#FF7E5F', '#8B5CF6', '#F59E0B',
+        '#10B981', '#3B82F6', '#EF4444', '#94A3B8', '#F472B6'
     ];
     
-    const borderColors = [
-        'rgba(47, 105, 143, 1)',
-        'rgba(41, 94, 132, 1)',
-        'rgba(59, 130, 246, 1)',
-        'rgba(16, 185, 129, 1)',
-        'rgba(245, 158, 11, 1)',
-        'rgba(239, 68, 68, 1)',
-        'rgba(109, 109, 109, 1)'
-    ];
-    
+    Chart.defaults.font.family = 'Inter, sans-serif';
+    Chart.defaults.color = '#4A5568';
+    Chart.defaults.animation.duration = 1000;
+
     chartData.forEach((data, index) => {
         const ctx = document.getElementById(`chart-${index + 1}`);
+        const total = data.data.reduce((a, b) => a + b, 0);
         
-        // Crear gráfico de dona
         new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: data.labels,
                 datasets: [{
                     data: data.data,
-                    backgroundColor: colors.slice(0, data.labels.length),
-                    borderColor: borderColors.slice(0, data.labels.length),
-                    borderWidth: 1
+                    backgroundColor: colorPalette,
+                    borderColor: 'white',
+                    borderWidth: 2,
+                    hoverOffset: 10
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                cutout: '65%',
                 plugins: {
                     legend: {
                         position: 'right',
                         labels: {
-                            boxWidth: 15,
-                            font: {
-                                family: "'Poppins', sans-serif",
-                                size: 12
-                            }
+                            boxWidth: 16,
+                            padding: 16,
+                            font: { size: 14 }
                         }
                     },
                     tooltip: {
+                        backgroundColor: 'rgba(47, 105, 143, 0.95)',
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 14 },
+                        padding: 12,
+                        displayColors: true,
                         callbacks: {
-                            label: function(context) {
-                                const label = context.label || '';
-                                const value = context.raw || 0;
-                                const dataset = context.dataset;
-                                const total = dataset.data.reduce((acc, data) => acc + data, 0);
-                                const percentage = ((value / total) * 100).toFixed(2) + '%';
-                                return `${label}: ${value} (${percentage})`;
+                            label: (context) => {
+                                const value = context.parsed;
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return ` ${context.label}: ${value} (${percentage}%)`;
                             }
                         }
                     }
+                },
+                animation: {
+                    animateRotate: true,
+                    animateScale: true
                 }
             }
         });
     });
+
+    // Animar barras de progreso
+    document.querySelectorAll('.progress').forEach(progress => {
+        const width = progress.style.width;
+        progress.style.width = '0';
+        setTimeout(() => {
+            progress.style.width = width;
+        }, 500);
+    });
 });
 </script>
-
-
 {% endblock scriptcontent %}

@@ -170,6 +170,20 @@ class personalizacionPlantilla(models.Model):
         default='convocatorias1'  # Primera opción como predeterminada
     )
 
+    INFO_CHOICES = [
+        ('info1', 'Informacion 1'),
+        ('info2', 'Informacion 2'),
+        ('info3', 'Informacion 3'),
+        ('info4', 'Informacion 4'),
+
+        ('sininfo', 'Sin Informacion'),
+    ]
+    informacion_municipio = models.CharField(
+        max_length=50,
+        choices=INFO_CHOICES,
+        default='info1'  # Primera opción como predeterminada
+    )
+
 
 
     def __str__(self):
