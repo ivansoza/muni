@@ -166,7 +166,36 @@
     background-color: var(--color-secundario);
     color: white;
 }
+.buscador-input {
+    width: 500px; /* Puedes ajustar esto a 250px o el valor que prefieras */
+    padding: 10px 15px;
+    font-size: 15px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
 
+    .buscador-input:focus {
+        outline: none;
+        border-color: var(--color-primario);
+        box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    }
+
+    .search-container::before {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 16px;
+        color: #888;
+        pointer-events: none;
+    }
+
+    .buscador-input::placeholder {
+        padding-left: 20px;
+        color: #aaa;
+    }
 
 </style>
 
@@ -175,6 +204,12 @@
         <h2 class="news-title">Privacidad <span>| Avisos de Privacidad</span></h2>
         <p>Consulta los avisos de privacidad por área y accede a los documentos relacionados con cada trámite o servicio municipal.</p>
     </div>
+    <div class="search-container" style="margin-bottom: 20px; display: flex; justify-content: flex-end;">
+        <input type="text" id="buscadorAreas" class="form-control buscador-input" placeholder="🔍 Buscar área...">
+    </div>
+    
+    
+    
     <div class="avisos-list">
         {% for aviso in avisos %}
             <div class="aviso-card">
@@ -236,6 +271,21 @@
             button.textContent = "+";
         }
     }
+</script>
+<script>
+    document.getElementById('buscadorAreas').addEventListener('input', function() {
+        const filtro = this.value.toLowerCase();
+        const tarjetas = document.querySelectorAll('.aviso-card');
+
+        tarjetas.forEach(function(tarjeta) {
+            const nombreArea = tarjeta.querySelector('h3').textContent.toLowerCase();
+            if (nombreArea.includes(filtro)) {
+                tarjeta.style.display = 'block';
+            } else {
+                tarjeta.style.display = 'none';
+            }
+        });
+    });
 </script>
 
 {% endblock %}
