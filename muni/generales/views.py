@@ -1337,6 +1337,23 @@ def crear_categoria_ajax_sevac(request):
             return JsonResponse({'id': categoria.id, 'nombre': categoria.nombre})
     return JsonResponse({'error': 'Error al procesar'}, status=400)
 
+def editar_categoria(request, pk):
+    categoria = get_object_or_404(CategoriaSevac, pk=pk)
+    if request.method == 'POST':
+        nuevo_nombre = request.POST.get('nombre')
+        categoria.nombre = nuevo_nombre
+        categoria.save()
+        messages.success(request, 'Categoría actualizada correctamente.')
+    return redirect('listar_carpetas')
+
+def eliminar_categoria(request, pk):
+    categoria = get_object_or_404(CategoriaSevac, pk=pk)
+    if request.method == 'POST':
+        nombre = categoria.nombre
+        categoria.delete()
+        messages.success(request, f'Categoría "{nombre}" eliminada correctamente.')
+    return redirect('listar_carpetas')  # reemplaza con tu vista
+
 # Vista para editar carpeta
 class EditarCarpetaView(View, LoginRequiredMixin):
     template_name = 'sevac/editar_carpeta.html'
