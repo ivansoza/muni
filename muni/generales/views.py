@@ -2502,7 +2502,6 @@ class GroupUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 
 
 
-
 class SeccionPlusDetailView(TemplateView):
     template_name = 'seccionplus_detail.html'
 
@@ -2510,7 +2509,7 @@ class SeccionPlusDetailView(TemplateView):
         pk = self.kwargs.get('pk')
         slug = self.kwargs.get('slug')
         seccion = get_object_or_404(SeccionPlus, pk=pk, status=True)
-        # Si el slug de la URL no coincide con el del objeto, redirige a la URL correcta
+        # Redirige si el slug no coincide
         if seccion.slug != slug:
             return redirect('seccionplus_detail', pk=seccion.pk, slug=seccion.slug)
         return seccion
@@ -2518,28 +2517,34 @@ class SeccionPlusDetailView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         seccion = self.get_object()
-        
-        
+
         context['seccion'] = seccion
-        context['sidebar'] = 'mas'  
+        context['sidebar'] = 'mas'
 
-        # Filtrar convocatorias por la categoría de la SeccionPlus
-        context['convocatorias_activas'] = Convocatoria.objects.filter(
-            estado__in=['ABIERTA', 'PRÓXIMA'],
-            categoria=seccion.categoria_convocatoria
-        ).order_by('-id')
-        
-        context['convocatorias_pasadas'] = Convocatoria.objects.filter(
-            estado='CERRADA',
-            categoria=seccion.categoria_convocatoria
-        ).order_by('-id')
+        categoria = seccion.categoria_convocatoria
 
-        # Filtrar y depurar la categoría
-        categorias_qs = CategoriaConvocatoria.objects.filter(pk=seccion.categoria_convocatoria.pk)
-        context['categorias'] = categorias_qs
-        
+        if categoria:
+            # Si hay categoría, filtra por ella
+            context['convocatorias_activas'] = Convocatoria.objects.filter(
+                estado__in=['ABIERTA', 'PRÓXIMA'],
+                categoria=categoria
+            ).order_by('-id')
+            context['convocatorias_pasadas'] = Convocatoria.objects.filter(
+                estado='CERRADA',
+                categoria=categoria
+            ).order_by('-id')
+            context['categorias'] = CategoriaConvocatoria.objects.filter(pk=categoria.pk)
+        else:
+            # Si no hay categoría, muestra solo por estado (o vacío si prefieres)
+            context['convocatorias_activas'] = Convocatoria.objects.filter(
+                estado__in=['ABIERTA', 'PRÓXIMA']
+            ).order_by('-id')
+            context['convocatorias_pasadas'] = Convocatoria.objects.filter(
+                estado='CERRADA'
+            ).order_by('-id')
+            context['categorias'] = CategoriaConvocatoria.objects.none()
+
         return context
-
 def eliminar_aviso_privacidad(request, pk):
     aviso = get_object_or_404(AvisoDePrivacidad, pk=pk)
     if request.method == 'POST':
