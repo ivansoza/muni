@@ -273,7 +273,9 @@ class SeccionPlus(models.Model):
     categoria_convocatoria = models.ForeignKey(
         Categoria,
         on_delete=models.CASCADE,
-        related_name='secciones_plus'
+        related_name='secciones_plus',
+        null=True,        # permite valor NULL en la BD
+        blank=True        # permite dejarlo en blanco en formularios/admin
     )
     municipio = models.ForeignKey(
         Municipio,
@@ -290,6 +292,11 @@ class SeccionPlus(models.Model):
     )
     status = models.BooleanField(default=True)
 
+    incluye_recomendaciones = models.BooleanField(
+        default=False,
+        help_text="Marcar si esta sección debe mostrar recomendaciones."
+    )
+
     detalles = models.TextField(
         blank=True,
         null=True,
@@ -302,3 +309,41 @@ class SeccionPlus(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.nombre)
         super().save(*args, **kwargs)
+
+
+
+
+class Recomendaciones(models.Model):
+    municipio = models.ForeignKey(
+        Municipio,
+        related_name='recomendaciones',  
+        on_delete=models.CASCADE
+    )
+    area = models.CharField(max_length=200)
+    descripcion = models.CharField(max_length=200, blank=True, null=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Recomendación - {self.area} ({self.municipio})"
+
+
+class ArchivoRelacionadoRecomendacion(models.Model):
+    recomendacion = models.ForeignKey(
+        Recomendaciones,
+        related_name='archivos_relacionados',  # podrás hacer recomendacion.archivos_relacionados.all()
+        on_delete=models.CASCADE
+    )
+    archivo = models.FileField(
+        upload_to='archivos_recomendaciones/', 
+        blank=False, 
+        null=False
+    )
+    descripcion = models.CharField(
+        max_length=255, 
+        blank=True, 
+        null=True
+    )
+    fecha_subida = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Archivo: {self.descripcion or 'Sin descripción'}"

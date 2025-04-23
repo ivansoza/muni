@@ -1,6 +1,6 @@
 # admin.py
 from django.contrib import admin
-from .models import ContadorVisitas, MetaMunicipio, SeccionPlus, Secciones, SocialNetwork, personalizacionPlantilla
+from .models import ArchivoRelacionadoRecomendacion, ContadorVisitas, MetaMunicipio, Recomendaciones, SeccionPlus, Secciones, SocialNetwork, personalizacionPlantilla
 
 @admin.register(SocialNetwork)
 class SocialNetworkAdmin(admin.ModelAdmin):
@@ -36,3 +36,23 @@ admin.site.register(MetaMunicipio, MetaMunicipioAdmin)
 admin.site.register(SeccionPlus)
 
 
+class ArchivoRelacionadoRecomendacionInline(admin.TabularInline):
+    model = ArchivoRelacionadoRecomendacion
+    extra = 1
+    readonly_fields = ('fecha_subida',)
+    fields = ('archivo', 'descripcion', 'fecha_subida')
+
+@admin.register(Recomendaciones)
+class RecomendacionesAdmin(admin.ModelAdmin):
+    list_display = ('municipio', 'area', 'fecha_creacion')
+    list_filter = ('municipio',)
+    search_fields = ('area', 'descripcion')
+    readonly_fields = ('fecha_creacion',)
+    date_hierarchy = 'fecha_creacion'
+    inlines = (ArchivoRelacionadoRecomendacionInline,)
+
+@admin.register(ArchivoRelacionadoRecomendacion)
+class ArchivoRelacionadoRecomendacionAdmin(admin.ModelAdmin):
+    list_display = ('recomendacion', 'descripcion', 'fecha_subida')
+    search_fields = ('descripcion',)
+    readonly_fields = ('fecha_subida',)
