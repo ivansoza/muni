@@ -1,6 +1,6 @@
 from django import forms
 
-from servicios.models import EnQueConsiste, Servicio
+from servicios.models import EnQueConsiste, QueSeRequiere, Servicio
 
 class ServicioForm(forms.ModelForm):
     class Meta:
@@ -15,3 +15,8 @@ class EnQueConsisteForm(forms.ModelForm):
     class Meta:
         model = EnQueConsiste
         fields = ['tramite', 'canal_presentacion', 'solicitado_por', 'momento_solicitud']
+
+class QueSeRequiereForm(forms.ModelForm):
+    class Meta:
+        model = QueSeRequiere
+        fields = '__all__'
