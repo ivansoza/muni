@@ -19,4 +19,8 @@ class EnQueConsisteForm(forms.ModelForm):
 class QueSeRequiereForm(forms.ModelForm):
     class Meta:
         model = QueSeRequiere
-        fields = '__all__'
+        exclude = ['servicio']  
+        widgets = {
+            'especificaciones': forms.Textarea(attrs={'rows': 3}),
+            'tipo_documento': forms.Textarea(attrs={'rows': 3})
+        }
