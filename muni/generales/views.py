@@ -1091,31 +1091,49 @@ class EliminarRequisitoView(View):
         return redirect('gestionar_requisitos', servicio_id=servicio.id)
     
 class RealizoView(View):
-    def get(self, request, servicio_id):
+    def get(self, request, servicio_id, paso_id=None):
         servicio = get_object_or_404(Servicio, id=servicio_id)
-        pasos = ComoLoRealizo.objects.filter(servicio=servicio).order_by('canal_presentacion__nombre', 'paso')
-        form = ComoLoRealizoForm()
+        if paso_id:
+            paso = get_object_or_404(ComoLoRealizo, id=paso_id)
+            form = ComoLoRealizoForm(instance=paso)
+        else:
+            form = ComoLoRealizoForm()
+        pasos = ComoLoRealizo.objects.filter(servicio=servicio).order_by('canal_presentacion', 'paso')
         return render(request, 'servicios/realizo_form.html', {
             'servicio': servicio,
+            'form': form,
             'pasos': pasos,
-            'form': form
+            'paso_id': paso_id,
         })
 
-    def post(self, request, servicio_id):
+    def post(self, request, servicio_id, paso_id=None):
         servicio = get_object_or_404(Servicio, id=servicio_id)
-        form = ComoLoRealizoForm(request.POST)
+        if paso_id:
+            paso = get_object_or_404(ComoLoRealizo, id=paso_id)
+            form = ComoLoRealizoForm(request.POST, instance=paso)
+        else:
+            form = ComoLoRealizoForm(request.POST)
+        
         if form.is_valid():
             paso = form.save(commit=False)
             paso.servicio = servicio
             paso.save()
             return redirect('gestionar_realizo', servicio_id=servicio.id)
-        
-        pasos = ComoLoRealizo.objects.filter(servicio=servicio).order_by('canal_presentacion__nombre', 'paso')
+
+        pasos = ComoLoRealizo.objects.filter(servicio=servicio).order_by('canal_presentacion', 'paso')
         return render(request, 'servicios/realizo_form.html', {
             'servicio': servicio,
+            'form': form,
             'pasos': pasos,
-            'form': form
+            'paso_id': paso_id,
         })
+    
+class EliminarPasoView(View):
+    def post(self, request, paso_id):
+        paso = get_object_or_404(ComoLoRealizo, id=paso_id)
+        servicio_id = paso.servicio.id  # Guardamos para redirigir después
+        paso.delete()
+        return redirect('gestionar_realizo', servicio_id=servicio_id)
 """
     Terminan Vistas de Servicios en el administrador
 """
