@@ -1,6 +1,6 @@
 from django import forms
 
-from servicios.models import EnQueConsiste, QueSeRequiere, Servicio
+from servicios.models import ComoLoRealizo, EnQueConsiste, QueSeRequiere, Servicio
 
 class ServicioForm(forms.ModelForm):
     class Meta:
@@ -23,4 +23,12 @@ class QueSeRequiereForm(forms.ModelForm):
         widgets = {
             'especificaciones': forms.Textarea(attrs={'rows': 3}),
             'tipo_documento': forms.Textarea(attrs={'rows': 3})
+        }
+
+class ComoLoRealizoForm(forms.ModelForm):
+    class Meta:
+        model = ComoLoRealizo
+        exclude = ['servicio']
+        widgets = {
+            'descripcion': forms.Textarea(attrs={'rows': 3})
         }
