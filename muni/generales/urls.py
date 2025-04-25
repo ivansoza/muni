@@ -7,6 +7,7 @@ from . import views
 from .views import CrearCarpetaView, SubirArchivoView, ListarCarpetasView, EditarCarpetaView, GestionarCarpetaView, EliminarCarpetaView, EditarArchivoView, eliminar_archivo
 from .views import ListaObligacionesView, ListaObligacionesCreateView, ListaObligacionesUpdateView, ListaObligacionesDeleteView, GestionarArticulosView, CrearArticuloView, EditarArticuloView, EliminarArticuloView, actualizar_orden_articulos, convocatoriaHome, filtrar_convocatorias, GestionarArticulosArView, CrearArticuloLigaView, EditarArticuloLigaArchivoView
 from .views import crear_noticia
+
 urlpatterns = [
     path("", CustomLoginView.as_view(),name='login'),
     path('logout/', LogoutView.as_view(next_page='home'),  name='logout'),      
@@ -30,13 +31,12 @@ urlpatterns = [
     path('eliminar_ejercicio/<int:pk>/', eliminar_ejercicio_fiscal, name='eliminar_ejercicio'),
     path('editar_documento/<int:pk>/', DocumentoTransparenciaUpdateView.as_view(), name='editar_documento_transparencia'),
     path('eliminar_documento/<int:pk>/', eliminar_documento_transparencia, name='eliminar_documento_transparencia'),
-    
+
+    #-------------------------------- SERVICIOS ----------------------------------------------
     path('servicios/', ServicesView.as_view(), name='servicios_view'),
     path('servicios/eliminar/<uuid:servicio_id>/', views.eliminar_servicio, name='eliminar_servicio'),
     path('servicios/crear/', ServicioCreateView.as_view(), name='crear_servicio'),
     path('servicios/editar/<uuid:pk>/', ServicioUpdateView.as_view(), name='editar_servicio'),
-
-
 
     #--------------------------------GENERALES----------------------------------------------
     path('generales/', GeneralesDashboardView.as_view(), name='generalesDashboard'),
@@ -142,7 +142,7 @@ urlpatterns = [
         name="encuesta_toggle_estado",
     ),
     
-#--------------------------Nuevas Noticias---------------------------------
+    #--------------------------Nuevas Noticias---------------------------------
     path('crear_noticia/', crear_noticia, name='crear_noticia'),
     path('edicion_noticia/<int:pk>/', views.editar_noticia_nueva, name='edicion_noticia'),
 
