@@ -1,0 +1,25 @@
+{% extends 'baseTemplate.html' %}
+{% block content %}
+<div class="container-fluid">
+    <h2>Gestionar Servicio: {{ servicio.titulo }}</h2>
+
+    <!-- Sección ¿En qué consiste? -->
+    <div class="card mt-4">
+        <div class="card-header">
+            📌 ¿En qué consiste?
+        </div>
+        <div class="card-body">
+            {% if consiste %}
+                <p><strong>Trámite:</strong> {{ consiste.tramite }}</p>
+                <p><strong>Canales de presentación:</strong> {{ consiste.get_canales_presentacion_display }}</p>
+                <p><strong>Solicitado por:</strong> {{ consiste.get_solicitado_por_display }}</p>
+                <p><strong>Momento de solicitud:</strong> {{ consiste.momento_solicitud }}</p>
+                <a href="{% url 'gestionar_consiste' servicio.id %}" class="btn btn-outline-primary">Editar sección</a>
+            {% else %}
+                <a href="{% url 'gestionar_consiste' servicio.id %}" class="btn btn-success">Agregar sección</a>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
