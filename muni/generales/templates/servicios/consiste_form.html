@@ -1,0 +1,16 @@
+{% extends "baseTemplate.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2>📌 ¿En qué consiste? – {{ servicio.titulo }}</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">💾 Guardar</button>
+            <a href="{% url 'gestionar_servicio' servicio.id %}" class="btn btn-secondary btn-lg">❌ Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,6 +1,6 @@
 from django import forms
 
-from servicios.models import Servicio
+from servicios.models import EnQueConsiste, Servicio
 
 class ServicioForm(forms.ModelForm):
     class Meta:
@@ -10,3 +10,8 @@ class ServicioForm(forms.ModelForm):
         widgets = {
             'descripcion': forms.Textarea(attrs={'rows': 3})
         }
+
+class EnQueConsisteForm(forms.ModelForm):
+    class Meta:
+        model = EnQueConsiste
+        fields = ['tramite', 'canal_presentacion', 'solicitado_por', 'momento_solicitud']
