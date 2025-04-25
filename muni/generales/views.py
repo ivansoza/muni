@@ -23,8 +23,8 @@ from informacion_municipal.models import Municipio, Video
 from generales.models import ContadorVisitas, SeccionPlus, Secciones, SocialNetwork
 from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, AvisoDePrivacidadForm
 from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
-from servicios.forms import ServicioForm
-from servicios.models import Servicio
+from servicios.forms import EnQueConsisteForm, ServicioForm
+from servicios.models import EnQueConsiste, Servicio
 from .forms import CustomAuthenticationForm, GroupForm, SeccionPlusForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
@@ -991,6 +991,35 @@ class ServicioUpdateView(LoginRequiredMixin, UpdateView):
         }
         context['sidebar'] = 'servicios'
         return context
+    
+class GestionarServicioView(TemplateView):
+    template_name = "servicios/gestionar_servicio.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        servicio = Servicio.objects.get(pk=kwargs['pk'])
+        consiste = EnQueConsiste.objects.filter(servicio=servicio).first()
+        context.update({
+            'servicio': servicio,
+            'consiste': consiste
+        })
+        return context
+    
+class EnQueConsisteView(View):
+    def get(self, request, servicio_id):
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        consiste, _ = EnQueConsiste.objects.get_or_create(servicio=servicio)
+        form = EnQueConsisteForm(instance=consiste)
+        return render(request, 'servicios/consiste_form.html', {'form': form, 'servicio': servicio})
+
+    def post(self, request, servicio_id):
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        consiste, _ = EnQueConsiste.objects.get_or_create(servicio=servicio)
+        form = EnQueConsisteForm(request.POST, instance=consiste)
+        if form.is_valid():
+            form.save()
+            return redirect('gestionar_servicio', pk=servicio.id )  # Cambia si tu url tiene otro name
+        return render(request, 'servicios/consiste_form.html', {'form': form, 'servicio': servicio})
 """
     Terminan Vistas de Servicios en el administrador
 """
