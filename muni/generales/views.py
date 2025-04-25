@@ -23,8 +23,8 @@ from informacion_municipal.models import Municipio, Video
 from generales.models import ContadorVisitas, SeccionPlus, Secciones, SocialNetwork
 from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, AvisoDePrivacidadForm
 from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
-from servicios.forms import EnQueConsisteForm, ServicioForm
-from servicios.models import EnQueConsiste, Servicio
+from servicios.forms import EnQueConsisteForm, QueSeRequiereForm, ServicioForm
+from servicios.models import EnQueConsiste, QueSeRequiere, Servicio
 from .forms import CustomAuthenticationForm, GroupForm, SeccionPlusForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
@@ -999,9 +999,11 @@ class GestionarServicioView(TemplateView):
         context = super().get_context_data(**kwargs)
         servicio = Servicio.objects.get(pk=kwargs['pk'])
         consiste = EnQueConsiste.objects.filter(servicio=servicio).first()
+        requisitos = QueSeRequiere.objects.filter(servicio=servicio)
         context.update({
             'servicio': servicio,
-            'consiste': consiste
+            'consiste': consiste,
+            'requisitos': requisitos
         })
         return context
     
@@ -1020,6 +1022,67 @@ class EnQueConsisteView(View):
             form.save()
             return redirect('gestionar_servicio', pk=servicio.id )  # Cambia si tu url tiene otro name
         return render(request, 'servicios/consiste_form.html', {'form': form, 'servicio': servicio})
+    
+class RequisitosView(View):
+    def get(self, request, servicio_id):
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        requisitos = QueSeRequiere.objects.filter(servicio=servicio)
+        form = QueSeRequiereForm()
+        return render(request, 'servicios/requisitos_form.html', {
+            'servicio': servicio,
+            'requisitos': requisitos,
+            'form': form
+        })
+
+    def post(self, request, servicio_id):
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        form = QueSeRequiereForm(request.POST, request.FILES)
+        if form.is_valid():
+            requisito = form.save(commit=False)
+            requisito.servicio = servicio
+            requisito.save()
+            return redirect('gestionar_requisitos', servicio_id=servicio.id)
+        requisitos = QueSeRequiere.objects.filter(servicio=servicio)
+        return render(request, 'servicios/requisitos_form.html', {
+            'servicio': servicio,
+            'requisitos': requisitos,
+            'form': form
+        })
+    
+class EditarRequisitoView(View):
+    def get(self, request, servicio_id, requisito_id):
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        requisito = get_object_or_404(QueSeRequiere, id=requisito_id, servicio=servicio)
+        form = QueSeRequiereForm(instance=requisito)
+        return render(request, 'servicios/requisitos_form.html', {
+            'servicio': servicio,
+            'form': form,
+            'requisitos': QueSeRequiere.objects.filter(servicio=servicio),
+            'modo_edicion': True,
+            'requisito_id': requisito.id
+        })
+
+    def post(self, request, servicio_id, requisito_id):
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        requisito = get_object_or_404(QueSeRequiere, id=requisito_id, servicio=servicio)
+        form = QueSeRequiereForm(request.POST, request.FILES, instance=requisito)
+        if form.is_valid():
+            form.save()
+            return redirect('gestionar_requisitos', servicio_id=servicio.id)
+        return render(request, 'servicios/requisitos_form.html', {
+            'servicio': servicio,
+            'form': form,
+            'requisitos': QueSeRequiere.objects.filter(servicio=servicio),
+            'modo_edicion': True,
+            'requisito_id': requisito.id
+        })
+    
+class EliminarRequisitoView(View):
+    def post(self, request, servicio_id, requisito_id):
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        requisito = get_object_or_404(QueSeRequiere, id=requisito_id, servicio=servicio)
+        requisito.delete()
+        return redirect('gestionar_requisitos', servicio_id=servicio.id)
 """
     Terminan Vistas de Servicios en el administrador
 """
