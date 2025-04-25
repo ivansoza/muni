@@ -200,3 +200,133 @@ class MiembroGabineteDirectores(models.Model):
 
     def __str__(self):
         return f"{self.orden} - {self.nombre} ({self.cargo})"
+    
+
+class MiembroGabinetePresidentesComu(models.Model):
+    STATUS_CHOICES = [
+        ('activo', 'Activo'),
+        ('inactivo', 'Inactivo'),
+    ]
+
+    municipio = models.ForeignKey(
+        Municipio,
+        on_delete=models.CASCADE,
+        related_name="gabinete_presidentes_comu",
+        verbose_name="Municipio"
+    )
+    nombre = models.CharField("Nombre", max_length=255)
+    cargo = models.CharField("Cargo", max_length=255)
+    semblanza = models.TextField("Semblanza", blank=True, null=True)
+    numero_contacto = models.CharField("Número de Contacto", max_length=20, blank=True, null=True)
+    correo_electronico = models.EmailField("Correo Electrónico", blank=True, null=True)
+    pagina_web = models.URLField("Página Web", blank=True, null=True)
+    
+    imagen = models.ImageField(
+        "Fotografía del Presidente Comunal",
+        upload_to='presidentes_comu/',
+        blank=True,
+        null=True,
+        help_text="Carga la fotografía del presidente comunal (opcional)."
+    )
+    
+    orden = models.PositiveIntegerField(
+        "Orden",
+        default=1,
+        help_text="El miembro con orden 1 será considerado el principal."
+    )
+    status = models.CharField(
+        "Estado",
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default='activo'
+    )
+    
+    # Nuevos campos:
+    telefono = models.CharField("Teléfono", max_length=20, blank=True, null=True)
+    horario = models.CharField("Horario de Atención", max_length=255, blank=True, null=True)
+    formacion_academica = models.TextField("Formación Académica", blank=True, null=True)
+    experiencia = models.TextField("Experiencia en el Servicio Público", blank=True, null=True)
+    area = models.CharField("Área de Trabajo", max_length=255, blank=True, null=True)
+    descripcion_area = models.TextField("Descripción del Área de Trabajo", blank=True, null=True)
+    
+    dependencia = models.ForeignKey(
+        Dependencia,
+        on_delete=models.CASCADE,
+        related_name="presidentes_comu",
+        verbose_name="Dependencia",
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        ordering = ['orden']
+        verbose_name = "Miembro del Gabinete / Presidente Comunal"
+        verbose_name_plural = "Miembros del Gabinete / Presidentes Comunales"
+
+    def __str__(self):
+        return f"{self.orden} - {self.nombre} ({self.cargo})"
+    
+
+class MiembroGabineteCoordinadoresDif(models.Model):
+    STATUS_CHOICES = [
+        ('activo', 'Activo'),
+        ('inactivo', 'Inactivo'),
+    ]
+
+    municipio = models.ForeignKey(
+        Municipio,
+        on_delete=models.CASCADE,
+        related_name="gabinete_coordinadores_dif",
+        verbose_name="Municipio"
+    )
+    nombre = models.CharField("Nombre", max_length=255)
+    cargo = models.CharField("Cargo", max_length=255)
+    semblanza = models.TextField("Semblanza", blank=True, null=True)
+    numero_contacto = models.CharField("Número de Contacto", max_length=20, blank=True, null=True)
+    correo_electronico = models.EmailField("Correo Electrónico", blank=True, null=True)
+    pagina_web = models.URLField("Página Web", blank=True, null=True)
+    
+    imagen = models.ImageField(
+        "Fotografía del Coordinador DIF",
+        upload_to='coordinadores_dif/',
+        blank=True,
+        null=True,
+        help_text="Carga la fotografía del coordinador/a DIF (opcional)."
+    )
+    
+    orden = models.PositiveIntegerField(
+        "Orden",
+        default=1,
+        help_text="El miembro con orden 1 será considerado el principal."
+    )
+    status = models.CharField(
+        "Estado",
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default='activo'
+    )
+    
+    # Nuevos campos:
+    telefono = models.CharField("Teléfono", max_length=20, blank=True, null=True)
+    horario = models.CharField("Horario de Atención", max_length=255, blank=True, null=True)
+    formacion_academica = models.TextField("Formación Académica", blank=True, null=True)
+    experiencia = models.TextField("Experiencia en el Servicio Público", blank=True, null=True)
+    area = models.CharField("Área de Trabajo", max_length=255, blank=True, null=True)
+    descripcion_area = models.TextField("Descripción del Área de Trabajo", blank=True, null=True)
+    
+    dependencia = models.ForeignKey(
+        Dependencia,
+        on_delete=models.CASCADE,
+        related_name="coordinadores_dif",
+        verbose_name="Dependencia",
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        ordering = ['orden']
+        verbose_name = "Miembro del Gabinete / Coordinador DIF"
+        verbose_name_plural = "Miembros del Gabinete / Coordinadores DIF"
+
+    def __str__(self):
+        return f"{self.orden} - {self.nombre} ({self.cargo})"
