@@ -1,0 +1,50 @@
+{% extends 'baseTemplate.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container-fluid">
+    <h2>📄 ¿Qué se requiere? - {{ servicio.titulo }}</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success">Agregar requisito</button>
+        <a href="{% url 'gestionar_servicio' servicio.id %}" class="btn btn-secondary">Volver</a>
+    </form>
+
+    <hr>
+
+    <h4>Requisitos existentes</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Original</th>
+                <th>Copia</th>
+                <th>Archivo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in requisitos %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ r.nombre }}</td>
+                <td>{{ r.tipo_documento }}</td>
+                <td>{{ r.presentar_original|yesno:"Sí,No" }}</td>
+                <td>{{ r.presentar_copia|yesno:"Sí,No" }}</td>
+                <td>
+                    {% if r.archivo_descarga %}
+                        <a href="{{ r.archivo_descarga.url }}" target="_blank">Descargar</a>
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="text-center">No hay requisitos registrados.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
