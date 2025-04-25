@@ -12,8 +12,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView
-from gobierno.models import MiembroGabinete, MiembroGabineteDirectores, MiembroGabineteRegidores
-from gobierno.forms import MiembroGabineteDirectorForm, MiembroGabineteForm, MiembroGabineteRegidorForm
+from gobierno.models import MiembroGabinete, MiembroGabineteCoordinadoresDif, MiembroGabineteDirectores, MiembroGabinetePresidentesComu, MiembroGabineteRegidores
+from gobierno.forms import MiembroGabineteCoordinadoresDifForm, MiembroGabineteDirectorForm, MiembroGabineteForm, MiembroGabinetePresidentesComuForm, MiembroGabineteRegidorForm
 # Create your views here.
 # 
 from django.shortcuts import get_list_or_404
@@ -112,6 +112,21 @@ def directores_list_api(request):
     return lista_miembros(request, MiembroGabineteDirectores)
 
 
+def presidentes_comu_list_api(request):
+    """
+    Devuelve en JSON la lista de Presidentes Comunales
+    activos en el municipio activo, ordenados por 'orden'.
+    """
+    return lista_miembros(request, MiembroGabinetePresidentesComu)
+
+
+def coordinadores_dif_list_api(request):
+    """
+    Devuelve en JSON la lista de Coordinadores DIF
+    activos en el municipio activo, ordenados por 'orden'.
+    """
+    return lista_miembros(request, MiembroGabineteCoordinadoresDif)
+
 
 @require_POST
 @csrf_exempt          # deja esta línea solo si no envías el header X‑CSRFTOKEN desde JS
@@ -158,7 +173,18 @@ def regidores_update_order_api(request):
 def directores_update_order_api(request):
     return update_order(request, MiembroGabineteDirectores)
 
+def presidentes_comu_update_order_api(request):
+    """
+    Wrapper para actualizar el orden de Presidentes Comunales.
+    """
+    return update_order(request, MiembroGabinetePresidentesComu)
 
+
+def coordinadores_dif_update_order_api(request):
+    """
+    Wrapper para actualizar el orden de Coordinadores DIF.
+    """
+    return update_order(request, MiembroGabineteCoordinadoresDif)
 
 
 class MiembroGabineteCreateView(LoginRequiredMixin, CreateView):
@@ -284,3 +310,90 @@ class DirectorUpdateView(LoginRequiredMixin, UpdateView):
         }
         context['sidebar'] = 'gabinete'
         return context
+    
+
+
+
+
+class PresidenteComuCreateView(LoginRequiredMixin, CreateView):
+    model = MiembroGabinetePresidentesComu
+    form_class = MiembroGabinetePresidentesComuForm
+    template_name = 'admin/presidentes_comu_form.html'
+    success_url = reverse_lazy('ListarGabineteView')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Presidente comunal creado con éxito.")
+        return response
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['breadcrumb'] = {
+            'parent': {'name': 'Lista de Presidentes Comunales', 'url': '/gobierno/lista-presidentes-comu/'},
+            'child': {'name': 'Crear Nuevo Presidente Comunal', 'url': ''}
+        }
+        ctx['sidebar'] = 'gabinete'
+        return ctx
+
+
+class PresidenteComuUpdateView(LoginRequiredMixin, UpdateView):
+    model = MiembroGabinetePresidentesComu
+    form_class = MiembroGabinetePresidentesComuForm
+    template_name = 'admin/presidentes_comu_form.html'
+    success_url = reverse_lazy('ListarGabineteView')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Presidente comunal actualizado con éxito.")
+        return response
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['breadcrumb'] = {
+            'parent': {'name': 'Lista de Presidentes Comunales', 'url': '/gobierno/lista-presidentes-comu/'},
+            'child': {'name': 'Editar Presidente Comunal', 'url': ''}
+        }
+        ctx['sidebar'] = 'gabinete'
+        return ctx
+
+
+class CoordinadorDifCreateView(LoginRequiredMixin, CreateView):
+    model = MiembroGabineteCoordinadoresDif
+    form_class = MiembroGabineteCoordinadoresDifForm
+    template_name = 'admin/coordinadores_dif_form.html'
+    success_url = reverse_lazy('ListarGabineteView')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Coordinador DIF creado con éxito.")
+        return response
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['breadcrumb'] = {
+            'parent': {'name': 'Lista de Coordinadores DIF', 'url': '/gobierno/lista-coordinadores-dif/'},
+            'child': {'name': 'Crear Nuevo Coordinador DIF', 'url': ''}
+        }
+        ctx['sidebar'] = 'gabinete'
+        return ctx
+
+
+class CoordinadorDifUpdateView(LoginRequiredMixin, UpdateView):
+    model = MiembroGabineteCoordinadoresDif
+    form_class = MiembroGabineteCoordinadoresDifForm
+    template_name = 'admin/coordinadores_dif_form.html'
+    success_url = reverse_lazy('ListarGabineteView')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Coordinador DIF actualizado con éxito.")
+        return response
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['breadcrumb'] = {
+            'parent': {'name': 'Lista de Coordinadores DIF', 'url': '/gobierno/lista-coordinadores-dif/'},
+            'child': {'name': 'Editar Coordinador DIF', 'url': ''}
+        }
+        ctx['sidebar'] = 'gabinete'
+        return ctx
