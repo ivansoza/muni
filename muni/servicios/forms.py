@@ -6,7 +6,7 @@ class ServicioForm(forms.ModelForm):
     class Meta:
         model = Servicio
         fields = ['titulo', 'descripcion', 'url_tramite', 'estado', 
-                  'clasificacion', 'sector', 'organismo', 'pago_en_linea', 'ahora_en_linea']
+                  'clasificacion', 'sector', 'organismo', 'pago_en_linea', 'ahora_en_linea', 'responsable']
         widgets = {
             'descripcion': forms.Textarea(attrs={'rows': 3})
         }
