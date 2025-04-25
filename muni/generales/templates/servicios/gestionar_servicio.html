@@ -21,5 +21,35 @@
         </div>
     </div>
 
+    <!-- Sección ¿Qué se requiere? -->
+    <div class="card mt-4">
+        <div class="card-header">
+            📄 ¿Qué se requiere?
+        </div>
+        <div class="card-body">
+            {% if requisitos %}
+                <ul class="list-group mb-3">
+                    {% for r in requisitos %}
+                    <li class="list-group-item">
+                        <strong>{{ forloop.counter }}. {{ r.nombre }}</strong> — 
+                        Tipo: {{ r.tipo_documento }} |
+                        Original: {{ r.presentar_original|yesno:"Sí,No" }} |
+                        Copia: {{ r.presentar_copia|yesno:"Sí,No" }} |
+                        {% if r.archivo_descarga %}
+                            <a href="{{ r.archivo_descarga.url }}" target="_blank">📄 Descargar</a>
+                        {% else %}
+                            Sin archivo
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No hay requisitos registrados aún.</p>
+            {% endif %}
+
+            <a href="{% url 'gestionar_requisitos' servicio.id %}" class="btn btn-outline-primary">Gestionar requisitos</a>
+        </div>
+    </div>
+
 </div>
 {% endblock %}
