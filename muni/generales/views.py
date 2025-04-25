@@ -23,8 +23,8 @@ from informacion_municipal.models import Municipio, Video
 from generales.models import ContadorVisitas, SeccionPlus, Secciones, SocialNetwork
 from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, AvisoDePrivacidadForm
 from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
-from servicios.forms import EnQueConsisteForm, QueSeRequiereForm, ServicioForm
-from servicios.models import EnQueConsiste, QueSeRequiere, Servicio
+from servicios.forms import ComoLoRealizoForm, EnQueConsisteForm, QueSeRequiereForm, ServicioForm
+from servicios.models import ComoLoRealizo, EnQueConsiste, QueSeRequiere, Servicio
 from .forms import CustomAuthenticationForm, GroupForm, SeccionPlusForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
@@ -1000,10 +1000,16 @@ class GestionarServicioView(TemplateView):
         servicio = Servicio.objects.get(pk=kwargs['pk'])
         consiste = EnQueConsiste.objects.filter(servicio=servicio).first()
         requisitos = QueSeRequiere.objects.filter(servicio=servicio)
+        instrucciones_queryset = ComoLoRealizo.objects.filter(servicio=servicio).order_by('canal_presentacion__nombre', 'paso')
+        instrucciones = {
+            'linea': instrucciones_queryset.filter(canal_presentacion__nombre='linea'),
+            'presencial': instrucciones_queryset.filter(canal_presentacion__nombre='presencial')
+        }
         context.update({
             'servicio': servicio,
             'consiste': consiste,
-            'requisitos': requisitos
+            'requisitos': requisitos,
+            'instrucciones': instrucciones
         })
         return context
     
@@ -1083,6 +1089,33 @@ class EliminarRequisitoView(View):
         requisito = get_object_or_404(QueSeRequiere, id=requisito_id, servicio=servicio)
         requisito.delete()
         return redirect('gestionar_requisitos', servicio_id=servicio.id)
+    
+class RealizoView(View):
+    def get(self, request, servicio_id):
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        pasos = ComoLoRealizo.objects.filter(servicio=servicio).order_by('canal_presentacion__nombre', 'paso')
+        form = ComoLoRealizoForm()
+        return render(request, 'servicios/realizo_form.html', {
+            'servicio': servicio,
+            'pasos': pasos,
+            'form': form
+        })
+
+    def post(self, request, servicio_id):
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        form = ComoLoRealizoForm(request.POST)
+        if form.is_valid():
+            paso = form.save(commit=False)
+            paso.servicio = servicio
+            paso.save()
+            return redirect('gestionar_realizo', servicio_id=servicio.id)
+        
+        pasos = ComoLoRealizo.objects.filter(servicio=servicio).order_by('canal_presentacion__nombre', 'paso')
+        return render(request, 'servicios/realizo_form.html', {
+            'servicio': servicio,
+            'pasos': pasos,
+            'form': form
+        })
 """
     Terminan Vistas de Servicios en el administrador
 """

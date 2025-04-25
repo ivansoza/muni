@@ -51,5 +51,35 @@
         </div>
     </div>
 
+    <!-- Sección ¿Cómo lo realizo? -->
+    <div class="card mt-4">
+        <div class="card-header">
+            🛠️ ¿Cómo lo realizo?
+        </div>
+        <div class="card-body">
+            {% if instrucciones %}
+                {% for canal, pasos in instrucciones.items %}
+                    <h5>
+                        {% if canal == "linea" %}
+                            💻 En línea
+                        {% elif canal == "presencial" %}
+                            🏢 Presencial
+                        {% else %}
+                            Otro
+                        {% endif %}
+                    </h5>
+                    <ol>
+                        {% for paso in pasos %}
+                            <li>{{ paso.descripcion }}</li>
+                        {% endfor %}
+                    </ol>
+                {% endfor %}
+                    <a href="{% url 'gestionar_realizo' servicio.id %}" class="btn btn-outline-primary">Gestionar pasos</a>
+            {% else %}
+                <a href="{% url 'gestionar_realizo' servicio.id %}" class="btn btn-success">Agregar pasos</a>
+            {% endif %}
+        </div>
+    </div>
+
 </div>
 {% endblock %}
