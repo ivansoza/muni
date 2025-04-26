@@ -499,35 +499,63 @@
 
       
     {% if regidores %}
-    <div class="gabinete">
-      <h2>Regidores</h2>
-      <div class="miembros-gabinete">
-        {% for miembro in regidores %}
-          <div class="miembro">
-            <a href="#">
-              <div class="foto-miembro">
-                {% if miembro.imagen %}
-                  <img src="{{ miembro.imagen.url }}" 
-                       alt="{{ miembro.nombre }}">
-                {% else %}
-                  {% if municipio.logotipo_claro %}
-                    <img src="{{ municipio.logotipo_claro.url }}"
-                         alt="{{ miembro.nombre }}">
+      <div class="gabinete">
+        <h2>Regidores</h2>
+        <div class="miembros-gabinete">
+          {% for miembro in regidores %}
+            <div class="miembro">
+              <a href="#">
+                <div class="foto-miembro">
+                  {% if miembro.imagen %}
+                    <img src="{{ miembro.imagen.url }}" 
+                        alt="{{ miembro.nombre }}">
                   {% else %}
-                    <img src="{{ municipio.logotipo.url }}"
-                         alt="{{ miembro.nombre }}">
+                    {% if municipio.logotipo_claro %}
+                      <img src="{{ municipio.logotipo_claro.url }}"
+                          alt="{{ miembro.nombre }}">
+                    {% else %}
+                      <img src="{{ municipio.logotipo.url }}"
+                          alt="{{ miembro.nombre }}">
+                    {% endif %}
                   {% endif %}
-                {% endif %}
-                <div class="overlay"></div>
-              </div>
-            </a>
-            <h3>{{ miembro.nombre }}</h3>
-            <p>{{ miembro.cargo }}</p>
-          </div>
-        {% endfor %}
+                  <div class="overlay"></div>
+                </div>
+              </a>
+              <h3>{{ miembro.nombre }}</h3>
+              <p>{{ miembro.cargo }}</p>
+            </div>
+          {% endfor %}
+        </div>
       </div>
-    </div>
-  {% endif %}
+    {% endif %}
+    {# Presidentes Comunales #}
+    {% if presidentes_comu %}
+      <div class="gabinete">
+        <h2>Presidentes de Comunidad</h2>
+        <div class="miembros-gabinete">
+          {% for miembro in presidentes_comu %}
+            <div class="miembro">
+              <a href="#">
+                <div class="foto-miembro">
+                  {% if miembro.imagen %}
+                    <img src="{{ miembro.imagen.url }}" alt="{{ miembro.nombre }}">
+                  {% else %}
+                    {% if municipio.logotipo_claro %}
+                      <img src="{{ municipio.logotipo_claro.url }}" alt="{{ miembro.nombre }}">
+                    {% else %}
+                      <img src="{{ municipio.logotipo.url }}" alt="{{ miembro.nombre }}">
+                    {% endif %}
+                  {% endif %}
+                  <div class="overlay"></div>
+                </div>
+              </a>
+              <h3>{{ miembro.nombre }}</h3>
+              <p>{{ miembro.cargo }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
 
 
     {% if directores%}
@@ -566,7 +594,34 @@
         </div>
       </div>
     {% endif %}
-
+    {# Coordinadores DIF #}
+    {% if coordinadores_dif %}
+      <div class="gabinete">
+        <h2>Coordinadores </h2>
+        <div class="miembros-gabinete">
+          {% for miembro in coordinadores_dif %}
+            <div class="miembro">
+              <a href="#">
+                <div class="foto-miembro">
+                  {% if miembro.imagen %}
+                    <img src="{{ miembro.imagen.url }}" alt="{{ miembro.nombre }}">
+                  {% else %}
+                    {% if municipio.logotipo_claro %}
+                      <img src="{{ municipio.logotipo_claro.url }}" alt="{{ miembro.nombre }}">
+                    {% else %}
+                      <img src="{{ municipio.logotipo.url }}" alt="{{ miembro.nombre }}">
+                    {% endif %}
+                  {% endif %}
+                  <div class="overlay"></div>
+                </div>
+              </a>
+              <h3>{{ miembro.nombre }}</h3>
+              <p>{{ miembro.cargo }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
 
   {% else %}
     <p>No se encontró información del municipio.</p>
