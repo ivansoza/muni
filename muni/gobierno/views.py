@@ -25,26 +25,30 @@ class HomeGobiernoView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # 1. Obtenemos el primer municipio con status activo
         municipio_activo = Municipio.objects.filter(status='activo').first()
 
-        # 2. Si hay municipio activo, obtenemos sus miembros activos y ordenados
         if municipio_activo:
             miembros_activos = municipio_activo.gabinete.filter(status='activo').order_by('orden')
             regidores_activos = municipio_activo.gabinete_regidores.filter(status='activo').order_by('orden')
             directores_activos = municipio_activo.gabinete_directores.filter(status='activo').order_by('orden')
+            presidentes_comu_activos = municipio_activo.gabinete_presidentes_comu.filter(status='activo').order_by('orden')
+            coordinadores_dif_activos = municipio_activo.gabinete_coordinadores_dif.filter(status='activo').order_by('orden')
         else:
             miembros_activos = None
             regidores_activos = None
             directores_activos = None
+            presidentes_comu_activos = None
+            coordinadores_dif_activos = None
 
-        # 3. Agregamos los datos al contexto
-        context['municipio'] = municipio_activo
-        context['miembros'] = miembros_activos
-        context['regidores'] = regidores_activos
-        context['directores'] = directores_activos
-        context['sidebar'] = 'gobierno'  # Marcar 'Inicio' como activo
-
+        context.update({
+            'municipio': municipio_activo,
+            'miembros': miembros_activos,
+            'regidores': regidores_activos,
+            'directores': directores_activos,
+            'presidentes_comu': presidentes_comu_activos,
+            'coordinadores_dif': coordinadores_dif_activos,
+            'sidebar': 'gobierno',
+        })
         return context
 class SemblanzaHomeView(TemplateView):
     template_name = 'homeSemblanza.html'
@@ -69,14 +73,18 @@ class ListarGabineteView(LoginRequiredMixin, TemplateView):
 
         def contador(modelo):
             if municipio_activo:
-                return modelo.objects.filter(municipio=municipio_activo,
-                                             status='activo').count()
+                return modelo.objects.filter(
+                    municipio=municipio_activo,
+                    status='activo'
+                ).count()
             return 0
 
         ctx['contacts_data'] = {
             'gabinete': contador(MiembroGabinete),
             'regidores': contador(MiembroGabineteRegidores),
             'directores': contador(MiembroGabineteDirectores),
+            'presidentes_comu': contador(MiembroGabinetePresidentesComu),
+            'coordinadores_dif': contador(MiembroGabineteCoordinadoresDif),
         }
 
         ctx['regreso_url'] = reverse("dashboard")
@@ -323,14 +331,14 @@ class PresidenteComuCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        messages.success(self.request, "Presidente comunal creado con éxito.")
+        messages.success(self.request, "Presidente de comunidad creado con éxito.")
         return response
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['breadcrumb'] = {
-            'parent': {'name': 'Lista de Presidentes Comunales', 'url': '/gobierno/lista-presidentes-comu/'},
-            'child': {'name': 'Crear Nuevo Presidente Comunal', 'url': ''}
+            'parent': {'name': 'Lista de Presidentes de Comunidad', 'url': '/gobierno/lista-presidentes-comu/'},
+            'child': {'name': 'Crear Nuevo Presidente de Comunidad', 'url': ''}
         }
         ctx['sidebar'] = 'gabinete'
         return ctx
@@ -344,14 +352,14 @@ class PresidenteComuUpdateView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        messages.success(self.request, "Presidente comunal actualizado con éxito.")
+        messages.success(self.request, "Presidente de Comunidad actualizado con éxito.")
         return response
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['breadcrumb'] = {
-            'parent': {'name': 'Lista de Presidentes Comunales', 'url': '/gobierno/lista-presidentes-comu/'},
-            'child': {'name': 'Editar Presidente Comunal', 'url': ''}
+            'parent': {'name': 'Lista de Presidentes de Comunidad', 'url': '/gobierno/lista-presidentes-comu/'},
+            'child': {'name': 'Editar Presidente de Comunidad', 'url': ''}
         }
         ctx['sidebar'] = 'gabinete'
         return ctx
