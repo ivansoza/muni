@@ -949,6 +949,7 @@ class ServicesView(LoginRequiredMixin, TemplateView):
         }
         context['sidebar'] = 'servicios'  # Asegura que el sidebar resalte la sección de Servicios
         context['servicios'] = Servicio.objects.all()
+        context['regreso_url'] = url_configuracion
 
         return context
     
