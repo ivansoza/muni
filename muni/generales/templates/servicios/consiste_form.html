@@ -1,18 +1,35 @@
 {% extends 'baseTemplate.html' %}
-{% load crispy_forms_tags %}  {# si estás usando crispy #}
+{% load crispy_forms_tags %}
 
 {% block content %}
 <div class="container-fluid">
-    <h3 class="mb-4">Editar sección: ¿En qué consiste?</h3>
-
-    <form method="post">
-        {% csrf_token %}
-        {{ form|crispy }}
-
-        <div class="mt-3">
-            <button type="submit" class="btn btn-primary">💾 Guardar</button>
-            <a href="{% url 'gestionar_servicio' servicio.id %}" class="btn btn-secondary">Cancelar</a>
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h2 class="mb-0">
+                {% if consiste %}
+                    Editar sección: ¿En qué consiste?
+                {% else %}
+                    Agregar sección: ¿En qué consiste?
+                {% endif %}
+            </h2>
         </div>
-    </form>
+
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+        
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary btn-lg me-3">
+                        💾 Guardar
+                    </button>
+
+                    <a href="{% url 'gestionar_servicio' servicio.id %}" class="btn btn-secondary btn-lg">
+                        ❌ Volver
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}
