@@ -18,14 +18,15 @@ from django.views.generic import TemplateView, ListView, CreateView, UpdateView,
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.http import require_POST
 from django.views.generic import FormView
+from django.http import JsonResponse, HttpResponseNotAllowed
 
-from informacion_municipal.models import Municipio, Video
+from informacion_municipal.models import ElementoLista, InformacionCiudad, Municipio, Video
 from generales.models import ContadorVisitas, SeccionPlus, Secciones, SocialNetwork
 from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, AvisoDePrivacidadForm
 from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
 from servicios.forms import ComoLoRealizoForm, CuantoCuestaForm, EnQueConsisteForm, QueSeRequiereForm, ServicioForm
 from servicios.models import ComoLoRealizo, CuantoCuesta, EnQueConsiste, QueSeRequiere, Servicio
-from .forms import CustomAuthenticationForm, GroupForm, SeccionPlusForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm
+from .forms import CustomAuthenticationForm, ElementoListaForm, GroupForm, InformacionCiudadForm, SeccionPlusForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from noticias.models import Noticia, ImagenGaleria, Categoria
@@ -96,6 +97,133 @@ class ReportesView(LoginRequiredMixin,TemplateView):
         context['regreso_url']= url_configuracion
         return context
     
+class DetailMunicipioView(LoginRequiredMixin,TemplateView):
+    template_name = 'detalle/detalle.html'
+
+
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        if not (user.is_superuser or user.has_perm('auth.add_user')):
+            raise PermissionDenied  
+        return super().dispatch(request, *args, **kwargs)
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumb"] = {
+            'parent': {'name': 'Generales', 'url': '/admin'},
+            'child': {'name': 'Detalles de Municipio', 'url': ''}
+        }
+        context['sidebar'] = 'Generales' 
+        url_configuracion = reverse( 'generalesDashboard')
+        context['regreso_url']= url_configuracion
+        return context
+    
+@login_required
+@require_http_methods(["GET", "POST"])
+def informacion_ciudad_api(request):
+    """
+    Endpoint JSON-only para la ficha de InformaciónCiudad.
+    - Selecciona el primer Municipio con status='activo'.
+    - Si no hay municipios activos → 404.
+    - GET  → devuelve datos.
+    - POST → actualiza (lema, título, etc.).
+    """
+    municipio = (
+        Municipio.objects
+        .filter(status="activo")
+        .order_by("id")
+        .first()
+    )
+
+    if municipio is None:
+        return JsonResponse(
+            {"detail": "No hay ningún Municipio con estatus 'activo'."},
+            status=404
+        )
+
+    # ficha vinculada a ese municipio
+    info, _ = InformacionCiudad.objects.get_or_create(municipio=municipio)
+
+    if request.method == "GET":
+        data = {
+            "id":               info.id,
+            "municipio":        municipio.nombre,         # ← nombre del municipio activo
+            "lema":             info.lema,
+            "titulo":           info.titulo,
+            "subtitulo":        info.subtitulo,
+            "encabezado_lista": info.encabezado_lista,
+            "elementos": list(info.elementos.values("id", "texto")),
+        }
+        return JsonResponse(data, status=200)
+
+    # --- POST → actualizar ----------------------------------------------
+    payload = json.loads(request.body or "{}")
+    form = InformacionCiudadForm(payload, instance=info)
+    if form.is_valid():
+        form.save()
+        return JsonResponse(
+            {"detail": "Información actualizada con éxito."},
+            status=200
+        )
+    return JsonResponse({"errors": form.errors}, status=400)
+@login_required
+@csrf_exempt
+def elemento_api(request, pk=None):
+    """
+    Crear, actualizar o eliminar un ElementoLista:
+      • POST    /elemento/          → crear
+      • PATCH   /elemento/<pk>/     → actualizar
+      • DELETE  /elemento/<pk>/     → eliminar
+    Siempre trabaja con el primer Municipio activo.
+    """
+    # 1️⃣ Obtener el primer Municipio activo
+    municipio = Municipio.objects.filter(status="activo").order_by("id").first()
+    if not municipio:
+        return JsonResponse(
+            {"detail": "No hay ningún Municipio con estatus 'activo'."},
+            status=404
+        )
+
+    # 2️⃣ Asegurar la existencia de la ficha de InfoCiudad
+    info, _ = InformacionCiudad.objects.get_or_create(municipio=municipio)
+
+    # 3️⃣ CREAR (POST sin pk)
+    if request.method == "POST" and pk is None:
+        payload = json.loads(request.body or "{}")
+        form = ElementoListaForm(payload)
+        if form.is_valid():
+            elemento = form.save(commit=False)
+            elemento.informacion = info
+            elemento.save()
+            return JsonResponse({"id": elemento.id, "texto": elemento.texto}, status=201)
+        return JsonResponse({"errors": form.errors}, status=400)
+
+    # 4️⃣ A partir de aquí, necesitamos un pk válido
+    elemento = get_object_or_404(
+        ElementoLista,
+        pk=pk,
+        informacion__municipio=municipio
+    )
+
+    # 5️⃣ ACTUALIZAR (PATCH)
+    if request.method == "PATCH":
+        payload = json.loads(request.body or "{}")
+        # ❌ NO usar partial=True aquí
+        form = ElementoListaForm(payload, instance=elemento)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({"detail": "Elemento actualizado."}, status=200)
+        return JsonResponse({"errors": form.errors}, status=400)
+
+    # 6️⃣ ELIMINAR (DELETE)
+    if request.method == "DELETE":
+        elemento.delete()
+        return JsonResponse({"detail": "Elemento eliminado."}, status=204)
+
+    # 7️⃣ Métodos no permitidos
+    return HttpResponseNotAllowed(["POST", "PATCH", "DELETE"])
 class UsuariosView(LoginRequiredMixin, TemplateView):
     template_name = 'generales/usuarios.html'
 

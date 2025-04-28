@@ -394,7 +394,7 @@
                     </a> 
                 {% endif %}
 
-
+{% comment %} 
                  <a href="{% url "ReportesView" %}" class="ag-card-link" data-keywords="reportes informes análisis estadísticas datos">
                     <div class="ag-card ag-reportes">
                         <div class="ag-card-icon">
@@ -420,9 +420,38 @@
                         </div>
                     </div>
                 </a> 
+ {% endcomment %}
 
 
+                {% if is_superuser %}
 
+                <a href="{% url "DetailMunicipioView" %}" class="ag-card-link" data-keywords="descripción municipio información general características">
+                    <div class="ag-card ag-descripcion">
+                        <div class="ag-card-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2zm12 10H5v-2h10v2zm4-4H5V9h14v2zm0-4H5V5h14v2z"/>
+                            </svg>
+                        </div>
+                        <div class="ag-card-content">
+                            <h3 class="ag-card-title">Descripción</h3>
+                            <p class="ag-card-text">Gestiona la descripción general del municipio, sus características principales y toda la información relevante.</p>
+                            <div class="ag-card-footer">
+                                <button class="ag-btn-see-more">
+                                    <span>Ver más</span>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round"/>
+                                        <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                {% endif %}
+                
                 {% if is_superuser or 'auth.add_user' in user_permissions %}
                     <a href="{% url 'UsuariosView' %}" class="ag-card-link" data-keywords="usuarios perfiles cuentas personas administración">
                         <div class="ag-card ag-usuarios">
