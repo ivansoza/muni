@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import MiembroGabinete, Dependencia, MiembroGabineteDirectores, MiembroGabineteRegidores
+from .models import MiembroGabinete, Dependencia, MiembroGabineteDirectores, MiembroGabineteRegidores, MiembroGabineteCoordinadoresDif, MiembroGabinetePresidentesComu
 
 class MiembroGabineteInline(admin.TabularInline):
     model = MiembroGabinete
@@ -39,3 +39,6 @@ class MiembroGabineteAdmin(admin.ModelAdmin):
 admin.site.register(MiembroGabineteDirectores)
 
 admin.site.register(MiembroGabineteRegidores)
+
+admin.site.register(MiembroGabineteCoordinadoresDif)
+admin.site.register(MiembroGabinetePresidentesComu)
