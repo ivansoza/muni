@@ -1,13 +1,179 @@
+{# templates/detalle/detalle.html #}
 {% extends "baseTemplate.html" %}
-
-
-
+{% load static %}
 
 {% block content %}
+<div class="container py-4" id="appInfoCiudad">
+  <h1 class="h3 mb-4">
+      Información de {{ municipio.nombre|default:"–" }}
+  </h1>
 
-{% endblock content %}
+  <!-- Avisos -->
+  <div id="alertPlaceholder"></div>
 
+  <!-- Formulario generado por JS -->
+  <form id="infoForm" class="needs-validation" novalidate></form>
+
+  <button id="btnAddItem" class="btn btn-outline-secondary btn-sm me-2">+ Elemento</button>
+  <button id="btnSave"    class="btn btn-primary">Guardar cambios</button>
+</div>
+{% endblock %}
 
 {% block scriptcontent %}
+<script>
+/* global bootstrap */
+document.addEventListener('DOMContentLoaded', () => {
+  // ───────── utilidades ─────────
+  const csrftoken = document.cookie.match(/csrftoken=([^;]+)/)?.[1] ?? '';
 
-{% endblock scriptcontent %}
+  const toast = (msg, type='success') => {
+    const id = 't' + Date.now();
+    document.getElementById('alertPlaceholder')
+      .insertAdjacentHTML('beforeend',
+        `<div id="${id}" class="alert alert-${type} alert-dismissible fade show" role="alert">
+           ${msg}
+           <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+         </div>`);
+    setTimeout(() =>
+      bootstrap.Alert.getOrCreateInstance('#'+id)?.close(), 4000);
+  };
+
+  // ───────── refs ─────────
+  const container = document.getElementById('appInfoCiudad');
+  const formEl    = document.getElementById('infoForm');
+  const addBtn    = document.getElementById('btnAddItem');
+  const saveBtn   = document.getElementById('btnSave');
+
+  // ───────── estado ─────────
+  let infoId = null;
+  let elementos = [];   // [{id, texto}, …]
+
+  // ───────── render ─────────
+  const renderForm = data => {
+    infoId    = data.id;
+    elementos = data.elementos || [];
+
+    formEl.innerHTML = `
+      <div class="mb-3"><label class="form-label">Lema</label>
+        <input class="form-control" name="lema" value="${data.lema ?? ''}">
+      </div>
+      <div class="mb-3"><label class="form-label">Título</label>
+        <input class="form-control" name="titulo" value="${data.titulo ?? ''}">
+      </div>
+      <div class="mb-3"><label class="form-label">Subtítulo</label>
+        <input class="form-control" name="subtitulo" value="${data.subtitulo ?? ''}">
+      </div>
+      <div class="mb-3"><label class="form-label">Encabezado de la lista</label>
+        <input class="form-control" name="encabezado_lista" value="${data.encabezado_lista ?? ''}">
+      </div>
+      <h5 class="mt-4">Elementos</h5>
+      <ul id="listaElementos" class="list-group mb-4"></ul>
+    `;
+
+    renderElementos();
+  };
+
+  const renderElementos = () => {
+    const ul = document.getElementById('listaElementos');
+    ul.innerHTML = '';
+    elementos.forEach(({id, texto}) => {
+      ul.insertAdjacentHTML('beforeend', `
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+          <span contenteditable="true" class="flex-grow-1 me-3">${texto}</span>
+          <div class="btn-group btn-group-sm">
+            <button class="btn btn-outline-success" data-action="save" data-id="${id}">
+              <i class="fa fa-save"></i>
+            </button>
+            <button class="btn btn-outline-danger" data-action="delete" data-id="${id}">
+              <i class="fa fa-trash"></i>
+            </button>
+          </div>
+        </li>`);
+
+      // autoguardado al perder foco
+      const li      = ul.lastElementChild;
+      const spanEdt = li.querySelector('[contenteditable]');
+      spanEdt.addEventListener('blur', () => {
+        const nuevo  = spanEdt.innerText.trim();
+        const previo = elementos.find(el => el.id===id)?.texto ?? '';
+        if (nuevo === previo) return;   // sin cambios
+
+        fetch(`/admin/api/elemento/${id}/`, {
+          method : 'PATCH',
+          headers: {'Content-Type':'application/json','X-CSRFToken':csrftoken},
+          body   : JSON.stringify({texto: nuevo})
+        })
+        .then(r => r.ok
+          ? (elementos.find(el=>el.id===id).texto = nuevo, toast('Elemento actualizado'))
+          : Promise.reject(r))
+        .catch(() => toast('Error al actualizar','danger'));
+      });
+    });
+  };
+
+  // ───────── crear nuevo ─────────
+  addBtn.addEventListener('click', () => {
+    fetch('/admin/api/elemento/', {
+      method : 'POST',
+      headers: {'Content-Type':'application/json','X-CSRFToken':csrftoken},
+      body   : JSON.stringify({texto:'Nuevo elemento…'})
+    })
+    .then(r => r.ok ? r.json() : Promise.reject(r))
+    .then(obj => { elementos.push(obj); renderElementos(); })
+    .catch(() => toast('No se pudo crear el elemento','danger'));
+  });
+
+  // ───────── acciones save/delete ─────────
+  container.addEventListener('click', e => {
+    const btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+    const {action,id} = btn.dataset;
+    const li    = btn.closest('li');
+    const texto = li.querySelector('[contenteditable]').innerText.trim();
+
+    if (action==='save') {          // guardar manual
+      fetch(`/admin/api/elemento/${id}/`, {
+        method : 'PATCH',
+        headers: {'Content-Type':'application/json','X-CSRFToken':csrftoken},
+        body   : JSON.stringify({texto})
+      })
+      .then(r=>r.ok?toast('Elemento actualizado'):Promise.reject(r))
+      .catch(()=>toast('Error al actualizar','danger'));
+    }
+    else if (action==='delete') {   // eliminar
+      fetch(`/admin/api/elemento/${id}/`, {method:'DELETE',headers:{'X-CSRFToken':csrftoken}})
+      .then(r=>{
+        if(r.ok){
+          elementos=elementos.filter(el=>el.id!==Number(id));
+          renderElementos();
+          toast('Elemento eliminado','warning');
+        }else{throw r;}
+      })
+      .catch(()=>toast('Error al eliminar','danger'));
+    }
+  });
+
+  // ───────── guardar ficha principal ─────────
+  saveBtn.addEventListener('click', () => {
+    const payload = Object.fromEntries(
+      [...formEl.querySelectorAll('input')].map(i=>[i.name,i.value.trim()])
+    );
+    fetch('/admin/api/informacion-ciudad/', {
+      method : 'POST',
+      headers: {'Content-Type':'application/json','X-CSRFToken':csrftoken},
+      body   : JSON.stringify(payload)
+    })
+    .then(r=>r.ok?r.json():Promise.reject(r))
+    .then(()=>toast('Información guardada con éxito'))
+    .catch(()=>toast('No se pudo guardar','danger'));
+  });
+
+  // ───────── init ─────────
+  fetch('/admin/api/informacion-ciudad/')
+    .then(r => r.ok ? r.json() : r.json().then(o=>Promise.reject(o.detail)))
+    .then(renderForm)
+    .catch(err => toast(err || 'Error al cargar','danger'));
+});
+</script>
+{% endblock %}
+

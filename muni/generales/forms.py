@@ -7,6 +7,7 @@ from django.contrib.auth.models import User, Group, Permission
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
 from generales.models import SeccionPlus, Secciones
+from informacion_municipal.models import ElementoLista, InformacionCiudad
 
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
@@ -199,3 +200,14 @@ class SeccionPlusForm(forms.ModelForm):
             'status': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'detalles': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
         }
+
+
+class InformacionCiudadForm(forms.ModelForm):
+    class Meta:
+        model = InformacionCiudad
+        exclude = ("municipio",)
+
+class ElementoListaForm(forms.ModelForm):
+    class Meta:
+        model = ElementoLista
+        fields = ("texto",)
