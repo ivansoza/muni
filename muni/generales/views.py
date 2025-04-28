@@ -1019,11 +1019,20 @@ class EnQueConsisteView(View):
         servicio = get_object_or_404(Servicio, id=servicio_id)
         consiste = EnQueConsiste.objects.filter(servicio=servicio).first()
         form = EnQueConsisteForm(instance=consiste)
-        return render(request, 'servicios/consiste_form.html', {
-            'form': form, 
+
+        breadcrumb = {
+            'parent': {'name': 'Servicios', 'url': reverse('gestionar_servicio', kwargs={'pk': servicio.id})},
+            'child': {'name': 'Sección: ¿En qué consiste?', 'url': ''},
+        }
+
+        context = {
+            'form': form,
             'servicio': servicio,
             'consiste': consiste,
-        })
+            'breadcrumb': breadcrumb,
+            'sidebar': 'servicios',
+        }
+        return render(request, 'servicios/consiste_form.html', context)
 
     def post(self, request, servicio_id):
         servicio = get_object_or_404(Servicio, id=servicio_id)
@@ -1039,7 +1048,20 @@ class EnQueConsisteView(View):
             consiste.save()
             return redirect('gestionar_servicio', pk=servicio.id )
         
-        return render(request, 'servicios/consiste_form.html', {'form': form, 'servicio': servicio})
+        breadcrumb = {
+            'parent': {'name': 'Servicios', 'url': reverse('gestionar_servicio', kwargs={'pk': servicio.id})},
+            'child': {'name': 'Sección: ¿En qué consiste?', 'url': ''},
+        }
+
+        context = {
+            'form': form,
+            'servicio': servicio,
+            'consiste': consiste,
+            'breadcrumb': breadcrumb,
+            'sidebar': 'servicios',
+        }
+        
+        return render(request, 'servicios/consiste_form.html', context)
     
 class RequisitosView(View):
     def get(self, request, servicio_id):
