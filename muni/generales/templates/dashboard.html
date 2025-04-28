@@ -673,7 +673,7 @@
             {% endif %}
 
 
-            {% if is_superuser or 'transparencia.view_encuesta' in user_permissions %}
+            {% comment %} {% if is_superuser or 'transparencia.view_encuesta' in user_permissions %}
                 <a class="app-item" href="{% url "ReportesView" %}">
                     <div class="app-card" style="background-image: url('{% static 'img/apps/reportes.png' %}');"></div>
                     <div class="app-name">Reportes</div>
@@ -690,7 +690,7 @@
                     </div>
                     <div class="app-name">Reportes</div>
                 </div>
-            {% endif %}
+            {% endif %} {% endcomment %}
 
 
 
