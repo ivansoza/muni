@@ -1078,11 +1078,20 @@ class RequisitosView(View):
         servicio = get_object_or_404(Servicio, id=servicio_id)
         requisitos = QueSeRequiere.objects.filter(servicio=servicio)
         form = QueSeRequiereForm()
-        return render(request, 'servicios/requisitos_form.html', {
+
+        breadcrumb = {
+            'parent': {'name': 'Gestión De Servicio', 'url': reverse('gestionar_servicio', kwargs={'pk': servicio.id})},
+            'child': {'name': 'Sección: ¿Qué se requiere?', 'url': ''},
+        }
+
+        context = {
+            'form': form,
             'servicio': servicio,
             'requisitos': requisitos,
-            'form': form
-        })
+            'breadcrumb': breadcrumb,
+            'sidebar': 'servicios',
+        }
+        return render(request, 'servicios/requisitos_form.html', context)
 
     def post(self, request, servicio_id):
         servicio = get_object_or_404(Servicio, id=servicio_id)
