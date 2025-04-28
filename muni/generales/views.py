@@ -1023,7 +1023,7 @@ class EnQueConsisteView(View):
         form = EnQueConsisteForm(instance=consiste)
 
         breadcrumb = {
-            'parent': {'name': 'Servicios', 'url': reverse('gestionar_servicio', kwargs={'pk': servicio.id})},
+            'parent': {'name': 'Gestión De Servicio', 'url': reverse('gestionar_servicio', kwargs={'pk': servicio.id})},
             'child': {'name': 'Sección: ¿En qué consiste?', 'url': ''},
         }
 
