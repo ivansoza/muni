@@ -285,6 +285,13 @@
     line-height: 1.4;
   }
 
+
+  .nuevo-p {
+    color: #666 !important;
+    font-size: 0.75rem !important;
+    line-height: 1.4 !important;
+  }
+  
   /* Foto de cada miembro */
   .foto-miembro {
     width: 140px;
@@ -523,6 +530,10 @@
               </a>
               <h3>{{ miembro.nombre }}</h3>
               <p>{{ miembro.cargo }}</p>
+              {% if miembro.area %}
+                  <p class="nuevo-p">{{ miembro.area }}</p>
+              {% endif %}
+
             </div>
           {% endfor %}
         </div>
