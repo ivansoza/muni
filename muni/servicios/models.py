@@ -58,9 +58,9 @@ class Servicio(models.Model):
     icono = models.ImageField(upload_to='iconos/', null=True, blank=True)  # Permite subir un icono
     url_tramite = models.URLField(null=True, blank=True)
     estado = models.PositiveIntegerField(default=0)  # Número para "+5" en la tarjeta
-    clasificacion = models.ForeignKey(Categoria, on_delete=models.PROTECT)
-    sector = models.ForeignKey(Sector, on_delete=models.PROTECT)
-    organismo = models.ForeignKey(Dependencia, on_delete=models.PROTECT)
+    clasificacion = models.ForeignKey(Categoria, on_delete=models.PROTECT, blank=True, null=True)
+    sector = models.ForeignKey(Sector, on_delete=models.PROTECT, blank=True, null=True)
+    organismo = models.ForeignKey(Dependencia, on_delete=models.PROTECT, blank=True, null=True)
     creado_en = models.DateTimeField(auto_now_add=True)
 
     # Nuevos campos para activar/desactivar las opciones
