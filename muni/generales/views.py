@@ -1002,6 +1002,7 @@ class GestionarServicioView(TemplateView):
         consiste = EnQueConsiste.objects.filter(servicio=servicio).first()
         requisitos = QueSeRequiere.objects.filter(servicio=servicio)
         instrucciones_queryset = ComoLoRealizo.objects.filter(servicio=servicio).order_by('canal_presentacion__nombre', 'paso')
+        costos = CuantoCuesta.objects.filter(servicio=servicio)
         instrucciones = {
             'linea': instrucciones_queryset.filter(canal_presentacion__nombre='linea'),
             'presencial': instrucciones_queryset.filter(canal_presentacion__nombre='presencial')
@@ -1010,7 +1011,8 @@ class GestionarServicioView(TemplateView):
             'servicio': servicio,
             'consiste': consiste,
             'requisitos': requisitos,
-            'instrucciones': instrucciones
+            'instrucciones': instrucciones,
+            'costos': costos
         })
         return context
     
