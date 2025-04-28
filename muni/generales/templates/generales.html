@@ -422,7 +422,10 @@
                 </a> 
  {% endcomment %}
 
-                <a href="" class="ag-card-link" data-keywords="descripción municipio información general características">
+
+                {% if is_superuser %}
+
+                <a href="{% url "DetailMunicipioView" %}" class="ag-card-link" data-keywords="descripción municipio información general características">
                     <div class="ag-card ag-descripcion">
                         <div class="ag-card-icon">
                             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -447,7 +450,7 @@
                         </div>
                     </div>
                 </a>
-
+                {% endif %}
                 
                 {% if is_superuser or 'auth.add_user' in user_permissions %}
                     <a href="{% url 'UsuariosView' %}" class="ag-card-link" data-keywords="usuarios perfiles cuentas personas administración">

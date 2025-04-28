@@ -96,15 +96,15 @@ class ReportesView(LoginRequiredMixin,TemplateView):
         context['regreso_url']= url_configuracion
         return context
     
-class DeatilMunicipioView(LoginRequiredMixin,TemplateView):
+class DetailMunicipioView(LoginRequiredMixin,TemplateView):
     template_name = 'detalle/detalle.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         context["breadcrumb"] = {
-            'parent': {'name': 'Dashboard', 'url': '/admin'},
-            'child': {'name': 'Reportes', 'url': ''}
+            'parent': {'name': 'Generales', 'url': '/admin'},
+            'child': {'name': 'Detalles de Municipio', 'url': ''}
         }
         context['sidebar'] = 'Generales' 
         url_configuracion = reverse( 'generalesDashboard')
