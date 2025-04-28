@@ -1017,17 +1017,28 @@ class GestionarServicioView(TemplateView):
 class EnQueConsisteView(View):
     def get(self, request, servicio_id):
         servicio = get_object_or_404(Servicio, id=servicio_id)
-        consiste, _ = EnQueConsiste.objects.get_or_create(servicio=servicio)
+        consiste = EnQueConsiste.objects.filter(servicio=servicio).first()
         form = EnQueConsisteForm(instance=consiste)
-        return render(request, 'servicios/consiste_form.html', {'form': form, 'servicio': servicio})
+        return render(request, 'servicios/consiste_form.html', {
+            'form': form, 
+            'servicio': servicio,
+            'consiste': consiste,
+        })
 
     def post(self, request, servicio_id):
         servicio = get_object_or_404(Servicio, id=servicio_id)
-        consiste, _ = EnQueConsiste.objects.get_or_create(servicio=servicio)
-        form = EnQueConsisteForm(request.POST, instance=consiste)
+        try:
+            consiste = EnQueConsiste.objects.get(servicio=servicio)
+            form = EnQueConsisteForm(request.POST, instance=consiste)
+        except EnQueConsiste.DoesNotExist:
+            form = EnQueConsisteForm(request.POST)
+
         if form.is_valid():
-            form.save()
-            return redirect('gestionar_servicio', pk=servicio.id )  # Cambia si tu url tiene otro name
+            consiste = form.save(commit=False)
+            consiste.servicio = servicio
+            consiste.save()
+            return redirect('gestionar_servicio', pk=servicio.id )
+        
         return render(request, 'servicios/consiste_form.html', {'form': form, 'servicio': servicio})
     
 class RequisitosView(View):
