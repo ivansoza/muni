@@ -23,8 +23,8 @@ from informacion_municipal.models import Municipio, Video
 from generales.models import ContadorVisitas, SeccionPlus, Secciones, SocialNetwork
 from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, AvisoDePrivacidadForm
 from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
-from servicios.forms import ComoLoRealizoForm, EnQueConsisteForm, QueSeRequiereForm, ServicioForm
-from servicios.models import ComoLoRealizo, EnQueConsiste, QueSeRequiere, Servicio
+from servicios.forms import ComoLoRealizoForm, CuantoCuestaForm, EnQueConsisteForm, QueSeRequiereForm, ServicioForm
+from servicios.models import ComoLoRealizo, CuantoCuesta, EnQueConsiste, QueSeRequiere, Servicio
 from .forms import CustomAuthenticationForm, GroupForm, SeccionPlusForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
@@ -1007,7 +1007,15 @@ class GestionarServicioView(TemplateView):
             'linea': instrucciones_queryset.filter(canal_presentacion__nombre='linea'),
             'presencial': instrucciones_queryset.filter(canal_presentacion__nombre='presencial')
         }
+
+        breadcrumb = {
+            'parent': {'name': 'Servicios', 'url': reverse('servicios_view')},
+            'child': {'name': 'Gestión de servicio', 'url': ''},
+        }
+
         context.update({
+            'sidebar': 'servicios',
+            'breadcrumb': breadcrumb,
             'servicio': servicio,
             'consiste': consiste,
             'requisitos': requisitos,
@@ -1170,6 +1178,52 @@ class EliminarPasoView(View):
         servicio_id = paso.servicio.id  # Guardamos para redirigir después
         paso.delete()
         return redirect('gestionar_realizo', servicio_id=servicio_id)
+    
+class CostosView(View):
+    def get(self, request, servicio_id, costo_id=None):
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        if costo_id:
+            costo = get_object_or_404(CuantoCuesta, id=costo_id, servicio=servicio)
+            form = CuantoCuestaForm(instance=costo)
+        else:
+            form = CuantoCuestaForm()
+        
+        costos = CuantoCuesta.objects.filter(servicio=servicio)
+        return render(request, 'servicios/costos_form.html', {
+            'servicio': servicio,
+            'form': form,
+            'costos': costos,
+            'costo_id': costo_id,
+        })
+
+    def post(self, request, servicio_id, costo_id=None):
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        if costo_id:
+            costo = get_object_or_404(CuantoCuesta, id=costo_id, servicio=servicio)
+            form = CuantoCuestaForm(request.POST, instance=costo)
+        else:
+            form = CuantoCuestaForm(request.POST)
+
+        if form.is_valid():
+            nuevo_costo = form.save(commit=False)
+            nuevo_costo.servicio = servicio
+            nuevo_costo.save()
+            return redirect('gestionar_costos', servicio_id=servicio.id)
+
+        costos = CuantoCuesta.objects.filter(servicio=servicio)
+        return render(request, 'servicios/costos_form.html', {
+            'servicio': servicio,
+            'form': form,
+            'costos': costos,
+            'costo_id': costo_id,
+        })
+    
+class EliminarCostoView(View):
+    def post(self, request, costo_id):
+        costo = get_object_or_404(CuantoCuesta, id=costo_id)
+        servicio_id = costo.servicio.id
+        costo.delete()
+        return redirect('gestionar_costos', servicio_id=servicio_id)
 """
     Terminan Vistas de Servicios en el administrador
 """

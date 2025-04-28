@@ -6,7 +6,6 @@
 {% endblock %}
 
 {% block content %}
-
 <style>
     .btn-add {
         display: block;
@@ -25,6 +24,7 @@
         color: white;
     }
 </style>
+
 <div class="container-fluid">
     <a href="{% url 'crear_servicio' %}" class="btn btn-add" style="margin-bottom: 20px; border-radius: 10px; padding: 12px 20px; font-size: 16px;"><i class="fa-solid fa-laptop-file"></i> Nuevo Servicio</a>
 
@@ -50,7 +50,7 @@
                                 <td>{{ servicio.sector.nombre }}</td>
                                 <td> {{ servicio.organismo.nombre }}</td>
                                 <td style="text-align: center;">
-                                    <a href="#" class="btn btn-sm btn-primary rounded-circle p-2" title="Gestionar">
+                                    <a href="{% url 'gestionar_servicio' servicio.id %}" class="btn btn-sm btn-primary rounded-circle p-2" title="Gestionar">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <a href="{% url 'editar_servicio' servicio.id %}" class="btn btn-warning btn-sm rounded-circle p-2" title="Editar">

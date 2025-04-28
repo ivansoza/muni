@@ -1,6 +1,6 @@
 from django import forms
 
-from servicios.models import ComoLoRealizo, EnQueConsiste, QueSeRequiere, Servicio
+from servicios.models import ComoLoRealizo, CuantoCuesta, EnQueConsiste, QueSeRequiere, Servicio
 
 class ServicioForm(forms.ModelForm):
     class Meta:
@@ -31,4 +31,12 @@ class ComoLoRealizoForm(forms.ModelForm):
         exclude = ['servicio']
         widgets = {
             'descripcion': forms.Textarea(attrs={'rows': 3})
+        }
+
+class CuantoCuestaForm(forms.ModelForm):
+    class Meta:
+        model = CuantoCuesta
+        exclude = ['servicio']
+        widgets = {
+            'notas': forms.Textarea(attrs={'rows': 3})
         }

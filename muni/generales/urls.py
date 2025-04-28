@@ -43,8 +43,11 @@ urlpatterns = [
     path('servicio/<uuid:servicio_id>/requisitos/<int:requisito_id>/editar/', EditarRequisitoView.as_view(), name='editar_requisito'),
     path('servicio/<uuid:servicio_id>/requisitos/<int:requisito_id>/eliminar/', EliminarRequisitoView.as_view(), name='eliminar_requisito'),
     path('servicios/<uuid:servicio_id>/realizo/', views.RealizoView.as_view(), name='gestionar_realizo'),
-    path('servicios/<uuid:servicio_id>/realizo/<int:paso_id>/', views.RealizoView.as_view(), name='editar_realizo'),  # Editar existente
+    path('servicios/<uuid:servicio_id>/realizo/<int:paso_id>/', views.RealizoView.as_view(), name='editar_realizo'),  
     path('servicios/pasos/<int:paso_id>/eliminar/', views.EliminarPasoView.as_view(), name='eliminar_paso'),
+    path('servicios/<uuid:servicio_id>/costos/', views.CostosView.as_view(), name='gestionar_costos'),
+    path('servicios/<uuid:servicio_id>/costos/<int:costo_id>/', views.CostosView.as_view(), name='editar_costo'),
+    path('costos/<int:costo_id>/eliminar/', views.EliminarCostoView.as_view(), name='eliminar_costo'),
 
     #--------------------------------GENERALES----------------------------------------------
     path('generales/', GeneralesDashboardView.as_view(), name='generalesDashboard'),

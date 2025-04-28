@@ -1,31 +1,35 @@
 {% extends 'baseTemplate.html' %}
+
 {% block content %}
 <div class="container-fluid">
-    <h2>Gestionar Servicio: {{ servicio.titulo }}</h2>
-
-    <!-- Sección ¿En qué consiste? -->
-    <div class="card mt-4">
+    <div class="card shadow-lg">
         <div class="card-header">
-            📌 ¿En qué consiste?
+            <h2 class="mb-0">
+                📌 ¿En qué consiste?
+            </h2>
         </div>
+
         <div class="card-body">
             {% if consiste %}
                 <p><strong>Trámite:</strong> {{ consiste.tramite }}</p>
                 <p><strong>Canales de presentación:</strong> {{ consiste.get_canales_presentacion_display }}</p>
                 <p><strong>Solicitado por:</strong> {{ consiste.get_solicitado_por_display }}</p>
                 <p><strong>Momento de solicitud:</strong> {{ consiste.momento_solicitud }}</p>
-                <a href="{% url 'gestionar_consiste' servicio.id %}" class="btn btn-outline-primary">Editar sección</a>
+                <a href="{% url 'gestionar_consiste' servicio.id %}" class="btn btn-primary">Editar sección</a>
             {% else %}
-                <a href="{% url 'gestionar_consiste' servicio.id %}" class="btn btn-success">Agregar sección</a>
+                <a href="{% url 'gestionar_consiste' servicio.id %}" class="btn btn-primary">Agregar sección</a>
             {% endif %}
         </div>
     </div>
 
     <!-- Sección ¿Qué se requiere? -->
-    <div class="card mt-4">
+    <div class="card shadow-lg">
         <div class="card-header">
-            📄 ¿Qué se requiere?
+            <h2 class="mb-0">
+                📄 ¿Qué se requiere?
+            </h2>
         </div>
+
         <div class="card-body">
             {% if requisitos %}
                 <ul class="list-group mb-3">
@@ -47,15 +51,18 @@
                 <p>No hay requisitos registrados aún.</p>
             {% endif %}
 
-            <a href="{% url 'gestionar_requisitos' servicio.id %}" class="btn btn-outline-primary">Gestionar requisitos</a>
+            <a href="{% url 'gestionar_requisitos' servicio.id %}" class="btn btn-primary">Gestionar requisitos</a>
         </div>
     </div>
 
     <!-- Sección ¿Cómo lo realizo? -->
-    <div class="card mt-4">
+    <div class="card shadow-lg">
         <div class="card-header">
-            🛠️ ¿Cómo lo realizo?
+            <h2 class="mb-0">
+                🛠️ ¿Cómo lo realizo?
+            </h2>
         </div>
+
         <div class="card-body">
             {% if instrucciones %}
                 {% for canal, pasos in instrucciones.items %}
@@ -74,9 +81,52 @@
                         {% endfor %}
                     </ol>
                 {% endfor %}
-                    <a href="{% url 'gestionar_realizo' servicio.id %}" class="btn btn-outline-primary">Gestionar pasos</a>
+                    <a href="{% url 'gestionar_realizo' servicio.id %}" class="btn btn-primary">Gestionar pasos</a>
             {% else %}
-                <a href="{% url 'gestionar_realizo' servicio.id %}" class="btn btn-success">Agregar pasos</a>
+                <a href="{% url 'gestionar_realizo' servicio.id %}" class="btn btn-primary">Agregar pasos</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Sección ¿Cuánto cuesta? -->
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h2 class="mb-0">
+                💰 ¿Cuánto cuesta?
+            </h2>
+        </div>
+
+        <div class="card-body">
+            {% if costos %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Concepto</th>
+                            <th>Notas</th>
+                            <th>Vigencia</th>
+                            <th>Tipo</th>
+                            <th>Costo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for costo in costos %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ costo.concepto }}</td>
+                            <td>{{ costo.notas|default:"-" }}</td>
+                            <td>{{ costo.vigencia }}</td>
+                            <td>{{ costo.tipo }}</td>
+                            <td>{{ costo.costo }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <br>
+                <a href="{% url 'gestionar_costos' servicio.id %}" class="btn btn-primary">Gestionar costos</a>
+            {% else %}
+                <p>No hay costos registrados.</p>
+                <a href="{% url 'gestionar_costos' servicio.id %}" class="btn btn-primary">Agregar costos</a>
             {% endif %}
         </div>
     </div>

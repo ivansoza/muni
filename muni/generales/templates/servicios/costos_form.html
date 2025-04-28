@@ -1,0 +1,63 @@
+{% extends 'baseTemplate.html' %}
+{% load crispy_forms_tags %}
+
+{% block css %} 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2>💰 {% if costo_id %}Editar Costo{% else %}Agregar nuevo Costo{% endif %} - {{ servicio.titulo }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success">
+            {% if costo_id %}Actualizar Costo{% else %}Agregar Costo{% endif %}
+        </button>
+        <a href="{% url 'gestionar_servicio' servicio.id %}" class="btn btn-secondary">Volver</a>
+    </form>
+
+    <hr>
+
+    <h4>Costos registrados</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Concepto</th>
+                <th>Notas</th>
+                <th>Vigencia</th>
+                <th>Tipo</th>
+                <th>Costo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for costo in costos %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ costo.concepto }}</td>
+                <td>{{ costo.notas|default:"-" }}</td>
+                <td>{{ costo.vigencia }}</td>
+                <td>{{ costo.tipo }}</td>
+                <td>{{ costo.costo }}</td>
+                <td>
+                    <a href="{% url 'editar_costo' servicio.id costo.id %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <form action="{% url 'eliminar_costo' costo.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este costo?');">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="text-center">No hay costos registrados.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

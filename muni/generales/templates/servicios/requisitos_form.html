@@ -1,5 +1,10 @@
 {% extends 'baseTemplate.html' %}
 {% load crispy_forms_tags %}
+
+{% block css %} 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid">
     <h2>📄 ¿Qué se requiere? - {{ servicio.titulo }}</h2>
@@ -7,7 +12,9 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form|crispy }}
-        <button type="submit" class="btn btn-success">Agregar requisito</button>
+        <button type="submit" class="btn btn-success">
+            {% if modo_edicion %}Guardar cambios{% else %}Agregar requisito{% endif %}
+        </button>
         <a href="{% url 'gestionar_servicio' servicio.id %}" class="btn btn-secondary">Volver</a>
     </form>
 
@@ -23,6 +30,7 @@
                 <th>Original</th>
                 <th>Copia</th>
                 <th>Archivo</th>
+                <th>Opciones</th>
             </tr>
         </thead>
         <tbody>
@@ -39,6 +47,17 @@
                     {% else %}
                         N/A
                     {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'editar_requisito' servicio.id r.id %}" class="btn btn-sm btn-warning">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <form method="post" action="{% url 'eliminar_requisito' servicio.id r.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar este requisito?')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
                 </td>
             </tr>
             {% empty %}

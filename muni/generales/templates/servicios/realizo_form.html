@@ -1,0 +1,62 @@
+{% extends 'baseTemplate.html' %}
+{% load crispy_forms_tags %}
+
+{% block css %} 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2>🛠️ {% if paso_id %}Editar paso{% else %}Agregar nuevo paso{% endif %} - {{ servicio.titulo }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success">
+            {% if paso_id %}Actualizar Paso{% else %}Agregar Paso{% endif %}
+        </button>
+        <a href="{% url 'gestionar_servicio' servicio.id %}" class="btn btn-secondary">Volver</a>
+    </form>
+
+    <hr>
+
+    <h4>Pasos registrados</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Tipo de presentación</th>
+                <th>Descripción</th>
+                <th>Orden</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for paso in pasos %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ paso.canal_presentacion }}</td>
+                <td>{{ paso.descripcion }}</td>
+                <td>{{ paso.paso }}</td>
+                <td>
+                    <!-- Botón Editar -->
+                    <a href="{% url 'editar_realizo' servicio.id paso.id %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-edit"></i>
+                    </a>
+    
+                    <!-- Botón Eliminar -->
+                    <form action="{% url 'eliminar_paso' paso.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este paso?');">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-center">No hay pasos registrados.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
