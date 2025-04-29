@@ -7,8 +7,8 @@
 
 {% block content %}
 <div class="search-container">
-    <form method="GET" action="{% url 'homeServicios' %}">
-        <div class="input-group">
+    <form method="GET" action="{% url 'homeServicios' %}" class="search-form">
+        <div class="input-group custom-search-bar">
             <input type="text" class="form-control search-input" name="q" placeholder="¿Qué servicio o trámite buscas?" value="{{ query }}">
             <button type="submit" class="btn search-btn">
                 <i class="fas fa-search"></i> Buscar
@@ -19,6 +19,8 @@
         </div>
     </form>
 </div>
+
+<br>
 
 <div class="container">
     <div class="avisos-list">
@@ -39,7 +41,11 @@
                     </div>
                     {% endif %}
 
-                    <div id="detalle-{{ servicio.id }}" class="detalle-container mt-3" style="display: none;"></div>
+                    {% if servicio.descripcion %}
+                    <div class="municipio-card">
+                        <div id="detalle-{{ servicio.id }}" class="detalle-container mt-3" style="display: none;"></div>
+                    </div>
+                    {% endif %}
     
                     <!-- Botones de acción -->
                     <div class="buttons row g-2 mt-3">
