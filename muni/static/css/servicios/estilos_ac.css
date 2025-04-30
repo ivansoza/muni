@@ -111,12 +111,12 @@ h2 {
 /* Específicos para cada badge */
 .costo {
     background-color: var(--color-secundario);
-    color: var(--color-primario);
+    color: white;
 }
 
 .presencial {
     background-color: var(--color-secundario);
-    color: var(--color-primario);
+    color: white;
 }
 
 .economico {
