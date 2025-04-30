@@ -1,0 +1,532 @@
+/* Encabezado */
+.header {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.breadcrumb {
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: bold;
+    color: black;
+}
+
+.subtitle {
+    font-size: 18px;
+    color: #555;
+}
+
+/* Contenido principal */
+.content-wrapper {
+    display: flex;
+    gap: 20px;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;  /* Ancho fijo para todas las secciones */
+    min-width: 260px;
+    max-width: 260px;  /* Evita que crezca en otras secciones */
+    background: #f4f4f4;
+    padding: 15px;
+    border-radius: 8px;
+    min-height: 100%;
+    overflow-y: auto;
+    transition: all 0.3s ease-in-out;  /* Transición suave para evitar cambios bruscos */
+}
+
+/* Ajuste para pantallas más pequeñas */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 220px;
+        min-width: 220px;
+        max-width: 220px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        min-width: auto;
+        max-width: 100%;
+    }
+}
+
+.menu {
+    list-style: none;
+    padding: 0;
+}
+
+.menu li {
+    padding: 10px;
+    font-size: 16px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.menu .active {
+    background: var(--color-primario);
+    color: white;
+    font-weight: bold;
+}
+
+h2 {
+    color: var(--color-primario);
+    font-size: 22px;
+}
+
+/* Información del trámite */
+.info-grid {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin: 15px 0;
+    align-items: flex-start;
+}
+
+/* Estilos para alinear correctamente los títulos y etiquetas */
+.info-item {
+    display: flex;
+    flex-direction: column; /* Pone el texto arriba y la etiqueta abajo */
+    font-size: 16px;
+    padding: 10px 0;
+}
+
+/* Etiquetas estilo circular */
+.badge {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 20px; /* Hace el fondo más redondeado */
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 5px; /* Espacio entre el título y la etiqueta */
+    text-align: center;
+    width: fit-content; /* Ajusta el ancho al contenido */
+}
+
+/* Específicos para cada badge */
+.costo {
+    background-color: var(--color-secundario);
+    color: var(--color-primario);
+}
+
+.presencial {
+    background-color: var(--color-secundario);
+    color: var(--color-primario);
+}
+
+.economico {
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-top: 5px; /* Separación */
+}
+
+/* Descripción */
+.descripcion {
+    min-height: 80px; /* Ajustable según estética */
+    margin: 15px 0;
+    text-align: justify;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.descripcion h3 {
+    font-size: 18px;
+    color: var(--color-primario);
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.btn-secondary {
+    background-color: var(--color-primario);
+    color: var(--color-secundario);
+}
+
+/* Sidebar en desktop */
+.desktop-sidebar {
+    width: 30%;
+    background: #f4f4f4;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+/* Sidebar en móviles (se muestra como barra superior con íconos) */
+.responsive-sidebar {
+    display: none; /* Oculto por defecto */
+}
+
+/* Ajuste para pantallas pequeñas */
+@media (max-width: 768px) {
+    .content-wrapper {
+        flex-direction: column;
+    }
+
+    /* Sidebar en desktop se oculta en móviles */
+    .desktop-sidebar {
+        display: none;
+    }
+
+    /* Sidebar en móviles aparece arriba del contenido */
+    .responsive-sidebar {
+        display: flex;
+        background: white;
+        padding: 10px;
+        justify-content: space-around;
+        border-bottom: 2px solid #ddd;
+        margin-bottom: 15px;
+    }
+
+    .menu {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+    .menu li {
+        flex: 1;
+        text-align: center;
+        padding: 10px;
+        font-size: 22px;
+    }
+
+    .menu li i {
+        font-size: 24px;
+        color: var(--color-iconos);
+    }
+}
+
+@media (max-width: 320px) {
+    .info-grid {
+        display: flex;
+        flex-direction: column;  /* Apila los elementos */
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 10px; /* Espaciado uniforme */
+    }
+
+    .info-item {
+        width: 100%;  /* Hace que cada elemento ocupe el ancho completo */
+        font-size: 14px; /* Reduce el tamaño de la fuente */
+    }
+
+    .badge {
+        font-size: 12px;  /* Hace las etiquetas más pequeñas */
+        padding: 3px 8px;
+    }
+
+    .main-content {
+        max-width: 100%;  /* Evita desbordes */
+        padding: 15px;  /* Reduce padding */
+        border: 1px solid #ddd;
+        border-radius: 5px;  /* Bordes más redondeados */
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+    }
+}
+
+/* Estilo de la tabla de requisitos */
+.tabla-requisitos {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.tabla-requisitos th, .tabla-requisitos td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.tabla-requisitos th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.tabla-requisitos a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.tabla-requisitos a:hover {
+    text-decoration: underline;
+}
+
+.seccion {
+    display: none;
+}
+
+.menu-item.active {
+    font-weight: bold;
+    color: var(--color-secundario);
+    border-left: 4px solid var(--color-secundario);
+    padding-left: 8px;
+}
+
+.table-container {
+    width: 100%; /* Se ajusta al ancho sin afectar el sidebar */
+    overflow-x: auto;
+}
+
+/* Estilos de la seccion ¿Como lo realizo?  */
+.seccion ol {
+    padding-left: 50px;
+    list-style: decimal;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.seccion li {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.seccion li:last-child {
+    border-bottom: none;
+}
+
+.responsable-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    background: #f9f9f9;
+}
+
+.responsable-foto {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.responsable-info p {
+    margin: 5px 0;
+}
+
+.btn-volver {
+    position: absolute;
+    top: 98px;
+    right: 55px;
+    z-index: 10;
+}
+
+/* ----- Estilos de servicios detalle parcial ----- */
+/* Estilos generales */
+.avisos-list {
+    display: block; /* Cambiado de flex a block para que las tarjetas estén en una sola columna */
+    gap: 20px;
+}
+
+.aviso-card {
+    width: 100%;  /* Asegura que cada tarjeta ocupe el 100% del ancho */
+    max-width: 100%;  /* Elimina el máximo ancho, ahora cada tarjeta ocupará todo el espacio */
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    background-color: #fff;
+    transition: transform 0.3s ease;
+    margin-bottom: 20px;  /* Se añade un margen entre las tarjetas */
+}
+
+.aviso-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Cabecera de la tarjeta */
+.aviso-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px;
+    background-color: var(--color-primario);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.aviso-header:hover {
+    background-color: var(--color-secundario);
+}
+
+.aviso-header h3 {
+    margin-left: 25px;
+    margin-top: 5px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.toggle-btn {
+background-color: rgba(255, 255, 255, 0.15);
+border: 1px solid rgba(255, 255, 255, 0.3);
+color: #fff;
+font-size: 20px;
+width: 36px;
+height: 36px;
+border-radius: 50%;
+cursor: pointer;
+transition: all 0.3s ease;
+display: flex;
+align-items: center;
+justify-content: center;
+font-weight: bold;
+}
+
+.toggle-btn:hover {
+background-color: rgba(255, 255, 255, 0.25);
+transform: rotate(90deg);
+border-color: rgba(255, 255, 255, 0.6);
+}
+
+
+/* Cuerpo desplegable */
+.aviso-body {
+    padding: 20px;
+    display: none;
+    background-color: #f9f9f9;
+    border-top: 1px solid #ddd;
+}
+
+/* Tarjeta interna para el municipio y la descripción */
+.municipio-card {
+    padding: 15px;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    border-left: 5px solid var(--color-primario);
+
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid var(--color-primario);
+
+}
+
+.municipio-card h4 {
+    font-size: 18px;
+    margin: 0;
+}
+
+.municipio-card p {
+    margin: 10px 0;
+}
+
+/* Listado de archivos */
+.archivos-list {
+margin-top: 10px;
+display: flex;
+flex-direction: column;
+gap: 12px;
+}
+
+.archivo-item {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 12px 18px;
+background: linear-gradient(to right, #ffffff, #f4f4f4);
+border-left: 5px solid var(--color-primario);
+border-radius: 10px;
+transition: transform 0.2s ease, box-shadow 0.2s ease;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+}
+
+.archivo-item:hover {
+transform: translateY(-2px);
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.archivo-info {
+display: flex;
+align-items: center;
+gap: 12px;
+color: #333;
+font-size: 15px;
+}
+
+.icon {
+font-size: 22px;
+color: #555;
+}
+
+.archivo-info a {
+color: #1d3557;
+text-decoration: none;
+font-weight: 500;
+}
+
+.archivo-info a:hover {
+text-decoration: underline;
+}
+
+.download-btn {
+color: var(--color-primario);
+border: none;
+padding: 8px 14px;
+font-size: 14px;
+font-weight: bold;
+border-radius: 6px;
+cursor: pointer;
+transition: background-color 0.3s;
+text-decoration: none; /* 👈 elimina la línea debajo del texto */
+
+}
+
+.download-btn:hover {
+background-color: var(--color-secundario);
+color: white;
+}
+
+.search-container::before {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #888;
+    pointer-events: none;
+}
+
+/* ----- Estilos extras ----- */
+/* Buscador centrado al 90% */
+.search-form {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.custom-search-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.custom-search-bar .search-input {
+    flex: 1;
+    min-width: 250px;
+}
+
+.custom-search-bar .search-btn,
+.custom-search-bar .reset-btn {
+    white-space: nowrap;
+}
+
+.contenido-principal {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+}

@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/servicios/estilos_ac.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+<div class="search-container">
+    <form method="GET" action="{% url 'homeServicios' %}" class="search-form">
+        <div class="input-group custom-search-bar">
+            <input type="text" class="form-control search-input" name="q" placeholder="¿Qué servicio o trámite buscas?" value="{{ query }}">
+            <button type="submit" class="btn search-btn">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+            <a href="{% url 'homeServicios' %}" class="btn reset-btn">
+                <i class="fas fa-sync-alt"></i> Restablecer
+            </a>
+        </div>
+    </form>
+</div>
+
+<br>
+
+<div class="container">
+    <div class="avisos-list">
+        {% for servicio in servicios %}
+            <div class="aviso-card">
+                <div class="aviso-header" onclick="toggleVisibility('{{ servicio.id }}')">
+                    <h3>
+                        <i class="fa-solid fa-laptop"></i> 
+                        {{ servicio.titulo }}
+                    </h3>
+                    <button class="toggle-btn" id="btn-{{ servicio.id }}">+</button>
+                </div>
+                <div class="aviso-body" id="body-{{ servicio.id }}" style="display: none;">
+                    <!-- Descripción del servicio -->
+                    {% if servicio.descripcion1 %}
+                    <div class="municipio-card">
+                        <p>{{ servicio.descripcion }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if servicio.descripcion %}
+                    <div class="municipio-card">
+                        <div id="detalle-{{ servicio.id }}" class="detalle-container mt-3" style="display: none;"></div>
+                    </div>
+                    {% endif %}
+    
+                    <!-- Botones de acción -->
+                    <div class="buttons row g-2 mt-3">
+                        {% if servicio.url_tramite %}
+                        <div class="col-6">
+                            <a class="btn btn-primary d-block rounded-pill" href="{{ servicio.url_tramite }}" target="_blank">
+                                <i class="fas fa-money-bill"></i> Iniciar trámite
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-center text-muted">No se encontraron servicios.</p>
+        {% endfor %}
+    </div>    
+</div>
+
+<script>
+    function toggleVisibility(id) {
+        const currentBody = document.getElementById('body-' + id);
+        const currentButton = document.getElementById('btn-' + id);
+    
+        const allBodies = document.querySelectorAll('.aviso-body');
+        const allButtons = document.querySelectorAll('.toggle-btn');
+    
+        // Cerrar todos los demás acordeones
+        allBodies.forEach(body => {
+            if (body.id !== 'body-' + id) {
+                body.style.display = 'none';
+            }
+        });
+    
+        allButtons.forEach(btn => {
+            if (btn.id !== 'btn-' + id) {
+                btn.textContent = '+';
+            }
+        });
+    
+        // Alternar el actual
+        const isClosed = currentBody.style.display === 'none' || currentBody.style.display === '';
+        currentBody.style.display = isClosed ? 'block' : 'none';
+        currentButton.textContent = isClosed ? '-' : '+';
+    
+        // Cargar detalle solo si está vacío y se está abriendo
+        const detalleDiv = document.getElementById('detalle-' + id);
+        if (isClosed && detalleDiv.innerHTML.trim() === "") {
+            fetch(`/servicios/${id}/detalle_parcial/`)
+                .then(response => response.json())
+                .then(data => {
+                    detalleDiv.innerHTML = data.html;
+                    detalleDiv.style.display = 'block';
+                    inicializarSidebar(id);
+                })
+                .catch(error => {
+                    console.error('Error al cargar detalle:', error);
+                    detalleDiv.innerHTML = "<div class='alert alert-danger'>No se pudo cargar el detalle.</div>";
+                });
+        }
+    }
+</script>
+
+<script>
+    function cargarDetalle(servicioId) {
+        const detalleDiv = document.getElementById('detalle-' + servicioId);
+    
+        if (detalleDiv.innerHTML.trim() === "") {
+            fetch(`/servicios/${servicioId}/detalle_parcial/`)
+            .then(response => response.json())
+            .then(data => {
+                detalleDiv.innerHTML = data.html;
+                detalleDiv.style.display = 'block';
+                inicializarSidebar(servicioId); // 🔥 Ejecutar lógica del sidebar
+            })
+            .catch(error => {
+                console.error('Error al cargar detalle:', error);
+                detalleDiv.innerHTML = "<div class='alert alert-danger'>No se pudo cargar el detalle.</div>";
+            });
+        } else {
+            // Toggle si ya se había cargado
+            detalleDiv.style.display = (detalleDiv.style.display === 'none') ? 'block' : 'none';
+        }
+    }
+</script>
+
+<!-- Script específico para este acordeón -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const menuItems = document.querySelectorAll(".menu-item");
+        const menuIcons = document.querySelectorAll(".menu-icon");
+        const sections = document.querySelectorAll(".seccion");
+    
+        function mostrarSeccion(seccionId) {
+            sections.forEach(sec => sec.style.display = "none");
+            const target = document.getElementById(seccionId);
+            if (target) target.style.display = "block";
+        }
+    
+        function activarElemento(lista, actual) {
+            lista.forEach(i => i.classList.remove("active"));
+            actual.classList.add("active");
+        }
+    
+        menuItems.forEach(item => {
+            item.addEventListener("click", function () {
+                const seccion = this.getAttribute("data-seccion");
+                mostrarSeccion(seccion);
+                activarElemento(menuItems, this);
+                activarElemento(menuIcons, document.querySelector(`.menu-icon[data-seccion="${seccion}"]`));
+            });
+        });
+    
+        menuIcons.forEach(icon => {
+            icon.addEventListener("click", function () {
+                const seccion = this.getAttribute("data-seccion");
+                mostrarSeccion(seccion);
+                activarElemento(menuIcons, this);
+                activarElemento(menuItems, document.querySelector(`.menu-item[data-seccion="${seccion}"]`));
+            });
+        });
+    
+        // Mostrar por default "¿En qué consiste?"
+        mostrarSeccion("seccion-consiste-{{ servicio.id }}");
+    });
+</script>
+
+<script>
+    function inicializarSidebar(servicioId) {
+        const prefix = `seccion-`;
+        const sid = servicioId;
+    
+        const menuItems = document.querySelectorAll(`#detalle-${sid} .menu-item`);
+        const menuIcons = document.querySelectorAll(`#detalle-${sid} .menu-icon`);
+        const sections = document.querySelectorAll(`#detalle-${sid} .seccion`);
+    
+        function mostrarSeccion(seccionId) {
+            sections.forEach(sec => sec.style.display = "none");
+            const target = document.getElementById(seccionId);
+            if (target) target.style.display = "block";
+        }
+    
+        function activarElemento(lista, actual) {
+            lista.forEach(i => i.classList.remove("active"));
+            if (actual) actual.classList.add("active");
+        }
+    
+        menuItems.forEach(item => {
+            item.addEventListener("click", function () {
+                const seccion = this.getAttribute("data-seccion");
+                mostrarSeccion(seccion);
+                activarElemento(menuItems, this);
+                activarElemento(menuIcons, document.querySelector(`#detalle-${sid} .menu-icon[data-seccion="${seccion}"]`));
+            });
+        });
+    
+        menuIcons.forEach(icon => {
+            icon.addEventListener("click", function () {
+                const seccion = this.getAttribute("data-seccion");
+                mostrarSeccion(seccion);
+                activarElemento(menuIcons, this);
+                activarElemento(menuItems, document.querySelector(`#detalle-${sid} .menu-item[data-seccion="${seccion}"]`));
+            });
+        });
+    
+        // Mostrar por defecto la primera sección
+        mostrarSeccion(`seccion-consiste-${sid}`);
+    }
+</script>    
+{% endblock content %}
