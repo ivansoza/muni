@@ -8,7 +8,7 @@
             <li class="menu-icon" data-seccion="seccion-requisitos-{{ servicio.id }}"><i class="fas fa-file-alt"></i></li>
             <li class="menu-icon" data-seccion="seccion-realizo-{{ servicio.id }}"><i class="fas fa-tools"></i></li>
             <li class="menu-icon" data-seccion="seccion-costo-{{ servicio.id }}"><i class="fas fa-money-bill-wave"></i></li>
-            <li class="menu-icon" data-seccion="seccion-responsable-{{ servicio.id }}"><i class="fas fa-user"></i></li>
+            <!-- <li class="menu-icon" data-seccion="seccion-responsable-{{ servicio.id }}"><i class="fas fa-user"></i></li> -->
         </ul>        
     </div>
 
@@ -22,7 +22,7 @@
                 <li class="menu-item" data-seccion="seccion-requisitos-{{ servicio.id }}">📄 ¿Qué se requiere?</li>
                 <li class="menu-item" data-seccion="seccion-realizo-{{ servicio.id }}">🛠️ ¿Cómo lo realizo?</li>
                 <li class="menu-item" data-seccion="seccion-costo-{{ servicio.id }}">💰 ¿Cuánto cuesta?</li>
-                <li class="menu-item" data-seccion="seccion-responsable-{{ servicio.id }}">👤 Responsable</li>
+                <!-- <li class="menu-item" data-seccion="seccion-responsable-{{ servicio.id }}">👤 Responsable</li> -->
             </ul>
         </div>
 
@@ -71,9 +71,9 @@
                         <tr>
                             <th>Documento</th>
                             <th>Especificaciones</th>
-                            <th>Tipo de documentos</th>
-                            <th>Presentar en</th>
-                            <th>Descargar</th>
+                            <!-- <th>Tipo de documentos</th> -->
+                            <!-- <th>Presentar en</th> -->
+                            <!-- <th>Descargar</th> -->
                         </tr>
                     </thead>
                     <tbody>
@@ -81,15 +81,15 @@
                         <tr>
                             <td>{{ forloop.counter }}. {{ requisito.nombre }}</td>
                             <td>{{ requisito.especificaciones }}</td>
-                            <td>{{ requisito.tipo_documento }}</td>
-                            <td>Original ({{ requisito.presentar_original }}) / Copia ({{ requisito.presentar_copia }})</td>
-                            <td>
+                            <!-- <td>{{ requisito.tipo_documento }}</td> -->
+                            <!-- <td>Original ({{ requisito.presentar_original }}) / Copia ({{ requisito.presentar_copia }})</td> -->
+                            <!-- <td>
                                 {% if requisito.archivo_descarga %}
                                     <a href="{{ requisito.archivo_descarga.url }}" target="_blank">Descargar</a>
                                 {% else %}
                                     N/A
                                 {% endif %}
-                            </td>
+                            </td> -->
                         </tr>
                         {% empty %}
                         <tr>
@@ -130,9 +130,9 @@
                     <thead>
                         <tr>
                             <th>Concepto</th>
-                            <th>Notas</th>
-                            <th>Vigencia</th>
-                            <th>Tipo</th>
+                            <th>Observaciones</th>
+                            <!-- <th>Vigencia</th> -->
+                            <!-- <th>Tipo</th> -->
                             <th>Costo</th>
                         </tr>
                     </thead>
@@ -141,8 +141,8 @@
                         <tr>
                             <td><strong>{{ forloop.counter }}. {{ costo.concepto }}</strong></td>
                             <td>{{ costo.notas|default:"-" }}</td>
-                            <td>{{ costo.vigencia }}</td>
-                            <td>{{ costo.tipo }}</td>
+                            <!-- <td>{{ costo.vigencia }}</td> -->
+                            <!-- <td>{{ costo.tipo }}</td> -->
                             <td>{{ costo.costo|default:"No especificado" }}</td>
                         </tr>
                         {% empty %}
@@ -162,7 +162,7 @@
             </div>
 
             <!-- Sección Responsable -->
-            <div id="seccion-responsable-{{ servicio.id }}" class="seccion table-container" style="display:none;">
+            <!-- <div id="seccion-responsable-{{ servicio.id }}" class="seccion table-container" style="display:none;">
                 <h2>Responsable del Trámite</h2>
                 {% if servicio.responsable %}
                 <div class="responsable-box">
@@ -182,7 +182,7 @@
                 {% else %}
                 <p>No se ha asignado responsable para este trámite.</p>
                 {% endif %}
-            </div>
+            </div> -->
 
         </div>
     </div>
