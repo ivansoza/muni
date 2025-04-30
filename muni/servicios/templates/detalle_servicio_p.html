@@ -26,163 +26,164 @@
             </ul>
         </div>
 
-        <!-- Sección ¿En qué consiste? -->
-        <div id="seccion-consiste-{{ servicio.id }}" class="seccion">
-            <h2>Información del Trámite</h2>
-            <div class="info-grid">
-                <div class="info-item">
-                    <strong>Trámite:</strong>
-                    <span class="badge costo">{{ consiste.tramite }}</span>
+        <div class="contenido-principal">
+            <!-- Sección ¿En qué consiste? -->
+            <div id="seccion-consiste-{{ servicio.id }}" class="seccion">
+                <h2>Información del Trámite</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Trámite:</strong>
+                        <span class="badge costo">{{ consiste.tramite }}</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Sector Económico:</strong> 
+                        <span class="economico">{{ servicio.sector.nombre }}</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Canales de presentación:</strong> 
+                        <span class="badge presencial">{{ consiste.canal_presentacion }}</span>
+                    </div>
                 </div>
-                <div class="info-item">
-                    <strong>Sector Económico:</strong> 
-                    <span class="economico">{{ servicio.sector.nombre }}</span>
+
+                <div class="descripcion">
+                    <h3>Descripción:</h3>
+                    <p>{{ servicio.descripcion }}</p>
                 </div>
-                <div class="info-item">
-                    <strong>Canales de presentación:</strong> 
-                    <span class="badge presencial">{{ consiste.canal_presentacion }}</span>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Puede ser solicitado por:</strong> 
+                        {{ consiste.get_solicitado_por_display }}
+                    </div>
+                    <div class="info-item">
+                        <strong>En qué momento se deberá solicitar:</strong> 
+                        {{ consiste.momento_solicitud }}
+                    </div>
                 </div>
             </div>
 
-            <div class="descripcion">
-                <h3>Descripción:</h3>
-                <p>{{ servicio.descripcion }}</p>
+            <!-- Sección ¿Qué se requiere? -->
+            <div id="seccion-requisitos-{{ servicio.id }}" class="seccion table-container" style="display:none;">
+                <h2>Requisitos</h2>
+
+                <table class="tabla-requisitos table">
+                    <thead>
+                        <tr>
+                            <th>Documento</th>
+                            <th>Especificaciones</th>
+                            <th>Tipo de documentos</th>
+                            <th>Presentar en</th>
+                            <th>Descargar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for requisito in requiere %}
+                        <tr>
+                            <td>{{ forloop.counter }}. {{ requisito.nombre }}</td>
+                            <td>{{ requisito.especificaciones }}</td>
+                            <td>{{ requisito.tipo_documento }}</td>
+                            <td>Original ({{ requisito.presentar_original }}) / Copia ({{ requisito.presentar_copia }})</td>
+                            <td>
+                                {% if requisito.archivo_descarga %}
+                                    <a href="{{ requisito.archivo_descarga.url }}" target="_blank">Descargar</a>
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No se requieren documentos.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
 
-            <div class="info-grid">
-                <div class="info-item">
-                    <strong>Puede ser solicitado por:</strong> 
-                    {{ consiste.get_solicitado_por_display }}
-                </div>
-                <div class="info-item">
-                    <strong>En qué momento se deberá solicitar:</strong> 
-                    {{ consiste.momento_solicitud }}
-                </div>
-            </div>
-        </div>
-
-        <!-- Sección ¿Qué se requiere? -->
-        <div id="seccion-requisitos-{{ servicio.id }}" class="seccion table-container" style="display:none;">
-            <h2>Requisitos</h2>
-
-            <table class="tabla-requisitos table">
-                <thead>
-                    <tr>
-                        <th>Documento</th>
-                        <th>Especificaciones</th>
-                        <th>Tipo de documentos</th>
-                        <th>Presentar en</th>
-                        <th>Descargar</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for requisito in requiere %}
-                    <tr>
-                        <td>{{ forloop.counter }}. {{ requisito.nombre }}</td>
-                        <td>{{ requisito.especificaciones }}</td>
-                        <td>{{ requisito.tipo_documento }}</td>
-                        <td>Original ({{ requisito.presentar_original }}) / Copia ({{ requisito.presentar_copia }})</td>
-                        <td>
-                            {% if requisito.archivo_descarga %}
-                                <a href="{{ requisito.archivo_descarga.url }}" target="_blank">Descargar</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center">No se requieren documentos.</td>
-                    </tr>
+            <!-- Sección ¿Cómo lo realizo? -->
+            <div id="seccion-realizo-{{ servicio.id }}" class="seccion" style="display:none;">
+                <h2>Canales de Presentación</h2>
+                {% if instrucciones_linea %}
+                <h4>💻 100% en línea</h4>
+                <ol>
+                    {% for paso in instrucciones_linea %}
+                        <li>{{ paso.descripcion }}</li>
                     {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Sección ¿Cómo lo realizo? -->
-        <div id="seccion-realizo-{{ servicio.id }}" class="seccion" style="display:none;">
-            <h2>Canales de Presentación</h2>
-            {% if instrucciones_linea %}
-            <h4>💻 100% en línea</h4>
-            <ol>
-                {% for paso in instrucciones_linea %}
-                    <li>{{ paso.descripcion }}</li>
-                {% endfor %}
-            </ol>
-            {% endif %}
-
-            {% if instrucciones_presencial %}
-            <h4>🏢 Presencial</h4>
-            <ol>
-                {% for paso in instrucciones_presencial %}
-                    <li>{{ paso.descripcion }}</li>
-                {% endfor %}
-            </ol>
-            {% endif %}
-        </div>
-
-        <!-- Sección ¿Cuánto cuesta? -->
-        <div id="seccion-costo-{{ servicio.id }}" class="seccion table-container" style="display:none;">
-            <h2>Costos</h2>
-
-            <table class="tabla-requisitos table">
-                <thead>
-                    <tr>
-                        <th>Concepto</th>
-                        <th>Notas</th>
-                        <th>Vigencia</th>
-                        <th>Tipo</th>
-                        <th>Costo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for costo in costos %}
-                    <tr>
-                        <td><strong>{{ forloop.counter }}. {{ costo.concepto }}</strong></td>
-                        <td>{{ costo.notas|default:"-" }}</td>
-                        <td>{{ costo.vigencia }}</td>
-                        <td>{{ costo.tipo }}</td>
-                        <td>{{ costo.costo|default:"No especificado" }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center">Este trámite no tiene costos definidos.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-            {% if costos %}
-            <div class="alert alert-info mt-3" role="alert">
-                <i class="fas fa-info-circle"></i>
-                <strong>Momento de pago:</strong> {{ costos.0.momento_pago }}
-            </div>
-            {% endif %}
-        </div>
-
-        <!-- Sección Responsable -->
-        <div id="seccion-responsable-{{ servicio.id }}" class="seccion table-container" style="display:none;">
-            <h2>Responsable del Trámite</h2>
-            {% if servicio.responsable %}
-            <div class="responsable-box">
-                {% if servicio.responsable.imagen %}
-                    <img src="{{ servicio.responsable.imagen.url }}" alt="Foto del responsable" class="responsable-foto">
-                {% else %}
-                    <img src="{{ municipio.logotipo.url }}" alt="Logotipo" class="responsable-foto">
+                </ol>
                 {% endif %}
-                <div class="responsable-info">
-                    <p><strong>Nombre:</strong> {{ servicio.responsable.nombre }}</p>
-                    <p><strong>Dependencia:</strong> {{ servicio.responsable.dependencia }}</p>
-                    <p><strong>Teléfono:</strong> {{ servicio.responsable.telefono }}</p>
-                    <p><strong>Correo:</strong> <a href="mailto:{{ servicio.responsable.correo }}">{{ servicio.responsable.correo }}</a></p>
-                    <p><strong>Horario de atención:</strong> {{ servicio.responsable.horario }}</p>
-                </div>
+
+                {% if instrucciones_presencial %}
+                <h4>🏢 Presencial</h4>
+                <ol>
+                    {% for paso in instrucciones_presencial %}
+                        <li>{{ paso.descripcion }}</li>
+                    {% endfor %}
+                </ol>
+                {% endif %}
             </div>
-            {% else %}
-            <p>No se ha asignado responsable para este trámite.</p>
-            {% endif %}
+
+            <!-- Sección ¿Cuánto cuesta? -->
+            <div id="seccion-costo-{{ servicio.id }}" class="seccion table-container" style="display:none;">
+                <h2>Costos</h2>
+
+                <table class="tabla-requisitos table">
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>Notas</th>
+                            <th>Vigencia</th>
+                            <th>Tipo</th>
+                            <th>Costo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for costo in costos %}
+                        <tr>
+                            <td><strong>{{ forloop.counter }}. {{ costo.concepto }}</strong></td>
+                            <td>{{ costo.notas|default:"-" }}</td>
+                            <td>{{ costo.vigencia }}</td>
+                            <td>{{ costo.tipo }}</td>
+                            <td>{{ costo.costo|default:"No especificado" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">Este trámite no tiene costos definidos.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                {% if costos %}
+                <div class="alert alert-info mt-3" role="alert">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Momento de pago:</strong> {{ costos.0.momento_pago }}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Sección Responsable -->
+            <div id="seccion-responsable-{{ servicio.id }}" class="seccion table-container" style="display:none;">
+                <h2>Responsable del Trámite</h2>
+                {% if servicio.responsable %}
+                <div class="responsable-box">
+                    {% if servicio.responsable.imagen %}
+                        <img src="{{ servicio.responsable.imagen.url }}" alt="Foto del responsable" class="responsable-foto">
+                    {% else %}
+                        <img src="{{ municipio.logotipo.url }}" alt="Logotipo" class="responsable-foto">
+                    {% endif %}
+                    <div class="responsable-info">
+                        <p><strong>Nombre:</strong> {{ servicio.responsable.nombre }}</p>
+                        <p><strong>Dependencia:</strong> {{ servicio.responsable.dependencia }}</p>
+                        <p><strong>Teléfono:</strong> {{ servicio.responsable.telefono }}</p>
+                        <p><strong>Correo:</strong> <a href="mailto:{{ servicio.responsable.correo }}">{{ servicio.responsable.correo }}</a></p>
+                        <p><strong>Horario de atención:</strong> {{ servicio.responsable.horario }}</p>
+                    </div>
+                </div>
+                {% else %}
+                <p>No se ha asignado responsable para este trámite.</p>
+                {% endif %}
+            </div>
+
         </div>
-
     </div>
-
 </div>
