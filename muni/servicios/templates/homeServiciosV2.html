@@ -67,24 +67,39 @@
 
 <script>
     function toggleVisibility(id) {
-        const body = document.getElementById('body-' + id);
-        const button = body.previousElementSibling.querySelector('.toggle-btn');
+        const currentBody = document.getElementById('body-' + id);
+        const currentButton = document.getElementById('btn-' + id);
     
+        const allBodies = document.querySelectorAll('.aviso-body');
+        const allButtons = document.querySelectorAll('.toggle-btn');
+    
+        // Cerrar todos los demás acordeones
+        allBodies.forEach(body => {
+            if (body.id !== 'body-' + id) {
+                body.style.display = 'none';
+            }
+        });
+    
+        allButtons.forEach(btn => {
+            if (btn.id !== 'btn-' + id) {
+                btn.textContent = '+';
+            }
+        });
+    
+        // Alternar el actual
+        const isClosed = currentBody.style.display === 'none' || currentBody.style.display === '';
+        currentBody.style.display = isClosed ? 'block' : 'none';
+        currentButton.textContent = isClosed ? '-' : '+';
+    
+        // Cargar detalle solo si está vacío y se está abriendo
         const detalleDiv = document.getElementById('detalle-' + id);
-    
-        const mostrar = (body.style.display === "none" || body.style.display === "");
-    
-        body.style.display = mostrar ? "block" : "none";
-        button.textContent = mostrar ? "-" : "+";
-    
-        // Si se está abriendo el acordeón y aún no se ha cargado el contenido
-        if (mostrar && detalleDiv.innerHTML.trim() === "") {
+        if (isClosed && detalleDiv.innerHTML.trim() === "") {
             fetch(`/servicios/${id}/detalle_parcial/`)
                 .then(response => response.json())
                 .then(data => {
                     detalleDiv.innerHTML = data.html;
                     detalleDiv.style.display = 'block';
-                    inicializarSidebar(id); // Activar navegación del detalle
+                    inicializarSidebar(id);
                 })
                 .catch(error => {
                     console.error('Error al cargar detalle:', error);
