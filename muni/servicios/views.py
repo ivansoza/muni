@@ -3,9 +3,11 @@ from django.views.generic import TemplateView, DetailView
 from django.core.paginator import Paginator
 from django.core.exceptions import ObjectDoesNotExist
 from servicios.models import ComoLoRealizo, CuantoCuesta, EnQueConsiste, QueSeRequiere, Servicio
+from django.template.loader import render_to_string
+from django.http import JsonResponse
 
 class HomeServiciosView(TemplateView):
-    template_name = 'homeServicios.html'  # Ruta del template
+    template_name = 'homeServiciosV2.html'  # Ruta del template
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -82,3 +84,32 @@ class ServicioDetailView(DetailView):
             context["instrucciones_presencial"] = []
             context['costos'] = None
         return context
+    
+class ServicioDetalleParcialView(DetailView):
+    model = Servicio
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        
+        try:
+            context["consiste"] = EnQueConsiste.objects.get(servicio=self.object)
+            context["requiere"] = QueSeRequiere.objects.filter(servicio=self.object)
+            context["instrucciones_linea"] = ComoLoRealizo.objects.filter(
+                servicio=self.object,
+                canal_presentacion__nombre='linea'
+            ).order_by('paso')
+            context["instrucciones_presencial"] = ComoLoRealizo.objects.filter(
+                servicio=self.object,
+                canal_presentacion__nombre='presencial'
+            ).order_by('paso')
+            context["costos"] = CuantoCuesta.objects.filter(servicio=self.object)
+        except ObjectDoesNotExist:
+            context["consiste"] = None
+            context['requiere'] = []
+            context["instrucciones_linea"] = []
+            context["instrucciones_presencial"] = []
+            context["costos"] = []
+
+        html = render_to_string('detalle_servicio_p.html', context, request=request)
+        return JsonResponse({'html': html})
