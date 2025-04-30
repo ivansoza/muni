@@ -74,14 +74,6 @@
     font-weight: bold;
 }
 
-/* Sección de contenido */
-.main-content {
-    flex-grow: 1;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-}
-
 h2 {
     color: var(--color-primario);
     font-size: 22px;
@@ -93,6 +85,7 @@ h2 {
     justify-content: space-between;
     flex-wrap: wrap;
     margin: 15px 0;
+    align-items: flex-start;
 }
 
 /* Estilos para alinear correctamente los títulos y etiquetas */
@@ -135,20 +128,18 @@ h2 {
 
 /* Descripción */
 .descripcion {
+    min-height: 80px; /* Ajustable según estética */
     margin: 15px 0;
     text-align: justify;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .descripcion h3 {
     font-size: 18px;
     color: var(--color-primario);
 }
-
-/* Botones de acción */
-/* .action-buttons {
-    margin-top: 20px;
-    text-align: right;
-} */
 
 .btn {
     padding: 10px 20px;
@@ -499,21 +490,6 @@ text-decoration: none; /* 👈 elimina la línea debajo del texto */
 background-color: var(--color-secundario);
 color: white;
 }
-.buscador-input {
-width: 500px; /* Puedes ajustar esto a 250px o el valor que prefieras */
-padding: 10px 15px;
-font-size: 15px;
-border: 2px solid #ccc;
-border-radius: 8px;
-transition: all 0.3s ease-in-out;
-box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.buscador-input:focus {
-    outline: none;
-    border-color: var(--color-primario);
-    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
-}
 
 .search-container::before {
     position: absolute;
@@ -525,7 +501,32 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     pointer-events: none;
 }
 
-.buscador-input::placeholder {
-    padding-left: 20px;
-    color: #aaa;
+/* ----- Estilos extras ----- */
+/* Buscador centrado al 90% */
+.search-form {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.custom-search-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.custom-search-bar .search-input {
+    flex: 1;
+    min-width: 250px;
+}
+
+.custom-search-bar .search-btn,
+.custom-search-bar .reset-btn {
+    white-space: nowrap;
+}
+
+.contenido-principal {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
 }
