@@ -63,6 +63,7 @@
             </div>
 
             <!-- Sección ¿Qué se requiere? -->
+            {% if mostrar_seccion_requisitos %}
             <div id="seccion-requisitos-{{ servicio.id }}" class="seccion table-container" style="display:none;">
                 <h2>Requisitos</h2>
 
@@ -71,9 +72,15 @@
                         <tr>
                             <th>Documento</th>
                             <th>Especificaciones</th>
-                            <!-- <th>Tipo de documentos</th> -->
-                            <!-- <th>Presentar en</th> -->
-                            <!-- <th>Descargar</th> -->
+                            {% if mostrar_tipo_documento %}
+                                <th>Tipo de documento</th>
+                            {% endif %}
+                            {% if mostrar_presentar_original or mostrar_presentar_copia %}
+                                <th>Presentar</th>
+                            {% endif %}
+                            {% if mostrar_archivo_descarga %}
+                                <th>Descargar</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
@@ -81,15 +88,27 @@
                         <tr>
                             <td>{{ forloop.counter }}. {{ requisito.nombre }}</td>
                             <td>{{ requisito.especificaciones }}</td>
-                            <!-- <td>{{ requisito.tipo_documento }}</td> -->
-                            <!-- <td>Original ({{ requisito.presentar_original }}) / Copia ({{ requisito.presentar_copia }})</td> -->
-                            <!-- <td>
-                                {% if requisito.archivo_descarga %}
-                                    <a href="{{ requisito.archivo_descarga.url }}" target="_blank">Descargar</a>
-                                {% else %}
-                                    N/A
-                                {% endif %}
-                            </td> -->
+
+                            {% if mostrar_tipo_documento %}
+                                <td>{{ requisito.tipo_documento|default:"-" }}</td>
+                            {% endif %}
+
+                            {% if mostrar_presentar_original or mostrar_presentar_copia %}
+                                <td>
+                                    {% if mostrar_presentar_original %}Original ({{ requisito.presentar_original }}) {% endif %}
+                                    {% if mostrar_presentar_copia %}/ Copia ({{ requisito.presentar_copia }}){% endif %}
+                                </td>
+                            {% endif %}
+
+                            {% if mostrar_archivo_descarga %}
+                                <td>
+                                    {% if requisito.archivo_descarga %}
+                                        <a href="{{ requisito.archivo_descarga.url }}" target="_blank">Descargar</a>
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                            {% endif %}
                         </tr>
                         {% empty %}
                         <tr>
@@ -99,6 +118,7 @@
                     </tbody>
                 </table>
             </div>
+            {% endif %}
 
             <!-- Sección ¿Cómo lo realizo? -->
             <div id="seccion-realizo-{{ servicio.id }}" class="seccion" style="display:none;">
