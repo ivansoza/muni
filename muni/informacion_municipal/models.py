@@ -43,6 +43,31 @@ class Municipio(models.Model):
         return self.nombre
 
 
+class Anuncio(models.Model):
+    municipio = models.ForeignKey(
+        Municipio,
+        on_delete=models.CASCADE,
+        related_name='anuncios',
+        blank=True,
+        null=True,
+    )
+    imagen = models.ImageField(
+        'Imagen del anuncio',
+        upload_to='anuncios/',
+        blank=True,
+        null=True,
+        help_text='Sube aquí la imagen del anuncio'
+    )
+
+    class Meta:
+        verbose_name = 'Anuncio'
+        verbose_name_plural = 'Anuncios'
+
+    def __str__(self):
+        return f"Anuncio de {self.municipio.nombre_municipio if self.municipio else 'sin municipio'}"
+    
+
+
 class InformacionCiudad(models.Model):
     municipio = models.OneToOneField(  # O ForeignKey si permites más de una por municipio
         'Municipio',

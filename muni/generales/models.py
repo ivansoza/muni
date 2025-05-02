@@ -183,8 +183,19 @@ class personalizacionPlantilla(models.Model):
         choices=INFO_CHOICES,
         default='info1'  # Primera opción como predeterminada
     )
+    ANUNCIOS_CHOICES = [
+        ('anuncio1', 'Anuncio 1'),
+        ('anuncio2', 'Anuncio 2'),
+        ('anuncio3', 'Anuncio 3'),
+        ('sinanuncio', 'Sin anuncio'),
+    ]
 
-
+    anuncios = models.CharField(
+        max_length=50,
+        choices=ANUNCIOS_CHOICES,
+        default='sinanuncio',
+        verbose_name="Anuncios"
+    )
 
     def __str__(self):
         return f"{self.municipio} - {self.get_entrada_display()}"
