@@ -1583,7 +1583,14 @@ class GestionarCarpetaView(View):
         carpeta = get_object_or_404(Carpeta, id=carpeta_id)
         
         # Obtener todas las subcarpetas y archivos, activos e inactivos
-        subcarpetas = carpeta.subcarpetas.all().prefetch_related('archivos', 'subcarpetas__archivos')
+        subcarpetas = carpeta.subcarpetas.all().prefetch_related(
+            'archivos',
+            'subcarpetas__archivos',
+            'subcarpetas__subcarpetas__archivos',
+            'subcarpetas__subcarpetas__subcarpetas__archivos',
+            'subcarpetas__subcarpetas__subcarpetas__subcarpetas__archivos'
+        )
+
         archivos = carpeta.archivos.all()
         
         # Añadir datos al contexto
