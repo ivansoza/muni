@@ -52,7 +52,7 @@ class Archivo(models.Model):
 
     carpeta = models.ForeignKey(Carpeta, related_name='archivos', on_delete=models.CASCADE)
     nombre = models.CharField(max_length=255)
-    archivo = models.FileField(upload_to=archivo_upload_to)
+    archivo = models.FileField(upload_to=archivo_upload_to, max_length=255)
     fecha_subida = models.DateTimeField(auto_now_add=True)
     estatus = models.CharField(max_length=1, choices=ESTATUS_CHOICES, default='A')  # Campo de estatus
 
