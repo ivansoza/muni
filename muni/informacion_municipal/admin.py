@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import ElementoLista, InformacionCiudad, Municipio, ColoresMunicipio, GobiernoActual, MisionVision,SeccionInicio, Video
+from .models import ElementoLista, InformacionCiudad, Municipio, ColoresMunicipio, GobiernoActual, MisionVision,SeccionInicio, Video, Anuncio
 
 # Registro de Municipio
 @admin.register(Municipio)
@@ -224,3 +224,7 @@ class ElementoListaAdmin(admin.ModelAdmin):
     list_display = ('texto', 'informacion')
     search_fields = ('texto',)
     list_filter = ('informacion',)
+
+
+
+admin.site.register(Anuncio)

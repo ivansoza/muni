@@ -484,6 +484,28 @@
                         {# Aquí tus condiciones para las secciones estáticas, por ejemplo: #}
 
 
+                        {% if municipio.cortina%}
+                            {% if municipio.cortina.anuncios == "anuncio1" %}
+                                {% include "home/components/anuncios/anuncio1.html" %}
+                            {% elif municipio.cortina.anuncios == "anuncio2" %}
+                                {% include "home/components/anuncios/anuncio1.html" %}
+                            {% elif municipio.cortina.anuncios == "anuncio3" %}
+                                {% include "home/components/anuncios/anuncio1.html" %}
+                            {% elif municipio.cortina.anuncios == "anuncio4" %}
+                                {% include "home/components/anuncios/anuncio1.html" %}
+                            {% elif municipio.cortina.anuncios == "sinanuncio" %}
+
+
+                            {% else %}
+                                {% include "home/components/anuncios/anuncio1.html" %}
+                            {% endif %}
+                            
+                        
+                        {% endif %}
+
+
+
+
                         {% if seccion.nombre == 'servicios' %}
                             {% if municipio.cortina %}
                                 {% if municipio.cortina.servicios == "servicios1" %}
@@ -565,6 +587,28 @@
                     {% endif %}
                 {% endfor %}
             {% else %}
+
+
+
+                {% if municipio.cortina%}
+                    {% if municipio.cortina.anuncios == "anuncio1" %}
+                        {% include "home/components/anuncios/anuncio1.html" %}
+                    {% elif municipio.cortina.anuncios == "anuncio2" %}
+                        {% include "home/components/anuncios/anuncio1.html" %}
+                    {% elif municipio.cortina.anuncios == "anuncio3" %}
+                        {% include "home/components/anuncios/anuncio1.html" %}
+                    {% elif municipio.cortina.anuncios == "anuncio4" %}
+                        {% include "home/components/anuncios/anuncio1.html" %}
+                    {% elif municipio.cortina.anuncios == "sinanuncio" %}
+
+
+                    {% else %}
+                        {% include "home/components/anuncios/anuncio1.html" %}
+                    {% endif %}
+                    
+                
+                {% endif %}
+
                 {# Orden predeterminado si no hay secciones definidas #}
                 {% if municipio.cortina %}
                     {% if municipio.cortina.servicios == "servicios1" %}
