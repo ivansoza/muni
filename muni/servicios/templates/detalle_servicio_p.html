@@ -143,6 +143,7 @@
             </div>
 
             <!-- Sección ¿Cuánto cuesta? -->
+            {% if mostrar_seccion_costo %}
             <div id="seccion-costo-{{ servicio.id }}" class="seccion table-container" style="display:none;">
                 <h2>Costos</h2>
 
@@ -151,8 +152,12 @@
                         <tr>
                             <th>Concepto</th>
                             <th>Observaciones</th>
-                            <!-- <th>Vigencia</th> -->
-                            <!-- <th>Tipo</th> -->
+                            {% if mostrar_campo_vigencia %}
+                                <th>Vigencia</th>
+                            {% endif %}
+                            {% if mostrar_campo_tipo %}
+                                <th>Tipo</th>
+                            {% endif %}
                             <th>Costo</th>
                         </tr>
                     </thead>
@@ -161,8 +166,12 @@
                         <tr>
                             <td><strong>{{ forloop.counter }}. {{ costo.concepto }}</strong></td>
                             <td>{{ costo.notas|default:"-" }}</td>
-                            <!-- <td>{{ costo.vigencia }}</td> -->
-                            <!-- <td>{{ costo.tipo }}</td> -->
+                            {% if mostrar_campo_vigencia %}
+                                <td>{{ costo.vigencia|default:"-" }}</td>
+                            {% endif %}
+                            {% if mostrar_campo_tipo %}
+                                <td>{{ costo.tipo|default:"-" }}</td>
+                            {% endif %}
                             <td>{{ costo.costo|default:"No especificado" }}</td>
                         </tr>
                         {% empty %}
@@ -173,13 +182,14 @@
                     </tbody>
                 </table>
 
-                {% if costos %}
+                {% if mostrar_campo_momento_pago and costos %}
                 <div class="alert alert-info mt-3" role="alert">
                     <i class="fas fa-info-circle"></i>
                     <strong>Momento de pago:</strong> {{ costos.0.momento_pago }}
                 </div>
                 {% endif %}
             </div>
+            {% endif %}
 
             <!-- Sección Responsable -->
             <!-- <div id="seccion-responsable-{{ servicio.id }}" class="seccion table-container" style="display:none;">
