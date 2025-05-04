@@ -7,7 +7,12 @@ from django.template.loader import render_to_string
 from django.http import JsonResponse
 
 class HomeServiciosView(TemplateView):
-    template_name = 'homeServiciosV2.html'  # Ruta del template
+    template_name = ''
+
+    def dispatch(self, request, *args, **kwargs):
+        config = ConfiguracionServicio.objects.first()
+        self.template_name = 'homeServiciosV2.html' if (config and config.usar_plantilla_v2) else 'homeServicios.html'
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -47,6 +52,7 @@ class HomeServiciosView(TemplateView):
             'sector': sector,
             'organismo': organismo,
             'per_page': per_page,
+            'organismos': Servicio.objects.values('organismo__id', 'organismo__nombre').distinct(),
         })
         
         return context
