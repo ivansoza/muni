@@ -51,6 +51,35 @@ class CanalPresentacion(models.Model):
     def __str__(self):
         return self.get_nombre_display()
     
+class ConfiguracionServicio(models.Model):
+    # Secciones
+    mostrar_seccion_consiste = models.BooleanField(default=True)
+    mostrar_seccion_requisitos = models.BooleanField(default=True)
+    mostrar_seccion_realizo = models.BooleanField(default=True)
+    mostrar_seccion_costo = models.BooleanField(default=True)
+    mostrar_seccion_responsable = models.BooleanField(default=False)
+
+    # Campos específicos de la sección "¿Qué se requiere?"
+    mostrar_tipo_documento = models.BooleanField(default=False, help_text='Sección: ¿Que se requiere?')
+    mostrar_presentar_original = models.BooleanField(default=False, help_text='Sección: ¿Que se requiere?')
+    mostrar_presentar_copia = models.BooleanField(default=False, help_text='Sección: ¿Que se requiere?')
+    mostrar_archivo_descarga = models.BooleanField(default=False, help_text='Sección: ¿Que se requiere?')
+
+    # Campos específicos de la sección "¿Cuánto cuesta?"
+    mostrar_campo_vigencia = models.BooleanField(default=False, help_text='Sección: ¿Cuanto cuesta?')
+    mostrar_campo_tipo = models.BooleanField(default=False, help_text='Sección: ¿Cuanto cuesta?')
+    mostrar_campo_momento_pago = models.BooleanField(default=True, help_text='Sección: ¿Cuanto cuesta?')
+
+    # Campo especifico para usar la plantilla v1 o v2
+    usar_plantilla_v2 = models.BooleanField(default=True, help_text='')
+
+    class Meta:
+        verbose_name = "Configuración de servicio"
+        verbose_name_plural = "Configuración de servicios"
+
+    def __str__(self):
+        return "Configuración global de visibilidad"
+    
 class Servicio(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     titulo = models.CharField(max_length=100)
