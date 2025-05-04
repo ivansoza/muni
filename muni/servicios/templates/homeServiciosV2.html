@@ -19,6 +19,22 @@
         </div>
     </form>
 </div>
+<div class="filter-container mt-3 mb-4">
+    <form method="GET" action="{% url 'homeServicios' %}" class="form-inline">
+        <label for="organismo" class="me-2">Filtrar por área:</label>
+        <select name="organismo" id="organismo" class="form-select w-auto d-inline-block me-2">
+            <option value="">Todos</option>
+            {% for org in organismos %}
+                <option value="{{ org.organismo__id }}" {% if org.organismo__id|stringformat:"s" == organismo %}selected{% endif %}>
+                    {{ org.organismo__nombre }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <input type="hidden" name="q" value="{{ query }}">
+        <button type="submit" class="btn search-btn">Aplicar filtro</button>
+    </form>
+</div>
 
 <br>
 
