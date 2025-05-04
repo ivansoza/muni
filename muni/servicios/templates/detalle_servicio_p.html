@@ -4,11 +4,25 @@
     <!-- Sidebar lateral -->
     <div class="sidebar responsive-sidebar">
         <ul class="menu">
+            {% if mostrar_seccion_consiste %}
             <li class="menu-icon active" data-seccion="seccion-consiste-{{ servicio.id }}"><i class="fas fa-thumbtack"></i></li>
+            {% endif %}
+
+            {% if mostrar_seccion_requisitos %}
             <li class="menu-icon" data-seccion="seccion-requisitos-{{ servicio.id }}"><i class="fas fa-file-alt"></i></li>
+            {% endif %}
+
+            {% if mostrar_seccion_realizo %}
             <li class="menu-icon" data-seccion="seccion-realizo-{{ servicio.id }}"><i class="fas fa-tools"></i></li>
+            {% endif %}
+
+            {% if mostrar_seccion_costo %}
             <li class="menu-icon" data-seccion="seccion-costo-{{ servicio.id }}"><i class="fas fa-money-bill-wave"></i></li>
-            <!-- <li class="menu-icon" data-seccion="seccion-responsable-{{ servicio.id }}"><i class="fas fa-user"></i></li> -->
+            {% endif %}
+
+            {% if mostrar_seccion_responsable %}
+            <li class="menu-icon" data-seccion="seccion-responsable-{{ servicio.id }}"><i class="fas fa-user"></i></li>
+            {% endif %}
         </ul>        
     </div>
 
@@ -18,11 +32,25 @@
         <!-- Sidebar para escritorio -->
         <div class="sidebar desktop-sidebar">
             <ul class="menu">
+                {% if mostrar_seccion_consiste %}
                 <li class="menu-item active" data-seccion="seccion-consiste-{{ servicio.id }}">📌 ¿En qué consiste?</li>
+                {% endif %}
+
+                {% if mostrar_seccion_requisitos %}
                 <li class="menu-item" data-seccion="seccion-requisitos-{{ servicio.id }}">📄 ¿Qué se requiere?</li>
+                {% endif %}
+
+                {% if mostrar_seccion_realizo %}
                 <li class="menu-item" data-seccion="seccion-realizo-{{ servicio.id }}">🛠️ ¿Cómo lo realizo?</li>
+                {% endif %}
+
+                {% if mostrar_seccion_costo %}
                 <li class="menu-item" data-seccion="seccion-costo-{{ servicio.id }}">💰 ¿Cuánto cuesta?</li>
-                <!-- <li class="menu-item" data-seccion="seccion-responsable-{{ servicio.id }}">👤 Responsable</li> -->
+                {% endif %}
+
+                {% if mostrar_seccion_responsable %}
+                <li class="menu-item" data-seccion="seccion-responsable-{{ servicio.id }}">👤 Responsable</li>
+                {% endif %}
             </ul>
         </div>
 
