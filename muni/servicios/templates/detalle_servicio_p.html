@@ -192,7 +192,8 @@
             {% endif %}
 
             <!-- Sección Responsable -->
-            <!-- <div id="seccion-responsable-{{ servicio.id }}" class="seccion table-container" style="display:none;">
+            {% if mostrar_seccion_responsable %}
+            <div id="seccion-responsable-{{ servicio.id }}" class="seccion table-container" style="display:none;">
                 <h2>Responsable del Trámite</h2>
                 {% if servicio.responsable %}
                 <div class="responsable-box">
@@ -212,8 +213,8 @@
                 {% else %}
                 <p>No se ha asignado responsable para este trámite.</p>
                 {% endif %}
-            </div> -->
-
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
