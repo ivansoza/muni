@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, DetailView
 from django.core.paginator import Paginator
 from django.core.exceptions import ObjectDoesNotExist
-from servicios.models import ComoLoRealizo, CuantoCuesta, EnQueConsiste, QueSeRequiere, Servicio
+from servicios.models import ComoLoRealizo, ConfiguracionServicio, CuantoCuesta, EnQueConsiste, QueSeRequiere, Servicio
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 
@@ -116,6 +116,30 @@ class ServicioDetalleParcialView(DetailView):
             context["instrucciones_linea"] = []
             context["instrucciones_presencial"] = []
             context["costos"] = []
+
+        # Leer la única configuración existente
+        config = ConfiguracionServicio.objects.first()
+
+        if config:
+            context.update({
+                # Secciones
+                'mostrar_seccion_consiste': config.mostrar_seccion_consiste,
+                'mostrar_seccion_requisitos': config.mostrar_seccion_requisitos,
+                'mostrar_seccion_realizo': config.mostrar_seccion_realizo,
+                'mostrar_seccion_costo': config.mostrar_seccion_costo,
+                'mostrar_seccion_responsable': config.mostrar_seccion_responsable,
+
+                # Requisitos
+                'mostrar_tipo_documento': config.mostrar_tipo_documento,
+                'mostrar_presentar_original': config.mostrar_presentar_original,
+                'mostrar_presentar_copia': config.mostrar_presentar_copia,
+                'mostrar_archivo_descarga': config.mostrar_archivo_descarga,
+
+                # Costos
+                'mostrar_campo_vigencia': config.mostrar_campo_vigencia,
+                'mostrar_campo_tipo': config.mostrar_campo_tipo,
+                'mostrar_campo_momento_pago': config.mostrar_campo_momento_pago,
+            })
 
         html = render_to_string('detalle_servicio_p.html', context, request=request)
         return JsonResponse({'html': html})
