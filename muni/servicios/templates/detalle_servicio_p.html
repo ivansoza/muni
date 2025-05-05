@@ -4,11 +4,25 @@
     <!-- Sidebar lateral -->
     <div class="sidebar responsive-sidebar">
         <ul class="menu">
+            {% if mostrar_seccion_consiste %}
             <li class="menu-icon active" data-seccion="seccion-consiste-{{ servicio.id }}"><i class="fas fa-thumbtack"></i></li>
+            {% endif %}
+
+            {% if mostrar_seccion_requisitos %}
             <li class="menu-icon" data-seccion="seccion-requisitos-{{ servicio.id }}"><i class="fas fa-file-alt"></i></li>
+            {% endif %}
+
+            {% if mostrar_seccion_realizo %}
             <li class="menu-icon" data-seccion="seccion-realizo-{{ servicio.id }}"><i class="fas fa-tools"></i></li>
+            {% endif %}
+
+            {% if mostrar_seccion_costo %}
             <li class="menu-icon" data-seccion="seccion-costo-{{ servicio.id }}"><i class="fas fa-money-bill-wave"></i></li>
-            <!-- <li class="menu-icon" data-seccion="seccion-responsable-{{ servicio.id }}"><i class="fas fa-user"></i></li> -->
+            {% endif %}
+
+            {% if mostrar_seccion_responsable %}
+            <li class="menu-icon" data-seccion="seccion-responsable-{{ servicio.id }}"><i class="fas fa-user"></i></li>
+            {% endif %}
         </ul>        
     </div>
 
@@ -18,27 +32,45 @@
         <!-- Sidebar para escritorio -->
         <div class="sidebar desktop-sidebar">
             <ul class="menu">
+                {% if mostrar_seccion_consiste %}
                 <li class="menu-item active" data-seccion="seccion-consiste-{{ servicio.id }}">📌 ¿En qué consiste?</li>
+                {% endif %}
+
+                {% if mostrar_seccion_requisitos %}
                 <li class="menu-item" data-seccion="seccion-requisitos-{{ servicio.id }}">📄 ¿Qué se requiere?</li>
+                {% endif %}
+
+                {% if mostrar_seccion_realizo %}
                 <li class="menu-item" data-seccion="seccion-realizo-{{ servicio.id }}">🛠️ ¿Cómo lo realizo?</li>
+                {% endif %}
+
+                {% if mostrar_seccion_costo %}
                 <li class="menu-item" data-seccion="seccion-costo-{{ servicio.id }}">💰 ¿Cuánto cuesta?</li>
-                <!-- <li class="menu-item" data-seccion="seccion-responsable-{{ servicio.id }}">👤 Responsable</li> -->
+                {% endif %}
+
+                {% if mostrar_seccion_responsable %}
+                <li class="menu-item" data-seccion="seccion-responsable-{{ servicio.id }}">👤 Responsable</li>
+                {% endif %}
             </ul>
         </div>
 
         <div class="contenido-principal">
             <!-- Sección ¿En qué consiste? -->
+            {% if mostrar_seccion_consiste %}
             <div id="seccion-consiste-{{ servicio.id }}" class="seccion">
                 <h2>Información del Trámite</h2>
+
                 <div class="info-grid">
                     <div class="info-item">
                         <strong>Trámite:</strong>
                         <span class="badge costo">{{ consiste.tramite }}</span>
                     </div>
+
                     <div class="info-item">
-                        <strong>Sector Económico:</strong> 
-                        <span class="economico">{{ servicio.sector.nombre }}</span>
+                        <strong>Área:</strong> 
+                        <span class="economico">{{ servicio.organismo.nombre }}</span>
                     </div>
+
                     <div class="info-item">
                         <strong>Canales de presentación:</strong> 
                         <span class="badge presencial">{{ consiste.canal_presentacion }}</span>
@@ -55,14 +87,17 @@
                         <strong>Puede ser solicitado por:</strong> 
                         {{ consiste.get_solicitado_por_display }}
                     </div>
+
                     <div class="info-item">
                         <strong>En qué momento se deberá solicitar:</strong> 
                         {{ consiste.momento_solicitud }}
                     </div>
                 </div>
             </div>
+            {% endif %}
 
             <!-- Sección ¿Qué se requiere? -->
+            {% if mostrar_seccion_requisitos %}
             <div id="seccion-requisitos-{{ servicio.id }}" class="seccion table-container" style="display:none;">
                 <h2>Requisitos</h2>
 
@@ -71,9 +106,15 @@
                         <tr>
                             <th>Documento</th>
                             <th>Especificaciones</th>
-                            <!-- <th>Tipo de documentos</th> -->
-                            <!-- <th>Presentar en</th> -->
-                            <!-- <th>Descargar</th> -->
+                            {% if mostrar_tipo_documento %}
+                                <th>Tipo de documento</th>
+                            {% endif %}
+                            {% if mostrar_presentar_original or mostrar_presentar_copia %}
+                                <th>Presentar</th>
+                            {% endif %}
+                            {% if mostrar_archivo_descarga %}
+                                <th>Descargar</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
@@ -81,15 +122,27 @@
                         <tr>
                             <td>{{ forloop.counter }}. {{ requisito.nombre }}</td>
                             <td>{{ requisito.especificaciones }}</td>
-                            <!-- <td>{{ requisito.tipo_documento }}</td> -->
-                            <!-- <td>Original ({{ requisito.presentar_original }}) / Copia ({{ requisito.presentar_copia }})</td> -->
-                            <!-- <td>
-                                {% if requisito.archivo_descarga %}
-                                    <a href="{{ requisito.archivo_descarga.url }}" target="_blank">Descargar</a>
-                                {% else %}
-                                    N/A
-                                {% endif %}
-                            </td> -->
+
+                            {% if mostrar_tipo_documento %}
+                                <td>{{ requisito.tipo_documento|default:"-" }}</td>
+                            {% endif %}
+
+                            {% if mostrar_presentar_original or mostrar_presentar_copia %}
+                                <td>
+                                    {% if mostrar_presentar_original %}Original ({{ requisito.presentar_original }}) {% endif %}
+                                    {% if mostrar_presentar_copia %}/ Copia ({{ requisito.presentar_copia }}){% endif %}
+                                </td>
+                            {% endif %}
+
+                            {% if mostrar_archivo_descarga %}
+                                <td>
+                                    {% if requisito.archivo_descarga %}
+                                        <a href="{{ requisito.archivo_descarga.url }}" target="_blank">Descargar</a>
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                            {% endif %}
                         </tr>
                         {% empty %}
                         <tr>
@@ -99,10 +152,13 @@
                     </tbody>
                 </table>
             </div>
+            {% endif %}
 
             <!-- Sección ¿Cómo lo realizo? -->
+            {% if mostrar_seccion_realizo %}
             <div id="seccion-realizo-{{ servicio.id }}" class="seccion" style="display:none;">
                 <h2>Canales de Presentación</h2>
+
                 {% if instrucciones_linea %}
                 <h4>💻 100% en línea</h4>
                 <ol>
@@ -121,8 +177,10 @@
                 </ol>
                 {% endif %}
             </div>
+            {% endif %}
 
             <!-- Sección ¿Cuánto cuesta? -->
+            {% if mostrar_seccion_costo %}
             <div id="seccion-costo-{{ servicio.id }}" class="seccion table-container" style="display:none;">
                 <h2>Costos</h2>
 
@@ -131,8 +189,12 @@
                         <tr>
                             <th>Concepto</th>
                             <th>Observaciones</th>
-                            <!-- <th>Vigencia</th> -->
-                            <!-- <th>Tipo</th> -->
+                            {% if mostrar_campo_vigencia %}
+                                <th>Vigencia</th>
+                            {% endif %}
+                            {% if mostrar_campo_tipo %}
+                                <th>Tipo</th>
+                            {% endif %}
                             <th>Costo</th>
                         </tr>
                     </thead>
@@ -141,8 +203,12 @@
                         <tr>
                             <td><strong>{{ forloop.counter }}. {{ costo.concepto }}</strong></td>
                             <td>{{ costo.notas|default:"-" }}</td>
-                            <!-- <td>{{ costo.vigencia }}</td> -->
-                            <!-- <td>{{ costo.tipo }}</td> -->
+                            {% if mostrar_campo_vigencia %}
+                                <td>{{ costo.vigencia|default:"-" }}</td>
+                            {% endif %}
+                            {% if mostrar_campo_tipo %}
+                                <td>{{ costo.tipo|default:"-" }}</td>
+                            {% endif %}
                             <td>{{ costo.costo|default:"No especificado" }}</td>
                         </tr>
                         {% empty %}
@@ -153,16 +219,18 @@
                     </tbody>
                 </table>
 
-                {% if costos %}
+                {% if mostrar_campo_momento_pago and costos %}
                 <div class="alert alert-info mt-3" role="alert">
                     <i class="fas fa-info-circle"></i>
                     <strong>Momento de pago:</strong> {{ costos.0.momento_pago }}
                 </div>
                 {% endif %}
             </div>
+            {% endif %}
 
             <!-- Sección Responsable -->
-            <!-- <div id="seccion-responsable-{{ servicio.id }}" class="seccion table-container" style="display:none;">
+            {% if mostrar_seccion_responsable %}
+            <div id="seccion-responsable-{{ servicio.id }}" class="seccion table-container" style="display:none;">
                 <h2>Responsable del Trámite</h2>
                 {% if servicio.responsable %}
                 <div class="responsable-box">
@@ -182,8 +250,8 @@
                 {% else %}
                 <p>No se ha asignado responsable para este trámite.</p>
                 {% endif %}
-            </div> -->
-
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

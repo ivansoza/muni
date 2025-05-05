@@ -5,7 +5,7 @@ from servicios.models import ComoLoRealizo, CuantoCuesta, EnQueConsiste, QueSeRe
 class ServicioForm(forms.ModelForm):
     class Meta:
         model = Servicio
-        fields = ['titulo', 'descripcion', 'url_tramite', 'estado', 
+        fields = ['titulo', 'descripcion',
                   'clasificacion', 'sector', 'organismo', 'pago_en_linea', 'ahora_en_linea', 'responsable']
         widgets = {
             'descripcion': forms.Textarea(attrs={'rows': 3})
