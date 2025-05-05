@@ -10,7 +10,37 @@
         <div class="card-body">
             <form method="POST" enctype="multipart/form-data">  
                 {% csrf_token %}
-                {{ form|crispy }}
+                {{ form.non_field_errors }}
+
+                {{ form.titulo|as_crispy_field }}
+                
+                {{ form.descripcion|as_crispy_field }}
+
+                {{ form.clasificacion|as_crispy_field }}
+
+                {{ form.sector|as_crispy_field }}
+
+                <div class="mb-3">
+                    <label for="{{ form.organismo.id_for_label }}" class="form-label">
+                        {{ form.organismo.label }}
+                    </label>
+                    <div class="input-group">
+                        {{ form.organismo }}
+                        <button type="button" id="abrirModalOrganismo" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalOrganismo">
+                            +
+                        </button>
+                    </div>
+                    {% if form.organismo.errors %}
+                        <div class="text-danger">{{ form.organismo.errors }}</div>
+                    {% endif %}
+                </div>
+
+                {{ form.pago_en_linea|as_crispy_field }}
+
+                {{ form.ahora_en_linea|as_crispy_field }}
+
+                {{ form.responsable|as_crispy_field }}
+
                 
                 <div class="form-group text-center">
                     <button type="submit" class="btn btn-primary btn-lg me-3">
@@ -21,7 +51,76 @@
                     </a>
                 </div>
             </form>
+
+            <!-- Modal -->
+            <div class="modal fade" id="modalOrganismo" tabindex="-1" aria-labelledby="modalOrganismoLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form id="formNuevoOrganismo">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalOrganismoLabel">Agregar nuevo organismo</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="nombreOrganismo" class="form-label">Nombre del organismo</label>
+                                <input type="text" class="form-control" id="nombreOrganismo" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            </div>
+
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById('formNuevoOrganismo');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();  // ⛔ evita recarga
+            const nombre = document.getElementById('nombreOrganismo').value;
+    
+            fetch("{% url 'crear_dependencia_ajax' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `nombre=${encodeURIComponent(nombre)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const select = document.getElementById("id_organismo");
+                    const option = new Option(data.nombre, data.id, true, true);
+                    select.appendChild(option);
+                    select.value = data.id;
+    
+                    // Cierra el modal
+                    const modalEl = document.getElementById('modalOrganismo');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    modal.hide();
+
+                    // 🔄 Devuelve el foco al botón que abrió el modal
+                    document.getElementById('abrirModalOrganismo').focus();
+    
+                    // Limpia el campo
+                    document.getElementById('nombreOrganismo').value = '';
+                } else {
+                    alert("No se pudo guardar el organismo.");
+                }
+            }).catch(err => {
+                console.error("Error en el fetch:", err);
+                alert("Ocurrió un error al guardar.");
+            });
+        });
+    });
+</script>
 {% endblock %}
