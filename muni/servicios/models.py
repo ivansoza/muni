@@ -89,7 +89,7 @@ class Servicio(models.Model):
     estado = models.PositiveIntegerField(default=0)  # Número para "+5" en la tarjeta
     clasificacion = models.ForeignKey(Categoria, on_delete=models.PROTECT, blank=True, null=True)
     sector = models.ForeignKey(Sector, on_delete=models.PROTECT, blank=True, null=True)
-    organismo = models.ForeignKey(Dependencia, on_delete=models.PROTECT, blank=True, null=True)
+    organismo = models.ForeignKey(Dependencia, on_delete=models.PROTECT, blank=True, null=True, verbose_name='Organismo / Área')
     creado_en = models.DateTimeField(auto_now_add=True)
 
     # Nuevos campos para activar/desactivar las opciones
