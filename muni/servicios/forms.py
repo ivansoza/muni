@@ -11,6 +11,12 @@ class ServicioForm(forms.ModelForm):
             'descripcion': forms.Textarea(attrs={'rows': 3})
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Solo al campo 'organismo'
+        self.fields['organismo'].widget.attrs.update({'class': 'form-control'})
+
 class EnQueConsisteForm(forms.ModelForm):
     class Meta:
         model = EnQueConsiste
