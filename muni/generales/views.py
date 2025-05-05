@@ -24,7 +24,7 @@ from generales.models import ContadorVisitas, SeccionPlus, Secciones, SocialNetw
 from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, AvisoDePrivacidadForm
 from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
 from servicios.forms import ComoLoRealizoForm, CuantoCuestaForm, EnQueConsisteForm, QueSeRequiereForm, ServicioForm
-from servicios.models import ComoLoRealizo, CuantoCuesta, EnQueConsiste, QueSeRequiere, Servicio
+from servicios.models import ComoLoRealizo, CuantoCuesta, Dependencia, EnQueConsiste, QueSeRequiere, Servicio
 from .forms import CustomAuthenticationForm, GroupForm, SeccionPlusForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
@@ -1233,6 +1233,15 @@ class EliminarCostoView(View):
         servicio_id = costo.servicio.id
         costo.delete()
         return redirect('gestionar_costos', servicio_id=servicio_id)
+    
+@csrf_exempt
+def crear_dependencia_ajax(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        if nombre:
+            nueva = Dependencia.objects.create(nombre=nombre)
+            return JsonResponse({'success': True, 'id': nueva.id, 'nombre': nueva.nombre})
+    return JsonResponse({'success': False})
 """
     Terminan Vistas de Servicios en el administrador
 """
