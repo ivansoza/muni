@@ -63,6 +63,8 @@ class ConfiguracionServicio(models.Model):
     mostrar_puede_ser_solicitado = models.BooleanField(default=False, help_text='Sección: ¿En qué consiste?')
 
     # Campos específicos de la sección "¿Qué se requiere?"
+    usar_requisitos_v2 = models.BooleanField(default=False, help_text='Usar versión 2 de requisitos (imagen única).')
+
     mostrar_tipo_documento = models.BooleanField(default=False, help_text='Sección: ¿Que se requiere?')
     mostrar_presentar_original = models.BooleanField(default=False, help_text='Sección: ¿Que se requiere?')
     mostrar_presentar_copia = models.BooleanField(default=False, help_text='Sección: ¿Que se requiere?')
@@ -134,6 +136,17 @@ class QueSeRequiere(models.Model):
     
     class Meta:
         verbose_name_plural = "2. ¿Que se requiere?"
+
+class RequisitosImagen(models.Model):
+    servicio = models.OneToOneField(Servicio, on_delete=models.CASCADE)
+    imagen = models.ImageField(upload_to='requisitos_imagen/')
+    descripcion = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Imagen de requisitos para {self.servicio.titulo}"
+    
+    class Meta:
+        verbose_name_plural = "2. ¿Que se requiere? V2"
 
 class ComoLoRealizo(models.Model):
     servicio = models.ForeignKey(Servicio, on_delete=models.CASCADE, related_name='instrucciones')
