@@ -129,6 +129,9 @@ class ServicioDetalleParcialView(DetailView):
                 'mostrar_seccion_costo': config.mostrar_seccion_costo,
                 'mostrar_seccion_responsable': config.mostrar_seccion_responsable,
 
+                # En qué consiste
+                'mostrar_puede_ser_solicitado': config.mostrar_puede_ser_solicitado,
+
                 # Requisitos
                 'mostrar_tipo_documento': config.mostrar_tipo_documento,
                 'mostrar_presentar_original': config.mostrar_presentar_original,
@@ -136,6 +139,7 @@ class ServicioDetalleParcialView(DetailView):
                 'mostrar_archivo_descarga': config.mostrar_archivo_descarga,
 
                 # Costos
+                'mostrar_observaciones': config.mostrar_observaciones,
                 'mostrar_campo_vigencia': config.mostrar_campo_vigencia,
                 'mostrar_campo_tipo': config.mostrar_campo_tipo,
                 'mostrar_campo_momento_pago': config.mostrar_campo_momento_pago,
