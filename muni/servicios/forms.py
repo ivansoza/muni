@@ -1,6 +1,6 @@
 from django import forms
 
-from servicios.models import ComoLoRealizo, CuantoCuesta, EnQueConsiste, QueSeRequiere, Servicio
+from servicios.models import ComoLoRealizo, CuantoCuesta, EnQueConsiste, QueSeRequiere, RequisitosImagen, Servicio
 
 class ServicioForm(forms.ModelForm):
     class Meta:
@@ -30,6 +30,15 @@ class QueSeRequiereForm(forms.ModelForm):
             'especificaciones': forms.Textarea(attrs={'rows': 3}),
             'tipo_documento': forms.Textarea(attrs={'rows': 3})
         }
+
+class RequisitosImagenForm(forms.ModelForm):
+    class Meta:
+        model = RequisitosImagen
+        fields = ['imagen', 'descripcion']
+        widgets = {
+            'descripcion': forms.Textarea(attrs={'rows': 2}),
+        }
+
 
 class ComoLoRealizoForm(forms.ModelForm):
     class Meta:
