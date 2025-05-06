@@ -100,6 +100,7 @@ class Secciones(models.Model):
     reportes = models.BooleanField(default=False)
     encuestas = models.BooleanField(default=False)
     servicios_en_linea = models.BooleanField(default=False)
+    videos = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Secciones de {self.municipio}"

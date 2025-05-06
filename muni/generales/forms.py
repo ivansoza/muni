@@ -180,14 +180,17 @@ class GroupForm(forms.ModelForm):
         return group
     
 
+# generales/forms.py
 class SeccionesForm(forms.ModelForm):
     class Meta:
-        model = Secciones
+        model  = Secciones
         fields = [
             'noticias', 'convocatorias', 'transparencia', 'servicios',
             'habla_con_tus_hijos', 'aviso_de_privacidad', 'gabinete',
-            'sevac', 'contacts', 'reportes', 'encuestas', 'servicios_en_linea'
+            'sevac', 'contacts', 'reportes', 'encuestas',
+            'servicios_en_linea', 'videos',                      # ← agregado
         ]
+
 
 class SeccionPlusForm(forms.ModelForm):
     class Meta:
