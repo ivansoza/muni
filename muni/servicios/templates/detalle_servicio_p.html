@@ -103,56 +103,76 @@
             <div id="seccion-requisitos-{{ servicio.id }}" class="seccion table-container" style="display:none;">
                 <h2>Requisitos</h2>
 
-                <table class="tabla-requisitos table">
-                    <thead>
-                        <tr>
-                            <th>Documento</th>
-                            <th>Especificaciones</th>
-                            {% if mostrar_tipo_documento %}
-                                <th>Tipo de documento</th>
-                            {% endif %}
-                            {% if mostrar_presentar_original or mostrar_presentar_copia %}
-                                <th>Presentar</th>
-                            {% endif %}
-                            {% if mostrar_archivo_descarga %}
-                                <th>Descargar</th>
-                            {% endif %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for requisito in requiere %}
-                        <tr>
-                            <td>{{ forloop.counter }}. {{ requisito.nombre }}</td>
-                            <td>{{ requisito.especificaciones }}</td>
+                {% if usar_requisitos_v2 %}
+                    {% if requisitos_imagen %}
+                        <div class="text-center mb-3">
+                            <img src="{{ requisitos_imagen.imagen.url }}" alt="Requisitos" class="requisitos-imagen">
+                        </div>
 
-                            {% if mostrar_tipo_documento %}
-                                <td>{{ requisito.tipo_documento|default:"-" }}</td>
-                            {% endif %}
+                        <div class="text-center mb-4">
+                            <a href="{{ requisitos_imagen.imagen.url }}" download class="btn btn-secondary">
+                                📥 Descargar imagen de requisitos
+                            </a>
+                        </div>
 
-                            {% if mostrar_presentar_original or mostrar_presentar_copia %}
-                                <td>
-                                    {% if mostrar_presentar_original %}Original ({{ requisito.presentar_original }}) {% endif %}
-                                    {% if mostrar_presentar_copia %}/ Copia ({{ requisito.presentar_copia }}){% endif %}
-                                </td>
-                            {% endif %}
+                        {% if requisitos_imagen.descripcion %}
+                            <p class="text-muted">{{ requisitos_imagen.descripcion }}</p>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted">No se ha subido imagen de requisitos.</p>
+                    {% endif %}
+                {% else %}
+                    <table class="tabla-requisitos table">
+                        <thead>
+                            <tr>
+                                <th>Documento</th>
+                                <th>Especificaciones</th>
+                                {% if mostrar_tipo_documento %}
+                                    <th>Tipo de documento</th>
+                                {% endif %}
+                                {% if mostrar_presentar_original or mostrar_presentar_copia %}
+                                    <th>Presentar</th>
+                                {% endif %}
+                                {% if mostrar_archivo_descarga %}
+                                    <th>Descargar</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for requisito in requiere %}
+                            <tr>
+                                <td>{{ forloop.counter }}. {{ requisito.nombre }}</td>
+                                <td>{{ requisito.especificaciones }}</td>
 
-                            {% if mostrar_archivo_descarga %}
-                                <td>
-                                    {% if requisito.archivo_descarga %}
-                                        <a href="{{ requisito.archivo_descarga.url }}" target="_blank">Descargar</a>
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </td>
-                            {% endif %}
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="5" class="text-center">No se requieren documentos.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                {% if mostrar_tipo_documento %}
+                                    <td>{{ requisito.tipo_documento|default:"-" }}</td>
+                                {% endif %}
+
+                                {% if mostrar_presentar_original or mostrar_presentar_copia %}
+                                    <td>
+                                        {% if mostrar_presentar_original %}Original ({{ requisito.presentar_original }}) {% endif %}
+                                        {% if mostrar_presentar_copia %}/ Copia ({{ requisito.presentar_copia }}){% endif %}
+                                    </td>
+                                {% endif %}
+
+                                {% if mostrar_archivo_descarga %}
+                                    <td>
+                                        {% if requisito.archivo_descarga %}
+                                            <a href="{{ requisito.archivo_descarga.url }}" target="_blank">Descargar</a>
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No se requieren documentos.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
             </div>
             {% endif %}
 

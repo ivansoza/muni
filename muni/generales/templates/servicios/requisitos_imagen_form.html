@@ -1,0 +1,43 @@
+{% extends 'baseTemplate.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h2 class="mb-0">
+                📷 Imagen de requisitos – {{ servicio.titulo }}
+            </h2>
+        </div>
+
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy }}
+
+                <div class="form-group text-center mt-3">
+                    <button type="submit" class="btn btn-primary btn-lg me-3">
+                        💾 Guardar imagen
+                    </button>
+                    <a href="{% url 'gestionar_servicio' servicio.id %}" class="btn btn-secondary btn-lg">
+                        ❌ Cancelar
+                    </a>
+                </div>
+            </form>
+
+            {% if form.instance.imagen %}
+            <hr>
+            <div class="text-center mt-4">
+                <h5>Imagen actual:</h5>
+                <img src="{{ form.instance.imagen.url }}" alt="Imagen de requisitos" class="img-fluid rounded shadow-sm" style="max-width: 400px; height: auto;">
+                <div class="mt-2">
+                    <a href="{{ form.instance.imagen.url }}" class="btn btn-outline-success btn-sm" download>
+                        ⬇️ Descargar imagen
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

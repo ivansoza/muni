@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, DetailView
 from django.core.paginator import Paginator
 from django.core.exceptions import ObjectDoesNotExist
-from servicios.models import ComoLoRealizo, ConfiguracionServicio, CuantoCuesta, EnQueConsiste, QueSeRequiere, Servicio
+from servicios.models import ComoLoRealizo, ConfiguracionServicio, CuantoCuesta, EnQueConsiste, QueSeRequiere, RequisitosImagen, Servicio
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 
@@ -144,6 +144,13 @@ class ServicioDetalleParcialView(DetailView):
                 'mostrar_campo_tipo': config.mostrar_campo_tipo,
                 'mostrar_campo_momento_pago': config.mostrar_campo_momento_pago,
             })
+
+        if config:
+            context['usar_requisitos_v2'] = config.usar_requisitos_v2
+            if config.usar_requisitos_v2:
+                context['requisitos_imagen'] = (
+                    RequisitosImagen.objects.filter(servicio=self.object).first()
+                )
 
         html = render_to_string('detalle_servicio_p.html', context, request=request)
         return JsonResponse({'html': html})

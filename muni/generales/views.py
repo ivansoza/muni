@@ -24,8 +24,8 @@ from informacion_municipal.models import ElementoLista, InformacionCiudad, Munic
 from generales.models import ContadorVisitas, SeccionPlus, Secciones, SocialNetwork, VideoMunicipio
 from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, AvisoDePrivacidadForm
 from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
-from servicios.forms import ComoLoRealizoForm, CuantoCuestaForm, EnQueConsisteForm, QueSeRequiereForm, ServicioForm
-from servicios.models import ComoLoRealizo, CuantoCuesta, Dependencia, EnQueConsiste, QueSeRequiere, Servicio
+from servicios.forms import ComoLoRealizoForm, CuantoCuestaForm, EnQueConsisteForm, QueSeRequiereForm, RequisitosImagenForm, ServicioForm
+from servicios.models import ComoLoRealizo, ConfiguracionServicio, CuantoCuesta, Dependencia, EnQueConsiste, QueSeRequiere, RequisitosImagen, Servicio
 from .forms import CustomAuthenticationForm, ElementoListaForm, GroupForm, InformacionCiudadForm, SeccionPlusForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm, VideoMunicipioForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
@@ -1150,6 +1150,11 @@ class GestionarServicioView(TemplateView):
             'instrucciones': instrucciones,
             'costos': costos
         })
+
+        # ✅ Agrega esta línea para activar el botón condicional
+        config = ConfiguracionServicio.objects.first()
+        context['usar_requisitos_v2'] = config.usar_requisitos_v2 if config else False
+        
         return context
     
 class EnQueConsisteView(View):
@@ -1270,6 +1275,29 @@ class EliminarRequisitoView(View):
         requisito = get_object_or_404(QueSeRequiere, id=requisito_id, servicio=servicio)
         requisito.delete()
         return redirect('gestionar_requisitos', servicio_id=servicio.id)
+    
+class RequisitosImagenView(View):
+    def get(self, request, servicio_id):
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        form, created = RequisitosImagen.objects.get_or_create(servicio=servicio)
+        form = RequisitosImagenForm(instance=form)
+        return render(request, 'servicios/requisitos_imagen_form.html', {
+            'form': form,
+            'servicio': servicio
+        })
+
+    def post(self, request, servicio_id):
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        instancia, _ = RequisitosImagen.objects.get_or_create(servicio=servicio)
+        form = RequisitosImagenForm(request.POST, request.FILES, instance=instancia)
+        if form.is_valid():
+            form.save()
+            return redirect('gestionar_servicio', pk=servicio.id)
+        return render(request, 'servicios/requisitos_imagen_form.html', {
+            'form': form,
+            'servicio': servicio
+        })
+
     
 class RealizoView(View):
     def get(self, request, servicio_id, paso_id=None):
