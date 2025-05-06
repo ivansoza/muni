@@ -120,20 +120,22 @@
   /* ────────────  SWIPER GALLERY  ──────────── */
   .swiper-container {
     position: relative;
+    width: 100%;
+    overflow: hidden;
     padding-bottom: 50px;
     z-index: 2;
+  }
+
+  .swiper-wrapper {
+    display: flex;
+    align-items: center;
   }
 
   .swiper-slide {
     height: auto;
     transition: var(--transition-standard);
-    transform: scale(0.92);
-    opacity: 0.8;
-  }
-
-  .swiper-slide-active {
-    transform: scale(1);
-    opacity: 1;
+    display: flex;
+    justify-content: center;
   }
 
   .video-card {
@@ -142,12 +144,16 @@
     overflow: hidden;
     box-shadow: var(--shadow-sm);
     height: 100%;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
     transition: var(--transition-standard);
     border: 1px solid var(--c-gray-200);
   }
 
   .swiper-slide-active .video-card {
     box-shadow: var(--shadow-md);
+    transform: scale(1.05);
   }
 
   .video-card:hover {
@@ -161,6 +167,7 @@
     aspect-ratio: 16/9;
     width: 100%;
     overflow: hidden;
+    background-color: #000;
   }
 
   .video-thumbnail::after {
@@ -174,6 +181,9 @@
   }
 
   .video-thumbnail iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     border: 0;
@@ -199,44 +209,20 @@
     margin-bottom: 12px;
   }
 
-  .video-play-button {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 60px;
-    height: 60px;
-    background: rgba(var(--c-primary-rgb), 0.8);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 2;
-    opacity: 0;
-    transition: var(--transition-standard);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  }
-
-  .video-play-button:after {
-    content: "";
-    display: block;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 10px 0 10px 18px;
-    border-color: transparent transparent transparent var(--c-white);
-    margin-left: 5px;
-  }
 
   .video-thumbnail:hover .video-play-button {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1.1);
+    background: rgba(var(--c-secondary-rgb), 0.9);
   }
 
   /* ────────────  NAVEGACIÓN  ──────────── */
   .swiper-pagination {
+    position: absolute;
     bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
   }
 
   .swiper-pagination-bullet {
@@ -244,10 +230,12 @@
     height: 10px;
     background: var(--c-gray-300);
     opacity: 1;
+    margin: 0 5px;
   }
 
   .swiper-pagination-bullet-active {
     background: var(--c-secondary);
+    transform: scale(1.2);
   }
 
   .swiper-button-next,
@@ -259,12 +247,23 @@
     border-radius: 50%;
     box-shadow: 0 4px 12px rgba(var(--c-primary-rgb), 0.3);
     transition: var(--transition-standard);
+    top: 45%;
+    margin-top: 0;
+    transform: translateY(-50%);
+  }
+
+  .swiper-button-next {
+    right: 10px;
+  }
+
+  .swiper-button-prev {
+    left: 10px;
   }
 
   .swiper-button-next:hover,
   .swiper-button-prev:hover {
     background: var(--c-secondary);
-    transform: scale(1.05);
+    transform: translateY(-50%) scale(1.05);
   }
 
   .swiper-button-next:after,
@@ -303,6 +302,57 @@
     display: block;
   }
 
+  /* ────────────  OVERLAY PARA VIDEOS  ──────────── */
+  .video-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  .video-overlay.active {
+    display: flex;
+  }
+
+  .video-overlay-content {
+    position: relative;
+    width: 80%;
+    max-width: 900px;
+    aspect-ratio: 16/9;
+  }
+
+  .video-overlay iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .video-overlay-close {
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 36px;
+    height: 36px;
+    background: var(--c-white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--c-primary);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+
   /* ────────────  RESPONSIVE  ──────────── */
   @media (max-width: 991px) {
     .videos-gallery {
@@ -312,6 +362,15 @@
     
     .videos-title {
       font-size: 1.85rem;
+    }
+
+    .video-overlay-content {
+      width: 90%;
+    }
+
+    .video-overlay-close {
+      top: -30px;
+      right: -10px;
     }
   }
 
@@ -340,6 +399,10 @@
     .swiper-button-prev:after {
       font-size: 15px;
     }
+
+    .video-overlay-content {
+      width: 95%;
+    }
   }
 
   @media (max-width: 480px) {
@@ -349,6 +412,11 @@
     
     .videos-title {
       font-size: 1.4rem;
+    }
+
+    .swiper-button-next,
+    .swiper-button-prev {
+      display: none;
     }
   }
 </style>
@@ -371,10 +439,15 @@
       <p>Aún no se han publicado videos. Próximamente tendremos contenido disponible.</p>
     </div>
   {% else %}
-    <div class="swiper-container">
+    <!-- Cargador visual mientras se inicializa el carrusel -->
+    <div id="carousel-loader" style="text-align: center; padding: 20px;">
+      <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid rgba(var(--c-primary-rgb), 0.1); border-left-color: var(--c-primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    </div>
+    
+    <div class="swiper-container" style="visibility: hidden;">
       <div class="swiper-wrapper">
         {% for video in videos %}
-          <div class="swiper-slide">
+          <div class="swiper-slide" {% if forloop.first %}data-initial-slide="true"{% endif %}>
             <div class="video-card">
               <div class="video-thumbnail">
                 <iframe
@@ -383,7 +456,7 @@
                   loading="lazy"
                   allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowfullscreen></iframe>
-                <div class="video-play-button"></div>
+                <div class="video-play-button" data-video-id="{{ video.id }}" data-video-src="{{ video.frame }}"></div>
               </div>
               <div class="video-info">
                 <h3 class="video-title">{{ video.nombre }}</h3>
@@ -403,31 +476,47 @@
     </div>
   {% endif %}
 </div>
+
+<!-- Overlay para reproducción de videos -->
+<div class="video-overlay">
+  <div class="video-overlay-content">
+    <iframe src="" title="Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <div class="video-overlay-close">✕</div>
+  </div>
+</div>
+
+<style>
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
 {% endwith %}
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // Inicializar Swiper
+    // Inicializar Swiper de manera optimizada
     const videoSwiper = new Swiper('.swiper-container', {
       slidesPerView: 1,
       spaceBetween: 30,
       centeredSlides: true,
-      loop: true,
+      loop: false, // Desactivamos el loop inicialmente
+      initialSlide: 0, // Aseguramos que comience en el primer slide
+      loopFillGroupWithBlank: true,
       autoplay: {
         delay: 5000,
         disableOnInteraction: false,
+        pauseOnMouseEnter: true
       },
-      effect: 'coverflow',
-      coverflowEffect: {
-        rotate: 0,
-        stretch: 0,
-        depth: 100,
-        modifier: 1,
-        slideShadows: false,
+      speed: 800,
+      grabCursor: true,
+      keyboard: {
+        enabled: true,
       },
       pagination: {
         el: '.swiper-pagination',
         clickable: true,
+        dynamicBullets: false // Desactivamos bullets dinámicos para más estabilidad
       },
       navigation: {
         nextEl: '.swiper-button-next',
@@ -435,34 +524,93 @@
       },
       breakpoints: {
         640: {
-          slidesPerView: 1.2,
+          slidesPerView: 1.5,
+          spaceBetween: 20,
         },
         768: {
           slidesPerView: 2,
+          spaceBetween: 30,
         },
         1024: {
-          slidesPerView: 3,
+          slidesPerView: 2.5,
+          spaceBetween: 40,
         },
+        1200: {
+          slidesPerView: 3,
+          spaceBetween: 50,
+        }
+      },
+      on: {
+        init: function() {
+          // Asegurarse de que el slide activo esté centrado
+          this.slideTo(0, 0); // Forzar al primer slide sin animación
+          
+          // Actualizar y mostrar carrusel con un retraso para asegurar la carga correcta
+          setTimeout(() => {
+            this.update();
+            showCarousel();
+          }, 300);
+        },
+        afterInit: function() {
+          // Activamos el loop después de la inicialización para evitar problemas de posición inicial
+          setTimeout(() => {
+            this.params.loop = true;
+            this.update();
+          }, 800);
+        }
       }
     });
 
-    // Agregar comportamiento a los botones de reproducción
-    document.querySelectorAll('.video-play-button').forEach(button => {
-      button.addEventListener('click', function(e) {
-        const iframe = this.closest('.video-thumbnail').querySelector('iframe');
-        const src = iframe.src;
+    // Mostrar carrusel una vez que esté listo
+    const swiperContainer = document.querySelector('.swiper-container');
+    const carouselLoader = document.getElementById('carousel-loader');
+    
+    // Función para mostrar el carrusel correctamente inicializado
+    function showCarousel() {
+      if (carouselLoader) {
+        carouselLoader.style.display = 'none';
+      }
+      if (swiperContainer) {
+        swiperContainer.style.visibility = 'visible';
+      }
+    }
+    
+    // Función para preparar la URL del video para reproducción automática
+    function prepareVideoUrl(url) {
+      // Detectar si es YouTube o Vimeo y ajustar para autoplay
+      if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        // Eliminar cualquier parámetro de autoplay existente
+        url = url.replace(/(&|\?)autoplay=\d/g, '');
         
-        // Agregar parámetro para reproducción automática al hacer clic
-        if (src.includes('youtube')) {
-          iframe.src = src.includes('?') ? 
-            src + '&autoplay=1' : 
-            src + '?autoplay=1';
-        } else if (src.includes('vimeo')) {
-          iframe.src = src.includes('?') ? 
-            src + '&autoplay=1' : 
-            src + '?autoplay=1';
+        // Agregar parámetro autoplay=1
+        if (url.includes('?')) {
+          url = url + '&autoplay=1&mute=0';
+        } else {
+          url = url + '?autoplay=1&mute=0';
         }
-      });
-    });
+      } 
+      else if (url.includes('vimeo.com')) {
+        // Eliminar cualquier parámetro de autoplay existente
+        url = url.replace(/(&|\?)autoplay=\d/g, '');
+        
+        // Agregar parámetro autoplay=1
+        if (url.includes('?')) {
+          url = url + '&autoplay=1';
+        } else {
+          url = url + '?autoplay=1';
+        }
+      }
+      
+      return url;
+    }
+
+    // Sistema de overlay mejorado para reproducción de videos
+    const videoOverlay = document.querySelector('.video-overlay');
+    const videoOverlayIframe = videoOverlay.querySelector('iframe');
+    const videoOverlayClose = videoOverlay.querySelector('.video-overlay-close');
+    
+    // Configurar los botones de reproducción
+
+
   });
 </script>
