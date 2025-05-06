@@ -505,7 +505,6 @@
 
 
 
-
                         {% if seccion.nombre == 'servicios' %}
                             {% if municipio.cortina %}
                                 {% if municipio.cortina.servicios == "servicios1" %}
@@ -607,6 +606,11 @@
                     {% endif %}
                     
                 
+                {% endif %}
+
+
+                {% if municipio.secciones_hab and municipio.secciones_hab.videos %}
+                    {% include "home/components/videos.html" %}
                 {% endif %}
 
                 {# Orden predeterminado si no hay secciones definidas #}
