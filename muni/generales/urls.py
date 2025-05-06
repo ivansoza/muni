@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from .views import AvisoDePrivacidadCreateView, AvisoDePrivacidadUpdateView, CrearCategoriaView, CrearSeccionPlusView, CustomLoginView, DashboardView, DetailMunicipioView, EditarSeccionPlusView, EliminarSeccionPlusView, EncuestaDetailView, EncuestasView, GeneralesDashboardView, GroupCreateView, GroupUpdateView, GruposView, NewsView, PersonalizacionView, PrivacidadView, ReportesView, SeccionPlusDetailView, SeccionesNuevasView, SeccionesUpdateView, SeccionesView, ServicioCreateView, ServicioUpdateView,SocialMediaView,ServicesView, UsuarioCreateView, UsuarioEditView, UsuarioEditView, UsuarioPasswordChangeView, UsuariosView, VideoView, actualizar_video, create_social_network, custom_upload_function, agregar_categoria, delete_group, delete_social_network, editar_convocatoria, elemento_api, eliminar_noticia, editar_noticia, informacion_ciudad_api, list_social_networks, toggle_favorite, toggle_user_status
+from .views import AvisoDePrivacidadCreateView, AvisoDePrivacidadUpdateView, CrearCategoriaView, CrearSeccionPlusView, CustomLoginView, DashboardView, DetailMunicipioView, EditarSeccionPlusView, EliminarSeccionPlusView, EncuestaDetailView, EncuestasView, GeneralesDashboardView, GroupCreateView, GroupUpdateView, GruposView, NewsView, PersonalizacionView, PrivacidadView, ReportesView, SeccionPlusDetailView, SeccionesNuevasView, SeccionesUpdateView, SeccionesView, ServicioCreateView, ServicioUpdateView,SocialMediaView,ServicesView, UsuarioCreateView, UsuarioEditView, UsuarioEditView, UsuarioPasswordChangeView, UsuariosView, VideoCreateView, VideoUpdateView, VideoView, VideosView, actualizar_video, create_social_network, custom_upload_function, agregar_categoria, delete_group, delete_social_network, editar_convocatoria, elemento_api, eliminar_noticia, editar_noticia, informacion_ciudad_api, list_social_networks, toggle_favorite, toggle_user_status, video_delete
 from django.contrib.auth.views import LogoutView
 from .views import TransparenciaView, crear_seccion, EjercicioFiscalListView, EjercicioFiscalCreateView, DocumentoTransparenciaListView, registrar_documento, SeccionTransparenciaUpdateView, eliminar_seccion, EjercicioFiscalUpdateView, eliminar_ejercicio_fiscal, DocumentoTransparenciaUpdateView, eliminar_documento_transparencia
 from . import views
@@ -152,6 +152,13 @@ urlpatterns = [
 #--------------------------Nuevas Noticias---------------------------------
     path('crear_noticia/', crear_noticia, name='crear_noticia'),
     path('edicion_noticia/<int:pk>/', views.editar_noticia_nueva, name='edicion_noticia'),
+
+    #--------------------------Videos---------------------------------
+    path('videos/', VideosView.as_view(), name='videos'),
+    path('videos/nuevo/', VideoCreateView.as_view(), name='video_add'),
+    path('videos/<int:pk>/editar/', VideoUpdateView.as_view(), name='video_edit'),
+    path('videos/<int:pk>/eliminar/', video_delete, name='video_delete'),
+
 
 
 ]

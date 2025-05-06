@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
-from generales.models import SeccionPlus, Secciones
+from generales.models import SeccionPlus, Secciones, VideoMunicipio
 from informacion_municipal.models import ElementoLista, InformacionCiudad
 
 class CustomAuthenticationForm(AuthenticationForm):
@@ -211,3 +211,14 @@ class ElementoListaForm(forms.ModelForm):
     class Meta:
         model = ElementoLista
         fields = ("texto",)
+
+
+class VideoMunicipioForm(forms.ModelForm):
+    class Meta:
+        model = VideoMunicipio
+        fields = ['nombre', 'frame', 'orden']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'frame': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://www.youtube.com/embed/…'}),
+            'orden': forms.NumberInput(attrs={'class': 'form-control'}),
+        }

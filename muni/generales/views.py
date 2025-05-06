@@ -21,12 +21,12 @@ from django.views.generic import FormView
 from django.http import JsonResponse, HttpResponseNotAllowed
 
 from informacion_municipal.models import ElementoLista, InformacionCiudad, Municipio, Video
-from generales.models import ContadorVisitas, SeccionPlus, Secciones, SocialNetwork
+from generales.models import ContadorVisitas, SeccionPlus, Secciones, SocialNetwork, VideoMunicipio
 from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, AvisoDePrivacidadForm
 from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
 from servicios.forms import ServicioForm
 from servicios.models import Servicio
-from .forms import CustomAuthenticationForm, ElementoListaForm, GroupForm, InformacionCiudadForm, SeccionPlusForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm
+from .forms import CustomAuthenticationForm, ElementoListaForm, GroupForm, InformacionCiudadForm, SeccionPlusForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm, VideoMunicipioForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from noticias.models import Noticia, ImagenGaleria, Categoria
@@ -3049,3 +3049,102 @@ def encuesta_toggle_estado(request, encuesta_id):
 
     # Si llegas con ?next=/algo, respeta esa redirección
     return redirect("EncuestasView")
+
+
+class VideosView(LoginRequiredMixin, TemplateView):
+    template_name = 'videos/videos.html'
+    login_url = reverse_lazy('login')
+    redirect_field_name = 'next'
+
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        # ajusta 'transparencia' al app_label real de tu modelo VideoMunicipio
+        if not (user.is_superuser or user.has_perm('generales.view_videomunicipio')):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': '/admin'},
+            'child':  {'name': 'Videos',    'url': ''      }
+        }
+        context['sidebar']     = 'Generales'
+        context['regreso_url'] = reverse('generalesDashboard')
+
+        municipio_activo = Municipio.objects.filter(status='activo').first()
+        if municipio_activo:
+            videos = municipio_activo.videos.all()
+            total_videos = videos.count()
+        else:
+            videos = None
+            total_videos = 0
+
+        context['municipio_activo'] = municipio_activo
+        context['videos']           = videos
+        context['data']             = {'total_videos': total_videos}
+
+        return context
+    
+
+class VideoCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = VideoMunicipio
+    form_class = VideoMunicipioForm
+    template_name = 'videos/video_form.html'
+    permission_required = 'generales.add_videomunicipio'
+    success_url = reverse_lazy('videos')
+
+    def dispatch(self, request, *args, **kwargs):
+        # permitir sólo superuser o con permiso explícito
+        if not (request.user.is_superuser or request.user.has_perm(self.permission_required)):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        # asignar al municipio activo
+        municipio_activo = Municipio.objects.filter(status='activo').first()
+        if not municipio_activo:
+            form.add_error(None, "No existe un municipio activo.")
+            return self.form_invalid(form)
+        form.instance.municipio = municipio_activo
+        response = super().form_valid(form)
+        messages.success(self.request, "Video agregado con éxito.")
+        return response
+    
+class VideoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = VideoMunicipio
+    form_class = VideoMunicipioForm
+    template_name = 'videos/video_form.html'
+    permission_required = 'generales.change_videomunicipio'
+    success_url = reverse_lazy('videos')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm(self.permission_required)):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Video actualizado con éxito.")
+        return response
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # reutilizamos breadcrumb y regreso_url
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': '/admin'},
+            'child':  {'name': 'Editar Video', 'url': ''      }
+        }
+        context['sidebar']     = 'Generales'
+        context['regreso_url'] = reverse_lazy('videos')
+        return context
+    
+@login_required
+@permission_required('generales.delete_videomunicipio', raise_exception=True)
+@require_POST
+def video_delete(request, pk):
+    video = get_object_or_404(VideoMunicipio, pk=pk)
+    video.delete()
+    messages.success(request, "Video eliminado con éxito.")
+    return redirect('videos')

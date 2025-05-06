@@ -358,3 +358,25 @@ class ArchivoRelacionadoRecomendacion(models.Model):
 
     def __str__(self):
         return f"Archivo: {self.descripcion or 'Sin descripción'}"
+
+
+
+
+class VideoMunicipio(models.Model):
+    municipio = models.ForeignKey(
+        Municipio,
+        on_delete=models.CASCADE,
+        related_name='videos'      # aquí definimos el related_name
+    )
+    nombre = models.CharField(max_length=255, verbose_name='Título')
+    frame = models.URLField(verbose_name='URL o frame de YouTube')
+    orden = models.PositiveIntegerField(default=0, verbose_name='Orden')
+
+    class Meta:
+        ordering = ['orden']
+        verbose_name = 'Video'
+        verbose_name_plural = 'Videos'
+
+    def __str__(self):
+        return self.nombre
+    
