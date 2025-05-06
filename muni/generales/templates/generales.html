@@ -310,31 +310,38 @@
         </section>
         <section class="ag-cards-section">
             <div class="ag-cards-grid" id="cardsContainer">
-                <a href="{% url "VideoView" %}" class="ag-card-link" data-keywords="video grabación multimedia contenido audiovisual">
-                    <div class="ag-card ag-video">
-                        <div class="ag-card-icon">
-                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M18 7c0-1.1-.9-2-2-2H6C4.9 5 4 5.9 4 7v10c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V7zm-6 9l-4-4 1.41-1.41L12 13.17l2.59-2.58L16 12l-4 4z"/>
-                            </svg>
-                        </div>
-                        <div class="ag-card-content">
-                            <h3 class="ag-card-title">Video</h3>
-                            <p class="ag-card-text">Accede a nuestra colección de videos y contenido multimedia para mejorar tu experiencia de aprendizaje.</p>
-                            <div class="ag-card-footer">
-                                <button class="ag-btn-see-more">
-                                    <span>Ver más</span>
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" 
-                                         xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
-                                              stroke-linejoin="round"/>
-                                        <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
-                                              stroke-linejoin="round"/>
-                                    </svg>
-                                </button>
+
+                {% if is_superuser or 'generales.view_videomunicipio' in user_permissions %}
+
+
+
+                    <a href="{% url "videos" %}" class="ag-card-link" data-keywords="video grabación multimedia contenido audiovisual">
+                        <div class="ag-card ag-video">
+                            <div class="ag-card-icon">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M18 7c0-1.1-.9-2-2-2H6C4.9 5 4 5.9 4 7v10c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V7zm-6 9l-4-4 1.41-1.41L12 13.17l2.59-2.58L16 12l-4 4z"/>
+                                </svg>
+                            </div>
+                            <div class="ag-card-content">
+                                <h3 class="ag-card-title">Video</h3>
+                                <p class="ag-card-text">Accede a nuestra colección de videos y contenido multimedia para mejorar tu experiencia de aprendizaje.</p>
+                                <div class="ag-card-footer">
+                                    <button class="ag-btn-see-more">
+                                        <span>Ver más</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" 
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+                                                stroke-linejoin="round"/>
+                                            <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+                                                stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </a>
+                    </a>
+
+                {% endif %}
 
                 {% if is_superuser or 'generales.view_secciones' in user_permissions %}
                     <a href="{% url "secciones_update" %}" class="ag-card-link" data-keywords="secciones categorías módulos partes">

@@ -3067,7 +3067,7 @@ class VideosView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         context["breadcrumb"] = {
-            'parent': {'name': 'Dashboard', 'url': '/admin'},
+            'parent': {'name': 'Generales', 'url': '/admin'},
             'child':  {'name': 'Videos',    'url': ''      }
         }
         context['sidebar']     = 'Generales'
@@ -3111,6 +3111,30 @@ class VideoCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         response = super().form_valid(form)
         messages.success(self.request, "Video agregado con éxito.")
         return response
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumb"] = {
+            'parent': {'name': 'Generales', 'url': '/admin/videos/'},
+            'child':  {'name': 'Crear Video',    'url': ''      }
+        }
+        context['sidebar']     = 'Generales'
+        context['regreso_url'] = reverse('videos')
+
+        municipio_activo = Municipio.objects.filter(status='activo').first()
+        if municipio_activo:
+            videos = municipio_activo.videos.all()
+            total_videos = videos.count()
+        else:
+            videos = None
+            total_videos = 0
+
+        context['municipio_activo'] = municipio_activo
+        context['videos']           = videos
+        context['data']             = {'total_videos': total_videos}
+
+        return context
     
 class VideoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = VideoMunicipio
