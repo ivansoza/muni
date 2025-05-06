@@ -31,27 +31,46 @@
         </div>
 
         <div class="card-body">
-            {% if requisitos %}
-                <ul class="list-group mb-3">
-                    {% for r in requisitos %}
-                    <li class="list-group-item">
-                        <strong>{{ forloop.counter }}. {{ r.nombre }}</strong> — 
-                        Tipo: {{ r.tipo_documento }} |
-                        Original: {{ r.presentar_original|yesno:"Sí,No" }} |
-                        Copia: {{ r.presentar_copia|yesno:"Sí,No" }} |
-                        {% if r.archivo_descarga %}
-                            <a href="{{ r.archivo_descarga.url }}" target="_blank">📄 Descargar</a>
-                        {% else %}
-                            Sin archivo
-                        {% endif %}
-                    </li>
-                    {% endfor %}
-                </ul>
+            {% if usar_requisitos_v2 %}
+                <!-- {% if servicio.requisitos_imagen %}
+                    <div class="text-center mb-3">
+                        <img src="{{ servicio.requisitos_imagen.url }}" class="img-fluid" style="max-height: 400px; border: 1px solid #ddd; border-radius: 8px;">
+                    </div>
+                    <div class="text-center mb-3">
+                        <a href="{{ servicio.requisitos_imagen.url }}" download class="btn btn-outline-success">
+                            <i class="fas fa-download"></i> Descargar imagen
+                        </a>
+                    </div>
+                {% else %}
+                    <p>No se ha cargado ninguna imagen de requisitos.</p>
+                {% endif %} -->
             {% else %}
-                <p>No hay requisitos registrados aún.</p>
+                {% if requisitos %}
+                    <ul class="list-group mb-3">
+                        {% for r in requisitos %}
+                        <li class="list-group-item">
+                            <strong>{{ forloop.counter }}. {{ r.nombre }}</strong> — 
+                            Tipo: {{ r.tipo_documento }} |
+                            Original: {{ r.presentar_original|yesno:"Sí,No" }} |
+                            Copia: {{ r.presentar_copia|yesno:"Sí,No" }} |
+                            {% if r.archivo_descarga %}
+                                <a href="{{ r.archivo_descarga.url }}" target="_blank">📄 Descargar</a>
+                            {% else %}
+                                Sin archivo
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No hay requisitos registrados aún.</p>
+                {% endif %}
             {% endif %}
-
-            <a href="{% url 'gestionar_requisitos' servicio.id %}" class="btn btn-primary">Gestionar requisitos</a>
+                
+            {% if usar_requisitos_v2 %}
+                <a href="{% url 'gestionar_requisitos_imagen' servicio.id %}" class="btn btn-primary">Gestionar imagen de requisitos</a>
+            {% else %}
+                <a href="{% url 'gestionar_requisitos' servicio.id %}" class="btn btn-primary">Gestionar requisitos</a>
+            {% endif %}
         </div>
     </div>
 
