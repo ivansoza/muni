@@ -1,0 +1,321 @@
+{% extends "baseTemplate.html" %}
+{% load static %}
+
+{% block content %}
+<div class="dashboard-container py-4">
+  <!-- Encabezado con animación sutil -->
+  <div class="d-flex justify-content-between align-items-center mb-4 header-section">
+    <div class="section-title-container">
+      <h2 class="section-title text-primary fw-bold">
+        <i class="fas fa-film me-2"></i>Videos del Municipio
+        {% if municipio_activo %}<span class="text-secondary">: {{ municipio_activo.nombre }}</span>{% endif %}
+      </h2>
+      <div class="title-underline"></div>
+    </div>
+    <a href="{% url 'video_add' %}" class="btn btn-primary btn-lg add-button">
+      <i class="fas fa-plus-circle me-2"></i> Agregar nuevo video
+    </a>
+  </div>
+
+  <!-- Tarjetas de estadísticas mejoradas -->
+  <div class="stats-container mb-5">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="stats-card h-100">
+          <div class="card-body text-center">
+            <i class="fas fa-video stats-icon mb-3"></i>
+            <h3 class="stats-value">{{ data.total_videos }}</h3>
+            <p class="stats-label">Total de videos</p>
+          </div>
+        </div>
+      </div>
+      <!-- Se pueden agregar más tarjetas de estadísticas aquí -->
+    </div>
+  </div>
+
+  <!-- Lista de videos con nueva presentación -->
+  {% if videos %}
+    <div class="video-list">
+      <div class="table-responsive">
+        <table class="table table-hover custom-table">
+          <thead class="table-dark">
+            <tr>
+              <th><i class="fas fa-sort-numeric-down me-2"></i>Orden</th>
+              <th><i class="fas fa-heading me-2"></i>Nombre</th>
+              <th><i class="fas fa-play-circle me-2"></i>Vista previa</th>
+              <th><i class="fas fa-tools me-2"></i>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for video in videos %}
+            <tr class="align-middle video-item">
+              <td>
+                <span class="order-badge">{{ video.orden }}</span>
+              </td>
+              <td>
+                <div class="video-title">{{ video.nombre }}</div>
+              </td>
+              <td>
+                <div class="video-embed">
+                  <div class="ratio ratio-16x9 video-frame">
+                    <iframe
+                      src="{{ video.frame }}"
+                      frameborder="0"
+                      allowfullscreen
+                      loading="lazy">
+                    </iframe>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <a href="{% url 'video_edit' video.pk %}" class="btn btn-warning action-btn">
+                    <i class="fas fa-edit"></i>
+                    <span class="btn-text">Editar</span>
+                  </a>
+                  <form action="{% url 'video_delete' video.pk %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger action-btn btn-delete">
+                      <i class="fas fa-trash-alt"></i>
+                      <span class="btn-text">Eliminar</span>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% else %}
+    <div class="empty-state text-center py-5">
+      <div class="empty-icon mb-4">
+        <i class="fas fa-film fa-4x text-secondary"></i>
+      </div>
+      <h4 class="text-secondary">No hay videos disponibles</h4>
+      <p class="text-muted">Agrega tu primer video haciendo clic en el botón "Agregar nuevo video"</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock content %}
+
+{% block scriptcontent %}
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <!-- Estilos personalizados -->
+  <style>
+    .dashboard-container {
+      background-color: #f8f9fa;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+      padding: 25px;
+    }
+    
+    .section-title-container {
+      position: relative;
+    }
+    
+    .title-underline {
+      background: linear-gradient(90deg, #3498db, #2ecc71);
+      height: 3px;
+      width: 100%;
+      margin-top: 5px;
+      border-radius: 2px;
+    }
+    
+    .add-button {
+      box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11);
+      transition: all 0.3s ease;
+    }
+    
+    .add-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1);
+    }
+    
+    .stats-card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
+    }
+    
+    .stats-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+    
+    .stats-icon {
+      font-size: 2.5rem;
+      color: #3498db;
+    }
+    
+    .stats-value {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #2c3e50;
+    }
+    
+    .stats-label {
+      font-size: 1rem;
+      color: #7f8c8d;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .custom-table {
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+    
+    .custom-table thead {
+      background: linear-gradient(90deg, #3498db, #2c3e50);
+      color: white;
+    }
+    
+    .order-badge {
+      background-color: #3498db;
+      color: white;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    
+    .video-title {
+      font-weight: 600;
+      color: #2c3e50;
+    }
+    
+    .video-frame {
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .video-frame:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    }
+    
+    .video-item {
+      transition: all 0.3s ease;
+    }
+    
+    .video-item:hover {
+      background-color: #f1f8ff;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .action-btn {
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      padding: 8px 16px;
+    }
+    
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
+    
+    .empty-state {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      padding: 50px 20px;
+    }
+    
+    .empty-icon {
+      color: #95a5a6;
+      opacity: 0.5;
+    }
+    
+    @media (max-width: 768px) {
+      .action-buttons {
+        flex-direction: column;
+        gap: 5px;
+      }
+      
+      .btn-text {
+        display: none;
+      }
+      
+      .action-btn {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  </style>
+  
+  <script>
+    // Inicializar SweetAlert2 para confirmación de eliminación
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const form = this.closest('form');
+        
+        Swal.fire({
+          title: '¿Estás seguro?',
+          text: "Este video será eliminado permanentemente.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: '<i class="fas fa-trash-alt me-2"></i>Sí, eliminar',
+          cancelButtonText: '<i class="fas fa-times me-2"></i>Cancelar',
+          customClass: {
+            popup: 'swal-custom-popup',
+            confirmButton: 'swal-confirm-button',
+            cancelButton: 'swal-cancel-button'
+          },
+          buttonsStyling: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Mostrar una animación de carga mientras se procesa
+            Swal.fire({
+              title: 'Eliminando...',
+              html: 'Por favor espera mientras se elimina el video',
+              timerProgressBar: true,
+              didOpen: () => {
+                Swal.showLoading();
+                form.submit();
+              }
+            });
+          }
+        });
+      });
+    });
+    
+    // Animación para elementos al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+      // Añadir clase para animación de entrada
+      document.querySelectorAll('.stats-card, .video-item').forEach((el, index) => {
+        setTimeout(() => {
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+        }, 100 * index);
+      });
+    });
+  </script>
+{% endblock %}

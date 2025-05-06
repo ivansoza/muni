@@ -1,6 +1,6 @@
 # admin.py
 from django.contrib import admin
-from .models import ArchivoRelacionadoRecomendacion, ContadorVisitas, MetaMunicipio, Recomendaciones, SeccionPlus, Secciones, SocialNetwork, personalizacionPlantilla
+from .models import ArchivoRelacionadoRecomendacion, ContadorVisitas, MetaMunicipio, Recomendaciones, SeccionPlus, Secciones, SocialNetwork, personalizacionPlantilla, VideoMunicipio
 
 @admin.register(SocialNetwork)
 class SocialNetworkAdmin(admin.ModelAdmin):
@@ -56,3 +56,8 @@ class ArchivoRelacionadoRecomendacionAdmin(admin.ModelAdmin):
     list_display = ('recomendacion', 'descripcion', 'fecha_subida')
     search_fields = ('descripcion',)
     readonly_fields = ('fecha_subida',)
+
+
+
+
+admin.site.register(VideoMunicipio)
