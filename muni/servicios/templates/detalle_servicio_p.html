@@ -83,10 +83,12 @@
                 </div>
 
                 <div class="info-grid">
+                    {% if mostrar_puede_ser_solicitado %}
                     <div class="info-item">
                         <strong>Puede ser solicitado por:</strong> 
                         {{ consiste.get_solicitado_por_display }}
                     </div>
+                    {% endif %}
 
                     <div class="info-item">
                         <strong>En qué momento se deberá solicitar:</strong> 
@@ -188,7 +190,9 @@
                     <thead>
                         <tr>
                             <th>Concepto</th>
-                            <th>Observaciones</th>
+                            {% if mostrar_observaciones %}
+                                <th>Observaciones</th>
+                            {% endif %}
                             {% if mostrar_campo_vigencia %}
                                 <th>Vigencia</th>
                             {% endif %}
@@ -202,7 +206,9 @@
                         {% for costo in costos %}
                         <tr>
                             <td><strong>{{ forloop.counter }}. {{ costo.concepto }}</strong></td>
-                            <td>{{ costo.notas|default:"-" }}</td>
+                            {% if mostrar_observaciones %}
+                                <td>{{ costo.notas|default:"-" }}</td>
+                            {% endif %}
                             {% if mostrar_campo_vigencia %}
                                 <td>{{ costo.vigencia|default:"-" }}</td>
                             {% endif %}
