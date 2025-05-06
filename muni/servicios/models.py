@@ -59,6 +59,9 @@ class ConfiguracionServicio(models.Model):
     mostrar_seccion_costo = models.BooleanField(default=True)
     mostrar_seccion_responsable = models.BooleanField(default=False)
 
+    # Campos especificos para la seccion ¿En qué consiste?
+    mostrar_puede_ser_solicitado = models.BooleanField(default=False, help_text='Sección: ¿En qué consiste?')
+
     # Campos específicos de la sección "¿Qué se requiere?"
     mostrar_tipo_documento = models.BooleanField(default=False, help_text='Sección: ¿Que se requiere?')
     mostrar_presentar_original = models.BooleanField(default=False, help_text='Sección: ¿Que se requiere?')
@@ -66,6 +69,7 @@ class ConfiguracionServicio(models.Model):
     mostrar_archivo_descarga = models.BooleanField(default=False, help_text='Sección: ¿Que se requiere?')
 
     # Campos específicos de la sección "¿Cuánto cuesta?"
+    mostrar_observaciones = models.BooleanField(default=False, help_text='Sección: ¿Cuanto cuesta?')
     mostrar_campo_vigencia = models.BooleanField(default=False, help_text='Sección: ¿Cuanto cuesta?')
     mostrar_campo_tipo = models.BooleanField(default=False, help_text='Sección: ¿Cuanto cuesta?')
     mostrar_campo_momento_pago = models.BooleanField(default=True, help_text='Sección: ¿Cuanto cuesta?')
