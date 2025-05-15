@@ -1,13 +1,173 @@
 {% extends "baseTemplate.html" %}
 
-
-
-
 {% block content %}
+<style>
+    /* ——— Tarjetas ——— */
+    .category-card {
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        border: none;
+        overflow: hidden;
+        position: relative;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    }
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    }
 
+    /* ——— Icono grande ——— */
+    .card-icon {
+        font-size: 2.5rem;
+        background: linear-gradient(45deg, #2c3e50, #3498db);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1.5rem;
+    }
+
+    /* ——— Badge Activo/Inactivo ——— */
+    .category-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* ——— Botón ——— */
+    .report-btn {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        background: linear-gradient(45deg, #3498db, #2c3e50);
+        border: none;
+        border-radius: 30px;
+        padding: 0.5rem 1.5rem;
+    }
+    .report-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+    }
+</style>
+
+<div class="container-fluid py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold mb-3">Reportes Ciudadanos</h1>
+        <p class="lead text-muted">Tu colaboración ayuda a mejorar nuestra ciudad</p>
+        <div class="divider mx-auto bg-primary mb-4"></div>
+    </div>
+
+    <div class="row g-4">
+
+        {# ═══════════════ Tarjeta: Agua ═══════════════ #}
+        {% with activo=reporte_status.reporte_agua_status %}
+        <div class="col-12 col-md-6 col-xl-3">
+            <a href=""
+               class="text-decoration-none text-dark"
+               {% if not activo %}tabindex="-1" aria-disabled="true"{% endif %}>
+                <div class="card h-100 category-card">
+                    <span class="category-badge {% if activo %}text-success{% else %}text-danger{% endif %}">
+                        {{ activo|yesno:"Activo,Inactivo" }}
+                    </span>
+                    <div class="card-body text-center py-4 px-3">
+                        <i class="bi bi-droplet-half card-icon"></i>
+                        <h4 class="card-title mb-3 fw-semibold">Servicio de Agua</h4>
+                        <p class="card-text text-muted mb-4">
+                            Reporta problemas de suministro, fugas o baja presión
+                        </p>
+                        <div class="d-grid">
+                            <button class="btn report-btn text-white">
+                                Reportes <i class="bi bi-arrow-right-short ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endwith %}
+
+        {# ═══════════════ Tarjeta: Bache ═══════════════ #}
+        {% with activo=reporte_status.reporte_bache_status %}
+        <div class="col-12 col-md-6 col-xl-3">
+            <a href=""
+               class="text-decoration-none text-dark"
+               {% if not activo %}tabindex="-1" aria-disabled="true"{% endif %}>
+                <div class="card h-100 category-card">
+                    <span class="category-badge {% if activo %}text-success{% else %}text-danger{% endif %}">
+                        {{ activo|yesno:"Activo,Inactivo" }}
+                    </span>
+                    <div class="card-body text-center py-4 px-3">
+                        <i class="bi bi-cone-striped card-icon"></i>
+                        <h4 class="card-title mb-3 fw-semibold">Baches</h4>
+                        <p class="card-text text-muted mb-4">
+                            Notifica huecos en la vía pública o daños en el pavimento
+                        </p>
+                        <div class="d-grid">
+                            <button class="btn report-btn text-white">
+                                Reportes <i class="bi bi-arrow-right-short ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endwith %}
+
+        {# ══════════ Tarjeta: Alcantarillado ══════════ #}
+        {% with activo=reporte_status.reporte_alcantarillado_status %}
+        <div class="col-12 col-md-6 col-xl-3">
+            <a href=""
+               class="text-decoration-none text-dark"
+               {% if not activo %}tabindex="-1" aria-disabled="true"{% endif %}>
+                <div class="card h-100 category-card">
+                    <span class="category-badge {% if activo %}text-success{% else %}text-danger{% endif %}">
+                        {{ activo|yesno:"Activo,Inactivo" }}
+                    </span>
+                    <div class="card-body text-center py-4 px-3">
+                        <i class="bi bi-water card-icon"></i>
+                        <h4 class="card-title mb-3 fw-semibold">Alcantarillado</h4>
+                        <p class="card-text text-muted mb-4">
+                            Reporta taponamientos, malos olores o brotes de agua
+                        </p>
+                        <div class="d-grid">
+                            <button class="btn report-btn text-white" >
+                                Reportes <i class="bi bi-arrow-right-short ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endwith %}
+
+        {# ═════════ Tarjeta: Alumbrado Público ═════════ #}
+        {% with activo=reporte_status.reporte_alumbrado_status %}
+        <div class="col-12 col-md-6 col-xl-3">
+            <a href ="" class="text-decoration-none text-dark"
+               {% if not activo %}tabindex="-1" aria-disabled="true"{% endif %}>
+                <div class="card h-100 category-card">
+                    <span class="category-badge {% if activo %}text-success{% else %}text-danger{% endif %}">
+                        {{ activo|yesno:"Activo,Inactivo" }}
+                    </span>
+                    <div class="card-body text-center py-4 px-3">
+                        <i class="bi bi-lightbulb-fill card-icon"></i>
+                        <h4 class="card-title mb-3 fw-semibold">Alumbrado Público</h4>
+                        <p class="card-text text-muted mb-4">
+                            Notifica luminarias dañadas o problemas de iluminación
+                        </p>
+                        <div class="d-grid">
+                    <button class="btn report-btn text-white" >
+                                Reportes <i class="bi bi-arrow-right-short ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endwith %}
+    </div>
+</div>
 {% endblock content %}
-
-
-{% block scriptcontent %}
-
-{% endblock scriptcontent %}

@@ -62,6 +62,8 @@ INSTALLED_APPS = [
     'sass_processor',
     'widget_tweaks',
     'usuario',
+    'reportes',
+
     'django_ckeditor_5',  # Asegúrate de incluirlo aquí
 
 ]

@@ -22,6 +22,7 @@ from django.http import JsonResponse, HttpResponseNotAllowed
 
 from informacion_municipal.models import ElementoLista, InformacionCiudad, Municipio, Video
 from generales.models import ContadorVisitas, SeccionPlus, Secciones, SocialNetwork, VideoMunicipio
+from reportes.models import ReporteStatus
 from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, AvisoDePrivacidadForm
 from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
 from servicios.forms import ServicioForm
@@ -82,19 +83,34 @@ class VideoView(LoginRequiredMixin,TemplateView):
 
 
 
-class ReportesView(LoginRequiredMixin,TemplateView):
-    template_name = 'generales/reportes.html'
+class ReportesView(LoginRequiredMixin, TemplateView):
+    template_name = "generales/reportes.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        # ─── breadcrumb y extras que ya tenías ───
         context["breadcrumb"] = {
-            'parent': {'name': 'Dashboard', 'url': '/admin'},
-            'child': {'name': 'Reportes', 'url': ''}
+            "parent": {"name": "Dashboard", "url": "/admin"},
+            "child": {"name": "Reportes", "url": ""},
         }
-        context['sidebar'] = 'Generales' 
-        url_configuracion = reverse( 'generalesDashboard')
-        context['regreso_url']= url_configuracion
+        context["sidebar"] = "Generales"
+        context["regreso_url"] = reverse("generalesDashboard")
+
+        # ─── get_or_create del único ReporteStatus ───
+        defaults = {
+            "reporte_agua_status": False,
+            "reporte_bache_status": False,
+            "reporte_alcantarillado_status": False,
+            "reporte_alumbrado_status": False,
+        }
+
+        reporte_status, _ = ReporteStatus.objects.get_or_create(
+            pk=1,  # siempre usaremos el registro #1
+            defaults=defaults,
+        )
+
+        context["reporte_status"] = reporte_status
         return context
     
 class DetailMunicipioView(LoginRequiredMixin,TemplateView):
