@@ -51,14 +51,15 @@
         <ul class="list-group mb-3">
             {% for subcarpeta in subcarpetas %}
                 <li class="list-group-item {% if subcarpeta.estatus == 'I' %}inactivo{% endif %}">
-                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <i class="fas fa-folder-open text-warning"></i> <strong style='font-size: 17px;'>{{ subcarpeta.nombre }}</strong>
+                            <i class="fas fa-folder-open text-warning"></i> 
+                            <strong style='font-size: 17px;'>{{ subcarpeta.nombre }}</strong>
                             <span class="badge {% if subcarpeta.estatus == 'I' %}bg-danger{% else %}bg-success{% endif %}">
                                 {% if subcarpeta.estatus == 'I' %}Inactivo{% else %}{{ subcarpeta.get_estatus_display }}{% endif %}
                             </span>
                         </div>
-                        <div class="actions" style="margin-right: 33px;">
+                        <div class="actions" style="margin-right: 100px;">
                             <a href="{% url 'editar_carpeta' subcarpeta.id %}" class="btn-round btn-warning" title="Editar">
                                 <i class="fas fa-edit"></i>
                             </a>
@@ -67,8 +68,9 @@
                             </button>
                         </div>
                     </div>
-                    
-                    <!-- Mostrar los archivos de la subcarpeta -->
+    
+                    <!-- Archivos del primer nivel -->
+                     <!-- Mostrar los archivos de la subcarpeta -->
                     <ul class="list-group mt-2 mb-3">
                         {% for archivo in subcarpeta.archivos.all %}
                             {% if archivo.estatus == 'A' %}
@@ -79,7 +81,7 @@
                                             <i class="fas fa-file-alt text-info"></i> {{ archivo.nombre }}
                                         </a>
                                     </div>
-                                    <div class="actions" style="margin-right: 16px;">
+                                    <div class="actions" style="margin-right: 84px;">
                                         <a href="{% url "editar_archivo" archivo.id %}" class="btn-round btn-warning" title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
@@ -97,7 +99,7 @@
                                             <i class="fas fa-file-alt text-info"></i> {{ archivo.nombre }}
                                         </a>
                                     </div>
-                                    <div class="actions" style="margin-right: 16px;">
+                                    <div class="actions" style="margin-right: 84px;">
                                         <a href="{% url "editar_archivo" archivo.id %}" class="btn-round btn-warning" title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
@@ -111,73 +113,289 @@
                             <li class="list-group-item text-muted">Sin archivos en esta subcarpeta</li>
                         {% endfor %}
                     </ul>
-
-                    <!-- Mostrar subcarpetas dentro de subcarpetas (anidación) -->
+    
+                    <!-- Subnivel 2 -->
                     <ul class="list-group mb-3 ms-4">
-                        <h5 class="text-muted">📂 Subcarpetas dentro de {{ subcarpeta.nombre }}:</h5>
                         {% for subsubcarpeta in subcarpeta.subcarpetas.all %}
                             <li class="list-group-item {% if subsubcarpeta.estatus == 'I' %}inactivo{% endif %}">
                                 <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <i class="fas fa-folder-open text-warning"></i> <strong>{{ subsubcarpeta.nombre }}</strong>
-                                            <span class="badge {% if subsubcarpeta.estatus == 'I' %}bg-danger{% else %}bg-success{% endif %}">{{ subsubcarpeta.get_estatus_display }}</span>
-                                        </div>
-                                        <div class="actions ms-auto" style="margin-right: 17px;">
-                                            <a href="{% url 'editar_carpeta' subsubcarpeta.id %}" class="btn-round btn-warning" title="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <button class="btn-round btn-danger eliminar-carpeta" data-id="{{ subsubcarpeta.id }}" data-nombre="{{ subsubcarpeta.nombre }}" title="Eliminar">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </div>
+                                    <div>
+                                        <i class="fas fa-folder-open text-warning"></i> 
+                                        <strong>{{ subsubcarpeta.nombre }}</strong>
+                                        <span class="badge {% if subsubcarpeta.estatus == 'I' %}bg-danger{% else %}bg-success{% endif %}">
+                                            {{ subsubcarpeta.get_estatus_display }}
+                                        </span>
                                     </div>
-                                    <ul class="list-group mt-2 mb-3">
-                                        {% for archivo in subsubcarpeta.archivos.all %}
-                                            {% if archivo.estatus == 'A' %}
-                                            <li class="list-group-item d-flex justify-content-between align-items-center {% if archivo.estatus == 'I' %}inactivo{% endif %}">
-                                                <div class="d-flex flex-column">
-                                                    <span class="badge {% if archivo.estatus == 'I' %}bg-danger{% else %}bg-success{% endif %} mb-1">
-                                                        {% if archivo.estatus == 'I' %}Inactivo{% else %}{{ archivo.get_estatus_display }}{% endif %}
-                                                    </span>
-                                                        <a href="{{ archivo.archivo.url }}" class="text-decoration-none">
-                                                            <i class="fas fa-file-alt text-info"></i> {{ archivo.nombre }}
-                                                        </a>
-                                                    </div>
-                                                    <div class="actions">
-                                                        <a href="{% url "editar_archivo" archivo.id %}" class="btn-round btn-warning" title="Editar">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
-                                                        <button class="btn-round btn-danger eliminar-archivo" data-id="{{ archivo.id }}" data-nombre="{{ archivo.nombre }}" title="Eliminar">
-                                                            <i class="fas fa-trash-alt"></i>
-                                                        </button>
-                                                    </div>
-                                                </li>
-                                            {% elif archivo.estatus == 'I' %}
-                                                <!-- Mostrar los archivos inactivos -->
-                                                <li class="list-group-item d-flex justify-content-between align-items-center inactivo">
-                                                    <div class="d-flex flex-column">
-                                                        <span class="badge bg-warning mb-1">Inactivo</span>
-                                                        <a href="{{ archivo.archivo.url }}" class="text-decoration-none">
-                                                            <i class="fas fa-file-alt text-info"></i> {{ archivo.nombre }}
-                                                        </a>
-                                                    </div>
-                                                    <div class="actions">
-                                                        <a href="{% url "editar_archivo" archivo.id %}" class="btn-round btn-warning" title="Editar">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
-                                                        <button class="btn-round btn-danger eliminar-archivo" data-id="{{ archivo.id }}" data-nombre="{{ archivo.nombre }}" title="Eliminar">
-                                                            <i class="fas fa-trash-alt"></i>
-                                                        </button>
-                                                    </div>
-                                                </li>
-                                            {% endif %}
-                                        {% empty %}
-                                            <li class="list-group-item text-muted">Sin archivos en esta subcarpeta</li>
-                                        {% endfor %}
-                                    </ul>
+                                    <div class="actions ms-auto" style="margin-right: 84px;">
+                                        <a href="{% url 'editar_carpeta' subsubcarpeta.id %}" class="btn-round btn-warning" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button class="btn-round btn-danger eliminar-carpeta" data-id="{{ subsubcarpeta.id }}" data-nombre="{{ subsubcarpeta.nombre }}" title="Eliminar">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+    
+                                <!-- Archivos subnivel 2 -->
+                                 <!-- Mostrar los archivos de la subcarpeta -->
+                    <ul class="list-group mt-2 mb-3">
+                        {% for archivo in subsubcarpeta.archivos.all %}
+                            {% if archivo.estatus == 'A' %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="d-flex flex-column">
+                                        <span class="badge bg-success mb-1">{{ archivo.get_estatus_display }}</span>
+                                        <a href="{{ archivo.archivo.url }}" class="text-decoration-none">
+                                            <i class="fas fa-file-alt text-info"></i> {{ archivo.nombre }}
+                                        </a>
+                                    </div>
+                                    <div class="actions" style="margin-right: 68px;">
+                                        <a href="{% url "editar_archivo" archivo.id %}" class="btn-round btn-warning" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button class="btn-round btn-danger eliminar-archivo" data-id="{{ archivo.id }}" data-nombre="{{ archivo.nombre }}" title="Eliminar">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
                                 </li>
+                            {% elif archivo.estatus == 'I' %}
+                                <!-- Muestra los archivos inactivos con estado y color diferenciados -->
+                                <li class="list-group-item d-flex justify-content-between align-items-center inactivo">
+                                    <div class="d-flex flex-column">
+                                        <span class="badge bg-danger mb-1">Inactivo</span>
+                                        <a href="{{ archivo.archivo.url }}" class="text-decoration-none">
+                                            <i class="fas fa-file-alt text-info"></i> {{ archivo.nombre }}
+                                        </a>
+                                    </div>
+                                    <div class="actions" style="margin-right: 68px;">
+                                        <a href="{% url "editar_archivo" archivo.id %}" class="btn-round btn-warning" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button class="btn-round btn-danger eliminar-archivo" data-id="{{ archivo.id }}" data-nombre="{{ archivo.nombre }}" title="Eliminar">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </li>
+                            {% endif %}
                         {% empty %}
-                            <li class="list-group-item text-muted">Sin subcarpetas dentro de esta subcarpeta</li>
+                            <li class="list-group-item text-muted">Sin archivos en esta subcarpeta</li>
+                        {% endfor %}
+                    </ul>
+    
+                                <!-- Subnivel 3 -->
+                                <ul class="list-group mb-3 ms-4">
+                                    {% for sub3 in subsubcarpeta.subcarpetas.all %}
+                                        <li class="list-group-item {% if sub3.estatus == 'I' %}inactivo{% endif %}">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i class="fas fa-folder-open text-warning"></i> 
+                                                    <strong>{{ sub3.nombre }}</strong>
+                                                    <span class="badge {% if sub3.estatus == 'I' %}bg-danger{% else %}bg-success{% endif %}">
+                                                        {{ sub3.get_estatus_display }}
+                                                    </span>
+                                                </div>
+                                                <div class="actions" style="margin-right: 66px;">
+                                                    <a href="{% url 'editar_carpeta' sub3.id %}" class="btn-round btn-warning" title="Editar">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <button class="btn-round btn-danger eliminar-carpeta" data-id="{{ sub3.id }}" data-nombre="{{ sub3.nombre }}" title="Eliminar">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+    
+                                            <!-- Archivos subnivel 3 -->
+                                            <ul class="list-group mt-2 mb-3">
+                                                {% for archivo in sub3.archivos.all %}
+                                                    {% if archivo.estatus == 'A' %}
+                                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                            <div class="d-flex flex-column">
+                                                                <span class="badge bg-success mb-1">{{ archivo.get_estatus_display }}</span>
+                                                                <a href="{{ archivo.archivo.url }}" class="text-decoration-none">
+                                                                    <i class="fas fa-file-alt text-info"></i> {{ archivo.nombre }}
+                                                                </a>
+                                                            </div>
+                                                            <div class="actions" style="margin-right: 50px;">
+                                                                <a href="{% url "editar_archivo" archivo.id %}" class="btn-round btn-warning" title="Editar">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </a>
+                                                                <button class="btn-round btn-danger eliminar-archivo" data-id="{{ archivo.id }}" data-nombre="{{ archivo.nombre }}" title="Eliminar">
+                                                                    <i class="fas fa-trash-alt"></i>
+                                                                </button>
+                                                            </div>
+                                                        </li>
+                                                    {% elif archivo.estatus == 'I' %}
+                                                        <!-- Muestra los archivos inactivos con estado y color diferenciados -->
+                                                        <li class="list-group-item d-flex justify-content-between align-items-center inactivo">
+                                                            <div class="d-flex flex-column">
+                                                                <span class="badge bg-danger mb-1">Inactivo</span>
+                                                                <a href="{{ archivo.archivo.url }}" class="text-decoration-none">
+                                                                    <i class="fas fa-file-alt text-info"></i> {{ archivo.nombre }}
+                                                                </a>
+                                                            </div>
+                                                            <div class="actions" style="margin-right: 50px;">
+                                                                <a href="{% url "editar_archivo" archivo.id %}" class="btn-round btn-warning" title="Editar">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </a>
+                                                                <button class="btn-round btn-danger eliminar-archivo" data-id="{{ archivo.id }}" data-nombre="{{ archivo.nombre }}" title="Eliminar">
+                                                                    <i class="fas fa-trash-alt"></i>
+                                                                </button>
+                                                            </div>
+                                                        </li>
+                                                    {% endif %}
+                                                {% empty %}
+                                                    <li class="list-group-item text-muted">Sin archivos en esta subcarpeta</li>
+                                                {% endfor %}
+                                            </ul>
+    
+                                            <!-- Subnivel 4 -->
+                                            <ul class="list-group mb-3 ms-4">
+                                                {% for sub4 in sub3.subcarpetas.all %}
+                                                    <li class="list-group-item {% if sub4.estatus == 'I' %}inactivo{% endif %}">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div>
+                                                                <i class="fas fa-folder-open text-warning"></i> 
+                                                                <strong>{{ sub4.nombre }}</strong>
+                                                                <span class="badge {% if sub4.estatus == 'I' %}bg-danger{% else %}bg-success{% endif %}">
+                                                                    {{ sub4.get_estatus_display }}
+                                                                </span>
+                                                            </div>
+                                                            <div class="actions" style="margin-right: 48px;">
+                                                                <a href="{% url 'editar_carpeta' sub4.id %}" class="btn-round btn-warning" title="Editar">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </a>
+                                                                <button class="btn-round btn-danger eliminar-carpeta" data-id="{{ sub4.id }}" data-nombre="{{ sub4.nombre }}" title="Eliminar">
+                                                                    <i class="fas fa-trash-alt"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+    
+                                                        <!-- Archivos subnivel 4 -->
+                                                        <ul class="list-group mt-2 mb-3">
+                                                            {% for archivo in sub4.archivos.all %}
+                                                                {% if archivo.estatus == 'A' %}
+                                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                        <div class="d-flex flex-column">
+                                                                            <span class="badge bg-success mb-1">{{ archivo.get_estatus_display }}</span>
+                                                                            <a href="{{ archivo.archivo.url }}" class="text-decoration-none">
+                                                                                <i class="fas fa-file-alt text-info"></i> {{ archivo.nombre }}
+                                                                            </a>
+                                                                        </div>
+                                                                        <div class="actions" style="margin-right: 32px;">
+                                                                            <a href="{% url "editar_archivo" archivo.id %}" class="btn-round btn-warning" title="Editar">
+                                                                                <i class="fas fa-edit"></i>
+                                                                            </a>
+                                                                            <button class="btn-round btn-danger eliminar-archivo" data-id="{{ archivo.id }}" data-nombre="{{ archivo.nombre }}" title="Eliminar">
+                                                                                <i class="fas fa-trash-alt"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </li>
+                                                                {% elif archivo.estatus == 'I' %}
+                                                                    <!-- Muestra los archivos inactivos con estado y color diferenciados -->
+                                                                    <li class="list-group-item d-flex justify-content-between align-items-center inactivo">
+                                                                        <div class="d-flex flex-column">
+                                                                            <span class="badge bg-danger mb-1">Inactivo</span>
+                                                                            <a href="{{ archivo.archivo.url }}" class="text-decoration-none">
+                                                                                <i class="fas fa-file-alt text-info"></i> {{ archivo.nombre }}
+                                                                            </a>
+                                                                        </div>
+                                                                        <div class="actions" style="margin-right: 32px;">
+                                                                            <a href="{% url "editar_archivo" archivo.id %}" class="btn-round btn-warning" title="Editar">
+                                                                                <i class="fas fa-edit"></i>
+                                                                            </a>
+                                                                            <button class="btn-round btn-danger eliminar-archivo" data-id="{{ archivo.id }}" data-nombre="{{ archivo.nombre }}" title="Eliminar">
+                                                                                <i class="fas fa-trash-alt"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </li>
+                                                                {% endif %}
+                                                            {% empty %}
+                                                                <li class="list-group-item text-muted">Sin archivos en esta subcarpeta</li>
+                                                            {% endfor %}
+                                                        </ul>
+    
+                                                        <!-- Subnivel 5 -->
+                                                        <ul class="list-group mb-3 ms-4">
+                                                            {% for sub5 in sub4.subcarpetas.all %}
+                                                                <li class="list-group-item {% if sub5.estatus == 'I' %}inactivo{% endif %}">
+                                                                    <div class="d-flex justify-content-between align-items-center">
+                                                                        <div>
+                                                                            <i class="fas fa-folder-open text-warning"></i> 
+                                                                            <strong>{{ sub5.nombre }}</strong>
+                                                                            <span class="badge {% if sub5.estatus == 'I' %}bg-danger{% else %}bg-success{% endif %}">
+                                                                                {{ sub5.get_estatus_display }}
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="actions" style="margin-right: 33px;">
+                                                                            <a href="{% url 'editar_carpeta' sub5.id %}" class="btn-round btn-warning" title="Editar">
+                                                                                <i class="fas fa-edit"></i>
+                                                                            </a>
+                                                                            <button class="btn-round btn-danger eliminar-carpeta" data-id="{{ sub5.id }}" data-nombre="{{ sub5.nombre }}" title="Eliminar">
+                                                                                <i class="fas fa-trash-alt"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+    
+                                                                    <!-- Archivos subnivel 5 -->
+                                                                    <ul class="list-group mt-2 mb-3">
+                                                                        {% for archivo in sub5.archivos.all %}
+                                                                            {% if archivo.estatus == 'A' %}
+                                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                                    <div class="d-flex flex-column">
+                                                                                        <span class="badge bg-success mb-1">{{ archivo.get_estatus_display }}</span>
+                                                                                        <a href="{{ archivo.archivo.url }}" class="text-decoration-none">
+                                                                                            <i class="fas fa-file-alt text-info"></i> {{ archivo.nombre }}
+                                                                                        </a>
+                                                                                    </div>
+                                                                                    <div class="actions" style="margin-right: 16px;">
+                                                                                        <a href="{% url "editar_archivo" archivo.id %}" class="btn-round btn-warning" title="Editar">
+                                                                                            <i class="fas fa-edit"></i>
+                                                                                        </a>
+                                                                                        <button class="btn-round btn-danger eliminar-archivo" data-id="{{ archivo.id }}" data-nombre="{{ archivo.nombre }}" title="Eliminar">
+                                                                                            <i class="fas fa-trash-alt"></i>
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </li>
+                                                                            {% elif archivo.estatus == 'I' %}
+                                                                                <!-- Muestra los archivos inactivos con estado y color diferenciados -->
+                                                                                <li class="list-group-item d-flex justify-content-between align-items-center inactivo">
+                                                                                    <div class="d-flex flex-column">
+                                                                                        <span class="badge bg-danger mb-1">Inactivo</span>
+                                                                                        <a href="{{ archivo.archivo.url }}" class="text-decoration-none">
+                                                                                            <i class="fas fa-file-alt text-info"></i> {{ archivo.nombre }}
+                                                                                        </a>
+                                                                                    </div>
+                                                                                    <div class="actions" style="margin-right: 16px;">
+                                                                                        <a href="{% url "editar_archivo" archivo.id %}" class="btn-round btn-warning" title="Editar">
+                                                                                            <i class="fas fa-edit"></i>
+                                                                                        </a>
+                                                                                        <button class="btn-round btn-danger eliminar-archivo" data-id="{{ archivo.id }}" data-nombre="{{ archivo.nombre }}" title="Eliminar">
+                                                                                            <i class="fas fa-trash-alt"></i>
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </li>
+                                                                            {% endif %}
+                                                                        {% empty %}
+                                                                            <li class="list-group-item text-muted">Sin archivos en esta subcarpeta</li>
+                                                                        {% endfor %}
+                                                                    </ul>
+                                                                </li>
+                                                            {% empty %}
+                                                                <li class="list-group-item text-muted">Sin subcarpetas</li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </li>
+                                                {% empty %}
+                                                    <li class="list-group-item text-muted">Sin subcarpetas</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </li>
+                                    {% empty %}
+                                        <li class="list-group-item text-muted">Sin subcarpetas</li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-muted">Sin subcarpetas</li>
                         {% endfor %}
                     </ul>
                 </li>
@@ -186,6 +404,7 @@
             {% endfor %}
         </ul>
     </div>
+    
 
     <!-- Archivos de la carpeta principal -->
     <div class="mb-4">

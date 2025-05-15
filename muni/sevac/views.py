@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Carpeta, Archivo, CategoriaSevac
 from django.views.generic import TemplateView
+import re
 
 class HomeSevacView(TemplateView):
     template_name = 'archivosListas.html'
@@ -21,13 +22,15 @@ class HomeSevacView(TemplateView):
         # Ordenar carpetas según los criterios especificados
         def ordenar_carpetas(carpeta):
             nombre = carpeta.nombre
-            # Detectar si el nombre contiene números
-            if nombre.isdigit():
-                # Convertir a entero para ordenar por número
-                return (-int(nombre), nombre)  # Ordenar números de mayor a menor
+
+            # Extrae partes numéricas separadas por puntos
+            partes = re.findall(r'\d+', nombre)
+            
+            if partes:
+                clave_numerica = [int(p) for p in partes]
+                return (0, clave_numerica)  # Los numéricos van primero
             else:
-                # Si contiene letras, devolver una clave que las coloque después de los números
-                return (0, nombre.lower())  # Orden alfabético para letras
+                return (1, nombre.lower())  # Los no numéricos después, orden alfabético
 
         # Aplicar el orden a las carpetas principales
         carpetas_ordenadas = sorted(carpetas_qs, key=ordenar_carpetas)

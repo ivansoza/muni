@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- Slick CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
 <style>
 /* Estilos generales */
 .container {
@@ -271,11 +274,6 @@
 }
 
 
-
-
-
-
-
 .news-link {
     display: inline-block;
     padding: 10px 10px;
@@ -538,7 +536,52 @@
         font-size: 14px; /* Reducir tamaño del texto en móviles */
     }
 }
+.dropdown-menu {
+    min-width: 250px;
+  }
+  
+  .dropdown-item.active {
+    background-color: var(--color-secundario);
+    color: white;
+  }
 
+  .slide-content {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  
+  .slide-content h2,
+  .slide-content p,
+  .slide-content a {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  
+  /* Se vuelve visible cuando tiene clase .visible */
+  .slide-content .visible {
+    opacity: 1;
+  }
+  
+  /* Animaciones */
+  .fadeInDown {
+    animation: fadeInDown 1s ease-in-out;
+  }
+  
+  .fadeIn {
+    animation: fadeIn 1.5s ease-in-out;
+  }
+  
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+    
 
 </style>
 
@@ -554,52 +597,82 @@
     
     
     <!-- Noticias Destacadas -->
-    <h3 class="nuevoTitulo">Noticias Destacadas</h3>
 
-    <div class="featured-news">
-        {% for noticia in noticias_destacadas %}
-            <div class="featured-news-card">
-                {% if noticia.imagen %}
-                     <img src="{{ noticia.imagen.url }}" alt="Imagen de noticia">
-                {% else %}
-                    <img src="/ruta/a/imagen/predeterminada.jpg" alt="Imagen predeterminada">
-                {% endif %}
-                <div class="featured-news-content">
-                    <h5 style="font-size:18px;">{{ noticia.titulo }}</h5>
-                    <!-- Icono de fecha y la fecha de la noticia -->
-                    <div class="featured-news-date-star">
-                        <div class="featured-news-date">
-                            <i class="fas fa-calendar-alt"></i> {{ noticia.fecha|date:"d/m/Y" }}
-                        </div>
-                        <!-- Estrella dorada -->
-                        <div class="featured-news-star">
-                            <i class="fas fa-star"></i>
-                        </div>
-                    </div>
-                    <!-- Botón de "Ver más" con ícono de flecha -->
-                    <a href="{% url 'detalle_noticia' noticia.id %}" class="news-link">
-                        <i class="fas fa-arrow-right" style="color: white;"></i> Ver más
-                    </a>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
+    <div class="js-slick-carousel"
+    style="margin-top: 40px;"
+    data-autoplay="true"
+    data-speed="10000"
+    data-infinite="true">
+
+   {% for noticia in noticias_destacadas %}
+       <div class="js-slide bg-img-hero-center"
+            style="background-image: url('{% if noticia.imagen %}{{ noticia.imagen.url }}{% else %}/ruta/a/imagen/predeterminada.jpg{% endif %}');
+                   background-size: cover;
+                   background-position: center;
+                   height: 400px;
+                   display: flex;
+                   align-items: flex-end;
+                   justify-content: center;
+                   padding-bottom: 50px;">
+           <div class="slide-content text-center text-white">
+               <h2 class="mb-2">{{ noticia.titulo }}</h2>
+               <p class="mb-1">
+                   <i class="fas fa-calendar-alt"></i> {{ noticia.fecha|date:"d/m/Y" }}
+               </p>
+               <a href="{% url 'detalle_noticia' noticia.id %}" class="btn btn-outline-light mt-2">
+                   <i class="fas fa-arrow-right me-1"></i> Ver más
+               </a>
+           </div>
+       </div>
+   {% endfor %}
+</div>
+
     
     
     <!-- Contenedor principal con noticias y sidebar -->
     <div class="main-container">
         <!-- Noticias -->
         <div class="main-content" style="flex: 1 1 70%;"> <!-- Esto hace que las noticias ocupen el 70% -->
-            <h3 class="nuevoTitulo">Noticias Recientes</h3>
-            <!-- Filtro por Categoría -->
-            <div class="categoria-filtro">
-                <a href="{% url 'homeNoticias' %}?{% if request.GET.page %}page={{ request.GET.page }}&{% endif %}categoria=" class="categoria-btn {% if request.GET.categoria == None or request.GET.categoria == '' %}active{% endif %}">Todas</a>
-                {% for categoria in categorias %}
-                    <a href="?categoria={{ categoria.id }}{% if request.GET.page %}&page={{ request.GET.page }}{% endif %}" class="categoria-btn {% if request.GET.categoria == categoria.id|stringformat:"s" %}active{% endif %}">
-                        {{ categoria.nombre }}
-                    </a>
-                {% endfor %}
-            </div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <!-- Título -->
+                <h3 class="nuevoTitulo mb-0">Noticias Recientes</h3>
+              
+                <!-- Filtro por Categoría -->
+                <div class="d-flex">
+                  <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle px-4 py-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="fa-solid fa-filter"></i>
+                      {% if request.GET.categoria %}
+                        {% for categoria in categorias %}
+                          {% if categoria.id|stringformat:"s" == request.GET.categoria %}
+                            Filtrando: {{ categoria.nombre }}
+                          {% endif %}
+                        {% endfor %}
+                      {% else %}
+                        Filtrar Noticias
+                      {% endif %}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow">
+                      <li>
+                        <a class="dropdown-item {% if not request.GET.categoria %}active{% endif %}" href="{% url 'homeNoticias' %}">
+                          Todas las categorías
+                        </a>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      {% for categoria in categorias %}
+                        <li>
+                          <a class="dropdown-item {% if request.GET.categoria == categoria.id|stringformat:"s" %}active{% endif %}" 
+                             href="?categoria={{ categoria.id }}">
+                            {{ categoria.nombre }}
+                          </a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
+              
             <div class="news-grid">
                 {% for noticia in noticias %}
                 <div class="news-card">
@@ -707,4 +780,45 @@
         });
     });
 </script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Slick JS -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script>
+    $(document).ready(function () {
+      function animateSlide($slide) {
+        const $elements = $slide.find('h2, p, a');
+        $elements.removeClass('fadeInDown fadeIn visible');
+  
+        void $slide[0].offsetWidth; // Forzar reflow
+  
+        // Aplicar animaciones
+        $slide.find('h2').addClass('fadeInDown visible');
+        $slide.find('p, a').addClass('fadeIn visible');
+      }
+  
+      $('.js-slick-carousel').on('init', function (event, slick) {
+        setTimeout(() => {
+          let $firstSlide = $(slick.$slides[0]);
+          animateSlide($firstSlide);
+        }, 100); // Delay leve para asegurar render completo
+      });
+  
+      $('.js-slick-carousel').on('afterChange', function (event, slick, currentSlide) {
+        let $current = $(slick.$slides[currentSlide]);
+        animateSlide($current);
+      });
+  
+      // Inicializar slick (debe ser después de enlazar eventos)
+      $('.js-slick-carousel').slick({
+        autoplay: true,
+        autoplaySpeed: 5000,
+        infinite: true,
+        arrows: true,
+        dots: true,
+        fade: false,
+      });
+    });
+  </script>
+  
+    
 {% endblock %}

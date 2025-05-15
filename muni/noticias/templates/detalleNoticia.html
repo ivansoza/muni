@@ -371,11 +371,38 @@
     color: #aaa;
 }
 
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-muted);
+  text-decoration: none;
+  font-size: 0.975rem;
+}
+
+.back-link:hover {
+  color: var(--color-foreground);
+}
+
+.back-link i {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.25rem;
+}
+/* Restar 100px del padding-top global */
+.custom-padding-top {
+    transform: translateY(-50px); /* Mueve el contenedor hacia arriba 100px */
+}
 
 
 </style>
+<div class="container my-4 custom-padding-top"> <!-- Ajusta el valor según lo que necesites -->
+    <a href="{% url "homeNoticias" %}" class="back-link">
+        <i class="fa-solid fa-arrow-left"></i>        
+        Volver a Noticias
+    </a>
+</div>
 
-<div class="contenedor-detalle-noticia">
+<div class="contenedor-detalle-noticia custom-padding-top ">
     <div class="columna-izquierda">
         <img src="{{ noticia.imagen.url }}" alt="Imagen de portada" class="imagen-noticia">
         <span class="fecha-noticia">{{ noticia.fecha }}</span> <!-- Etiqueta de fecha -->

@@ -31,7 +31,7 @@ class HomeNoticiasView(TemplateView):
         paginator = Paginator(noticias, 8)
         page_number = self.request.GET.get('page')
         noticias_page = paginator.get_page(page_number)
-        noticias_destacadas = noticias[:3]
+        noticias_destacadas = noticias[:4]
 
         # Obtener las categorías con al menos una noticia
         categorias = Categoria.objects.filter(noticias__isnull=False).distinct()
