@@ -91,7 +91,7 @@ class ReportesView(LoginRequiredMixin, TemplateView):
 
         # ─── breadcrumb y extras que ya tenías ───
         context["breadcrumb"] = {
-            "parent": {"name": "Dashboard", "url": "/admin"},
+            "parent": {"name": "Generales", "url": "/admin/generales/"},
             "child": {"name": "Reportes", "url": ""},
         }
         context["sidebar"] = "Generales"
