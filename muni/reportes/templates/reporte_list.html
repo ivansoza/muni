@@ -1,0 +1,119 @@
+{% extends "baseTemplate.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+
+    {# ───────── Tarjetas resumen ───────── #}
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-4">
+            <div class="card text-center shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="text-muted mb-1">Total reportes</h6>
+                    <h3 class="fw-bold mb-0">{{ total_reportes }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-4">
+            <div class="card text-center shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="text-muted mb-1">Resueltos</h6>
+                    <h3 class="fw-bold mb-0 text-success">{{ total_resueltos }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-4">
+            <div class="card text-center shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="text-muted mb-1">Pendientes</h6>
+                    <h3 class="fw-bold mb-0 text-warning">{{ total_pendientes }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# ───────── Tabla de reportes ───────── #}
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Código</th>
+                        <th>Solicitante</th>
+                        <th>Ubicación</th>
+                        <th>Estatus</th>
+                        <th>Creado</th>
+                        <th class="text-end">Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for obj in object_list %}
+                    <tr>
+                        <td class="fw-semibold">{{ obj.codigo_seguimiento }}</td>
+                        <td>{{ obj.nombre_solicitante }}</td>
+                        <td>{{ obj.ubicacion|truncatechars:40 }}</td>
+                        <td>
+                            <span class="badge
+                                {% if obj.estatus == obj.Estatus.RESUELTO %}bg-success
+                                {% elif obj.estatus == obj.Estatus.EN_PROGRESO %}bg-info
+                                {% elif obj.estatus == obj.Estatus.PENDIENTE %}bg-warning text-dark
+                                {% else %}bg-secondary{% endif %}">
+                                {{ obj.get_estatus_display }}
+                            </span>
+                        </td>
+                        <td>{{ obj.creado|date:"d/m/Y H:i" }}</td>
+
+                        <td class="text-end">
+                            <a href="{% url 'reportes:detalle' obj.pk %}"
+                               class="btn btn-sm btn-outline-primary">
+                                Ver
+                            </a>
+                            <a href="{% url 'reportes:atender' obj.pk %}"
+                               class="btn btn-sm btn-outline-success">
+                                Atender
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            No hay reportes registrados.
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {# ─── Paginación Bootstrap ─── #}
+        {% if is_paginated %}
+        <nav class="p-3">
+            <ul class="pagination justify-content-center mb-0">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                {% endif %}
+
+                {% for num in paginator.page_range %}
+                    {% if num == page_obj.number %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

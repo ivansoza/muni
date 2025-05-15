@@ -65,7 +65,7 @@
         {# ═══════════════ Tarjeta: Agua ═══════════════ #}
         {% with activo=reporte_status.reporte_agua_status %}
         <div class="col-12 col-md-6 col-xl-3">
-            <a href=""
+            <a href="{% url "lista-agua" %}"
                class="text-decoration-none text-dark"
                {% if not activo %}tabindex="-1" aria-disabled="true"{% endif %}>
                 <div class="card h-100 category-card">
@@ -92,7 +92,7 @@
         {# ═══════════════ Tarjeta: Bache ═══════════════ #}
         {% with activo=reporte_status.reporte_bache_status %}
         <div class="col-12 col-md-6 col-xl-3">
-            <a href=""
+            <a href="{% url "lista-bache" %}"
                class="text-decoration-none text-dark"
                {% if not activo %}tabindex="-1" aria-disabled="true"{% endif %}>
                 <div class="card h-100 category-card">
@@ -119,7 +119,7 @@
         {# ══════════ Tarjeta: Alcantarillado ══════════ #}
         {% with activo=reporte_status.reporte_alcantarillado_status %}
         <div class="col-12 col-md-6 col-xl-3">
-            <a href=""
+            <a href="{% url "lista-alcantarillado" %}"
                class="text-decoration-none text-dark"
                {% if not activo %}tabindex="-1" aria-disabled="true"{% endif %}>
                 <div class="card h-100 category-card">
@@ -146,7 +146,7 @@
         {# ═════════ Tarjeta: Alumbrado Público ═════════ #}
         {% with activo=reporte_status.reporte_alumbrado_status %}
         <div class="col-12 col-md-6 col-xl-3">
-            <a href ="" class="text-decoration-none text-dark"
+            <a href ="{% url "lista-alumbrado" %}" class="text-decoration-none text-dark"
                {% if not activo %}tabindex="-1" aria-disabled="true"{% endif %}>
                 <div class="card h-100 category-card">
                     <span class="category-badge {% if activo %}text-success{% else %}text-danger{% endif %}">
