@@ -1,4 +1,6 @@
 from django import forms
+
+from reportes.models import ReporteServicioAgua
 from .models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga, LigaArchivo
 
 class SeccionTransparenciaForm(forms.ModelForm):
@@ -134,3 +136,20 @@ class ArticuloLigaArchivoForm(forms.ModelForm):
             raise forms.ValidationError("El año fiscal es obligatorio.")
 
         return cleaned_data
+
+
+
+
+class ReporteServicioAguaForm(forms.ModelForm):
+    class Meta:
+        model = ReporteServicioAgua
+        fields = [
+            'nombre_solicitante',
+            'descripcion',
+            'foto',
+            'ubicacion',
+            'latitud',
+            'longitud',
+        ]
+
+        

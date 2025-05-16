@@ -2,26 +2,172 @@
 {% load static %}
 
 {% block content %}
-<div class="container">
-    <!-- Sección de Noticias Destacadas -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+<div class="container py-4">
+    <h2 class="news-title mb-4">
+        Reportes <span>| Servicio de agua</span>
+    </h2>
 
-    <div class="container">
-        <h2 class="news-title">Reportes
-            <span>| Genera reportes de sericio de agua</span>
-        </h2>
-    </div>
+    <form id="reporte-agua-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_nombre_solicitante" class="form-label">Nombre de quien reporta</label>
+            <input
+              type="text"
+              name="nombre_solicitante"
+              id="id_nombre_solicitante"
+              class="form-control"
+              required
+            >
+        </div>
 
+        <div class="mb-3">
+            <label for="id_descripcion" class="form-label">Descripción / comentarios</label>
+            <textarea
+              name="descripcion"
+              id="id_descripcion"
+              class="form-control"
+              rows="4"
+              required
+            ></textarea>
+        </div>
 
+        <div class="mb-3">
+            <label for="id_foto" class="form-label">Fotografía (opcional)</label>
+            <input
+              type="file"
+              name="foto"
+              id="id_foto"
+              class="form-control"
+            >
+        </div>
+
+        <div class="mb-3">
+            <label for="id_ubicacion" class="form-label">Ubicación</label>
+            <input
+              type="text"
+              name="ubicacion"
+              id="id_ubicacion"
+              class="form-control"
+              required
+            >
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="id_latitud" class="form-label">Latitud (opcional)</label>
+                <input
+                  type="text"
+                  name="latitud"
+                  id="id_latitud"
+                  class="form-control"
+                >
+            </div>
+            <div class="col-md-6">
+                <label for="id_longitud" class="form-label">Longitud (opcional)</label>
+                <input
+                  type="text"
+                  name="longitud"
+                  id="id_longitud"
+                  class="form-control"
+                >
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-4">Enviar reporte</button>
+    </form>
 </div>
 
-
-{% endblock content %}
-
-
+<!-- Modal de resultado -->
+<div
+  class="modal fade"
+  id="modalResultadoReporte"
+  tabindex="-1"
+  aria-labelledby="modalResultadoLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalResultadoLabel">¡Reporte enviado!</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Cerrar"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>Tu reporte se ha enviado con éxito. Guarda este código de seguimiento:</p>
+        <h4 class="text-primary" id="codigo-reporte-modal"></h4>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
 
 {% block scriptcontent %}
+<script>
+  // 1) Función para leer CSRF
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      document.cookie
+        .split(';')
+        .forEach(cookie => {
+          cookie = cookie.trim();
+          if (cookie.startsWith(name + '=')) {
+            cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
+          }
+        });
+    }
+    return cookieValue;
+  }
 
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlCrear = "{% url 'reporte-servicio-agua' %}";
+    const form = document.getElementById('reporte-agua-form');
+    const modalEl = document.getElementById('modalResultadoReporte');
+    const codigoModal = document.getElementById('codigo-reporte-modal');
+    const bsModal = new bootstrap.Modal(modalEl);
 
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const formData = new FormData(form);
 
-{% endblock scriptcontent %}
+      try {
+        const resp = await fetch(urlCrear, {
+          method: 'POST',
+          headers: { 'X-CSRFToken': getCookie('csrftoken') },
+          body: formData
+        });
+
+        if (!resp.ok) {
+          const err = await resp.json();
+          const mensajes = Object.entries(err.errors || {})
+            .map(([f, m]) => `${f}: ${m.join(', ')}`)
+            .join('\n') || 'Error desconocido';
+          return alert('No se pudo crear el reporte:\n' + mensajes);
+        }
+
+        const data = await resp.json();
+        // 2) Aquí rellenamos el modal y lo mostramos
+        codigoModal.textContent = data.codigo_seguimiento;
+        bsModal.show();
+        form.reset();
+      } catch (error) {
+        console.error('Error AJAX:', error);
+        alert('Ocurrió un error inesperado. Revisa la consola.');
+      }
+    });
+  });
+</script>
+{% endblock %}

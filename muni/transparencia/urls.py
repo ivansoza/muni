@@ -16,10 +16,16 @@ urlpatterns = [
 
 
 
-    path('agua/', ReporteServicioAguaView.as_view(), name='reportes_agua'),
+    path(
+        'transparencia/agua/',
+        ReporteServicioAguaView.as_view(),
+        name='reporte-servicio-agua'
+    ),    
+    
+    
     path('bache/', ReporteBacheView.as_view(), name='reportes_bache'),
     path('alcantarillado/', ReporteAlcantarilladoView.as_view(), name='reportes_alcantarillado'),
     path('alumbrado/', ReporteAlumbradoPublicoView.as_view(), name='reportes_alumbrado'),
-    
+
 
 ]

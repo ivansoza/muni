@@ -5,7 +5,9 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 import json
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
+from transparencia.forms import ReporteServicioAguaForm
 from reportes.models import ReporteStatus
 from .models import ArticuloLiga, SeccionTransparencia
 from django.shortcuts import get_object_or_404
@@ -263,7 +265,6 @@ def lista_obligaciones(request):
 class ReporteServicioAguaView(TemplateView):
     template_name = 'reportes/servicio_agua.html'
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # ─── get_or_create del único ReporteStatus ───
@@ -273,18 +274,28 @@ class ReporteServicioAguaView(TemplateView):
             "reporte_alcantarillado_status": False,
             "reporte_alumbrado_status": False,
         }
-
         reporte_status, _ = ReporteStatus.objects.get_or_create(
-            pk=1,  # siempre usaremos el registro #1
+            pk=1,
             defaults=defaults,
         )
-
         context["reporte_status"] = reporte_status
         context['sidebar'] = 'reportes'
         return context
-    
 
-    
+    def post(self, request, *args, **kwargs):
+        form = ReporteServicioAguaForm(request.POST, request.FILES)
+        if form.is_valid():
+            reporte = form.save()
+            return JsonResponse({
+                'success': True,
+                'codigo_seguimiento': reporte.codigo_seguimiento
+            })
+        return JsonResponse({
+            'success': False,
+            'errors': form.errors
+        }, status=400)
+
+
 class ReporteBacheView(TemplateView):
     template_name = 'reportes/bache.html'
     def get_context_data(self, **kwargs):
@@ -351,3 +362,4 @@ class ReporteAlumbradoPublicoView(TemplateView):
         context["reporte_status"] = reporte_status
         context['sidebar'] = 'reportes'
         return context
+    
