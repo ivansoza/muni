@@ -5,6 +5,8 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 import json
 from django.views.decorators.csrf import csrf_exempt
+
+from reportes.models import ReporteStatus
 from .models import ArticuloLiga, SeccionTransparencia
 from django.shortcuts import get_object_or_404
 from .models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia
@@ -36,13 +38,34 @@ class HomeSevacView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['sidebar'] = 'sevac'
+
+
         return context
+    
+
+
+
+
 class HomeReportesView(TemplateView):
     template_name = 'reportes/reportes.html' 
 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # ─── get_or_create del único ReporteStatus ───
+        defaults = {
+            "reporte_agua_status": False,
+            "reporte_bache_status": False,
+            "reporte_alcantarillado_status": False,
+            "reporte_alumbrado_status": False,
+        }
+
+        reporte_status, _ = ReporteStatus.objects.get_or_create(
+            pk=1,  # siempre usaremos el registro #1
+            defaults=defaults,
+        )
+
+        context["reporte_status"] = reporte_status
         context['sidebar'] = 'reportes'
         return context
 

@@ -312,6 +312,7 @@
 
 
 <div class="cards-container">
+    {% if reporte_status.reporte_bache_status %}
 
     <!-- Card 1 -->
     <div class="card">
@@ -332,9 +333,12 @@
         </div>
     </div>
 
+    {% endif %}
 
 
     <!-- Card 2 -->
+    {% if reporte_status.reporte_alumbrado_status %}
+
     <div class="card">
         <div class="card-image card-image-2"></div>
         <div class="card-content">
@@ -353,6 +357,10 @@
         </div>
     </div>
 
+    {% endif %}
+
+    {% if reporte_status.reporte_agua_status %}
+
     <!-- Card 3 -->
     <div class="card">
       <div class="card-image card-image-3"></div>
@@ -370,7 +378,33 @@
               </svg>
           </a>
       </div>
-  </div>
-  
+    </div>
+
+    {% endif %}
+
+    {% if reporte_status.reporte_alcantarillado_status %}
+
+    <div class="card">
+      <div class="card-image card-image-3"></div>
+      <div class="card-content">
+          <div class="card-deco"></div>
+          <h2 class="card-title">Problemas de Alcantarillado</h2>
+          <p class="card-description">
+              Reporta coladeras tapadas o fugas para prevenir inundaciones.  
+          </p>
+          <a href="#" class="card-button">
+              Reportar Ahora
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-badge-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 12px;">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M13 7h-6l4 5l-4 5h6l4 -5z"/>
+              </svg>
+          </a>
+      </div>
+    </div>
+
+
+    {% endif %}
+
+    
 </div> <!-- Fin .cards-container -->
 {% endblock content %}
