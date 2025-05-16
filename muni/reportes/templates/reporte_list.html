@@ -1,182 +1,614 @@
 {% extends "baseTemplate.html" %}
+{% load static %}
 
 {% block content %}
+  <div class="container-fluid py-4">
+    <!-- Header con Toggle Switch mejorado -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card shadow-sm border-0 dashboard-header">
+          <div class="card-body d-flex justify-content-between align-items-center">
+            <h4 class="mb-0 text-primary dashboard-title"></h4>
+            <div class="form-check form-switch">
+              <div class="d-flex align-items-center">
+                <input
+                  class="form-check-input status-toggle"
+                  type="checkbox"
+                  id="toggle-{{ toggle_tipo }}"
+                  data-get-url="{% url 'reporte-status' toggle_tipo %}"
+                  data-post-url="{% url 'toggle-reporte-status' toggle_tipo %}"
+                  data-tipo="{{ toggle_tipo }}"
+                >
+                <label class="form-check-label ms-2" for="toggle-{{ toggle_tipo }}">
+                  <span class="toggle-on text-success fw-bold" style="display:none;">Activado</span>
+                  <span class="toggle-off text-danger fw-bold">Desactivado</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
- <div class="mb-4">
-    <div class="form-check form-switch">
-      <input
-        class="form-check-input status-toggle"
-        type="checkbox"
-        id="toggle-{{ toggle_tipo }}"
-        data-get-url="{% url 'reporte-status' toggle_tipo %}"
-        data-post-url="{% url 'toggle-reporte-status' toggle_tipo %}"
-        data-tipo="{{ toggle_tipo }}"
-      >
-      <label class="form-check-label" for="toggle-{{ toggle_tipo }}">
-        Reportes de {{ toggle_label }}
-      </label>
+    <!-- Tarjetas resumen mejoradas -->
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-md-4">
+        <div class="card shadow-sm border-0 h-100 stats-card stats-card-primary">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="text-muted mb-2">Total reportes</h6>
+                <h3 class="fw-bold mb-0">{{ total_reportes }}</h3>
+              </div>
+              <div class="icon-box bg-primary bg-opacity-10 rounded-circle p-3">
+                <i class="bi bi-clipboard-data fs-4"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="card shadow-sm border-0 h-100 stats-card stats-card-success">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="text-muted mb-2">Resueltos</h6>
+                <h3 class="fw-bold mb-0 text-success">{{ total_resueltos }}</h3>
+              </div>
+              <div class="icon-box bg-success bg-opacity-10 rounded-circle p-3">
+                <i class="bi bi-check-circle  fs-4"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="card shadow-sm border-0 h-100 stats-card stats-card-warning">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="text-muted mb-2">Pendientes</h6>
+                <h3 class="fw-bold mb-0 text-warning">{{ total_pendientes }}</h3>
+              </div>
+              <div class="icon-box bg-warning bg-opacity-10 rounded-circle p-3">
+                <i class="bi bi-hourglass-split  fs-4"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtros rápidos -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card shadow-sm border-0 filter-card">
+          <div class="card-body p-3">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <div class="d-flex align-items-center">
+                <span class="me-3 text-muted">Filtros rápidos:</span>
+                <div class="btn-group filter-btn-group" role="group">
+                  <button type="button" class="btn btn-sm filter-btn active" data-filter="all">Todos</button>
+                  <button type="button" class="btn btn-sm filter-btn" data-filter="resuelto">Resueltos</button>
+                  <button type="button" class="btn btn-sm filter-btn" data-filter="en-progreso">En Progreso</button>
+                  <button type="button" class="btn btn-sm filter-btn" data-filter="pendiente">Pendientes</button>
+                </div>
+              </div>
+              <div class="d-flex gap-2">
+                <select class="form-select form-select-sm custom-select" id="filter-date">
+                  <option value="all">Todas las fechas</option>
+                  <option value="today">Hoy</option>
+                  <option value="week">Esta semana</option>
+                  <option value="month">Este mes</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla DataTable mejorada -->
+    <div class="card shadow-sm border-0 table-card">
+      <div class="card-header bg-white py-3">
+        <h5 class="mb-0">Listado de Reportes</h5>
+      </div>
+
+      <div class="card-body">
+      <div class="table-responsive">
+        <table id="reportes-table" class="table table-hover mb-0 align-middle custom-table">
+          <thead class="table-light">
+            <tr>
+              <th>Código</th>
+              <th>Solicitante</th>
+              <th>Ubicación</th>
+              <th>Estatus</th>
+              <th>Creado</th>
+              <th class="text-end">Opciones</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for obj in object_list %}
+            <tr>
+              <td class="fw-semibold">{{ obj.codigo_seguimiento }}</td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <div class="avatar me-2">
+                    {{ obj.nombre_solicitante|slice:":1"|upper }}
+                  </div>
+                  <div>{{ obj.nombre_solicitante }}</div>
+                </div>
+              </td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-geo-alt text-muted me-2"></i>
+                  <span>{{ obj.ubicacion|truncatechars:40 }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="badge rounded-pill status-badge 
+                  {% if obj.estatus == obj.Estatus.RESUELTO %}bg-success
+                  {% elif obj.estatus == obj.Estatus.EN_PROGRESO %}bg-info
+                  {% elif obj.estatus == obj.Estatus.PENDIENTE %}bg-warning
+                  {% else %}bg-secondary{% endif %}">
+                  {% if obj.estatus == obj.Estatus.RESUELTO %}<i class="bi bi-check-circle me-1"></i>
+                  {% elif obj.estatus == obj.Estatus.EN_PROGRESO %}<i class="bi bi-gear me-1"></i>
+                  {% elif obj.estatus == obj.Estatus.PENDIENTE %}<i class="bi bi-clock me-1"></i>
+                  {% else %}<i class="bi bi-question-circle me-1"></i>{% endif %}
+                  {{ obj.get_estatus_display }}
+                </span>
+              </td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-calendar3 text-muted me-2"></i>
+                  <span>{{ obj.creado|date:"d/m/Y H:i" }}</span>
+                </div>
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a href="{% url 'reportes:detalle' obj.pk %}"
+                     class="btn btn-sm btn-action btn-view" data-bs-toggle="tooltip" title="Ver detalles">
+                     <i class="bi bi-eye"></i>
+                  </a>
+                  <a href="{% url 'reportes:atender' obj.pk %}"
+                     class="btn btn-sm btn-action btn-attend" data-bs-toggle="tooltip" title="Atender reporte">
+                     <i class="bi bi-check2-square"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      </div>
+
+
     </div>
   </div>
+{% endblock %}
 
-
-<div class="container-fluid py-4">
-
-    {# ───────── Tarjetas resumen ───────── #}
-    <div class="row g-3 mb-4">
-        <div class="col-12 col-sm-4">
-            <div class="card text-center shadow-sm border-0">
-                <div class="card-body">
-                    <h6 class="text-muted mb-1">Total reportes</h6>
-                    <h3 class="fw-bold mb-0">{{ total_reportes }}</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-4">
-            <div class="card text-center shadow-sm border-0">
-                <div class="card-body">
-                    <h6 class="text-muted mb-1">Resueltos</h6>
-                    <h3 class="fw-bold mb-0 text-success">{{ total_resueltos }}</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-4">
-            <div class="card text-center shadow-sm border-0">
-                <div class="card-body">
-                    <h6 class="text-muted mb-1">Pendientes</h6>
-                    <h3 class="fw-bold mb-0 text-warning">{{ total_pendientes }}</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {# ───────── Tabla de reportes ───────── #}
-    <div class="card shadow-sm border-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0 align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Código</th>
-                        <th>Solicitante</th>
-                        <th>Ubicación</th>
-                        <th>Estatus</th>
-                        <th>Creado</th>
-                        <th class="text-end">Opciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for obj in object_list %}
-                    <tr>
-                        <td class="fw-semibold">{{ obj.codigo_seguimiento }}</td>
-                        <td>{{ obj.nombre_solicitante }}</td>
-                        <td>{{ obj.ubicacion|truncatechars:40 }}</td>
-                        <td>
-                            <span class="badge
-                                {% if obj.estatus == obj.Estatus.RESUELTO %}bg-success
-                                {% elif obj.estatus == obj.Estatus.EN_PROGRESO %}bg-info
-                                {% elif obj.estatus == obj.Estatus.PENDIENTE %}bg-warning text-dark
-                                {% else %}bg-secondary{% endif %}">
-                                {{ obj.get_estatus_display }}
-                            </span>
-                        </td>
-                        <td>{{ obj.creado|date:"d/m/Y H:i" }}</td>
-
-                        <td class="text-end">
-                            <a href="{% url 'reportes:detalle' obj.pk %}"
-                               class="btn btn-sm btn-outline-primary">
-                                Ver
-                            </a>
-                            <a href="{% url 'reportes:atender' obj.pk %}"
-                               class="btn btn-sm btn-outline-success">
-                                Atender
-                            </a>
-                        </td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="6" class="text-center text-muted py-4">
-                            No hay reportes registrados.
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        {# ─── Paginación Bootstrap ─── #}
-        {% if is_paginated %}
-        <nav class="p-3">
-            <ul class="pagination justify-content-center mb-0">
-                {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
-                    </li>
-                {% else %}
-                    <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
-                {% endif %}
-
-                {% for num in paginator.page_range %}
-                    {% if num == page_obj.number %}
-                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
-                    {% endif %}
-                {% endfor %}
-
-                {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
-                    </li>
-                {% else %}
-                    <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
-                {% endif %}
-            </ul>
-        </nav>
-        {% endif %}
-    </div>
-</div>
-{% endblock content %}
-{% block scriptcontent %}
-<script>
-  // Helper para obtener la cookie CSRF
-  function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-      document.cookie.split(';').forEach(c => {
-        c = c.trim();
-        if (c.startsWith(name + '=')) {
-          cookieValue = decodeURIComponent(c.substring(name.length + 1));
-        }
-      });
+{% block styles %}
+  <style>
+    /* Estilos generales para la UI */
+    :root {
+      --primary-color: #4e73df;
+      --primary-hover: #2e59d9;
+      --success-color: #1cc88a;
+      --warning-color: #f6c23e;
+      --info-color: #36b9cc;
+      --danger-color: #e74a3b;
+      --dark-color: #3a3b45;
+      --light-color: #f8f9fc;
+      --shadow-sm: 0 .125rem .25rem rgba(0, 0, 0, .075);
+      --shadow-md: 0 .5rem 1rem rgba(0, 0, 0, .15);
+      --transition: all .2s ease-in-out;
     }
-    return cookieValue;
-  }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.status-toggle').forEach(toggle => {
-      const getUrl  = toggle.dataset.getUrl;
+    /* Estilo general de tarjetas */
+    .card {
+      border-radius: 0.75rem;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+    
+    .card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Header del dashboard */
+    .dashboard-header {
+      background: linear-gradient(to right, var(--light-color), #ffffff);
+    }
+    
+    .dashboard-title {
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      position: relative;
+    }
+    
+    .dashboard-title:after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: var(--primary-color);
+      border-radius: 3px;
+    }
+
+    /* Toggle Switch personalizado */
+    .form-switch .form-check-input {
+      width: 3rem;
+      height: 1.5rem;
+      margin-top: 0;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .form-switch .form-check-input:checked {
+      background-color: var(--success-color);
+      border-color: var(--success-color);
+    }
+
+    /* Tarjetas de estadísticas */
+    .stats-card {
+      border-radius: 1rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+      border-left: 5px solid transparent;
+    }
+    
+    .stats-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .stats-card-primary {
+      border-left-color: var(--primary-color);
+    }
+    
+    .stats-card-success {
+      border-left-color: var(--success-color);
+    }
+    
+    .stats-card-warning {
+      border-left-color: var(--warning-color);
+    }
+    
+    .icon-box {
+      height: 60px;
+      width: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+    
+    .stats-card:hover .icon-box {
+      transform: scale(1.1);
+    }
+
+    /* Filtros personalizados */
+    .filter-card {
+      border-radius: 0.75rem;
+      border-bottom: 3px solid #f0f0f0;
+    }
+    
+    .filter-btn-group {
+      border-radius: 0.5rem;
+      overflow: hidden;
+    }
+    
+    .filter-btn {
+      border: 1px solid #dee2e6;
+      background-color: #fff;
+      color: #6c757d;
+      font-weight: 500;
+      padding: 0.375rem 0.75rem;
+      transition: var(--transition);
+    }
+    
+    .filter-btn:hover {
+      background-color: #f8f9fa;
+    }
+    
+    .filter-btn.active {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+    
+    /* Select personalizado */
+    .custom-select {
+      border-radius: 0.5rem;
+      padding: 0.375rem 2rem 0.375rem 0.75rem;
+      border: 1px solid #dee2e6;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .custom-select:focus {
+      box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+      border-color: #bac8f3;
+    }
+
+    /* Tabla personalizada */
+    .table-card {
+      border-radius: 0.75rem;
+      overflow: hidden;
+    }
+    
+    .table-card .card-header {
+      background-color: #fff;
+      border-bottom: 2px solid #f0f0f0;
+      padding: 1rem 1.5rem;
+    }
+    
+    .table-card .card-header h5 {
+      font-weight: 600;
+      color: var(--dark-color);
+    }
+    
+    .custom-table {
+      margin-bottom: 0;
+    }
+    
+    .custom-table thead th {
+      font-weight: 600;
+      color: var(--dark-color);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+      padding: 1rem 1.5rem;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .custom-table tbody td {
+      padding: 1rem 1.5rem;
+      vertical-align: middle;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .custom-table tr:hover {
+      background-color: rgba(78, 115, 223, 0.03);
+    }
+
+    /* Avatar personalizado */
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+    
+    tr:hover .avatar {
+      transform: scale(1.1);
+    }
+
+    /* Badges de estatus */
+    .status-badge {
+      padding: 0.5rem 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .status-badge.bg-warning {
+      color: #212529;
+    }
+
+    /* Botones de acción */
+    .btn-action {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: var(--transition);
+      margin: 0 2px;
+    }
+    
+    .btn-view {
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+    }
+    
+    .btn-view:hover {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-attend {
+      color: var(--success-color);
+      border: 1px solid var(--success-color);
+    }
+    
+    .btn-attend:hover {
+      background-color: var(--success-color);
+      color: white;
+    }
+
+    /* Estilo para los botones DataTables */
+    .dt-buttons .btn {
+      margin-right: 5px;
+      border-radius: 0.5rem;
+      padding: 0.375rem 0.75rem;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    
+    .dataTables_filter input {
+      border-radius: 0.5rem;
+      border: 1px solid #dee2e6;
+      padding: 0.375rem 0.75rem;
+      transition: var(--transition);
+    }
+    
+    .dataTables_filter input:focus {
+      box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+      border-color: #bac8f3;
+    }
+    
+    /* Personalización de paginación */
+    .pagination .page-item .page-link {
+      margin: 0 2px;
+      border-radius: 0.35rem;
+      border: none;
+      color: var(--primary-color);
+      transition: var(--transition);
+    }
+    
+    .pagination .page-item.active .page-link {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    .pagination .page-item .page-link:hover {
+      background-color: rgba(78, 115, 223, 0.1);
+      color: var(--primary-hover);
+    }
+    
+    /* Personalización de SweetAlert */
+    .swal2-popup {
+      border-radius: 1rem !important;
+      padding: 1.5rem !important;
+    }
+    
+    .swal2-toast {
+      box-shadow: var(--shadow-md) !important;
+    }
+    
+    /* Animaciones */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .card {
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    .stats-card:nth-child(1) { animation-delay: 0.1s; }
+    .stats-card:nth-child(2) { animation-delay: 0.2s; }
+    .stats-card:nth-child(3) { animation-delay: 0.3s; }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .filter-btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+      }
+      
+      .icon-box {
+        height: 48px;
+        width: 48px;
+      }
+      
+      .custom-table thead th,
+      .custom-table tbody td {
+        padding: 0.75rem 1rem;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block scriptcontent %}
+  {# DataTables #}
+  <script src="{% static 'assets/js/datatable/datatables/jquery.dataTables.min.js' %}"></script>
+  <script src="{% static 'assets/js/datatable/datatable-extension/dataTables.bootstrap4.min.js' %}"></script>
+  <script src="{% static 'assets/js/datatable/datatable-extension/dataTables.responsive.min.js' %}"></script>
+  <script src="{% static 'assets/js/datatable/datatable-extension/responsive.bootstrap4.min.js' %}"></script>
+  <script src="{% static 'assets/js/datatable/datatable-extension/dataTables.buttons.min.js' %}"></script>
+  <script src="{% static 'assets/js/datatable/datatable-extension/buttons.bootstrap4.min.js' %}"></script>
+  <script src="{% static 'assets/js/datatable/datatable-extension/jszip.min.js' %}"></script>
+  <script src="{% static 'assets/js/datatable/datatable-extension/pdfmake.min.js' %}"></script>
+  <script src="{% static 'assets/js/datatable/datatable-extension/vfs_fonts.js' %}"></script>
+  <script src="{% static 'assets/js/datatable/datatable-extension/buttons.html5.min.js' %}"></script>
+  <script src="{% static 'assets/js/datatable/datatable-extension/buttons.print.min.js' %}"></script>
+  <script src="{% static 'assets/js/datatable/datatable-extension/buttons.colVis.min.js' %}"></script>
+  <script src="{% static 'assets/js/tooltip-init.js' %}"></script>
+
+  {# Bootstrap Icons #}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+  {# SweetAlert2 #}
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        document.cookie.split(';').forEach(c => {
+          c = c.trim();
+          if (c.startsWith(name + '=')) {
+            cookieValue = decodeURIComponent(c.substring(name.length + 1));
+          }
+        });
+      }
+      return cookieValue;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Inicializar tooltips con animación
+      const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl, {
+          animation: true,
+          delay: { show: 100, hide: 100 }
+        });
+      });
+
+      // Toggle AJAX + Toast mejorado
+      const toggle = document.querySelector('.status-toggle');
+      const toggleOn = document.querySelector('.toggle-on');
+      const toggleOff = document.querySelector('.toggle-off');
+      const getUrl = toggle.dataset.getUrl;
       const postUrl = toggle.dataset.postUrl;
-      const tipo    = toggle.dataset.tipo;
+      const tipo = toggle.dataset.tipo;
 
-      // Obtener estado inicial
+      function updateToggleLabel(isChecked) {
+        if (isChecked) {
+          toggleOn.style.display = 'inline';
+          toggleOff.style.display = 'none';
+        } else {
+          toggleOn.style.display = 'none';
+          toggleOff.style.display = 'inline';
+        }
+      }
+
       fetch(getUrl)
         .then(r => r.json())
-        .then(data => {
+        .then(data => { 
           toggle.checked = data.status;
+          updateToggleLabel(data.status);
         });
 
-      // Al cambiar, enviamos POST
       toggle.addEventListener('change', () => {
+        const isChecked = toggle.checked;
+        updateToggleLabel(isChecked);
+        
         fetch(postUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken')
           },
-          body: JSON.stringify({status: toggle.checked})
+          body: JSON.stringify({status: isChecked})
         })
         .then(r => r.json())
         .then(data => {
-          // Toast de Swal
           Swal.fire({
             toast: true,
             position: 'top-end',
@@ -186,13 +618,15 @@
               : `Reportes de ${tipo.charAt(0).toUpperCase() + tipo.slice(1)} deshabilitados`,
             showConfirmButton: false,
             timer: 2000,
-            timerProgressBar: true
+            timerProgressBar: true,
+            customClass: {
+              popup: 'animated-toast'
+            }
           });
         })
-        .catch(err => {
-          console.error('Error al actualizar:', err);
-          // Revertir el toggle
-          toggle.checked = !toggle.checked;
+        .catch(() => {
+          toggle.checked = !isChecked;
+          updateToggleLabel(!isChecked);
           Swal.fire({
             toast: true,
             position: 'top-end',
@@ -204,8 +638,103 @@
           });
         });
       });
-    });
-  });
-</script>
-{% endblock scriptcontent %}
 
+      // Inicializar DataTable mejorado
+      let dataTable = $('#reportes-table').DataTable({
+        responsive: true,
+        dom: '<"row mb-3"<"col-md-6"B><"col-md-6"f>>' +
+             '<"row"<"col-md-12"tr>>' +
+             '<"row mt-3"<"col-md-5"i><"col-md-7"p>>',
+        language: {
+          sProcessing:   "Procesando...",
+          sLengthMenu:   "Mostrar _MENU_ registros",
+          sZeroRecords:  "No se encontraron resultados",
+          sEmptyTable:   "Ningún dato disponible en esta tabla",
+          sInfo:         "Mostrando _START_ - _END_ de _TOTAL_ registros",
+          sInfoEmpty:    "Mostrando 0 - 0 de 0 registros",
+          sInfoFiltered: "(filtrado de _MAX_ registros totales)",
+          sSearch:       "Buscar:",
+          oPaginate: {
+            sFirst:    "«",
+            sLast:     "»",
+            sNext:     "›",
+            sPrevious: "‹"
+          }
+        },
+        buttons: [
+          { 
+            extend: 'excel', 
+            className: 'btn btn-sm ', 
+            text: '<i class="bi bi-file-earmark-excel me-1"></i>Excel' 
+          },
+          { 
+            extend: 'pdf', 
+            className: 'btn btn-sm ', 
+            text: '<i class="bi bi-file-earmark-pdf me-1"></i>PDF' 
+          },
+          { 
+            extend: 'print', 
+            className: 'btn btn-sm ', 
+            text: '<i class="bi bi-printer me-1"></i>Imprimir' 
+          },
+          { 
+            extend: 'colvis', 
+            className: 'btn btn-sm ', 
+            text: '<i class="bi bi-layout-three-columns me-1"></i>Columnas' 
+          }
+        ],
+        order: [[4, 'desc']],
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50],
+        columnDefs: [{ orderable: false, targets: 5 }],
+        drawCallback: function() {
+          // Reinicializar tooltips después de redibujado
+          const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+          tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl, {
+              animation: true,
+              delay: { show: 100, hide: 100 }
+            });
+          });
+        }
+      });
+      
+      // Funcionalidad de filtros rápidos con animación
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          
+          const filter = this.dataset.filter;
+          
+          if (filter === 'all') {
+            dataTable.column(3).search('').draw();
+          } else {
+            dataTable.column(3).search(filter).draw();
+          }
+        });
+      });
+      
+      // Filtro por fecha con efecto visual
+      document.querySelector('#filter-date').addEventListener('change', function() {
+        const value = this.value;
+        let dateFilter = '';
+        
+        const today = new Date();
+        const todayStr = today.toLocaleDateString('es-ES');
+        
+        if (value === 'today') {
+          dateFilter = todayStr;
+        }
+        
+        // Efecto visual de carga
+        const table = document.querySelector('#reportes-table');
+        table.style.opacity = '0.6';
+        setTimeout(() => {
+          dataTable.column(4).search(dateFilter).draw();
+          table.style.opacity = '1';
+        }, 300);
+      });
+    });
+  </script>
+{% endblock %}
