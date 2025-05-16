@@ -1,6 +1,24 @@
 {% extends "baseTemplate.html" %}
 
 {% block content %}
+
+ <div class="mb-4">
+    <div class="form-check form-switch">
+      <input
+        class="form-check-input status-toggle"
+        type="checkbox"
+        id="toggle-{{ toggle_tipo }}"
+        data-get-url="{% url 'reporte-status' toggle_tipo %}"
+        data-post-url="{% url 'toggle-reporte-status' toggle_tipo %}"
+        data-tipo="{{ toggle_tipo }}"
+      >
+      <label class="form-check-label" for="toggle-{{ toggle_tipo }}">
+        Reportes de {{ toggle_label }}
+      </label>
+    </div>
+  </div>
+
+
 <div class="container-fluid py-4">
 
     {# ───────── Tarjetas resumen ───────── #}
@@ -117,3 +135,77 @@
     </div>
 </div>
 {% endblock content %}
+{% block scriptcontent %}
+<script>
+  // Helper para obtener la cookie CSRF
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      document.cookie.split(';').forEach(c => {
+        c = c.trim();
+        if (c.startsWith(name + '=')) {
+          cookieValue = decodeURIComponent(c.substring(name.length + 1));
+        }
+      });
+    }
+    return cookieValue;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.status-toggle').forEach(toggle => {
+      const getUrl  = toggle.dataset.getUrl;
+      const postUrl = toggle.dataset.postUrl;
+      const tipo    = toggle.dataset.tipo;
+
+      // Obtener estado inicial
+      fetch(getUrl)
+        .then(r => r.json())
+        .then(data => {
+          toggle.checked = data.status;
+        });
+
+      // Al cambiar, enviamos POST
+      toggle.addEventListener('change', () => {
+        fetch(postUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+          },
+          body: JSON.stringify({status: toggle.checked})
+        })
+        .then(r => r.json())
+        .then(data => {
+          // Toast de Swal
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: data.status ? 'success' : 'warning',
+            title: data.status
+              ? `Reportes de ${tipo.charAt(0).toUpperCase() + tipo.slice(1)} habilitados`
+              : `Reportes de ${tipo.charAt(0).toUpperCase() + tipo.slice(1)} deshabilitados`,
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+          });
+        })
+        .catch(err => {
+          console.error('Error al actualizar:', err);
+          // Revertir el toggle
+          toggle.checked = !toggle.checked;
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: 'Error al cambiar el estado',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+          });
+        });
+      });
+    });
+  });
+</script>
+{% endblock scriptcontent %}
+
