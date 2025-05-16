@@ -69,6 +69,30 @@ class HomeReportesView(TemplateView):
         context['sidebar'] = 'reportes'
         return context
 
+
+
+class HomeReportesView(TemplateView):
+    template_name = 'reportes/reportes.html' 
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # ─── get_or_create del único ReporteStatus ───
+        defaults = {
+            "reporte_agua_status": False,
+            "reporte_bache_status": False,
+            "reporte_alcantarillado_status": False,
+            "reporte_alumbrado_status": False,
+        }
+
+        reporte_status, _ = ReporteStatus.objects.get_or_create(
+            pk=1,  # siempre usaremos el registro #1
+            defaults=defaults,
+        )
+
+        context["reporte_status"] = reporte_status
+        context['sidebar'] = 'reportes'
+        return context
 def get_encuestas_activas(request, municipio_id):
     """
     Devuelve todas las encuestas activas de un municipio, con sus preguntas y opciones.
@@ -231,3 +255,19 @@ def lista_obligaciones(request):
         'years': years,
         'sidebar': 'transparencia'
     })
+
+
+
+
+
+class ReporteServicioAguaView(TemplateView):
+    template_name = 'reportes/servicio_agua.html'
+
+class ReporteBacheView(TemplateView):
+    template_name = 'reportes/bache.html'
+
+class ReporteAlcantarilladoView(TemplateView):
+    template_name = 'reportes/alcantarillado.html'
+
+class ReporteAlumbradoPublicoView(TemplateView):
+    template_name = 'reportes/alumbrado_publico.html'
