@@ -263,11 +263,91 @@ def lista_obligaciones(request):
 class ReporteServicioAguaView(TemplateView):
     template_name = 'reportes/servicio_agua.html'
 
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # ─── get_or_create del único ReporteStatus ───
+        defaults = {
+            "reporte_agua_status": False,
+            "reporte_bache_status": False,
+            "reporte_alcantarillado_status": False,
+            "reporte_alumbrado_status": False,
+        }
+
+        reporte_status, _ = ReporteStatus.objects.get_or_create(
+            pk=1,  # siempre usaremos el registro #1
+            defaults=defaults,
+        )
+
+        context["reporte_status"] = reporte_status
+        context['sidebar'] = 'reportes'
+        return context
+    
+
+    
 class ReporteBacheView(TemplateView):
     template_name = 'reportes/bache.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # ─── get_or_create del único ReporteStatus ───
+        defaults = {
+            "reporte_agua_status": False,
+            "reporte_bache_status": False,
+            "reporte_alcantarillado_status": False,
+            "reporte_alumbrado_status": False,
+        }
+
+        reporte_status, _ = ReporteStatus.objects.get_or_create(
+            pk=1,  # siempre usaremos el registro #1
+            defaults=defaults,
+        )
+
+        context["reporte_status"] = reporte_status
+        context['sidebar'] = 'reportes'
+        return context
+    
+
 
 class ReporteAlcantarilladoView(TemplateView):
     template_name = 'reportes/alcantarillado.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # ─── get_or_create del único ReporteStatus ───
+        defaults = {
+            "reporte_agua_status": False,
+            "reporte_bache_status": False,
+            "reporte_alcantarillado_status": False,
+            "reporte_alumbrado_status": False,
+        }
 
+        reporte_status, _ = ReporteStatus.objects.get_or_create(
+            pk=1,  # siempre usaremos el registro #1
+            defaults=defaults,
+        )
+
+        context["reporte_status"] = reporte_status
+        context['sidebar'] = 'reportes'
+        return context
 class ReporteAlumbradoPublicoView(TemplateView):
     template_name = 'reportes/alumbrado_publico.html'
+
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # ─── get_or_create del único ReporteStatus ───
+        defaults = {
+            "reporte_agua_status": False,
+            "reporte_bache_status": False,
+            "reporte_alcantarillado_status": False,
+            "reporte_alumbrado_status": False,
+        }
+
+        reporte_status, _ = ReporteStatus.objects.get_or_create(
+            pk=1,  # siempre usaremos el registro #1
+            defaults=defaults,
+        )
+
+        context["reporte_status"] = reporte_status
+        context['sidebar'] = 'reportes'
+        return context
