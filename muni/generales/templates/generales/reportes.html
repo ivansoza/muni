@@ -1,6 +1,7 @@
 {% extends "baseTemplate.html" %}
 
 {% block content %}
+
 <style>
     /* ——— Tarjetas ——— */
     .category-card {
@@ -10,10 +11,12 @@
         position: relative;
         background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
     }
-    .category-card:hover {
+    .category-card:hover:not(.inactive) {
         transform: translateY(-5px);
         box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
     }
+    /* ——— Estado inactivo ——— */
+
 
     /* ——— Icono grande ——— */
     .card-icon {
@@ -47,7 +50,11 @@
         border-radius: 30px;
         padding: 0.5rem 1.5rem;
     }
-    .report-btn:hover {
+    .report-btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+    }
+    .report-btn:hover:not(:disabled) {
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
     }
@@ -62,15 +69,24 @@
 
     <div class="row g-4">
 
-        {# ═══════════════ Tarjeta: Agua ═══════════════ #}
-        {% with activo=reporte_status.reporte_agua_status %}
+        {# ─── Servicio de Agua ─── #}
         <div class="col-12 col-md-6 col-xl-3">
-            <a href="{% url "lista-agua" %}"
-               class="text-decoration-none text-dark"
-               {% if not activo %}tabindex="-1" aria-disabled="true"{% endif %}>
-                <div class="card h-100 category-card">
-                    <span class="category-badge {% if activo %}text-success{% else %}text-danger{% endif %}">
-                        {{ activo|yesno:"Activo,Inactivo" }}
+            <a href="{% url 'lista-agua' %}" class="text-decoration-none text-dark">
+                <div class="card h-100 category-card
+                    {% if not is_superuser and not 'reportes.view_reporteservicioagua' in user_permissions or not reporte_status.reporte_agua_status %}
+                        inactive
+                    {% endif %}">
+                    <span class="category-badge
+                        {% if is_superuser and reporte_status.reporte_agua_status or 'reportes.view_reporteservicioagua' in user_permissions and reporte_status.reporte_agua_status %}
+                            text-success
+                        {% else %}
+                            text-danger
+                        {% endif %}">
+                        {% if is_superuser and reporte_status.reporte_agua_status or 'reportes.view_reporteservicioagua' in user_permissions and reporte_status.reporte_agua_status %}
+                            Activo
+                        {% else %}
+                            Inactivo
+                        {% endif %}
                     </span>
                     <div class="card-body text-center py-4 px-3">
                         <i class="bi bi-droplet-half card-icon"></i>
@@ -79,7 +95,10 @@
                             Reporta problemas de suministro, fugas o baja presión
                         </p>
                         <div class="d-grid">
-                            <button class="btn report-btn text-white">
+                            <button class="btn report-btn text-white"
+                                    {% if not is_superuser and not 'reportes.view_reporteservicioagua' in user_permissions or not reporte_status.reporte_agua_status %}
+                                        disabled
+                                    {% endif %}>
                                 Reportes <i class="bi bi-arrow-right-short ms-2"></i>
                             </button>
                         </div>
@@ -87,17 +106,25 @@
                 </div>
             </a>
         </div>
-        {% endwith %}
 
-        {# ═══════════════ Tarjeta: Bache ═══════════════ #}
-        {% with activo=reporte_status.reporte_bache_status %}
+        {# ─── Baches ─── #}
         <div class="col-12 col-md-6 col-xl-3">
-            <a href="{% url "lista-bache" %}"
-               class="text-decoration-none text-dark"
-               {% if not activo %}tabindex="-1" aria-disabled="true"{% endif %}>
-                <div class="card h-100 category-card">
-                    <span class="category-badge {% if activo %}text-success{% else %}text-danger{% endif %}">
-                        {{ activo|yesno:"Activo,Inactivo" }}
+            <a href="{% url 'lista-bache' %}" class="text-decoration-none text-dark">
+                <div class="card h-100 category-card
+                    {% if not is_superuser and not 'reportes.view_reportebache' in user_permissions or not reporte_status.reporte_bache_status %}
+                        inactive
+                    {% endif %}">
+                    <span class="category-badge
+                        {% if is_superuser and reporte_status.reporte_bache_status or 'reportes.view_reportebache' in user_permissions and reporte_status.reporte_bache_status %}
+                            text-success
+                        {% else %}
+                            text-danger
+                        {% endif %}">
+                        {% if is_superuser and reporte_status.reporte_bache_status or 'reportes.view_reportebache' in user_permissions and reporte_status.reporte_bache_status %}
+                            Activo
+                        {% else %}
+                            Inactivo
+                        {% endif %}
                     </span>
                     <div class="card-body text-center py-4 px-3">
                         <i class="bi bi-cone-striped card-icon"></i>
@@ -106,7 +133,10 @@
                             Notifica huecos en la vía pública o daños en el pavimento
                         </p>
                         <div class="d-grid">
-                            <button class="btn report-btn text-white">
+                            <button class="btn report-btn text-white"
+                                    {% if not is_superuser and not 'reportes.view_reportebache' in user_permissions or not reporte_status.reporte_bache_status %}
+                                        disabled
+                                    {% endif %}>
                                 Reportes <i class="bi bi-arrow-right-short ms-2"></i>
                             </button>
                         </div>
@@ -114,17 +144,25 @@
                 </div>
             </a>
         </div>
-        {% endwith %}
 
-        {# ══════════ Tarjeta: Alcantarillado ══════════ #}
-        {% with activo=reporte_status.reporte_alcantarillado_status %}
+        {# ─── Alcantarillado ─── #}
         <div class="col-12 col-md-6 col-xl-3">
-            <a href="{% url "lista-alcantarillado" %}"
-               class="text-decoration-none text-dark"
-               {% if not activo %}tabindex="-1" aria-disabled="true"{% endif %}>
-                <div class="card h-100 category-card">
-                    <span class="category-badge {% if activo %}text-success{% else %}text-danger{% endif %}">
-                        {{ activo|yesno:"Activo,Inactivo" }}
+            <a href="{% url 'lista-alcantarillado' %}" class="text-decoration-none text-dark">
+                <div class="card h-100 category-card
+                    {% if not is_superuser and not 'reportes.view_reportealcantarillado' in user_permissions or not reporte_status.reporte_alcantarillado_status %}
+                        inactive
+                    {% endif %}">
+                    <span class="category-badge
+                        {% if is_superuser and reporte_status.reporte_alcantarillado_status or 'reportes.view_reportealcantarillado' in user_permissions and reporte_status.reporte_alcantarillado_status %}
+                            text-success
+                        {% else %}
+                            text-danger
+                        {% endif %}">
+                        {% if is_superuser and reporte_status.reporte_alcantarillado_status or 'reportes.view_reportealcantarillado' in user_permissions and reporte_status.reporte_alcantarillado_status %}
+                            Activo
+                        {% else %}
+                            Inactivo
+                        {% endif %}
                     </span>
                     <div class="card-body text-center py-4 px-3">
                         <i class="bi bi-water card-icon"></i>
@@ -133,7 +171,10 @@
                             Reporta taponamientos, malos olores o brotes de agua
                         </p>
                         <div class="d-grid">
-                            <button class="btn report-btn text-white" >
+                            <button class="btn report-btn text-white"
+                                    {% if not is_superuser and not 'reportes.view_reportealcantarillado' in user_permissions or not reporte_status.reporte_alcantarillado_status %}
+                                        disabled
+                                    {% endif %}>
                                 Reportes <i class="bi bi-arrow-right-short ms-2"></i>
                             </button>
                         </div>
@@ -141,16 +182,25 @@
                 </div>
             </a>
         </div>
-        {% endwith %}
 
-        {# ═════════ Tarjeta: Alumbrado Público ═════════ #}
-        {% with activo=reporte_status.reporte_alumbrado_status %}
+        {# ─── Alumbrado Público ─── #}
         <div class="col-12 col-md-6 col-xl-3">
-            <a href ="{% url "lista-alumbrado" %}" class="text-decoration-none text-dark"
-               {% if not activo %}tabindex="-1" aria-disabled="true"{% endif %}>
-                <div class="card h-100 category-card">
-                    <span class="category-badge {% if activo %}text-success{% else %}text-danger{% endif %}">
-                        {{ activo|yesno:"Activo,Inactivo" }}
+            <a href="{% url 'lista-alumbrado' %}" class="text-decoration-none text-dark">
+                <div class="card h-100 category-card
+                    {% if not is_superuser and not 'reportes.view_reportealumbradopublico' in user_permissions or not reporte_status.reporte_alumbrado_status %}
+                        inactive
+                    {% endif %}">
+                    <span class="category-badge
+                        {% if is_superuser and reporte_status.reporte_alumbrado_status or 'reportes.view_reportealumbradopublico' in user_permissions and reporte_status.reporte_alumbrado_status %}
+                            text-success
+                        {% else %}
+                            text-danger
+                        {% endif %}">
+                        {% if is_superuser and reporte_status.reporte_alumbrado_status or 'reportes.view_reportealumbradopublico' in user_permissions and reporte_status.reporte_alumbrado_status %}
+                            Activo
+                        {% else %}
+                            Inactivo
+                        {% endif %}
                     </span>
                     <div class="card-body text-center py-4 px-3">
                         <i class="bi bi-lightbulb-fill card-icon"></i>
@@ -159,7 +209,10 @@
                             Notifica luminarias dañadas o problemas de iluminación
                         </p>
                         <div class="d-grid">
-                    <button class="btn report-btn text-white" >
+                            <button class="btn report-btn text-white"
+                                    {% if not is_superuser and not 'reportes.view_reportealumbradopublico' in user_permissions or not reporte_status.reporte_alumbrado_status %}
+                                        disabled
+                                    {% endif %}>
                                 Reportes <i class="bi bi-arrow-right-short ms-2"></i>
                             </button>
                         </div>
@@ -167,7 +220,8 @@
                 </div>
             </a>
         </div>
-        {% endwith %}
+
     </div>
 </div>
+
 {% endblock content %}

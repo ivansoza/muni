@@ -13,6 +13,7 @@ from django.contrib.auth.models import Group
 from django.views.decorators.http import require_http_methods
 from django.forms import modelformset_factory
 from django.forms import inlineformset_factory
+from .mixins import SuperuserOrReportPermissionMixin
 
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -83,35 +84,35 @@ class VideoView(LoginRequiredMixin,TemplateView):
 
 
 
-class ReportesView(LoginRequiredMixin, TemplateView):
+class ReportesView(LoginRequiredMixin,
+                   SuperuserOrReportPermissionMixin,
+                   TemplateView):
     template_name = "generales/reportes.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # ─── breadcrumb y extras que ya tenías ───
         context["breadcrumb"] = {
             "parent": {"name": "Generales", "url": "/admin/generales/"},
-            "child": {"name": "Reportes", "url": ""},
+            "child": {"name": "Reportes",  "url": ""},
         }
-        context["sidebar"] = "Generales"
+        context["sidebar"]    = "Generales"
         context["regreso_url"] = reverse("generalesDashboard")
 
-        # ─── get_or_create del único ReporteStatus ───
         defaults = {
-            "reporte_agua_status": False,
-            "reporte_bache_status": False,
+            "reporte_agua_status":         False,
+            "reporte_bache_status":        False,
             "reporte_alcantarillado_status": False,
-            "reporte_alumbrado_status": False,
+            "reporte_alumbrado_status":    False,
         }
-
         reporte_status, _ = ReporteStatus.objects.get_or_create(
-            pk=1,  # siempre usaremos el registro #1
-            defaults=defaults,
+            pk=1, defaults=defaults
         )
-
         context["reporte_status"] = reporte_status
         return context
+    
+
+
     
 class DetailMunicipioView(LoginRequiredMixin,TemplateView):
     template_name = 'detalle/detalle.html'
