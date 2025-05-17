@@ -7,7 +7,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from transparencia.forms import ReporteServicioAguaForm
+from transparencia.forms import ReporteAlcantarilladoForm, ReporteAlumbradoPublicoForm, ReporteBacheForm, ReporteServicioAguaForm
 from reportes.models import ReporteStatus
 from .models import ArticuloLiga, SeccionTransparencia
 from django.shortcuts import get_object_or_404
@@ -262,104 +262,60 @@ def lista_obligaciones(request):
 
 
 
-class ReporteServicioAguaView(TemplateView):
-    template_name = 'reportes/servicio_agua.html'
+# ───────────────────  Mixin para evitar repetición ────────────────────
+class ReporteStatusMixin:
+    sidebar_value = "reportes"  # puedes sobreescribirlo si luego cambias
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # ─── get_or_create del único ReporteStatus ───
+        ctx = super().get_context_data(**kwargs)
+
         defaults = {
             "reporte_agua_status": False,
             "reporte_bache_status": False,
             "reporte_alcantarillado_status": False,
             "reporte_alumbrado_status": False,
         }
-        reporte_status, _ = ReporteStatus.objects.get_or_create(
-            pk=1,
-            defaults=defaults,
-        )
-        context["reporte_status"] = reporte_status
-        context['sidebar'] = 'reportes'
-        return context
+        status, _ = ReporteStatus.objects.get_or_create(pk=1, defaults=defaults)
 
-    def post(self, request, *args, **kwargs):
-        form = ReporteServicioAguaForm(request.POST, request.FILES)
+        ctx["reporte_status"] = status
+        ctx["sidebar"] = self.sidebar_value
+        return ctx
+
+    # helper genérico para el POST
+    def _process_form(self, form_cls, request):
+        form = form_cls(request.POST, request.FILES)
         if form.is_valid():
             reporte = form.save()
-            return JsonResponse({
-                'success': True,
-                'codigo_seguimiento': reporte.codigo_seguimiento
-            })
-        return JsonResponse({
-            'success': False,
-            'errors': form.errors
-        }, status=400)
+            return JsonResponse(
+                {"success": True, "codigo_seguimiento": reporte.codigo_seguimiento}
+            )
+        return JsonResponse({"success": False, "errors": form.errors}, status=400)
 
 
-class ReporteBacheView(TemplateView):
-    template_name = 'reportes/bache.html'
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # ─── get_or_create del único ReporteStatus ───
-        defaults = {
-            "reporte_agua_status": False,
-            "reporte_bache_status": False,
-            "reporte_alcantarillado_status": False,
-            "reporte_alumbrado_status": False,
-        }
+# ───────────────────  Vistas ────────────────────
+class ReporteServicioAguaView(ReporteStatusMixin, TemplateView):
+    template_name = "reportes/servicio_agua.html"
 
-        reporte_status, _ = ReporteStatus.objects.get_or_create(
-            pk=1,  # siempre usaremos el registro #1
-            defaults=defaults,
-        )
-
-        context["reporte_status"] = reporte_status
-        context['sidebar'] = 'reportes'
-        return context
-    
+    def post(self, request, *args, **kwargs):
+        return self._process_form(ReporteServicioAguaForm, request)
 
 
-class ReporteAlcantarilladoView(TemplateView):
-    template_name = 'reportes/alcantarillado.html'
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # ─── get_or_create del único ReporteStatus ───
-        defaults = {
-            "reporte_agua_status": False,
-            "reporte_bache_status": False,
-            "reporte_alcantarillado_status": False,
-            "reporte_alumbrado_status": False,
-        }
+class ReporteBacheView(ReporteStatusMixin, TemplateView):
+    template_name = "reportes/bache.html"
 
-        reporte_status, _ = ReporteStatus.objects.get_or_create(
-            pk=1,  # siempre usaremos el registro #1
-            defaults=defaults,
-        )
-
-        context["reporte_status"] = reporte_status
-        context['sidebar'] = 'reportes'
-        return context
-class ReporteAlumbradoPublicoView(TemplateView):
-    template_name = 'reportes/alumbrado_publico.html'
+    def post(self, request, *args, **kwargs):
+        return self._process_form(ReporteBacheForm, request)
 
 
+class ReporteAlcantarilladoView(ReporteStatusMixin, TemplateView):
+    template_name = "reportes/alcantarillado.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # ─── get_or_create del único ReporteStatus ───
-        defaults = {
-            "reporte_agua_status": False,
-            "reporte_bache_status": False,
-            "reporte_alcantarillado_status": False,
-            "reporte_alumbrado_status": False,
-        }
+    def post(self, request, *args, **kwargs):
+        return self._process_form(ReporteAlcantarilladoForm, request)
 
-        reporte_status, _ = ReporteStatus.objects.get_or_create(
-            pk=1,  # siempre usaremos el registro #1
-            defaults=defaults,
-        )
 
-        context["reporte_status"] = reporte_status
-        context['sidebar'] = 'reportes'
-        return context
-    
+class ReporteAlumbradoPublicoView(ReporteStatusMixin, TemplateView):
+    template_name = "reportes/alumbrado_publico.html"
+
+    def post(self, request, *args, **kwargs):
+        return self._process_form(ReporteAlumbradoPublicoForm, request)

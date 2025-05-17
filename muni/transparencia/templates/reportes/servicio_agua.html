@@ -231,12 +231,36 @@
       max-width: calc(100% - 2rem);
     }
   }
+
+    /* Botón de regresar personalizado */
+.report-header .btn-secondary {
+  background-color: var(--light-bg);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+.report-header .btn-secondary:hover {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+
 </style>
 
 
 <div class="water-report-container">
   <div class="report-header">
     <h2 class="report-title">Reportes <span>| Servicio de agua</span></h2>
+
+     <button
+      type="button"
+      class="btn btn-secondary btn-sm mt-2"
+      onclick="history.back();"
+    >
+      <i class="bi bi-arrow-left-circle"></i> Regresar
+    </button>
+
   </div>
 
   <div class="form-container">
