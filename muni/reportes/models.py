@@ -7,24 +7,33 @@ import string
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
+from django.apps import apps
 
 from informacion_municipal.models import Municipio
 
 # ───────────────────────────────────────── helper ──────────────────────────────────────────
 _ALFABETO = string.ascii_uppercase + string.digits
 
-
-def _codigo_unico(modelo: type[models.Model], longitud: int = 8) -> str:
+def _codigo_unico(longitud: int = 8) -> str:
     """
-    Genera un código alfanumérico corto y garantiza que sea único en la tabla indicada.
+    Genera un código alfanumérico corto y garantiza que NO exista
+    en ninguna de las tablas de reporte de 'mi_app'.
     """
+    # Obtén las clases de modelo una vez
+    modelos = [
+        apps.get_model("reportes", "ReporteServicioAgua"),
+        apps.get_model("reportes", "ReporteBache"),
+        apps.get_model("reportes", "ReporteAlcantarillado"),
+        apps.get_model("reportes", "ReporteAlumbradoPublico"),
+    ]
     while True:
         codigo = "".join(secrets.choice(_ALFABETO) for _ in range(longitud))
-        if not modelo.objects.filter(codigo_seguimiento=codigo).exists():
+        # Si NO existe en ninguna tabla, lo devolvemos
+        if not any(m.objects.filter(codigo_seguimiento=codigo).exists() for m in modelos):
             return codigo
 
 
-# ───────────────────────────── clase base (NO crea tabla) ────────────────────────────────
+# ───────────────────────────── clase base (abstracta) ────────────────────────────────
 class ReporteBase(models.Model):
     """
     Campos comunes a cualquier tipo de reporte municipal.
@@ -58,12 +67,10 @@ class ReporteBase(models.Model):
     longitud = models.DecimalField(
         _("longitud"), max_digits=9, decimal_places=6, blank=True, null=True
     )
-
-
     place_id = models.CharField(
-        _("Google Place ID"), max_length=255,
-        blank=True, null=True, db_index=True
+        _("Google Place ID"), max_length=255, blank=True, null=True, db_index=True
     )
+
     class Estatus(models.TextChoices):
         PENDIENTE = "PEND", _("Pendiente")
         EN_PROGRESO = "ENPR", _("En progreso")
@@ -80,17 +87,16 @@ class ReporteBase(models.Model):
     actualizado = models.DateTimeField(_("actualizado"), auto_now=True)
 
     class Meta:
-        abstract = True  # Garantiza que no se cree tabla para ReporteBase
+        abstract = True
         ordering = ("-creado",)
 
-    # Representación legible
-    def __str__(self) -> str:  # pragma: no cover
+    def __str__(self) -> str:
         return f"{self._meta.verbose_name.title()} #{self.codigo_seguimiento}"
 
-    # Sobrecarga del save para asignar código único •una sola vez•
-    def save(self, *args, **kwargs):  # noqa: D401
+    def save(self, *args, **kwargs):
+        # Solo se genera el código una vez, al crear
         if not self.codigo_seguimiento:
-            self.codigo_seguimiento = _codigo_unico(self.__class__)
+            self.codigo_seguimiento = _codigo_unico()
         super().save(*args, **kwargs)
 
 
@@ -117,9 +123,6 @@ class ReporteAlumbradoPublico(ReporteBase):
     class Meta(ReporteBase.Meta):
         verbose_name = _("reporte de alumbrado público")
         verbose_name_plural = _("reportes de alumbrado público")
-
-
-
 class ReporteStatus(models.Model):
     """Debe existir **solo un** registro en toda la tabla."""
 

@@ -295,6 +295,227 @@
         }
         
 </style>
+<style>
+  .reporte-consulta-container {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    padding: 30px;
+    margin: 40px auto;
+    max-width: 1200px;
+    position: relative;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+  }
+  
+  .reporte-consulta-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+  }
+  
+  .reporte-consulta-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--color-primario), var(--color-secundario));
+  }
+  
+  .reporte-consulta-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+    position: relative;
+  }
+  
+  .reporte-consulta-icon {
+    margin-right: 15px;
+    background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-secundario) 100%);
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(42, 46, 141, 0.2);
+  }
+  
+  .reporte-consulta-icon svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+  }
+  
+  .reporte-consulta-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    letter-spacing: -0.02em;
+  }
+  
+  .reporte-consulta-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-light);
+    margin-top: 5px;
+    font-weight: 400;
+  }
+  
+  .reporte-consulta-form {
+    display: flex;
+    align-items: stretch;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+  }
+  
+  .reporte-consulta-form:focus-within {
+    border-color: var(--color-primario);
+    box-shadow: 0 5px 15px rgba(42, 46, 141, 0.1);
+  }
+  
+  .reporte-input-wrapper {
+    position: relative;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    background-color: #f8f9fa;
+  }
+  
+  .reporte-input-icon {
+    position: absolute;
+    left: 16px;
+    color: var(--text-light);
+  }
+  
+  .reporte-input {
+    width: 100%;
+    padding: 16px 16px 16px 45px;
+    border: none;
+    font-size: 1rem;
+    background-color: transparent;
+    outline: none;
+    color: var(--text-dark);
+    font-family: inherit;
+  }
+  
+  .reporte-input::placeholder {
+    color: #a0aec0;
+    font-weight: 400;
+  }
+  
+  .reporte-submit-btn {
+    background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-secundario) 100%);
+    color: white;
+    border: none;
+    padding: 0 28px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .reporte-submit-btn:hover {
+    background: linear-gradient(135deg, var(--color-secundario) 0%, var(--color-primario) 100%);
+  }
+  
+  .reporte-submit-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: 0.6s;
+  }
+  
+  .reporte-submit-btn:hover::before {
+    left: 100%;
+  }
+  
+  .reporte-submit-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .reporte-help-text {
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    text-align: right;
+  }
+  
+  .reporte-help-text a {
+    color: var(--color-primario);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+  
+  .reporte-help-text a:hover {
+    color: var(--color-secundario);
+    text-decoration: underline;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .reporte-consulta-container {
+      padding: 25px 20px;
+      margin: 30px 15px;
+    }
+    
+    .reporte-consulta-header {
+      margin-bottom: 20px;
+    }
+    
+    .reporte-consulta-icon {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .reporte-consulta-title {
+      font-size: 1.25rem;
+    }
+    
+    .reporte-input {
+      padding: 14px 14px 14px 40px;
+      font-size: 0.95rem;
+    }
+    
+    .reporte-submit-btn {
+      padding: 0 20px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .reporte-consulta-form {
+      flex-direction: column;
+    }
+    
+    .reporte-input {
+      padding: 15px 15px 15px 40px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+    
+    .reporte-submit-btn {
+      padding: 12px 0;
+    }
+  }
+</style>
+
+
 
 
 <div class="container">
@@ -307,8 +528,45 @@
         </h2>
     </div>
 
+<div class="reporte-consulta-container">
+  <div class="reporte-consulta-header">
+    <div class="reporte-consulta-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    </div>
+    <div>
+      <h3 class="reporte-consulta-title">Consulta tu reporte</h3>
+      <p class="reporte-consulta-subtitle">Ingresa el código de seguimiento para ver el estado de tu solicitud</p>
+    </div>
+  </div>
+  
+  <div class="reporte-consulta-form">
+    <div class="reporte-input-wrapper">
+      <span class="reporte-input-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+        </svg>
+      </span>
+      <input type="text" class="reporte-input" id="codigo-seguimiento" placeholder="Ejemplo: REP-2025-06789" autocomplete="off">
+    </div>
+    <button type="button" class="reporte-submit-btn" id="btn-buscar-reporte">
+      Consultar
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z"/>
+      </svg>
+    </button>
+  </div>
+  
+  <div class="reporte-help-text">
+    ¿No tienes un código de seguimiento? <a href="#">Genera un nuevo reporte</a>
+  </div>
+</div>
+
 
 </div>
+
+
 
 
 <div class="cards-container">
