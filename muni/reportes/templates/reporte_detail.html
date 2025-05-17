@@ -1,0 +1,657 @@
+
+
+{# ========================== templates/reporte_detail.html ========================== #}
+{% extends "baseTemplate.html" %}
+{% load static %}
+
+{# ────────────────────────────── CONTENIDO ──────────────────────────────── #}
+{% block content %}
+<style>
+  :root {
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --info-color: #3b82f6;
+    --danger-color: #ef4444;
+    --secondary-color: #6b7280;
+    --light-color: #f3f4f6;
+    --dark-color: #1f2937;
+    --border-radius: 0.5rem;
+    --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Estilos generales */
+  .card {
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+  }
+  
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+  
+  .card-header {
+    border-bottom: none;
+    padding: 1.25rem;
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+  
+  .card-footer {
+    border-top: none;
+    background-color: #fff;
+    padding: 1.25rem;
+    border-top: 1px solid rgba(0,0,0,0.05);
+  }
+  
+  /* Badge personalizado */
+  .status-badge {
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 9999px;
+  }
+  
+  /* Botones modernos */
+  .btn {
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+  }
+  
+  .btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+  }
+  
+  .btn-outline-secondary {
+    color: var(--secondary-color);
+    border-color: var(--secondary-color);
+  }
+  
+  .btn-outline-secondary:hover {
+    background-color: var(--secondary-color);
+    color: white;
+  }
+  
+  /* Línea de tiempo personalizada */
+  .timeline {
+    border-left: 2px solid var(--light-color);
+    margin-left: 0.5rem;
+    padding-left: 1.5rem;
+  }
+  
+  .timeline li {
+    position: relative;
+    padding-left: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .timeline li:last-child {
+    margin-bottom: 0;
+  }
+  
+  .timeline li::before {
+    content: "";
+    position: absolute;
+    top: 0.45rem;
+    left: -0.35rem;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    background-color: white;
+  }
+  
+  .timeline .badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.75em;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  
+  /* Estilo para el mapa */
+  #map {
+    width: 100%;
+    height: 400px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 2rem;
+  }
+  
+  /* Acordeón personalizado */
+  .accordion-item {
+    border: none;
+    margin-bottom: 0.5rem;
+    border-radius: var(--border-radius) !important;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .accordion-button {
+    padding: 1rem 1.25rem;
+    font-weight: 500;
+    color: var(--dark-color);
+    background-color: #fff;
+  }
+  
+  .accordion-button:not(.collapsed) {
+    color: var(--primary-color);
+    background-color: rgba(37, 99, 235, 0.05);
+  }
+  
+  .accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(37, 99, 235, 0.25);
+  }
+  
+  /* Mejora visual para campos de formulario */
+  .form-control, .form-select {
+    border-radius: 0.375rem;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid rgba(0,0,0,0.1);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  
+  .form-control:focus, .form-select:focus {
+    border-color: rgba(37, 99, 235, 0.4);
+    box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.15);
+  }
+  
+  /* Contenido de la imagen */
+  .img-container {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .img-container img {
+    max-height: 350px;
+    object-fit: contain;
+    border-radius: var(--border-radius);
+  }
+  
+  /* Efecto para tarjetas de información */
+  .info-header {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--secondary-color);
+    margin-bottom: 0.25rem;
+  }
+  
+  .info-value {
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+  
+  /* Sección de cabecera */
+  .report-header {
+    position: relative;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--box-shadow);
+  }
+  
+  .report-header h2 {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  
+  .report-code {
+    font-weight: 700;
+    color: var(--primary-color);
+  }
+</style>
+
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="container-fluid py-5">
+  {# ───── Encabezado mejorado ───── #}
+  <div class="report-header mb-4">
+    <div class="d-flex align-items-center justify-content-between">
+      <div>
+        <h2>
+          <i class="bi bi-file-earmark-text"></i> Reporte
+          <span class="report-code">{{ object.codigo_seguimiento }}</span>
+        </h2>
+        <p class="text-muted mb-0">Creado el {{ object.creado|date:"d/m/Y H:i" }} • Última actualización: {{ object.actualizado|date:"d/m/Y H:i" }}</p>
+      </div>
+      <span class="status-badge fs-6 
+        {% if object.estatus == object.Estatus.RESUELTO %}bg-success
+        {% elif object.estatus == object.Estatus.EN_PROGRESO %}bg-info
+        {% elif object.estatus == object.Estatus.PENDIENTE %}bg-warning
+        {% else %}bg-secondary{% endif %}">
+        <i class="bi 
+          {% if object.estatus == object.Estatus.RESUELTO %}bi-check-circle-fill
+          {% elif object.estatus == object.Estatus.EN_PROGRESO %}bi-arrow-repeat
+          {% elif object.estatus == object.Estatus.PENDIENTE %}bi-clock
+          {% else %}bi-x-circle{% endif %} me-1"></i>
+        {{ object.get_estatus_display }}
+      </span>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      {# ───── 1. Información principal del reporte ───── #}
+      <div class="card border-0 mb-4">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Información del reporte</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <div class="info-header">Solicitante</div>
+                <div class="info-value">
+                  <i class="bi bi-person me-1"></i> {{ object.nombre_solicitante }}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <div class="info-header">Ubicación</div>
+                <div class="info-value">
+                  <i class="bi bi-geo-alt me-1"></i> {{ object.ubicacion }}
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="info-header">Descripción del ciudadano</div>
+              <div class="info-value">{{ object.descripcion|linebreaks }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {# ───── 2. Fotografía ───── #}
+      <div class="card border-0 mb-4">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="bi bi-camera me-2"></i>Fotografía adjunta</h5>
+        </div>
+        <div class="card-body">
+          <div class="img-container">
+            {% if object.foto %}
+              <img src="{{ object.foto.url }}" alt="Fotografía del reporte" class="img-fluid">
+            {% else %}
+              <div class="text-center p-5 bg-light rounded">
+                <i class="bi bi-image text-secondary" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-3 mb-0">No se adjuntó ninguna fotografía</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      {# ───── 3. Mapa (solo si hay datos geo) ───── #}
+      {% if object.latitud or object.place_id %}
+        <div class="card border-0 mb-4">
+          <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-geo-alt me-2"></i>Ubicación en el mapa</h5>
+          </div>
+          <div class="card-body p-0">
+            <div id="map"
+                data-lat="{{ object.latitud|default_if_none:'' }}"
+                data-lng="{{ object.longitud|default_if_none:'' }}"
+                data-placeid="{{ object.place_id|default_if_none:'' }}"
+                class="m-0"></div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="col-lg-4">
+      {# ───── 4. Línea de tiempo de estatus ───── #}
+      <div class="card border-0 mb-4">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Historial de estatus</h5>
+        </div>
+        <div class="card-body">
+          <ul class="timeline list-unstyled">
+            {% if object.fecha_pendiente %}
+              <li>
+                <span class="badge bg-warning me-2">Pendiente</span>
+                <span>{{ object.fecha_pendiente|date:"d/m/Y H:i" }}</span>
+              </li>
+            {% endif %}
+            {% if object.fecha_en_progreso %}
+              <li>
+                <span class="badge bg-info me-2">En progreso</span>
+                <span>{{ object.fecha_en_progreso|date:"d/m/Y H:i" }}</span>
+              </li>
+            {% endif %}
+            {% if object.fecha_resuelto %}
+              <li>
+                <span class="badge bg-success me-2">Resuelto</span>
+                <span>{{ object.fecha_resuelto|date:"d/m/Y H:i" }}</span>
+              </li>
+            {% endif %}
+            {% if object.fecha_cerrado %}
+              <li>
+                <span class="badge bg-secondary me-2">Cerrado</span>
+                <span>{{ object.fecha_cerrado|date:"d/m/Y H:i" }}</span>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+
+      {# ───── 5. Formulario de administración ───── #}
+      <div class="card border-0 mb-4">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Actualizar reporte</h5>
+        </div>
+        <form id="admin-form" method="post" action="">
+          {% csrf_token %}
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Estatus</label>
+              {{ form.estatus }}
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Comentarios internos</label>
+              {{ form.comentarios }}
+            </div>
+          </div>
+          <div class="card-footer d-flex justify-content-between">
+            <a href="{{ regreso_url }}" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left me-1"></i> Regresar
+            </a>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-save me-1"></i> Guardar cambios
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {# ───── 6. Datos técnicos ───── #}
+      <div class="accordion" id="datosTecnicos">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingTech">
+            <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#collapseTech">
+              <i class="bi bi-gear me-2"></i> Datos técnicos
+            </button>
+          </h2>
+          <div id="collapseTech" class="accordion-collapse collapse"
+              data-bs-parent="#datosTecnicos">
+            <div class="accordion-body">
+              <div class="row">
+                <div class="col-12">
+                  <div class="info-header">Place ID</div>
+                  <div class="info-value font-monospace">{{ object.place_id|default:"—" }}</div>
+                </div>
+                <div class="col-6">
+                  <div class="info-header">Latitud</div>
+                  <div class="info-value font-monospace">{{ object.latitud|default:"—" }}</div>
+                </div>
+                <div class="col-6">
+                  <div class="info-header">Longitud</div>
+                  <div class="info-value font-monospace mb-0">{{ object.longitud|default:"—" }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scriptcontent %}
+{# ───────────────────────────── SCRIPTS ──────────────────────────────── #}
+<script>
+/* SweetAlert + fetch AJAX -------------------------------------------------- */
+(() => {
+  const f = document.getElementById("admin-form");
+  if (!f) return;
+
+  f.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    Swal.fire({
+      title: 'Procesando...',
+      html: 'Guardando los cambios, por favor espere',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    try {
+      const r = await fetch("", {
+        method: "POST",
+        headers: { "X-Requested-With": "XMLHttpRequest" },
+        body: new FormData(f),
+      });
+      const d = await r.json();
+
+      if (!r.ok || !d.ok) {
+        Swal.fire({
+          icon: "error",
+          title: "No se pudo guardar",
+          html: Object.values(d.errors || { error: "Error desconocido" }).join("<br>"),
+        });
+        return;
+      }
+
+      /* ✅ Actualizar badge de estatus */
+      const badge = document.querySelector(".status-badge");
+      if (badge) {
+        badge.textContent = d.estatus;
+        
+        // Actualizar también la clase del badge y su ícono
+        badge.className = 'status-badge fs-6';
+        let newClass = '';
+        let newIcon = '';
+        
+        if (d.estatus === 'Resuelto') {
+          newClass = 'bg-success';
+          newIcon = 'bi-check-circle-fill';
+        } else if (d.estatus === 'En progreso') {
+          newClass = 'bg-info';
+          newIcon = 'bi-arrow-repeat';
+        } else if (d.estatus === 'Pendiente') {
+          newClass = 'bg-warning';
+          newIcon = 'bi-clock';
+        } else {
+          newClass = 'bg-secondary';
+          newIcon = 'bi-x-circle';
+        }
+        
+        badge.classList.add(newClass);
+        const iconElement = badge.querySelector('i');
+        if (iconElement) {
+          iconElement.className = `bi ${newIcon} me-1`;
+        }
+      }
+
+      /* ✅ Actualizar campo de comentarios */
+      const comentariosInput = f.querySelector('[name="comentarios"]');
+      if (comentariosInput) comentariosInput.value = d.comentarios || "";
+
+      Swal.fire({
+        icon: "success",
+        title: "Guardado correctamente",
+        text: d.message,
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    } catch (err) {
+      console.error(err);
+      Swal.fire({
+        icon: "error",
+        title: "Error inesperado",
+        text: "No se pudieron guardar los cambios. Intenta más tarde.",
+      });
+    }
+  });
+})();
+</script>
+
+<script>
+function initMap() {
+  const el = document.getElementById("map");
+  if (!el) return;
+
+  /* ─── Lee atributos de data-* ─── */
+  const latStr = (el.dataset.lat || "").trim();
+  const lngStr = (el.dataset.lng || "").trim();
+  const pid    = (el.dataset.placeid || "").trim();
+
+  /* ─── Crea el mapa con un centro neutro ─── */
+  const map = new google.maps.Map(el, {
+    center: { lat: 19.3139, lng: -98.24 },  // Tlaxcala aprox.
+    zoom  : 14,
+    mapTypeControl: false,
+    styles: [
+      {
+        "featureType": "administrative",
+        "elementType": "labels.text.fill",
+        "stylers": [{"color": "#444444"}]
+      },
+      {
+        "featureType": "landscape",
+        "elementType": "all",
+        "stylers": [{"color": "#f2f2f2"}]
+      },
+      {
+        "featureType": "poi",
+        "elementType": "all",
+        "stylers": [{"visibility": "off"}]
+      },
+      {
+        "featureType": "road",
+        "elementType": "all",
+        "stylers": [{"saturation": -100}, {"lightness": 45}]
+      },
+      {
+        "featureType": "road.highway",
+        "elementType": "all",
+        "stylers": [{"visibility": "simplified"}]
+      },
+      {
+        "featureType": "water",
+        "elementType": "all",
+        "stylers": [{"color": "#2563eb"}, {"visibility": "on"}]
+      }
+    ]
+  });
+
+  /* Personalización del marcador */
+  const createCustomMarker = (position, title) => {
+    return new google.maps.Marker({
+      position,
+      map,
+      title,
+      animation: google.maps.Animation.DROP,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        fillColor: '#2563eb',
+        fillOpacity: 1,
+        strokeColor: '#ffffff',
+        strokeWeight: 2,
+        scale: 8
+      }
+    });
+  };
+
+  /* ───────────── 1) Prioridad: coordenadas directas ───────────── */
+  if (latStr && lngStr) {
+    const lat = Number(latStr);
+    const lng = Number(lngStr);
+
+    if (Number.isFinite(lat) && Number.isFinite(lng) && (lat !== 0 || lng !== 0)) {
+      const pos = { lat, lng };
+      map.setCenter(pos);
+      map.setZoom(17);
+      
+      const marker = createCustomMarker(pos, 'Ubicación del reporte');
+      
+      // Añadir círculo de radio
+      new google.maps.Circle({
+        strokeColor: '#2563eb',
+        strokeOpacity: 0.2,
+        strokeWeight: 1,
+        fillColor: '#2563eb',
+        fillOpacity: 0.1,
+        map,
+        center: pos,
+        radius: 50
+      });
+      
+      return;   // ¡Listo!
+    }
+  }
+
+  /* ───────────── 2) Fallback: buscar por Place ID ───────────── */
+  if (pid) {
+    const svc = new google.maps.places.PlacesService(map);
+    svc.getDetails(
+      { placeId: pid, fields: ["geometry", "name"] },
+      (place, status) => {
+        if (
+          status === google.maps.places.PlacesServiceStatus.OK &&
+          place.geometry &&
+          place.geometry.location
+        ) {
+          map.setCenter(place.geometry.location);
+          map.setZoom(17);
+          
+          const marker = createCustomMarker(
+            place.geometry.location, 
+            place.name || 'Ubicación del reporte'
+          );
+          
+          // Añadir círculo de radio
+          new google.maps.Circle({
+            strokeColor: '#2563eb',
+            strokeOpacity: 0.2,
+            strokeWeight: 1,
+            fillColor: '#2563eb',
+            fillOpacity: 0.1,
+            map,
+            center: place.geometry.location,
+            radius: 50
+          });
+        } else {
+          console.warn("No se pudo resolver el Place ID:", status);
+        }
+      }
+    );
+  }
+}
+(function () {
+  const s = document.createElement("script");
+  s.src =
+    "https://maps.googleapis.com/maps/api/js?key=AIzaSyAZ0B23l-LuHTGJl9R2eC176jQE67s8-Ec&callback=initMap&libraries=places";
+  s.async = true;
+  s.defer = true;
+  document.body.appendChild(s);
+})();
+</script>
+
+{% endblock scriptcontent %}

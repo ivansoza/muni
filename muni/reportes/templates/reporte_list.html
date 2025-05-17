@@ -166,14 +166,13 @@
               </td>
               <td class="text-end">
                 <div class="btn-group">
-                  <a href=""
-                     class="btn btn-sm btn-action btn-view" data-bs-toggle="tooltip" title="Ver detalles">
-                     <i class="bi bi-eye"></i>
-                  </a>
-                  <a href=""
-                     class="btn btn-sm btn-action btn-attend" data-bs-toggle="tooltip" title="Atender reporte">
-                     <i class="bi bi-check2-square"></i>
-                  </a>
+                    <a  href="{% url 'reporte_detail' toggle_tipo obj.pk %}"
+                        class="btn btn-sm btn-action"
+                        data-bs-toggle="tooltip"
+                        title="Ver / editar">
+                        <i class="bi bi-eye"></i>
+                    </a>
+
                 </div>
               </td>
             </tr>

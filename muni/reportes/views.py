@@ -6,7 +6,12 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 import json
+from django.http import Http404
+from django.views.generic import DetailView
+from django.views.generic import UpdateView
+from django.utils.translation import gettext_lazy as _
 
+from reportes.forms import ReporteAdminForm
 from reportes.models import (
     ReporteStatus,
     ReporteServicioAgua,
@@ -192,3 +197,77 @@ def toggle_reporte_status(request, tipo):
     setattr(obj, campo, nuevo)
     obj.save(update_fields=[campo])
     return JsonResponse({'status': getattr(obj, campo)})
+
+
+# views.py  (añade / ajusta lo siguiente)
+
+class ReporteDetailView(LoginRequiredMixin, UpdateView):
+    """
+    Muestra y permite actualizar estatus / comentarios de cualquier reporte.
+    Las actualizaciones se reciben vía POST (AJAX → JSON).
+    """
+    template_name = "reporte_detail.html"
+    form_class    = ReporteAdminForm   # se adaptará dinámicamente al modelo
+
+    _MODEL_MAP = {                     # ← como antes
+        "agua":           ReporteServicioAgua,
+        "bache":          ReporteBache,
+        "alcantarillado": ReporteAlcantarillado,
+        "alumbrado":      ReporteAlumbradoPublico,
+    }
+    _LIST_URL_NAME_MAP = {
+        "agua":           "lista-agua",
+        "bache":          "lista-bache",
+        "alcantarillado": "lista-alcantarillado",
+        "alumbrado":      "lista-alumbrado",
+    }
+
+    # ------- dispatch ----------------------------------------------------------
+    def dispatch(self, request, *args, **kwargs):
+        tipo = kwargs.get("tipo")
+        try:
+            self.model        = self._MODEL_MAP[tipo]
+            self.tipo         = tipo
+            self._list_url    = self._LIST_URL_NAME_MAP[tipo]
+            self.object       = self.get_object()          # evita doble consulta
+            # Ajusta el ModelForm al modelo correcto
+            self.form_class.Meta.model = self.model
+        except KeyError:
+            raise Http404(_("Tipo de reporte no válido"))
+        return super().dispatch(request, *args, **kwargs)
+
+    # ------- contexto ----------------------------------------------------------
+# views.py  (sólo cambia get_context_data)
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        obj = self.object
+
+        gmaps_url = ""
+        if obj.latitud and obj.longitud:
+            gmaps_url = f"https://www.google.com/maps?q={obj.latitud},{obj.longitud}"
+
+        ctx |= {
+            "breadcrumb": {
+                "parent": {"name": "Reportes", "url": reverse("ReportesView")},
+                "child":  {"name": f"Reporte {self.tipo.title()}", "url": ""},
+            },
+            "sidebar":      "Generales",
+            "regreso_url":  reverse(self._list_url),
+            "comentarios":  obj.comentarios or _("Sin comentarios"),
+            "gmaps_url":    gmaps_url,
+        }
+        return ctx
+
+    # ------- manejo POST (AJAX) -----------------------------------------------
+    def form_invalid(self, form):
+        """Errores → JSON status 400, para mostrar en SweetAlert."""
+        return JsonResponse({"ok": False, "errors": form.errors}, status=400)
+
+    def form_valid(self, form):
+        form.save()
+        return JsonResponse({
+            "ok":        True,
+            "message":   _("Cambios guardados correctamente"),
+            "estatus":   self.object.get_estatus_display(),
+            "comentarios": self.object.comentarios or ("Sin comentarios"),
+        })

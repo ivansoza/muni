@@ -6,6 +6,7 @@ from .views import (
     ReporteBacheListView,
     ReporteAlcantarilladoListView,
     ReporteAlumbradoListView,
+    ReporteDetailView,
     reporte_status,
     toggle_reporte_status,
 )
@@ -20,4 +21,9 @@ urlpatterns = [
     path("bache/",          ReporteBacheListView.as_view(),         name="lista-bache"),
     path("alcantarillado/", ReporteAlcantarilladoListView.as_view(),name="lista-alcantarillado"),
     path("alumbrado/",      ReporteAlumbradoListView.as_view(),     name="lista-alumbrado"),
+    path(
+        "admin/generales/reportes/<str:tipo>/<int:pk>/",
+        ReporteDetailView.as_view(),
+        name="reporte_detail",
+    ),
 ]
