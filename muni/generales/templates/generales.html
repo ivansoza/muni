@@ -401,34 +401,35 @@
                     </a> 
                 {% endif %}
 
-{% comment %} 
-                 <a href="{% url "ReportesView" %}" class="ag-card-link" data-keywords="reportes informes análisis estadísticas datos">
-                    <div class="ag-card ag-reportes">
-                        <div class="ag-card-icon">
-                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-                            </svg>
-                        </div>
-                        <div class="ag-card-content">
-                            <h3 class="ag-card-title">Reportes</h3>
-                            <p class="ag-card-text">Accede a reportes detallados y análisis de datos para tomar decisiones informadas en tu proyecto.</p>
-                            <div class="ag-card-footer">
-                                <button class="ag-btn-see-more">
-                                    <span>Ver más</span>
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" 
-                                         xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
-                                              stroke-linejoin="round"/>
-                                        <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
-                                              stroke-linejoin="round"/>
-                                    </svg>
-                                </button>
+                
+                {% if is_superuser or 'reportes.view_reportealcantarillado' in user_permissions or 'reportes.view_reportealumbradopublico' in user_permissions or 'reportes.view_reportebache' in user_permissions or 'reportes.view_reporteservicioagua' in user_permissions %}
+                    <a href="{% url "ReportesView" %}" class="ag-card-link" data-keywords="reportes informes análisis estadísticas datos">
+                        <div class="ag-card ag-reportes">
+                            <div class="ag-card-icon">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                                </svg>
+                            </div>
+                            <div class="ag-card-content">
+                                <h3 class="ag-card-title">Reportes</h3>
+                                <p class="ag-card-text">Accede a reportes detallados y análisis de datos para tomar decisiones informadas en tu proyecto.</p>
+                                <div class="ag-card-footer">
+                                    <button class="ag-btn-see-more">
+                                        <span>Ver más</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" 
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+                                                stroke-linejoin="round"/>
+                                            <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+                                                stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </a> 
- {% endcomment %}
+                    </a> 
 
+                {% endif %}
 
                 {% if is_superuser %}
 

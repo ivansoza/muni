@@ -1,4 +1,6 @@
 from django import forms
+
+from reportes.models import ReporteAlcantarillado, ReporteAlumbradoPublico, ReporteBache, ReporteServicioAgua
 from .models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga, LigaArchivo
 
 class SeccionTransparenciaForm(forms.ModelForm):
@@ -134,3 +136,44 @@ class ArticuloLigaArchivoForm(forms.ModelForm):
             raise forms.ValidationError("El año fiscal es obligatorio.")
 
         return cleaned_data
+
+
+
+
+class _ReporteBaseForm(forms.ModelForm):
+    """Config común: mismos campos + widgets ocultos"""
+    class Meta:
+        fields = (
+            "nombre_solicitante",
+            "descripcion",
+            "foto",
+            "ubicacion",
+            "latitud",
+            "longitud",
+            "place_id",
+        )
+        widgets = {
+            "latitud":  forms.HiddenInput(),
+            "longitud": forms.HiddenInput(),
+            "place_id": forms.HiddenInput(),
+        }
+
+# ───────────────────  Formularios concretos ────────────────────
+class ReporteServicioAguaForm(_ReporteBaseForm):
+    class Meta(_ReporteBaseForm.Meta):
+        model = ReporteServicioAgua
+
+
+class ReporteBacheForm(_ReporteBaseForm):
+    class Meta(_ReporteBaseForm.Meta):
+        model = ReporteBache
+
+
+class ReporteAlcantarilladoForm(_ReporteBaseForm):
+    class Meta(_ReporteBaseForm.Meta):
+        model = ReporteAlcantarillado
+
+
+class ReporteAlumbradoPublicoForm(_ReporteBaseForm):
+    class Meta(_ReporteBaseForm.Meta):
+        model = ReporteAlumbradoPublico
