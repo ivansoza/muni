@@ -59,6 +59,11 @@ class ReporteBase(models.Model):
         _("longitud"), max_digits=9, decimal_places=6, blank=True, null=True
     )
 
+
+    place_id = models.CharField(
+        _("Google Place ID"), max_length=255,
+        blank=True, null=True, db_index=True
+    )
     class Estatus(models.TextChoices):
         PENDIENTE = "PEND", _("Pendiente")
         EN_PROGRESO = "ENPR", _("En progreso")

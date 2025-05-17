@@ -143,13 +143,17 @@ class ArticuloLigaArchivoForm(forms.ModelForm):
 class ReporteServicioAguaForm(forms.ModelForm):
     class Meta:
         model = ReporteServicioAgua
-        fields = [
-            'nombre_solicitante',
-            'descripcion',
-            'foto',
-            'ubicacion',
-            'latitud',
-            'longitud',
-        ]
-
-        
+        fields = (
+            "nombre_solicitante",
+            "descripcion",
+            "foto",
+            "ubicacion",
+            "latitud",
+            "longitud",
+            "place_id",          # ➊ inclúyelo
+        )
+        widgets = {
+            "latitud":  forms.HiddenInput(),
+            "longitud": forms.HiddenInput(),
+            "place_id": forms.HiddenInput(),
+        }
