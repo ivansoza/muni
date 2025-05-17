@@ -10,6 +10,7 @@ from django.http import Http404
 from django.views.generic import DetailView
 from django.views.generic import UpdateView
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import PermissionDenied
 
 from reportes.forms import ReporteAdminForm
 from reportes.models import (
@@ -27,6 +28,13 @@ class ReporteAguaListView(LoginRequiredMixin, ListView):
     template_name = "reporte_list.html"
     paginate_by = 25
 
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        if not (user.is_superuser or user.has_perm('reportes.view_reporteservicioagua')):
+            raise PermissionDenied  
+        
+
+        return super().dispatch(request, *args, **kwargs)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["breadcrumb"] = {
@@ -64,7 +72,11 @@ class ReporteBacheListView(LoginRequiredMixin, ListView):
     model = ReporteBache
     template_name = "reporte_list.html"
     paginate_by = 25
-
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        if not (user.is_superuser or user.has_perm('reportes.view_reportebache')):
+            raise PermissionDenied  
+        return super().dispatch(request, *args, **kwargs)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["breadcrumb"] = {
@@ -97,6 +109,13 @@ class ReporteAlcantarilladoListView(LoginRequiredMixin, ListView):
     template_name = "reporte_list.html"
     paginate_by = 25
 
+
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        if not (user.is_superuser or user.has_perm('reportes.view_reportealcantarillado')):
+            raise PermissionDenied  
+        return super().dispatch(request, *args, **kwargs)
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["breadcrumb"] = {
@@ -128,6 +147,12 @@ class ReporteAlumbradoListView(LoginRequiredMixin, ListView):
     template_name = "reporte_list.html"
     paginate_by = 25
 
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        if not (user.is_superuser or user.has_perm('reportes.view_reportealumbradopublico')):
+            raise PermissionDenied  
+        return super().dispatch(request, *args, **kwargs)
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["breadcrumb"] = {
