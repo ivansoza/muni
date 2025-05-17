@@ -665,4 +665,282 @@
 
     
 </div> <!-- Fin .cards-container -->
+
+<style>
+  #modalReporte .modal-content {
+    border: none;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+  }
+  
+  #status-container {
+    background-color: #f8f9fa;
+  }
+  
+  #status-indicator.status-pendiente {
+    background-color: #ffc107;
+  }
+  
+  #status-indicator.status-proceso {
+    background-color: #17a2b8;
+  }
+  
+  #status-indicator.status-completado {
+    background-color: #28a745;
+  }
+  
+  #status-indicator.status-rechazado {
+    background-color: #dc3545;
+  }
+  
+  .progress {
+    background-color: #e9ecef;
+  }
+  
+  .timeline-item {
+    position: relative;
+  }
+  
+  .timeline-line {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    height: 30px;
+    width: 1px;
+    background-color: #dee2e6;
+  }
+  
+  .timeline-marker {
+    position: relative;
+    min-width: 10px;
+  }
+  
+  #modal-tipo-badge {
+    background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-secundario) 100%);
+    color: white;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 20px;
+  }
+</style>
+<!-- Modal de detalle de reporte mejorado -->
+<!-- Modal de detalle de reporte -->
+<div class="modal fade" id="modalReporte" tabindex="-1"
+     aria-labelledby="modalReporteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius:16px;overflow:hidden;">
+      <!-- ─────────── Loading ─────────── -->
+      <div id="modal-loading" class="py-5 text-center" style="display:none;">
+        <div class="spinner-border text-primary mb-3" style="width:3rem;height:3rem;"></div>
+        <h5 class="fw-normal text-muted">Buscando información del reporte…</h5>
+      </div>
+
+      <!-- ─────────── Error ─────────── -->
+      <div id="modal-error" class="text-center py-5" style="display:none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor" class="text-danger mb-4">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M12 9v3.75M12 15.75h.007M2.697 16.126c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z"/>
+        </svg>
+        <h4 class="text-danger mb-3">Reporte no encontrado</h4>
+        <p class="text-muted px-4">Verifica que el código sea correcto.</p>
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+
+      <!-- ─────────── Success ─────────── -->
+      <div id="modal-success" style="display:none;">
+        <!-- Cabecera -->
+        <div class="modal-header border-0 position-relative py-4"
+             style="background:linear-gradient(135deg,var(--color-primario),var(--color-secundario));">
+          <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+                  data-bs-dismiss="modal"></button>
+          <div class="w-100 text-center text-white">
+            <div class="d-inline-flex align-items-center justify-content-center
+                        bg-white bg-opacity-25 rounded-circle mb-3 p-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none"
+                   viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12h6m-6 4h6M7 3h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0119 9.414V21a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z"/>
+              </svg>
+            </div>
+            <h4 class="modal-title fw-bold mb-1" id="modalReporteLabel">Detalles del reporte</h4>
+            <p class="mb-0 opacity-75">Código: <span id="modal-codigo" class="fw-bold"></span></p>
+          </div>
+        </div>
+
+        <!-- Cuerpo -->
+        <div class="modal-body p-0">
+          <!-- Estado / barra -->
+          <div class="py-3 px-4 border-bottom" id="status-container">
+            <div class="d-flex align-items-center">
+              <div id="status-indicator" class="rounded-circle me-3"
+                   style="width:12px;height:12px;background:#28a745;"></div>
+              <h5 class="mb-0 fw-bold" id="modal-estatus-text">Pendiente</h5>
+            </div>
+            <div class="mt-2">
+              <div class="progress" style="height:8px;border-radius:4px;">
+                <div id="progress-bar" class="progress-bar" role="progressbar"
+                     style="width:25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              <div class="d-flex justify-content-between mt-1 small text-muted">
+                <span>Pendiente</span><span>En&nbsp;progreso</span>
+                <span>Resuelto</span><span>Cerrado</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Información principal -->
+          <div class="row g-0">
+            <!-- columna texto -->
+            <div class="col-md-7">
+              <div class="p-4">
+                <div class="mb-4">
+                  <span class="badge me-2" id="modal-tipo-badge">Tipo</span>
+                  <span class="text-muted small">Reportado el <span id="modal-fecha"></span></span>
+                </div>
+
+                <h5 class="fw-bold mb-3">Información del reporte</h5>
+
+                <div class="mb-3">
+                  <label class="text-muted small mb-1">Solicitante</label>
+                  <p class="mb-0 fw-medium" id="modal-nombre">-</p>
+                </div>
+
+                <div class="mb-3">
+                  <label class="text-muted small mb-1">Ubicación</label>
+                  <p class="mb-0 fw-medium" id="modal-ubicacion">-</p>
+                </div>
+
+                <div class="mb-3">
+                  <label class="text-muted small mb-1">Descripción</label>
+                  <p class="mb-0" id="modal-descripcion">-</p>
+                </div>
+
+                <div class="mb-3">
+                  <label class="text-muted small mb-1">Comentarios internos</label>
+                  <p class="mb-0 fst-italic" id="modal-comentarios">Sin comentarios</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- columna evidencia -->
+            <div class="col-md-5 border-start">
+              <div class="p-4">
+                <h5 class="fw-bold mb-3">Evidencia</h5>
+                <div id="modal-foto-container" class="text-center mb-3" style="display:none;">
+                  <img id="modal-foto" src="" class="img-fluid rounded shadow-sm" style="max-height:220px;">
+                </div>
+                <div id="modal-no-foto" class="text-center py-4 rounded bg-light">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none"
+                       viewBox="0 0 24 24" stroke="currentColor" class="text-secondary mb-2">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16M14 14l1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                  <p class="text-muted mb-0">Sin evidencia fotográfica</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer border-0 bg-light">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 {% endblock content %}
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const btn          = document.getElementById('btn-buscar-reporte');
+  const modalEl      = document.getElementById('modalReporte');
+  const modalLoading = document.getElementById('modal-loading');
+  const modalError   = document.getElementById('modal-error');
+  const modalSuccess = document.getElementById('modal-success');
+  const bsModal      = new bootstrap.Modal(modalEl);
+
+  const show = sec => {
+    [modalLoading, modalError, modalSuccess].forEach(s => s.style.display = 'none');
+    if (sec) sec.style.display = 'block';
+  };
+
+  // Actualiza indicador y barra según texto de estatus
+  function updateStatus(status) {
+    const ind  = document.getElementById('status-indicator');
+    const bar  = document.getElementById('progress-bar');
+    const text = document.getElementById('modal-estatus-text');
+
+    ind.className = 'rounded-circle me-3';
+    let pct = 25, cls = 'bg-warning';
+
+    const s = status.toLowerCase();
+    if (s.includes('pendiente'))      { pct = 25; cls = 'bg-warning'; }
+    else if (s.includes('progreso'))  { pct = 50; cls = 'bg-info';    }
+    else if (s.includes('resuelto'))  { pct = 75; cls = 'bg-primary'; }
+    else if (s.includes('cerrado'))   { pct = 100; cls = 'bg-success'; }
+
+    ind.classList.add(cls);
+    bar.style.width = pct + '%';
+    bar.setAttribute('aria-valuenow', pct);
+    text.textContent = status;
+  }
+
+  if (!btn) return;
+
+  btn.addEventListener('click', async () => {
+    const code = document.getElementById('codigo-seguimiento').value.trim();
+    if (!code) { alert('Ingresa un código de seguimiento.'); return; }
+
+    bsModal.show();
+    show(modalLoading);
+
+    try {
+      const resp = await fetch(
+        "{% url 'ajax_consulta_reporte' %}?codigo=" + encodeURIComponent(code),
+        { headers: { 'X-Requested-With': 'XMLHttpRequest' } }
+      );
+      const json = await resp.json();
+      await new Promise(r => setTimeout(r, 300));      // spinner breve
+
+      if (!resp.ok) { show(modalError); return; }
+
+      const rpt = json.reporte;
+
+      // Rellenar campos
+      document.getElementById('modal-codigo').textContent      = rpt.codigo;
+      document.getElementById('modal-tipo-badge').textContent  = rpt.tipo;
+      document.getElementById('modal-fecha').textContent       = rpt.fecha_creado;
+      document.getElementById('modal-nombre').textContent      = rpt.nombre || '-';
+      document.getElementById('modal-ubicacion').textContent   = rpt.ubicacion || '-';
+      document.getElementById('modal-descripcion').textContent = rpt.descripcion || '-';
+      document.getElementById('modal-comentarios').textContent =
+          rpt.comentarios_internos.trim() ? rpt.comentarios_internos : 'Sin comentarios';
+
+      updateStatus(rpt.estatus);
+
+      // Foto
+      const fotoBox = document.getElementById('modal-foto-container');
+      const noFoto  = document.getElementById('modal-no-foto');
+      if (rpt.foto_url) {
+        document.getElementById('modal-foto').src = rpt.foto_url;
+        fotoBox.style.display = 'block';
+        noFoto.style.display  = 'none';
+      } else {
+        fotoBox.style.display = 'none';
+        noFoto.style.display  = 'block';
+      }
+
+      show(modalSuccess);
+    } catch (e) {
+      console.error('Error AJAX', e);
+      show(modalError);
+    }
+  });
+});
+</script>
+{% endblock extra_js %}

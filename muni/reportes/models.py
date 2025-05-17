@@ -1,5 +1,6 @@
 # reportes/models.py
 from __future__ import annotations
+from django.utils import timezone
 
 import secrets
 import string
@@ -36,9 +37,11 @@ def _codigo_unico(longitud: int = 8) -> str:
 # ───────────────────────────── clase base (abstracta) ────────────────────────────────
 class ReporteBase(models.Model):
     """
-    Campos comunes a cualquier tipo de reporte municipal.
+    Campos comunes a cualquier tipo de reporte municipal, con timestamps
+    de cambio de estado y generación automática de código único.
     """
 
+    # --- Campos existentes ---
     codigo_seguimiento = models.CharField(
         _("código de seguimiento"),
         max_length=10,
@@ -53,50 +56,95 @@ class ReporteBase(models.Model):
     foto = models.ImageField(
         _("fotografía (opcional)"),
         upload_to="reportes/%Y/%m/%d/",
-        blank=True,
-        null=True,
+        blank=True, null=True,
     )
     ubicacion = models.CharField(
         _("ubicación (texto libre)"),
         max_length=255,
         help_text=_("Ej. Calle, número, colonia, referencia visual…"),
     )
+    place_id = models.CharField(
+        _("Google Place ID"),
+        max_length=255,
+        blank=True, null=True,
+        db_index=True
+    )
     latitud = models.DecimalField(
-        _("latitud"), max_digits=9, decimal_places=6, blank=True, null=True
+        _("latitud"), max_digits=9, decimal_places=6,
+        blank=True, null=True
     )
     longitud = models.DecimalField(
-        _("longitud"), max_digits=9, decimal_places=6, blank=True, null=True
+        _("longitud"), max_digits=9, decimal_places=6,
+        blank=True, null=True
     )
-    place_id = models.CharField(
-        _("Google Place ID"), max_length=255, blank=True, null=True, db_index=True
+    # --- Nuevo: Comentarios administrativos ---
+    comentarios = models.TextField(
+        _("comentarios internos"),
+        blank=True,
+        null=True,
+        help_text=_("Anotaciones del personal sobre este reporte"),
     )
 
     class Estatus(models.TextChoices):
-        PENDIENTE = "PEND", _("Pendiente")
-        EN_PROGRESO = "ENPR", _("En progreso")
-        RESUELTO = "RES", _("Resuelto")
-        CERRADO = "CER", _("Cerrado / sin acción")
+        PENDIENTE   = "PEND", _("Pendiente")
+        EN_PROGRESO = "ENPR", _("En Progreso")
+        RESUELTO    = "RES",  _("Resuelto")
+        CERRADO     = "CER",  _("Cerrado / Sin acción")
 
     estatus = models.CharField(
         _("estatus"),
-        max_length=4,
+        max_length=5,
         choices=Estatus.choices,
         default=Estatus.PENDIENTE,
     )
-    creado = models.DateTimeField(_("creado"), auto_now_add=True)
+
+    # --- Timestamps para cada transición de estado ---
+    fecha_pendiente   = models.DateTimeField(_("fecha pendiente"),    blank=True, null=True)
+    fecha_en_progreso = models.DateTimeField(_("fecha en progreso"), blank=True, null=True)
+    fecha_resuelto    = models.DateTimeField(_("fecha resuelto"),    blank=True, null=True)
+    fecha_cerrado     = models.DateTimeField(_("fecha cerrado"),     blank=True, null=True)
+
+    creado     = models.DateTimeField(_("creado"),     auto_now_add=True)
     actualizado = models.DateTimeField(_("actualizado"), auto_now=True)
 
     class Meta:
         abstract = True
         ordering = ("-creado",)
 
-    def __str__(self) -> str:
-        return f"{self._meta.verbose_name.title()} #{self.codigo_seguimiento}"
-
     def save(self, *args, **kwargs):
-        # Solo se genera el código una vez, al crear
+        ahora = timezone.now()
+
+        # Generar código único una sola vez
         if not self.codigo_seguimiento:
             self.codigo_seguimiento = _codigo_unico()
+
+        if not self.pk:
+            # Primera vez: marca pendiente
+            self.fecha_pendiente = ahora
+        else:
+            orig = type(self).objects.get(pk=self.pk)
+            nuevo = self.estatus
+
+            if orig.estatus != nuevo:
+                if nuevo == self.Estatus.CERRADO:
+                    # Rellenar fechas intermedias si faltan
+                    if not self.fecha_pendiente:
+                        self.fecha_pendiente = ahora
+                    if not self.fecha_en_progreso:
+                        self.fecha_en_progreso = ahora
+                    if not self.fecha_resuelto:
+                        self.fecha_resuelto = ahora
+                    if not self.fecha_cerrado:
+                        self.fecha_cerrado = ahora
+
+                elif nuevo == self.Estatus.EN_PROGRESO:
+                    if not self.fecha_en_progreso:
+                        self.fecha_en_progreso = ahora
+
+                elif nuevo == self.Estatus.RESUELTO:
+                    if not self.fecha_resuelto:
+                        self.fecha_resuelto = ahora
+
         super().save(*args, **kwargs)
 
 

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import HomeReportesView, HomeTransparenciaView, ReporteAlcantarilladoView, ReporteAlumbradoPublicoView, ReporteBacheView, ReporteServicioAguaView, get_encuestas_activas, guardar_respuestas
+from .views import HomeReportesView, HomeTransparenciaView, ReporteAlcantarilladoView, ReporteAlumbradoPublicoView, ReporteBacheView, ReporteServicioAguaView, consulta_reporte_ajax, get_encuestas_activas, guardar_respuestas
 from .views import HomeTransparenciaView, EjerciciosPorSeccionView, lista_obligaciones
 
 urlpatterns = [
@@ -26,6 +26,10 @@ urlpatterns = [
     path('bache/', ReporteBacheView.as_view(), name='reportes_bache'),
     path('alcantarillado/', ReporteAlcantarilladoView.as_view(), name='reportes_alcantarillado'),
     path('alumbrado/', ReporteAlumbradoPublicoView.as_view(), name='reportes_alumbrado'),
-
+    path(
+        "ajax/consulta-reporte/",
+        consulta_reporte_ajax,
+        name="ajax_consulta_reporte",
+    ),
 
 ]
