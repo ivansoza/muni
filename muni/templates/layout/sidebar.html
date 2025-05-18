@@ -249,6 +249,25 @@
               </li>
             {% endif %}
 
+                        <!-- Enlace Habla -->
+                        {% if is_superuser or 'evento.view_articulo' in user_permissions %}
+                        <li class="sidebar-list {% if sidebar == 'habla' %}active{% endif %}">
+                          <a class="sidebar-link sidebar-title" href="{% url 'habla_home' %}">
+                            <i class="fa-brands fa-rocketchat" style="color:white;"></i>
+                            <i class="fa fa-users fill-icon"></i>
+                            <span>Habla con tus hijos</span>
+                          </a>
+                        </li>
+                      {% else %}
+                        <li class="sidebar-list">
+                          <div class="sidebar-link sidebar-title desactivar">
+                            <i class="fa fa-university" style="color:white;"></i>
+                            <i class="fa fa-users fill-icon"></i>
+                            <span>Habla con tus hijos</span>
+                          </div>
+                        </li>
+                      {% endif %}
+
             <!-- Enlace Generales (solo para superuser) -->
             {% if is_superuser or 'transparencia.view_secciontransparencia' in user_permissions %}
               <li class="sidebar-list {% if sidebar == 'Generales' %}active{% endif %}">

@@ -63,6 +63,10 @@ from django.contrib.auth.models import Group, Permission
 
 from django.contrib.auth.mixins import  PermissionRequiredMixin
 from noticias.forms import ImagenGaleriaForm
+
+from eventos.models import Articulo, Categoria as CategoriaHabla, Autor
+from eventos.forms import ArticuloForm
+
 class VideoView(LoginRequiredMixin,TemplateView):
     template_name = 'generales/video.html'
 
@@ -3352,6 +3356,142 @@ def encuesta_toggle_estado(request, encuesta_id):
 
     # Si llegas con ?next=/algo, respeta esa redirección
     return redirect("EncuestasView")
+
+class HablaHome(TemplateView, LoginRequiredMixin):
+    template_name = 'HablaHijos/hablaHome.html'
+    # --- control de permisos ---
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("eventos.view_articulos")):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['articulos'] = Articulo.objects.all().order_by('-id')  # Ordenar por ID de forma descendente
+        url_configuracion = reverse('dashboard')
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': url_configuracion},
+            'child': {'name': 'Habla con tus hijos', 'url': ''}
+        }
+        context['regreso_url'] = reverse('dashboard')
+        context['sidebar'] = 'habla'
+        return context
+    
+class ArticuloCreateView(CreateView):
+    model = Articulo
+    form_class = ArticuloForm
+    template_name = 'hablaHijos/registrarArticulo.html'  # Puedes cambiar la ruta al template si es necesario
+    success_url = reverse_lazy('habla_home')  # Redirige a la lista de artículos después de guardar el artículo
+
+    def form_valid(self, form):
+        # Aquí puedes añadir lógica adicional antes de guardar el artículo (por ejemplo, agregar el autor actual al artículo)
+        articulo = form.save(commit=False)
+        articulo.save()
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        # Añadimos contexto adicional al renderizado de la plantilla, si es necesario
+        context = super().get_context_data(**kwargs)
+        url_configuracion = reverse('habla_home')
+        context["breadcrumb"] = {
+            'parent': {'name': 'Habla con tus hijos', 'url': url_configuracion},
+            'child': {'name': 'Crear Articulo', 'url': ''}
+        }
+        context['regreso_url'] = reverse('habla_home')
+        context['sidebar'] = 'habla'
+        return context
+    
+class ArticuloUpdateView(UpdateView):
+    model = Articulo
+    form_class = ArticuloForm
+    template_name = 'HablaHijos/editarArticulo.html'  # crea esta plantilla
+    success_url = reverse_lazy('habla_home')  # URL para redirigir tras éxito
+
+    # Opcional: controlar permisos si es necesario
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm("eventos.change_articulo")):
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        # Añadimos contexto adicional al renderizado de la plantilla, si es necesario
+        context = super().get_context_data(**kwargs)
+        url_configuracion = reverse('habla_home')
+        context["breadcrumb"] = {
+            'parent': {'name': 'Habla con tus hijos', 'url': url_configuracion},
+            'child': {'name': 'Editar Articulo', 'url': ''}
+        }
+        context['regreso_url'] = reverse('habla_home')
+        context['sidebar'] = 'habla'
+        return context
+    
+@login_required
+@permission_required('eventos.delete_articulo', raise_exception=True)
+def eliminar_articulo(request, pk):
+    articulo = get_object_or_404(Articulo, pk=pk)
+    if request.method == 'POST':
+        articulo.delete()
+        messages.success(request, f'El artículo "{articulo.titulo}" fue eliminado correctamente.')
+        return redirect('habla_home')  # Ajusta la url a donde quieras redirigir
+    else:
+        # Si quieres mostrar un template de confirmación, puedes hacerlo aquí
+        return redirect('habla_home')
+
+@csrf_exempt  # Usamos csrf_exempt si es necesario, pero mejor sería usar CSRF token correctamente
+def agregar_categoria_habla(request):
+    if request.method == 'POST':
+        categoria_nombre = request.POST.get('categoria_nombre', '').strip()
+
+        if categoria_nombre:
+            # Verificar si la categoría ya existe
+            categoria, created = CategoriaHabla.objects.get_or_create(nombre=categoria_nombre)
+            
+            if created:
+                # Retornamos un JsonResponse con la información de la categoría
+                return JsonResponse({
+                    'success': True,
+                    'categoria': categoria.nombre,
+                    'categoria_id': categoria.id
+                })
+            else:
+                # Si la categoría ya existe, devolver un error
+                return JsonResponse({'success': False, 'message': 'La categoría ya existe.'})
+
+        return JsonResponse({'success': False, 'message': 'El nombre de la categoría no puede estar vacío.'})
+    
+    return JsonResponse({'success': False, 'message': 'Solicitud inválida.'})
+
+def agregar_autor(request):
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        nombre_completo = request.POST.get('nombre_completo', '').strip()
+        perfil = request.POST.get('perfil', '').strip()
+        trayectoria = request.POST.get('trayectoria', '').strip()
+        fotografia = request.FILES.get('fotografia', None)
+
+        if nombre_completo and perfil and trayectoria:
+            # Crear un nuevo autor
+            autor = Autor.objects.create(
+                nombre_completo=nombre_completo,
+                perfil=perfil,
+                trayectoria=trayectoria,
+                fotografia=fotografia
+            )
+            return JsonResponse({
+                'success': True,
+                'autor': autor.nombre_completo,
+                'autor_id': autor.id
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'message': 'Todos los campos son obligatorios.'
+            })
+    
+    return JsonResponse({
+        'success': False,
+        'message': 'Solicitud inválida.'
+    })
 
 
 class VideosView(LoginRequiredMixin, TemplateView):

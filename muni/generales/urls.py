@@ -5,8 +5,8 @@ from django.contrib.auth.views import LogoutView
 from .views import TransparenciaView, crear_seccion, EjercicioFiscalListView, EjercicioFiscalCreateView, DocumentoTransparenciaListView, registrar_documento, SeccionTransparenciaUpdateView, eliminar_seccion, EjercicioFiscalUpdateView, eliminar_ejercicio_fiscal, DocumentoTransparenciaUpdateView, eliminar_documento_transparencia
 from . import views
 from .views import CrearCarpetaView, SubirArchivoView, ListarCarpetasView, EditarCarpetaView, GestionarCarpetaView, EliminarCarpetaView, EditarArchivoView, eliminar_archivo
-from .views import ListaObligacionesView, ListaObligacionesCreateView, ListaObligacionesUpdateView, ListaObligacionesDeleteView, GestionarArticulosView, CrearArticuloView, EditarArticuloView, EliminarArticuloView, actualizar_orden_articulos, convocatoriaHome, filtrar_convocatorias, GestionarArticulosArView, CrearArticuloLigaView, EditarArticuloLigaArchivoView
-from .views import crear_noticia
+from .views import ListaObligacionesView, ListaObligacionesCreateView, ListaObligacionesUpdateView, ListaObligacionesDeleteView, GestionarArticulosView, CrearArticuloView, EditarArticuloView, EliminarArticuloView, actualizar_orden_articulos, convocatoriaHome, filtrar_convocatorias, GestionarArticulosArView, CrearArticuloLigaView, EditarArticuloLigaArchivoView, ArticuloUpdateView
+from .views import crear_noticia, HablaHome, ArticuloCreateView, eliminar_articulo
 
 urlpatterns = [
     path("", CustomLoginView.as_view(),name='login'),
@@ -171,6 +171,18 @@ urlpatterns = [
     path('videos/nuevo/', VideoCreateView.as_view(), name='video_add'),
     path('videos/<int:pk>/editar/', VideoUpdateView.as_view(), name='video_edit'),
     path('videos/<int:pk>/eliminar/', video_delete, name='video_delete'),
+
+
+
+
+#----------------------- Habla con tus hijos ------------------------------
+    path('habla_home/', HablaHome.as_view(), name='habla_home'),
+    path('registro_articulo/', ArticuloCreateView.as_view(), name='registro_articulo'),
+    path('agregar_categoria_habla/', views.agregar_categoria_habla, name='agregar_categoria_habla'),
+    path('agregar_autor/', views.agregar_autor, name='agregar_autor'),
+    path('articulo_editar/<int:pk>/', ArticuloUpdateView.as_view(), name='articulo_editar'),
+
+    path('articulo_eliminar/<int:pk>/', eliminar_articulo, name='eliminar_articulo'),
 
 
 

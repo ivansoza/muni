@@ -1,0 +1,1251 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+  <!-- Fuente de Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Iconos de Feather -->
+  <script src="https://unpkg.com/feather-icons"></script>
+  <style>
+    /* Variables CSS */
+:root {
+    --color-primary: var(--color-primario);
+  --color-primary-hover: var(--color-secundario);
+  --color-primary-light: #fef3c7;
+  --color-primary-bg: #e2e2e2;
+  --color-text: #1f2937;
+  --color-text-light: #6b7280;
+  --color-border: #e5e7eb;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --radius-sm: 0.125rem;
+  --radius: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+}
+
+/* Reset y estilos base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  line-height: 1.5;
+  background-color: var(--color-white);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+button, input, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Utilidades */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Back link */
+.back-link-container {
+    margin-top: -50px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+  transition: color 0.2s;
+}
+
+.back-link:hover {
+  color: var(--color-primary);
+}
+
+.back-link svg {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+}
+
+/* Featured image */
+.featured-image {
+  position: relative;
+  width: 100%;
+  height: 40vh;
+  background-color: var(--color-gray-100);
+}
+
+@media (min-width: 768px) {
+  .featured-image {
+    height: 50vh;
+  }
+}
+
+.featured-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.featured-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+}
+
+.featured-image-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .featured-image-content {
+    padding: 2.5rem;
+  }
+}
+
+.article-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.badge-primary {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.article-title {
+  color: var(--color-white);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  max-width: 64rem;
+}
+
+@media (min-width: 768px) {
+  .article-title {
+    font-size: 2.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .article-title {
+    font-size: 3rem;
+  }
+}
+
+/* Article meta */
+.article-meta {
+  border-bottom: 1px solid var(--color-border);
+  padding: 1.5rem 0;
+}
+
+.article-meta-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .article-meta-content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.article-author {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.avatar {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--color-primario);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-gray-200);
+  font-weight: 600;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.author-name {
+  font-weight: 500;
+}
+
+.author-role {
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+}
+
+.article-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.stat svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Article content */
+.article-content {
+  padding: 2rem 0;
+}
+
+.article-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .article-grid {
+    grid-template-columns: 1fr 2fr 1fr;
+  }
+}
+
+.sidebar {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    display: block;
+  }
+  
+  .sidebar-left {
+    position: sticky;
+    top: 6rem;
+  }
+  
+  .sidebar-right {
+    position: sticky;
+    top: 6rem;
+  }
+}
+
+.share-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.share-label {
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+  margin-bottom: 0.5rem;
+}
+
+.share-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.share-button:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.separator {
+  width: 2rem;
+  height: 1px;
+  background-color: var(--color-border);
+  margin: 0.5rem 0;
+}
+
+/* Main content */
+.main-content {
+  max-width: 100%;
+}
+
+.article-body {
+  font-size: 1.125rem;
+  line-height: 1.7;
+}
+
+.article-lead {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.article-body h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.article-body h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.article-body p {
+  margin-bottom: 1.5rem;
+}
+
+.article-body ul, .article-body ol {
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.article-body ul {
+  list-style-type: disc;
+}
+
+.article-body ol {
+  list-style-type: decimal;
+}
+
+.article-body li {
+  margin-bottom: 0.5rem;
+}
+
+.article-body blockquote {
+  border-left: 4px solid var(--color-primary);
+  padding-left: 1rem;
+  font-style: italic;
+  color: var(--color-gray-700);
+  margin: 2rem 0;
+}
+
+.article-image {
+  margin: 2rem 0;
+}
+
+.article-image img {
+  width: 100%;
+  border-radius: var(--radius-lg);
+}
+
+.article-image figcaption {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+  margin-top: 0.5rem;
+}
+
+/* Article tags */
+.article-tags {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.tags-label {
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+}
+
+.tag-link {
+  font-size: 0.875rem;
+  color: var(--color-primary);
+  transition: text-decoration 0.2s;
+}
+
+.tag-link:hover {
+  text-decoration: underline;
+}
+
+/* Mobile share */
+.mobile-share {
+  display: block;
+  margin-top: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .mobile-share {
+    display: none;
+  }
+}
+
+.mobile-share-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobile-share-label {
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+}
+
+.mobile-share-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mobile-share-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+}
+
+/* Author box */
+.author-box {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: var(--color-primary-bg);
+  border-radius: var(--radius-lg);
+}
+
+.author-box-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .author-box-content {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.author-avatar {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--color-primario);
+}
+
+.author-details {
+  flex: 1;
+}
+
+.author-box-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.author-box-role {
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+}
+
+.author-box-bio {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.author-link {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: var(--color-primary);
+  font-size: 0.875rem;
+}
+
+.author-link:hover {
+  text-decoration: underline;
+}
+
+/* Article navigation */
+.article-navigation {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.prev-article, .next-article {
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: border-color 0.2s;
+}
+
+.prev-article:hover, .next-article:hover {
+  border-color: var(--color-primary);
+}
+
+.next-article .nav-article-content {
+  text-align: right;
+}
+
+.nav-article-label {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+}
+
+.next-article .nav-article-label {
+  justify-content: flex-end;
+}
+
+.nav-article-label svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.nav-article-title {
+  font-weight: 500;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s;
+}
+
+.prev-article:hover .nav-article-title,
+.next-article:hover .nav-article-title {
+  color: var(--color-primary);
+}
+
+/* Comments section */
+.comments-section {
+  margin-top: 3rem;
+}
+
+.comments-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.comment-form {
+  margin-bottom: 2rem;
+}
+
+.comment-form-container {
+  display: flex;
+  gap: 1rem;
+}
+
+.comment-avatar {
+  flex-shrink: 0;
+}
+
+.comment-input-container {
+  flex: 1;
+}
+
+.comment-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  resize: none;
+  min-height: 6rem;
+  margin-bottom: 0.5rem;
+}
+
+.comment-submit {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.comment-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-radius: var(--radius);
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.comment-button:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.comment {
+  display: flex;
+  gap: 1rem;
+}
+
+.comment-content {
+  flex: 1;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.comment-author {
+  font-weight: 500;
+}
+
+.author-badge {
+  display: inline-block;
+  font-size: 0.625rem;
+  padding: 0.125rem 0.375rem;
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  margin-left: 0.25rem;
+}
+
+.comment-date {
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+}
+
+.comment-text {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.comment-action-button {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius);
+  transition: background-color 0.2s;
+}
+
+.comment-action-button:hover {
+  background-color: var(--color-gray-100);
+}
+
+.comment-action-button svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.comment-reply {
+  margin-top: 1rem;
+  margin-left: 1.5rem;
+}
+
+.load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.load-more-button {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.load-more-button:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Related articles */
+.sidebar-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.related-articles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.related-article {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.related-article-image {
+  flex-shrink: 0;
+  width: 5rem;
+  height: 5rem;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.related-article-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s;
+}
+
+.related-article:hover .related-article-image img {
+  transform: scale(1.05);
+}
+
+.related-article-content {
+  flex: 1;
+}
+
+.related-article-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s;
+}
+
+.related-article:hover .related-article-title {
+  color: var(--color-primary);
+}
+
+.related-article-date {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+}
+
+.related-article-date svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+/* Newsletter box */
+.newsletter-box {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: var(--color-primary-bg);
+  border-radius: var(--radius-lg);
+}
+
+.newsletter-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.newsletter-text {
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+  margin-bottom: 1rem;
+}
+
+.newsletter-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.newsletter-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+}
+
+.newsletter-button {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-radius: var(--radius);
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: background-color 0.2s;
+}
+
+.newsletter-button:hover {
+  background-color: var(--color-primary-hover);
+}
+.sidebar-left{
+    position: sticky;
+    top: 110px;
+    height: fit-content;
+}
+.sidebar-right{
+    position: sticky;
+    top: 110px;
+    height: fit-content;
+}
+.tip{
+   background-color: #e0e0e0;
+}
+.tip:hover {
+        transform: translateY(-5px); /* Desplazamiento hacia arriba */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra para darle profundidad */
+        background-color: var(--color-secundario);
+        color: white;
+    }
+    
+#like-button {
+    transition: transform 0.2s ease, fill 0.2s ease;
+}
+
+#like-button:hover {
+    fill: blue;  /* Cambia a rojo cuando el cursor pase por encima */
+    transform: scale(1.1);
+}
+.stat {
+    position: relative; /* Para que el mensaje esté bien posicionado */
+    display: inline-block;
+}
+.like-message {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-primario);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    white-space: nowrap;
+}
+
+.like-message.show {
+    display: block;
+    opacity: 1;
+    transform: translateX(-50%) translateY(-5px);
+}
+  </style>
+<body>
+    <!-- Navegación de regreso -->
+    <div class="container back-link-container">
+      <a href="{% url "homeHabla" %}" class="back-link">
+        <i data-feather="arrow-left"></i>
+        Volver al inicio
+      </a>
+    </div>
+
+    <!-- Imagen destacada -->
+    <div class="featured-image">
+      <img src="{{ articulo.imagen.url }}" alt="{{ articulo.titulo }}">
+      <div class="featured-image-overlay"></div>
+      <div class="featured-image-content">
+        <div class="container">
+          <div class="article-categories">
+            {% for categoria in articulo.categoria.all %}
+            <span class="badge badge-primary">{{ categoria.nombre }}</span>
+          {% endfor %}
+          </div>
+          <h1 class="article-title">{{ articulo.titulo }}</h1>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metadatos del artículo -->
+    <div class="article-meta">
+      <div class="container">
+        <div class="article-meta-content">
+          <div class="article-author">
+            <div class="author-avatar">
+              <img src="{{ articulo.autor.fotografia.url }}" alt="María Rodríguez">
+            </div>
+            <div class="author-info">
+              <div class="author-name">{{ articulo.autor.nombre_completo }}</div>
+              <div class="author-role">{{ articulo.autor.perfil }}</div>
+            </div>
+          </div>
+          <div class="article-stats">
+            <div class="stat">
+              <i data-feather="calendar"></i>
+              <span>{{ articulo.fecha_publicacion|date:"j \\d\\e F, Y"  }}</span>
+            </div>
+            <div class="stat">
+              <i data-feather="clock"></i>
+              <span>{{ articulo.tiempo_lectura }} min de lectura</span>
+            </div>
+           
+            <div class="stat">
+                <i id="like-button" data-feather="thumbs-up" onclick="darLike({{ articulo.id }})" style="cursor: pointer;"></i>
+                <span id="like-count">{{ articulo.likes }} me gusta</span>
+                <div id="like-message" class="like-message"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenido del artículo -->
+    <article class="article-content">
+      <div class="container">
+        <div class="article-grid">
+          <!-- Barra lateral izquierda - Compartir -->
+          <div class="sidebar sidebar-left">
+            <div class="share-buttons">
+                <div class="share-label">Compartir</div>
+        
+                <!-- Facebook -->
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
+                   class="share-button" aria-label="Compartir en Facebook" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" 
+                         alt="Facebook" width="24" height="24">
+                </a>
+        
+                <!-- WhatsApp -->
+                <a href="https://api.whatsapp.com/send?text={{ articulo.titulo }}%20{{ request.build_absolute_uri }}" 
+                   class="share-button" aria-label="Compartir en WhatsApp" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
+                         alt="WhatsApp" width="24" height="24">
+                </a>
+        
+                <a href="https://twitter.com/intent/tweet?text={{ articulo.titulo }}%20{{ request.build_absolute_uri }}" 
+                class="share-button" aria-label="Compartir en Twitter" target="_blank">
+                    <img src="https://images.seeklogo.com/logo-png/49/1/twitter-x-logo-png_seeklogo-492396.png" 
+                        alt="X (Twitter)" width="24" height="24">
+                </a>
+
+        
+                <!-- LinkedIn -->
+                <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri }}" 
+                   class="share-button" aria-label="Compartir en LinkedIn" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" 
+                         alt="LinkedIn" width="24" height="24">
+                </a>
+            </div>
+        </div>
+        
+
+          <!-- Contenido principal -->
+          <div class="main-content">
+            <div class="article-body">
+                <p class="article-lead">{{ articulo.contenido|safe }}</p>
+                {% if video_embed_url %}
+                <div class="video-container" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;">
+                    <iframe src="{{ video_embed_url }}" 
+                            frameborder="0" 
+                            allowfullscreen 
+                            style="position: absolute; top:0; left: 0; width: 100%; height: 100%;">
+                    </iframe>
+                </div>
+            {% endif %}
+            
+            
+              <!-- Etiquetas -->
+              <div class="article-tags">
+                <span class="tags-label">Etiquetas:</span>
+                {% for etiqueta in etiquetas %}
+                <a href="#" class="tag-link">{{ etiqueta }}</a>
+                {% endfor %}
+            </div>
+            
+
+              <!-- Compartir móvil -->
+              <div class="mobile-share">
+                <div class="mobile-share-container">
+                  <span class="mobile-share-label">Compartir este artículo:</span>
+                  <div class="mobile-share-buttons">
+                    <!-- Facebook -->
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
+                class="share-button" aria-label="Compartir en Facebook" target="_blank">
+                 <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" 
+                      alt="Facebook" width="24" height="24">
+             </a>
+     
+             <!-- WhatsApp -->
+             <a href="https://api.whatsapp.com/send?text={{ articulo.titulo }}%20{{ request.build_absolute_uri }}" 
+                class="share-button" aria-label="Compartir en WhatsApp" target="_blank">
+                 <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
+                      alt="WhatsApp" width="24" height="24">
+             </a>
+     
+             <a href="https://twitter.com/intent/tweet?text={{ articulo.titulo }}%20{{ request.build_absolute_uri }}" 
+             class="share-button" aria-label="Compartir en Twitter" target="_blank">
+                 <img src="https://images.seeklogo.com/logo-png/49/1/twitter-x-logo-png_seeklogo-492396.png" 
+                     alt="X (Twitter)" width="24" height="24">
+             </a>
+
+     
+             <!-- LinkedIn -->
+             <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri }}" 
+                class="share-button" aria-label="Compartir en LinkedIn" target="_blank">
+                 <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" 
+                      alt="LinkedIn" width="24" height="24">
+             </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Autor -->
+              <div class="author-box">
+                <div class="author-box-content">
+                  <div class="author-avatar">
+                    <img src="{{ articulo.autor.fotografia.url }}" alt="María Rodríguez">
+                  </div>
+                  <div class="author-details">
+                    <h3 class="author-box-title">Sobre {{ articulo.autor.nombre_completo }}</h3>
+                    <p class="author-box-role">{{ articulo.autor.perfil }}</p>
+                    <p class="author-box-bio">
+                        {{ articulo.autor.trayectoria }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Navegación entre artículos -->
+            <div class="article-navigation">
+                {% if articulo_anterior %}
+                <a href="{% url 'articuloHabla' articulo_anterior.id %}" class="prev-article">
+                    <div class="nav-article-content">
+                        <span class="nav-article-label">
+                            <i data-feather="arrow-left"></i> Anterior
+                        </span>
+                        <span class="nav-article-title">
+                            {{ articulo_anterior.titulo }}
+                        </span>
+                    </div>
+                </a>
+                {% endif %}
+
+                {% if articulo_siguiente %}
+                <a href="{% url 'articuloHabla' articulo_siguiente.id %}" class="next-article">
+                    <div class="nav-article-content">
+                        <span class="nav-article-label">
+                            Siguiente <i data-feather="arrow-right"></i>
+                        </span>
+                        <span class="nav-article-title">
+                            {{ articulo_siguiente.titulo }}
+                        </span>
+                    </div>
+                </a>
+                {% endif %}
+            </div>
+
+            </div>
+          </div>
+
+          <!-- Barra lateral derecha - Artículos relacionados -->
+          <div class="sidebar sidebar-right">
+            <div class="related-articles">
+              <h3 class="sidebar-title">Artículos relacionados</h3>
+              
+              <div class="related-articles-list">
+                {% for relacionado in articulos_relacionados %}
+                    <a href="{% url 'articuloHabla' relacionado.id %}" class="related-article">
+                        <div class="related-article-image">
+                            <img src="{{ relacionado.imagen.url }}" alt="{{ relacionado.titulo }}">
+                        </div>
+                        <div class="related-article-content">
+                            <h4 class="related-article-title">{{ relacionado.titulo }}</h4>
+                            <div class="related-article-date">
+                                <i data-feather="calendar"></i>
+                                <span>{{ relacionado.fecha_publicacion|date:"j \d\e F, Y" }}</span>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+              </div>
+
+              <div class="newsletter-box" style="background-color: #f9f9f9; padding: 20px; border-radius: 10px;">
+                <h3 class="newsletter-title" style="font-size: 20px; text-align: center; color: #333;">
+                    <i data-feather="message-square" style="margin-right: 10px; color: var(--color-primario);"></i> Consejos rápidos
+                </h3>
+                <div class="quick-tips">
+                    <div class="tip" style="padding: 10px; margin: 10px 0; border-radius: 5px;">
+                        <i data-feather="check-circle" style="margin-right: 10px; color: var(--color-primario);"></i>
+                        Escucha activamente a tus hijos.
+                    </div>
+                    <div class="tip" style="padding: 10px;  margin: 10px 0; border-radius: 5px;">
+                        <i data-feather="check-circle" style="margin-right: 10px; color: var(--color-primario);"></i>
+                        Crea un ambiente seguro y de confianza.
+                    </div>
+                    <div class="tip" style="padding: 10px; margin: 10px 0; border-radius: 5px;">
+                        <i data-feather="check-circle" style="margin-right: 10px; color: var(--color-primario);"></i>
+                        Fomenta la confianza mediante el respeto.
+                    </div>
+                </div>
+            </div>
+            
+            
+            
+            
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  <script>
+    // Inicializar los iconos de Feather
+    document.addEventListener('DOMContentLoaded', function() {
+      feather.replace();
+    });
+  </script>
+  <script>
+function showLikeMessage(message, colorVar = "--color-primario") {
+    let likeMessage = document.getElementById("like-message");
+
+    // Obtener el valor de la variable CSS
+    let color = getComputedStyle(document.documentElement).getPropertyValue(colorVar);
+
+    likeMessage.textContent = message;
+    likeMessage.style.background = color.trim();  // Asignar el color dinámicamente
+    likeMessage.style.display = "block";
+    likeMessage.classList.add("show");
+
+    setTimeout(() => {
+        likeMessage.classList.remove("show");
+        setTimeout(() => {
+            likeMessage.style.display = "none";
+        }, 300);
+    }, 2000);
+}
+
+function darLike(articuloId) {
+    fetch(`/eventos/dar-like/${articuloId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            'csrfmiddlewaretoken': '{{ csrf_token }}',
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('like-count').textContent = data.likes + " me gusta";
+
+        let likeButton = document.getElementById('like-button');
+        likeButton.style.fill = "blue";
+        likeButton.style.transform = "scale(1.2)";
+        setTimeout(() => {
+            likeButton.style.transform = "scale(1)";
+        }, 200);
+
+        if (data.liked) {
+            showLikeMessage("¡Gracias por tu like! 💙");
+        } else {
+            showLikeMessage("Ya has dado me gusta.", "--color-secundario"); // Usa el color secundario
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+    </script>
+    
+    
+</body>
+
+{% endblock %}

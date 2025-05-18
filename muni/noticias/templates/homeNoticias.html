@@ -100,7 +100,10 @@
     justify-content: center;
     gap: 10px;
     margin-top: 20px;
-}
+    overflow-x: auto; /* Permite scroll horizontal */
+    padding: 5px 0;
+    -webkit-overflow-scrolling: touch; /* Suaviza scroll en iOS */
+  }
 
 .page-link {
     text-decoration: none;
@@ -111,6 +114,8 @@
     font-size: 16px;
     color: #333;
     transition: background-color 0.3s;
+    flex: 0 0 auto; /* Evita que se estiren los botones */
+    white-space: nowrap; /* Evita que el texto se corte */
 }
 
 .page-link:hover {
@@ -122,7 +127,17 @@
     color: white;
     font-weight: bold;
 }
-
+@media (max-width: 480px) {
+    .pagination .page-link {
+      display: none;
+    }
+    .pagination .page-prev,
+    .pagination .page-next {
+      display: inline-block;
+    }
+  }
+  
+    
 
 /* Sidebar flotante dentro de su contenedor */
 .sidebar2 {
@@ -697,20 +712,23 @@
             <!-- Paginación -->
             <div class="pagination">
                 {% if noticias.has_previous %}
-                    <a href="?page=1{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}" class="page-link">&laquo; Primero</a>
-                    <a href="?page={{ noticias.previous_page_number }}{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}" class="page-link">Anterior</a>
-                {% endif %}
-        
-                <!-- Paginación numérica -->
-                {% for i in noticias.paginator.page_range %}
-                    <a href="?page={{ i }}{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}" class="page-link {% if i == noticias.number %}active{% endif %}">{{ i }}</a>
+                  <a href="?page=1{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}" class="page-link">&laquo; Primero</a>
+                  <a href="?page={{ noticias.previous_page_number }}" class="page-link page-prev">Anterior</a>
+                  {% endif %}
+              
+                {% for i in page_range %}
+                  <a href="?page={{ i }}{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}" 
+                     class="page-link {% if i == noticias.number %}active{% endif %}">
+                    {{ i }}
+                  </a>
                 {% endfor %}
-        
+              
                 {% if noticias.has_next %}
-                    <a href="?page={{ noticias.next_page_number }}{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}" class="page-link">Siguiente</a>
-                    <a href="?page={{ noticias.paginator.num_pages }}{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}" class="page-link">Último &raquo;</a>
+                <a href="?page={{ noticias.next_page_number }}" class="page-link page-next">Siguiente</a>
+                <a href="?page={{ noticias.paginator.num_pages }}{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}" class="page-link">Último &raquo;</a>
                 {% endif %}
-            </div>
+              </div>
+              
             <br>
             <br>
             <br>
