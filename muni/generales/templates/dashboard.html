@@ -718,7 +718,7 @@
 
             
             {% if is_superuser or '' in user_permissions %}
-                <a class="app-item" href="">
+                <a class="app-item" href="{% url "habla_home" %}">
                     <div class="app-card" style="background-image: url('{% static 'img/apps/habla.png' %}');"></div>
                     <div class="app-name">Habla con tus hijos</div>
                 </a>
