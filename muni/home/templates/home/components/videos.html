@@ -1,0 +1,616 @@
+{# templates/videos_carousel.html #}
+{% load static %}
+
+{# ────────────  SWIPER JS  ──────────── #}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/10.3.1/swiper-bundle.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/10.3.1/swiper-bundle.min.js" defer></script>
+
+<style>
+  /* ────────────  VARIABLES DE COLOR  ──────────── */
+  :root {
+    {% if municipio.colores.exists %}
+      --c-primary: {{ municipio.colores.first.color_primario_dark }};
+      --c-primary-rgb: {{ municipio.colores.first.color_primario_dark_rgb }};
+      --c-secondary: {{ municipio.colores.first.color_primario }};
+      --c-secondary-rgb: {{ municipio.colores.first.color_primario_rgb }};
+      --c-accent: {{ municipio.colores.first.color_secundario }};
+    {% else %}
+      --c-primary: #1e4765;
+      --c-primary-rgb: 30,71,101;
+      --c-secondary: #295E84;
+      --c-secondary-rgb: 41,94,132;
+      --c-accent: #6d6d6d;
+    {% endif %}
+    
+    /* Nuevas variables para mejorar la consistencia */
+    --c-background: #f8f9fa;
+    --c-white: #ffffff;
+    --c-gray-100: #f1f3f5;
+    --c-gray-200: #e9ecef;
+    --c-gray-300: #dee2e6;
+    --c-gray-400: #ced4da;
+    --c-text-primary: #212529;
+    --c-text-secondary: #6c757d;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --shadow-sm: 0 2px 8px rgba(var(--c-primary-rgb), 0.08);
+    --shadow-md: 0 6px 16px rgba(var(--c-primary-rgb), 0.12);
+    --shadow-lg: 0 12px 28px rgba(var(--c-primary-rgb), 0.15);
+    --transition-standard: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  /* ────────────  CONTENEDOR GENERAL  ──────────── */
+  .videos-gallery {
+    position: relative;
+    margin: 60px auto;
+    max-width: 1400px;
+    padding: 60px 40px;
+    background: var(--c-background);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .videos-gallery::before,
+  .videos-gallery::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+  }
+
+  .videos-gallery::before {
+    background: linear-gradient(135deg, rgba(var(--c-secondary-rgb), 0.08), transparent);
+    height: 400px;
+    width: 400px;
+    top: -100px;
+    left: -100px;
+    border-radius: 50%;
+  }
+
+  .videos-gallery::after {
+    background: linear-gradient(215deg, rgba(var(--c-primary-rgb), 0.08), transparent);
+    height: 500px;
+    width: 500px;
+    bottom: -150px;
+    right: -150px;
+    border-radius: 50%;
+  }
+
+  /* ────────────  ENCABEZADO  ──────────── */
+  .videos-header {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 40px;
+  }
+
+  .videos-subtitle {
+    display: inline-block;
+    padding: 6px 18px;
+    background: var(--c-secondary);
+    color: var(--c-white);
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: 30px;
+    margin-bottom: 16px;
+    box-shadow: 0 3px 10px rgba(var(--c-secondary-rgb), 0.25);
+  }
+
+  .videos-title {
+    color: var(--c-primary);
+    font-size: 2.25rem;
+    font-weight: 800;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .videos-title::after {
+    content: "";
+    display: block;
+    height: 4px;
+    width: 80px;
+    background: var(--c-accent);
+    margin: 16px auto 0;
+    border-radius: 2px;
+  }
+
+  /* ────────────  SWIPER GALLERY  ──────────── */
+  .swiper-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding-bottom: 50px;
+    z-index: 2;
+  }
+
+  .swiper-wrapper {
+    display: flex;
+    align-items: center;
+  }
+
+  .swiper-slide {
+    height: auto;
+    transition: var(--transition-standard);
+    display: flex;
+    justify-content: center;
+  }
+
+  .video-card {
+    background: var(--c-white);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    height: 100%;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    transition: var(--transition-standard);
+    border: 1px solid var(--c-gray-200);
+  }
+
+  .swiper-slide-active .video-card {
+    box-shadow: var(--shadow-md);
+    transform: scale(1.05);
+  }
+
+  .video-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Marco 16:9 responsivo mejorado */
+  .video-thumbnail {
+    position: relative;
+    aspect-ratio: 16/9;
+    width: 100%;
+    overflow: hidden;
+    background-color: #000;
+  }
+
+  .video-thumbnail::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--c-secondary);
+  }
+
+  .video-thumbnail iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    transition: var(--transition-standard);
+  }
+
+  .video-info {
+    padding: 20px;
+  }
+
+  .video-title {
+    margin: 0 0 8px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--c-primary);
+    line-height: 1.4;
+  }
+
+  .video-date {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--c-text-secondary);
+    margin-bottom: 12px;
+  }
+
+
+  .video-thumbnail:hover .video-play-button {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+    background: rgba(var(--c-secondary-rgb), 0.9);
+  }
+
+  /* ────────────  NAVEGACIÓN  ──────────── */
+  .swiper-pagination {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+  }
+
+  .swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    background: var(--c-gray-300);
+    opacity: 1;
+    margin: 0 5px;
+  }
+
+  .swiper-pagination-bullet-active {
+    background: var(--c-secondary);
+    transform: scale(1.2);
+  }
+
+  .swiper-button-next,
+  .swiper-button-prev {
+    color: var(--c-white);
+    background: var(--c-primary);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(var(--c-primary-rgb), 0.3);
+    transition: var(--transition-standard);
+    top: 45%;
+    margin-top: 0;
+    transform: translateY(-50%);
+  }
+
+  .swiper-button-next {
+    right: 10px;
+  }
+
+  .swiper-button-prev {
+    left: 10px;
+  }
+
+  .swiper-button-next:hover,
+  .swiper-button-prev:hover {
+    background: var(--c-secondary);
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  .swiper-button-next:after,
+  .swiper-button-prev:after {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  /* ────────────  MENSAJES VACÍOS / ERROR  ──────────── */
+  .message-box {
+    text-align: center;
+    margin: 2rem auto;
+    padding: 1.5rem 2rem;
+    border-radius: var(--radius-md);
+    max-width: 600px;
+    font-size: 1.1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .message-empty {
+    color: var(--c-text-secondary);
+    background: var(--c-gray-100);
+    border-left: 4px solid var(--c-gray-400);
+  }
+
+  .message-error {
+    color: #d93025;
+    background: rgba(217, 48, 37, 0.08);
+    border-left: 4px solid #d93025;
+  }
+
+  .message-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  /* ────────────  OVERLAY PARA VIDEOS  ──────────── */
+  .video-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  .video-overlay.active {
+    display: flex;
+  }
+
+  .video-overlay-content {
+    position: relative;
+    width: 80%;
+    max-width: 900px;
+    aspect-ratio: 16/9;
+  }
+
+  .video-overlay iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .video-overlay-close {
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 36px;
+    height: 36px;
+    background: var(--c-white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--c-primary);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  /* ────────────  RESPONSIVE  ──────────── */
+  @media (max-width: 991px) {
+    .videos-gallery {
+      padding: 50px 30px;
+      margin: 40px auto;
+    }
+    
+    .videos-title {
+      font-size: 1.85rem;
+    }
+
+    .video-overlay-content {
+      width: 90%;
+    }
+
+    .video-overlay-close {
+      top: -30px;
+      right: -10px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .videos-gallery {
+      padding: 40px 20px;
+      margin: 30px auto;
+    }
+    
+    .videos-title {
+      font-size: 1.6rem;
+    }
+    
+    .videos-subtitle {
+      font-size: 0.8rem;
+      padding: 5px 15px;
+    }
+    
+    .swiper-button-next,
+    .swiper-button-prev {
+      width: 36px;
+      height: 36px;
+    }
+    
+    .swiper-button-next:after,
+    .swiper-button-prev:after {
+      font-size: 15px;
+    }
+
+    .video-overlay-content {
+      width: 95%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .videos-gallery {
+      padding: 30px 15px;
+    }
+    
+    .videos-title {
+      font-size: 1.4rem;
+    }
+
+    .swiper-button-next,
+    .swiper-button-prev {
+      display: none;
+    }
+  }
+</style>
+
+{% with videos=municipio.videos.all %}
+<div class="videos-gallery">
+  <div class="videos-header">
+    <span class="videos-subtitle">Contenido multimedia</span>
+    <h2 class="videos-title">Videos del Municipio</h2>
+  </div>
+
+  {% if municipio is None %}
+    <div class="message-box message-error">
+      <span class="message-icon">❗</span>
+      <p>No hay un municipio activo configurado.</p>
+    </div>
+  {% elif not videos %}
+    <div class="message-box message-empty">
+      <span class="message-icon">📹</span>
+      <p>Aún no se han publicado videos. Próximamente tendremos contenido disponible.</p>
+    </div>
+  {% else %}
+    <!-- Cargador visual mientras se inicializa el carrusel -->
+    <div id="carousel-loader" style="text-align: center; padding: 20px;">
+      <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid rgba(var(--c-primary-rgb), 0.1); border-left-color: var(--c-primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    </div>
+    
+    <div class="swiper-container" style="visibility: hidden;">
+      <div class="swiper-wrapper">
+        {% for video in videos %}
+          <div class="swiper-slide" {% if forloop.first %}data-initial-slide="true"{% endif %}>
+            <div class="video-card">
+              <div class="video-thumbnail">
+                <iframe
+                  src="{{ video.frame }}"
+                  title="{{ video.nombre|escape }}"
+                  loading="lazy"
+                  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+                <div class="video-play-button" data-video-id="{{ video.id }}" data-video-src="{{ video.frame }}"></div>
+              </div>
+              <div class="video-info">
+                <h3 class="video-title">{{ video.nombre }}</h3>
+                {% if video.fecha_publicacion %}
+                  <span class="video-date">Publicado: {{ video.fecha_publicacion|date:"d/m/Y" }}</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      
+      <!-- Navegación -->
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-pagination"></div>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Overlay para reproducción de videos -->
+<div class="video-overlay">
+  <div class="video-overlay-content">
+    <iframe src="" title="Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <div class="video-overlay-close">✕</div>
+  </div>
+</div>
+
+<style>
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+{% endwith %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Inicializar Swiper de manera optimizada
+    const videoSwiper = new Swiper('.swiper-container', {
+      slidesPerView: 1,
+      spaceBetween: 30,
+      centeredSlides: true,
+      loop: false, // Desactivamos el loop inicialmente
+      initialSlide: 0, // Aseguramos que comience en el primer slide
+      loopFillGroupWithBlank: true,
+      autoplay: {
+        delay: 5000,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true
+      },
+      speed: 800,
+      grabCursor: true,
+      keyboard: {
+        enabled: true,
+      },
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+        dynamicBullets: false // Desactivamos bullets dinámicos para más estabilidad
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      breakpoints: {
+        640: {
+          slidesPerView: 1.5,
+          spaceBetween: 20,
+        },
+        768: {
+          slidesPerView: 2,
+          spaceBetween: 30,
+        },
+        1024: {
+          slidesPerView: 2.5,
+          spaceBetween: 40,
+        },
+        1200: {
+          slidesPerView: 3,
+          spaceBetween: 50,
+        }
+      },
+      on: {
+        init: function() {
+          // Asegurarse de que el slide activo esté centrado
+          this.slideTo(0, 0); // Forzar al primer slide sin animación
+          
+          // Actualizar y mostrar carrusel con un retraso para asegurar la carga correcta
+          setTimeout(() => {
+            this.update();
+            showCarousel();
+          }, 300);
+        },
+        afterInit: function() {
+          // Activamos el loop después de la inicialización para evitar problemas de posición inicial
+          setTimeout(() => {
+            this.params.loop = true;
+            this.update();
+          }, 800);
+        }
+      }
+    });
+
+    // Mostrar carrusel una vez que esté listo
+    const swiperContainer = document.querySelector('.swiper-container');
+    const carouselLoader = document.getElementById('carousel-loader');
+    
+    // Función para mostrar el carrusel correctamente inicializado
+    function showCarousel() {
+      if (carouselLoader) {
+        carouselLoader.style.display = 'none';
+      }
+      if (swiperContainer) {
+        swiperContainer.style.visibility = 'visible';
+      }
+    }
+    
+    // Función para preparar la URL del video para reproducción automática
+    function prepareVideoUrl(url) {
+      // Detectar si es YouTube o Vimeo y ajustar para autoplay
+      if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        // Eliminar cualquier parámetro de autoplay existente
+        url = url.replace(/(&|\?)autoplay=\d/g, '');
+        
+        // Agregar parámetro autoplay=1
+        if (url.includes('?')) {
+          url = url + '&autoplay=1&mute=0';
+        } else {
+          url = url + '?autoplay=1&mute=0';
+        }
+      } 
+      else if (url.includes('vimeo.com')) {
+        // Eliminar cualquier parámetro de autoplay existente
+        url = url.replace(/(&|\?)autoplay=\d/g, '');
+        
+        // Agregar parámetro autoplay=1
+        if (url.includes('?')) {
+          url = url + '&autoplay=1';
+        } else {
+          url = url + '?autoplay=1';
+        }
+      }
+      
+      return url;
+    }
+
+    // Sistema de overlay mejorado para reproducción de videos
+    const videoOverlay = document.querySelector('.video-overlay');
+    const videoOverlayIframe = videoOverlay.querySelector('iframe');
+    const videoOverlayClose = videoOverlay.querySelector('.video-overlay-close');
+    
+    // Configurar los botones de reproducción
+
+
+  });
+</script>

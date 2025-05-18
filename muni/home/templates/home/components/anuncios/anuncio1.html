@@ -1,0 +1,77 @@
+<style>
+
+    
+    .anuncio-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+      margin: 2rem auto;
+      max-width: 85%;
+      background: var(--color-gradiente);
+      border-radius: 1rem;
+      box-shadow: 0 6px 20px rgba(var(--color-primario-rgb), 0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .anuncio-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(var(--color-primario-rgb), 0.25);
+    }
+    
+    .anuncio-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--color-primario);
+    }
+    
+    .anuncio-container img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      border-radius: 0.5rem;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Animación sutil al cargar */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .anuncio-container {
+      animation: fadeIn 0.6s ease forwards;
+    }
+    
+    @media (max-width: 992px) {
+      .anuncio-container {
+        max-width: 90%;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .anuncio-container {
+        padding: 1rem;
+        margin: 1.5rem auto;
+        max-width: 95%;
+      }
+    }
+    </style>
+    
+    {% with anuncio=municipio.anuncios.first %}
+      {% if anuncio and anuncio.imagen %}
+        <div class="anuncio-container">
+          <img 
+            src="{{ anuncio.imagen.url }}" 
+            alt="Anuncio del municipio {{ municipio.nombre_municipio }}"
+            loading="lazy"
+          >
+        </div>
+      {% endif %}
+    {% endwith %}

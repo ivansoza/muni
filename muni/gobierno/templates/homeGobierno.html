@@ -285,6 +285,13 @@
     line-height: 1.4;
   }
 
+
+  .nuevo-p {
+    color: #666 !important;
+    font-size: 0.75rem !important;
+    line-height: 1.4 !important;
+  }
+  
   /* Foto de cada miembro */
   .foto-miembro {
     width: 140px;
@@ -310,13 +317,15 @@
     border-radius: 50%;
     border: 6px solid var(--color-iconos);
     opacity: 0.3;
+    z-index: 2; /* Increase this to 2 to be above the image */
+    pointer-events: none; /* This allows clicks to pass through to the image */
   }
   .foto-miembro img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     position: relative;
-    z-index: 1;
+    z-index: 1; /* Keep this at 1 */
     transition: transform 0.3s ease;
   }
   .foto-miembro:hover img {
@@ -339,6 +348,9 @@
   .foto-miembro:hover .overlay {
     opacity: 1;
   }
+
+
+
   .foto-miembro::before {
     content: '';
     position: absolute;
@@ -502,22 +514,48 @@
               <a href="#">
                 <div class="foto-miembro">
                   {% if miembro.imagen %}
-                    <img style="margin-top:1rem; width:130px; height:auto;"
-                        src="{{ miembro.imagen.url }}"
+                    <img src="{{ miembro.imagen.url }}" 
                         alt="{{ miembro.nombre }}">
                   {% else %}
                     {% if municipio.logotipo_claro %}
-                      
-                      <img style="margin-top:1rem; width:130px; height:auto;"
-                      src="{{ municipio.logotipo_claro.url }}"
-                      alt="{{ miembro.nombre }}">
-
+                      <img src="{{ municipio.logotipo_claro.url }}"
+                          alt="{{ miembro.nombre }}">
                     {% else %}
-                      <img style="margin-top:1rem; width:130px; height:auto;"
-                          src="{{ municipio.logotipo.url }}"
+                      <img src="{{ municipio.logotipo.url }}"
                           alt="{{ miembro.nombre }}">
                     {% endif %}
+                  {% endif %}
+                  <div class="overlay"></div>
+                </div>
+              </a>
+              <h3>{{ miembro.nombre }}</h3>
+              <p>{{ miembro.cargo }}</p>
+              {% if miembro.area %}
+                  <p class="nuevo-p">{{ miembro.area }}</p>
+              {% endif %}
 
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+    {# Presidentes Comunales #}
+    {% if presidentes_comu %}
+      <div class="gabinete">
+        <h2>Presidentes de Comunidad</h2>
+        <div class="miembros-gabinete">
+          {% for miembro in presidentes_comu %}
+            <div class="miembro">
+              <a href="#">
+                <div class="foto-miembro">
+                  {% if miembro.imagen %}
+                    <img src="{{ miembro.imagen.url }}" alt="{{ miembro.nombre }}">
+                  {% else %}
+                    {% if municipio.logotipo_claro %}
+                      <img src="{{ municipio.logotipo_claro.url }}" alt="{{ miembro.nombre }}">
+                    {% else %}
+                      <img src="{{ municipio.logotipo.url }}" alt="{{ miembro.nombre }}">
+                    {% endif %}
                   {% endif %}
                   <div class="overlay"></div>
                 </div>
@@ -540,18 +578,18 @@
               <a href="#">
                 <div class="foto-miembro">
                   {% if miembro.imagen %}
-                    <img style="margin-top:1rem; width:130px; height:auto;"
+                    <img 
                         src="{{ miembro.imagen.url }}"
                         alt="{{ miembro.nombre }}">
                   {% else %}
                     {% if municipio.logotipo_claro %}
                       
-                      <img style="margin-top:1rem; width:130px; height:auto;"
+                      <img 
                       src="{{ municipio.logotipo_claro.url }}"
                       alt="{{ miembro.nombre }}">
 
                     {% else %}
-                      <img style="margin-top:1rem; width:130px; height:auto;"
+                      <img 
                           src="{{ municipio.logotipo.url }}"
                           alt="{{ miembro.nombre }}">
                     {% endif %}
@@ -567,7 +605,34 @@
         </div>
       </div>
     {% endif %}
-
+    {# Coordinadores DIF #}
+    {% if coordinadores_dif %}
+      <div class="gabinete">
+        <h2>Sistema Municipal DIF </h2>
+        <div class="miembros-gabinete">
+          {% for miembro in coordinadores_dif %}
+            <div class="miembro">
+              <a href="#">
+                <div class="foto-miembro">
+                  {% if miembro.imagen %}
+                    <img src="{{ miembro.imagen.url }}" alt="{{ miembro.nombre }}">
+                  {% else %}
+                    {% if municipio.logotipo_claro %}
+                      <img src="{{ municipio.logotipo_claro.url }}" alt="{{ miembro.nombre }}">
+                    {% else %}
+                      <img src="{{ municipio.logotipo.url }}" alt="{{ miembro.nombre }}">
+                    {% endif %}
+                  {% endif %}
+                  <div class="overlay"></div>
+                </div>
+              </a>
+              <h3>{{ miembro.nombre }}</h3>
+              <p>{{ miembro.cargo }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
 
   {% else %}
     <p>No se encontró información del municipio.</p>

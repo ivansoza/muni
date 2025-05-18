@@ -5,6 +5,13 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 import json
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET
+from django.apps import apps
+from django.utils import timezone
+
+from transparencia.forms import ReporteAlcantarilladoForm, ReporteAlumbradoPublicoForm, ReporteBacheForm, ReporteServicioAguaForm
+from reportes.models import ReporteStatus
 from .models import ArticuloLiga, SeccionTransparencia
 from django.shortcuts import get_object_or_404
 from .models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia
@@ -36,16 +43,61 @@ class HomeSevacView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['sidebar'] = 'sevac'
+
+
         return context
+    
+
+
+
+
 class HomeReportesView(TemplateView):
     template_name = 'reportes/reportes.html' 
 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # ─── get_or_create del único ReporteStatus ───
+        defaults = {
+            "reporte_agua_status": False,
+            "reporte_bache_status": False,
+            "reporte_alcantarillado_status": False,
+            "reporte_alumbrado_status": False,
+        }
+
+        reporte_status, _ = ReporteStatus.objects.get_or_create(
+            pk=1,  # siempre usaremos el registro #1
+            defaults=defaults,
+        )
+
+        context["reporte_status"] = reporte_status
         context['sidebar'] = 'reportes'
         return context
 
+
+
+class HomeReportesView(TemplateView):
+    template_name = 'reportes/reportes.html' 
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # ─── get_or_create del único ReporteStatus ───
+        defaults = {
+            "reporte_agua_status": False,
+            "reporte_bache_status": False,
+            "reporte_alcantarillado_status": False,
+            "reporte_alumbrado_status": False,
+        }
+
+        reporte_status, _ = ReporteStatus.objects.get_or_create(
+            pk=1,  # siempre usaremos el registro #1
+            defaults=defaults,
+        )
+
+        context["reporte_status"] = reporte_status
+        context['sidebar'] = 'reportes'
+        return context
 def get_encuestas_activas(request, municipio_id):
     """
     Devuelve todas las encuestas activas de un municipio, con sus preguntas y opciones.
@@ -208,3 +260,118 @@ def lista_obligaciones(request):
         'years': years,
         'sidebar': 'transparencia'
     })
+
+
+
+
+
+# ───────────────────  Mixin para evitar repetición ────────────────────
+class ReporteStatusMixin:
+    sidebar_value = "reportes"  # puedes sobreescribirlo si luego cambias
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+
+        defaults = {
+            "reporte_agua_status": False,
+            "reporte_bache_status": False,
+            "reporte_alcantarillado_status": False,
+            "reporte_alumbrado_status": False,
+        }
+        status, _ = ReporteStatus.objects.get_or_create(pk=1, defaults=defaults)
+
+        ctx["reporte_status"] = status
+        ctx["sidebar"] = self.sidebar_value
+        return ctx
+
+    # helper genérico para el POST
+    def _process_form(self, form_cls, request):
+        form = form_cls(request.POST, request.FILES)
+        if form.is_valid():
+            reporte = form.save()
+            return JsonResponse(
+                {"success": True, "codigo_seguimiento": reporte.codigo_seguimiento}
+            )
+        return JsonResponse({"success": False, "errors": form.errors}, status=400)
+
+
+# ───────────────────  Vistas ────────────────────
+class ReporteServicioAguaView(ReporteStatusMixin, TemplateView):
+    template_name = "reportes/servicio_agua.html"
+
+    def post(self, request, *args, **kwargs):
+        return self._process_form(ReporteServicioAguaForm, request)
+
+
+class ReporteBacheView(ReporteStatusMixin, TemplateView):
+    template_name = "reportes/bache.html"
+
+    def post(self, request, *args, **kwargs):
+        return self._process_form(ReporteBacheForm, request)
+
+
+class ReporteAlcantarilladoView(ReporteStatusMixin, TemplateView):
+    template_name = "reportes/alcantarillado.html"
+
+    def post(self, request, *args, **kwargs):
+        return self._process_form(ReporteAlcantarilladoForm, request)
+
+
+class ReporteAlumbradoPublicoView(ReporteStatusMixin, TemplateView):
+    template_name = "reportes/alumbrado_publico.html"
+
+    def post(self, request, *args, **kwargs):
+        return self._process_form(ReporteAlumbradoPublicoForm, request)
+
+
+
+@require_GET
+def consulta_reporte_ajax(request):
+    codigo = request.GET.get("codigo", "").strip()
+    if not codigo:
+        return JsonResponse({"error": "No se proporcionó código"}, status=400)
+
+    modelos = [
+        apps.get_model("reportes", "ReporteServicioAgua"),
+        apps.get_model("reportes", "ReporteBache"),
+        apps.get_model("reportes", "ReporteAlcantarillado"),
+        apps.get_model("reportes", "ReporteAlumbradoPublico"),
+    ]
+
+    reporte = None
+    tipo = ""
+    for m in modelos:
+        try:
+            reporte = m.objects.get(codigo_seguimiento=codigo)
+            tipo = m._meta.verbose_name.title()
+            break
+        except m.DoesNotExist:
+            continue
+
+    if reporte is None:
+        return JsonResponse({"error": "Código no encontrado"}, status=404)
+
+    # Usamos localtime para cada fecha
+    def fmt(dt):
+        return timezone.localtime(dt).strftime("%Y-%m-%d %H:%M") if dt else ""
+
+    data = {
+        "tipo": tipo,
+        "codigo": reporte.codigo_seguimiento,
+        "nombre": reporte.nombre_solicitante,
+        "descripcion": reporte.descripcion,
+        "estatus": reporte.get_estatus_display(),
+        "comentarios_internos": reporte.comentarios or "",
+        "ubicacion": reporte.ubicacion,
+        "latitud": str(reporte.latitud) if reporte.latitud is not None else "",
+        "longitud": str(reporte.longitud) if reporte.longitud is not None else "",
+        "place_id": reporte.place_id or "",
+        "fecha_creado": fmt(reporte.creado),
+        "fecha_pendiente": fmt(reporte.fecha_pendiente),
+        "fecha_en_progreso": fmt(reporte.fecha_en_progreso),
+        "fecha_resuelto": fmt(reporte.fecha_resuelto),
+        "fecha_cerrado": fmt(reporte.fecha_cerrado),
+        "foto_url": reporte.foto.url if reporte.foto else "",
+    }
+
+    return JsonResponse({"reporte": data})

@@ -6,7 +6,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
-from generales.models import SeccionPlus, Secciones
+from generales.models import SeccionPlus, Secciones, VideoMunicipio
+from informacion_municipal.models import ElementoLista, InformacionCiudad
 
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
@@ -179,14 +180,17 @@ class GroupForm(forms.ModelForm):
         return group
     
 
+# generales/forms.py
 class SeccionesForm(forms.ModelForm):
     class Meta:
-        model = Secciones
+        model  = Secciones
         fields = [
             'noticias', 'convocatorias', 'transparencia', 'servicios',
             'habla_con_tus_hijos', 'aviso_de_privacidad', 'gabinete',
-            'sevac', 'contacts', 'reportes', 'encuestas', 'servicios_en_linea'
+            'sevac', 'contacts', 'reportes', 'encuestas',
+            'servicios_en_linea', 'videos',                      # ← agregado
         ]
+
 
 class SeccionPlusForm(forms.ModelForm):
     class Meta:
@@ -198,4 +202,26 @@ class SeccionPlusForm(forms.ModelForm):
             'banner': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'status': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'detalles': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+        }
+
+
+class InformacionCiudadForm(forms.ModelForm):
+    class Meta:
+        model = InformacionCiudad
+        exclude = ("municipio",)
+
+class ElementoListaForm(forms.ModelForm):
+    class Meta:
+        model = ElementoLista
+        fields = ("texto",)
+
+
+class VideoMunicipioForm(forms.ModelForm):
+    class Meta:
+        model = VideoMunicipio
+        fields = ['nombre', 'frame', 'orden']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'frame': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://www.youtube.com/embed/…'}),
+            'orden': forms.NumberInput(attrs={'class': 'form-control'}),
         }

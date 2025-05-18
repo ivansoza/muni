@@ -13,19 +13,22 @@ from django.contrib.auth.models import Group
 from django.views.decorators.http import require_http_methods
 from django.forms import modelformset_factory
 from django.forms import inlineformset_factory
+from .mixins import SuperuserOrReportPermissionMixin
 
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.http import require_POST
 from django.views.generic import FormView
+from django.http import JsonResponse, HttpResponseNotAllowed
 
-from informacion_municipal.models import Municipio, Video
-from generales.models import ContadorVisitas, SeccionPlus, Secciones, SocialNetwork
+from informacion_municipal.models import ElementoLista, InformacionCiudad, Municipio, Video
+from generales.models import ContadorVisitas, SeccionPlus, Secciones, SocialNetwork, VideoMunicipio
+from reportes.models import ReporteStatus
 from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, AvisoDePrivacidadForm
 from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
 from servicios.forms import ServicioForm
 from servicios.models import Servicio
-from .forms import CustomAuthenticationForm, GroupForm, SeccionPlusForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm
+from .forms import CustomAuthenticationForm, ElementoListaForm, GroupForm, InformacionCiudadForm, SeccionPlusForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm, VideoMunicipioForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from noticias.models import Noticia, ImagenGaleria, Categoria
@@ -85,21 +88,163 @@ class VideoView(LoginRequiredMixin,TemplateView):
 
 
 
-class ReportesView(LoginRequiredMixin,TemplateView):
-    template_name = 'generales/reportes.html'
+class ReportesView(LoginRequiredMixin,
+                   SuperuserOrReportPermissionMixin,
+                   TemplateView):
+    template_name = "generales/reportes.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         context["breadcrumb"] = {
-            'parent': {'name': 'Dashboard', 'url': '/admin'},
-            'child': {'name': 'Reportes', 'url': ''}
+            "parent": {"name": "Generales", "url": "/admin/generales/"},
+            "child": {"name": "Reportes",  "url": ""},
+        }
+        context["sidebar"]    = "Generales"
+        context["regreso_url"] = reverse("generalesDashboard")
+
+        defaults = {
+            "reporte_agua_status":         False,
+            "reporte_bache_status":        False,
+            "reporte_alcantarillado_status": False,
+            "reporte_alumbrado_status":    False,
+        }
+        reporte_status, _ = ReporteStatus.objects.get_or_create(
+            pk=1, defaults=defaults
+        )
+        context["reporte_status"] = reporte_status
+        return context
+    
+
+
+    
+class DetailMunicipioView(LoginRequiredMixin,TemplateView):
+    template_name = 'detalle/detalle.html'
+
+
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        if not (user.is_superuser or user.has_perm('auth.add_user')):
+            raise PermissionDenied  
+        return super().dispatch(request, *args, **kwargs)
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumb"] = {
+            'parent': {'name': 'Generales', 'url': '/admin'},
+            'child': {'name': 'Detalles de Municipio', 'url': ''}
         }
         context['sidebar'] = 'Generales' 
         url_configuracion = reverse( 'generalesDashboard')
         context['regreso_url']= url_configuracion
         return context
     
+@login_required
+@require_http_methods(["GET", "POST"])
+def informacion_ciudad_api(request):
+    """
+    Endpoint JSON-only para la ficha de InformaciónCiudad.
+    - Selecciona el primer Municipio con status='activo'.
+    - Si no hay municipios activos → 404.
+    - GET  → devuelve datos.
+    - POST → actualiza (lema, título, etc.).
+    """
+    municipio = (
+        Municipio.objects
+        .filter(status="activo")
+        .order_by("id")
+        .first()
+    )
+
+    if municipio is None:
+        return JsonResponse(
+            {"detail": "No hay ningún Municipio con estatus 'activo'."},
+            status=404
+        )
+
+    # ficha vinculada a ese municipio
+    info, _ = InformacionCiudad.objects.get_or_create(municipio=municipio)
+
+    if request.method == "GET":
+        data = {
+            "id":               info.id,
+            "municipio":        municipio.nombre,         # ← nombre del municipio activo
+            "lema":             info.lema,
+            "titulo":           info.titulo,
+            "subtitulo":        info.subtitulo,
+            "encabezado_lista": info.encabezado_lista,
+            "elementos": list(info.elementos.values("id", "texto")),
+        }
+        return JsonResponse(data, status=200)
+
+    # --- POST → actualizar ----------------------------------------------
+    payload = json.loads(request.body or "{}")
+    form = InformacionCiudadForm(payload, instance=info)
+    if form.is_valid():
+        form.save()
+        return JsonResponse(
+            {"detail": "Información actualizada con éxito."},
+            status=200
+        )
+    return JsonResponse({"errors": form.errors}, status=400)
+@login_required
+@csrf_exempt
+def elemento_api(request, pk=None):
+    """
+    Crear, actualizar o eliminar un ElementoLista:
+      • POST    /elemento/          → crear
+      • PATCH   /elemento/<pk>/     → actualizar
+      • DELETE  /elemento/<pk>/     → eliminar
+    Siempre trabaja con el primer Municipio activo.
+    """
+    # 1️⃣ Obtener el primer Municipio activo
+    municipio = Municipio.objects.filter(status="activo").order_by("id").first()
+    if not municipio:
+        return JsonResponse(
+            {"detail": "No hay ningún Municipio con estatus 'activo'."},
+            status=404
+        )
+
+    # 2️⃣ Asegurar la existencia de la ficha de InfoCiudad
+    info, _ = InformacionCiudad.objects.get_or_create(municipio=municipio)
+
+    # 3️⃣ CREAR (POST sin pk)
+    if request.method == "POST" and pk is None:
+        payload = json.loads(request.body or "{}")
+        form = ElementoListaForm(payload)
+        if form.is_valid():
+            elemento = form.save(commit=False)
+            elemento.informacion = info
+            elemento.save()
+            return JsonResponse({"id": elemento.id, "texto": elemento.texto}, status=201)
+        return JsonResponse({"errors": form.errors}, status=400)
+
+    # 4️⃣ A partir de aquí, necesitamos un pk válido
+    elemento = get_object_or_404(
+        ElementoLista,
+        pk=pk,
+        informacion__municipio=municipio
+    )
+
+    # 5️⃣ ACTUALIZAR (PATCH)
+    if request.method == "PATCH":
+        payload = json.loads(request.body or "{}")
+        # ❌ NO usar partial=True aquí
+        form = ElementoListaForm(payload, instance=elemento)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({"detail": "Elemento actualizado."}, status=200)
+        return JsonResponse({"errors": form.errors}, status=400)
+
+    # 6️⃣ ELIMINAR (DELETE)
+    if request.method == "DELETE":
+        elemento.delete()
+        return JsonResponse({"detail": "Elemento eliminado."}, status=204)
+
+    # 7️⃣ Métodos no permitidos
+    return HttpResponseNotAllowed(["POST", "PATCH", "DELETE"])
 class UsuariosView(LoginRequiredMixin, TemplateView):
     template_name = 'generales/usuarios.html'
 
@@ -2513,7 +2658,6 @@ class GroupUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 
 
 
-
 class SeccionPlusDetailView(TemplateView):
     template_name = 'seccionplus_detail.html'
 
@@ -2521,7 +2665,7 @@ class SeccionPlusDetailView(TemplateView):
         pk = self.kwargs.get('pk')
         slug = self.kwargs.get('slug')
         seccion = get_object_or_404(SeccionPlus, pk=pk, status=True)
-        # Si el slug de la URL no coincide con el del objeto, redirige a la URL correcta
+        # Redirige si el slug no coincide
         if seccion.slug != slug:
             return redirect('seccionplus_detail', pk=seccion.pk, slug=seccion.slug)
         return seccion
@@ -2529,28 +2673,34 @@ class SeccionPlusDetailView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         seccion = self.get_object()
-        
-        
+
         context['seccion'] = seccion
-        context['sidebar'] = 'mas'  
+        context['sidebar'] = 'mas'
 
-        # Filtrar convocatorias por la categoría de la SeccionPlus
-        context['convocatorias_activas'] = Convocatoria.objects.filter(
-            estado__in=['ABIERTA', 'PRÓXIMA'],
-            categoria=seccion.categoria_convocatoria
-        ).order_by('-id')
-        
-        context['convocatorias_pasadas'] = Convocatoria.objects.filter(
-            estado='CERRADA',
-            categoria=seccion.categoria_convocatoria
-        ).order_by('-id')
+        categoria = seccion.categoria_convocatoria
 
-        # Filtrar y depurar la categoría
-        categorias_qs = CategoriaConvocatoria.objects.filter(pk=seccion.categoria_convocatoria.pk)
-        context['categorias'] = categorias_qs
-        
+        if categoria:
+            # Si hay categoría, filtra por ella
+            context['convocatorias_activas'] = Convocatoria.objects.filter(
+                estado__in=['ABIERTA', 'PRÓXIMA'],
+                categoria=categoria
+            ).order_by('-id')
+            context['convocatorias_pasadas'] = Convocatoria.objects.filter(
+                estado='CERRADA',
+                categoria=categoria
+            ).order_by('-id')
+            context['categorias'] = CategoriaConvocatoria.objects.filter(pk=categoria.pk)
+        else:
+            # Si no hay categoría, muestra solo por estado (o vacío si prefieres)
+            context['convocatorias_activas'] = Convocatoria.objects.filter(
+                estado__in=['ABIERTA', 'PRÓXIMA']
+            ).order_by('-id')
+            context['convocatorias_pasadas'] = Convocatoria.objects.filter(
+                estado='CERRADA'
+            ).order_by('-id')
+            context['categorias'] = CategoriaConvocatoria.objects.none()
+
         return context
-
 def eliminar_aviso_privacidad(request, pk):
     aviso = get_object_or_404(AvisoDePrivacidad, pk=pk)
     if request.method == 'POST':
@@ -3063,3 +3213,126 @@ def agregar_autor(request):
         'success': False,
         'message': 'Solicitud inválida.'
     })
+
+
+class VideosView(LoginRequiredMixin, TemplateView):
+    template_name = 'videos/videos.html'
+    login_url = reverse_lazy('login')
+    redirect_field_name = 'next'
+
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        # ajusta 'transparencia' al app_label real de tu modelo VideoMunicipio
+        if not (user.is_superuser or user.has_perm('generales.view_videomunicipio')):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumb"] = {
+            'parent': {'name': 'Generales', 'url': '/admin'},
+            'child':  {'name': 'Videos',    'url': ''      }
+        }
+        context['sidebar']     = 'Generales'
+        context['regreso_url'] = reverse('generalesDashboard')
+
+        municipio_activo = Municipio.objects.filter(status='activo').first()
+        if municipio_activo:
+            videos = municipio_activo.videos.all()
+            total_videos = videos.count()
+        else:
+            videos = None
+            total_videos = 0
+
+        context['municipio_activo'] = municipio_activo
+        context['videos']           = videos
+        context['data']             = {'total_videos': total_videos}
+
+        return context
+    
+
+class VideoCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = VideoMunicipio
+    form_class = VideoMunicipioForm
+    template_name = 'videos/video_form.html'
+    permission_required = 'generales.add_videomunicipio'
+    success_url = reverse_lazy('videos')
+
+    def dispatch(self, request, *args, **kwargs):
+        # permitir sólo superuser o con permiso explícito
+        if not (request.user.is_superuser or request.user.has_perm(self.permission_required)):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        # asignar al municipio activo
+        municipio_activo = Municipio.objects.filter(status='activo').first()
+        if not municipio_activo:
+            form.add_error(None, "No existe un municipio activo.")
+            return self.form_invalid(form)
+        form.instance.municipio = municipio_activo
+        response = super().form_valid(form)
+        messages.success(self.request, "Video agregado con éxito.")
+        return response
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["breadcrumb"] = {
+            'parent': {'name': 'Generales', 'url': '/admin/videos/'},
+            'child':  {'name': 'Crear Video',    'url': ''      }
+        }
+        context['sidebar']     = 'Generales'
+        context['regreso_url'] = reverse('videos')
+
+        municipio_activo = Municipio.objects.filter(status='activo').first()
+        if municipio_activo:
+            videos = municipio_activo.videos.all()
+            total_videos = videos.count()
+        else:
+            videos = None
+            total_videos = 0
+
+        context['municipio_activo'] = municipio_activo
+        context['videos']           = videos
+        context['data']             = {'total_videos': total_videos}
+
+        return context
+    
+class VideoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = VideoMunicipio
+    form_class = VideoMunicipioForm
+    template_name = 'videos/video_form.html'
+    permission_required = 'generales.change_videomunicipio'
+    success_url = reverse_lazy('videos')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm(self.permission_required)):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Video actualizado con éxito.")
+        return response
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # reutilizamos breadcrumb y regreso_url
+        context["breadcrumb"] = {
+            'parent': {'name': 'Dashboard', 'url': '/admin'},
+            'child':  {'name': 'Editar Video', 'url': ''      }
+        }
+        context['sidebar']     = 'Generales'
+        context['regreso_url'] = reverse_lazy('videos')
+        return context
+    
+@login_required
+@permission_required('generales.delete_videomunicipio', raise_exception=True)
+@require_POST
+def video_delete(request, pk):
+    video = get_object_or_404(VideoMunicipio, pk=pk)
+    video.delete()
+    messages.success(request, "Video eliminado con éxito.")
+    return redirect('videos')

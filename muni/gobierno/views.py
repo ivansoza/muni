@@ -12,8 +12,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView
-from gobierno.models import MiembroGabinete, MiembroGabineteDirectores, MiembroGabineteRegidores
-from gobierno.forms import MiembroGabineteDirectorForm, MiembroGabineteForm, MiembroGabineteRegidorForm
+from gobierno.models import MiembroGabinete, MiembroGabineteCoordinadoresDif, MiembroGabineteDirectores, MiembroGabinetePresidentesComu, MiembroGabineteRegidores
+from gobierno.forms import MiembroGabineteCoordinadoresDifForm, MiembroGabineteDirectorForm, MiembroGabineteForm, MiembroGabinetePresidentesComuForm, MiembroGabineteRegidorForm
 # Create your views here.
 # 
 from django.shortcuts import get_list_or_404
@@ -25,26 +25,30 @@ class HomeGobiernoView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # 1. Obtenemos el primer municipio con status activo
         municipio_activo = Municipio.objects.filter(status='activo').first()
 
-        # 2. Si hay municipio activo, obtenemos sus miembros activos y ordenados
         if municipio_activo:
             miembros_activos = municipio_activo.gabinete.filter(status='activo').order_by('orden')
             regidores_activos = municipio_activo.gabinete_regidores.filter(status='activo').order_by('orden')
             directores_activos = municipio_activo.gabinete_directores.filter(status='activo').order_by('orden')
+            presidentes_comu_activos = municipio_activo.gabinete_presidentes_comu.filter(status='activo').order_by('orden')
+            coordinadores_dif_activos = municipio_activo.gabinete_coordinadores_dif.filter(status='activo').order_by('orden')
         else:
             miembros_activos = None
             regidores_activos = None
             directores_activos = None
+            presidentes_comu_activos = None
+            coordinadores_dif_activos = None
 
-        # 3. Agregamos los datos al contexto
-        context['municipio'] = municipio_activo
-        context['miembros'] = miembros_activos
-        context['regidores'] = regidores_activos
-        context['directores'] = directores_activos
-        context['sidebar'] = 'gobierno'  # Marcar 'Inicio' como activo
-
+        context.update({
+            'municipio': municipio_activo,
+            'miembros': miembros_activos,
+            'regidores': regidores_activos,
+            'directores': directores_activos,
+            'presidentes_comu': presidentes_comu_activos,
+            'coordinadores_dif': coordinadores_dif_activos,
+            'sidebar': 'gobierno',
+        })
         return context
 class SemblanzaHomeView(TemplateView):
     template_name = 'homeSemblanza.html'
@@ -69,14 +73,18 @@ class ListarGabineteView(LoginRequiredMixin, TemplateView):
 
         def contador(modelo):
             if municipio_activo:
-                return modelo.objects.filter(municipio=municipio_activo,
-                                             status='activo').count()
+                return modelo.objects.filter(
+                    municipio=municipio_activo,
+                    status='activo'
+                ).count()
             return 0
 
         ctx['contacts_data'] = {
             'gabinete': contador(MiembroGabinete),
             'regidores': contador(MiembroGabineteRegidores),
             'directores': contador(MiembroGabineteDirectores),
+            'presidentes_comu': contador(MiembroGabinetePresidentesComu),
+            'coordinadores_dif': contador(MiembroGabineteCoordinadoresDif),
         }
 
         ctx['regreso_url'] = reverse("dashboard")
@@ -111,6 +119,21 @@ def regidores_list_api(request):
 def directores_list_api(request):
     return lista_miembros(request, MiembroGabineteDirectores)
 
+
+def presidentes_comu_list_api(request):
+    """
+    Devuelve en JSON la lista de Presidentes Comunales
+    activos en el municipio activo, ordenados por 'orden'.
+    """
+    return lista_miembros(request, MiembroGabinetePresidentesComu)
+
+
+def coordinadores_dif_list_api(request):
+    """
+    Devuelve en JSON la lista de Coordinadores DIF
+    activos en el municipio activo, ordenados por 'orden'.
+    """
+    return lista_miembros(request, MiembroGabineteCoordinadoresDif)
 
 
 @require_POST
@@ -158,7 +181,18 @@ def regidores_update_order_api(request):
 def directores_update_order_api(request):
     return update_order(request, MiembroGabineteDirectores)
 
+def presidentes_comu_update_order_api(request):
+    """
+    Wrapper para actualizar el orden de Presidentes Comunales.
+    """
+    return update_order(request, MiembroGabinetePresidentesComu)
 
+
+def coordinadores_dif_update_order_api(request):
+    """
+    Wrapper para actualizar el orden de Coordinadores DIF.
+    """
+    return update_order(request, MiembroGabineteCoordinadoresDif)
 
 
 class MiembroGabineteCreateView(LoginRequiredMixin, CreateView):
@@ -284,3 +318,90 @@ class DirectorUpdateView(LoginRequiredMixin, UpdateView):
         }
         context['sidebar'] = 'gabinete'
         return context
+    
+
+
+
+
+class PresidenteComuCreateView(LoginRequiredMixin, CreateView):
+    model = MiembroGabinetePresidentesComu
+    form_class = MiembroGabinetePresidentesComuForm
+    template_name = 'admin/presidentes_comu_form.html'
+    success_url = reverse_lazy('ListarGabineteView')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Presidente de comunidad creado con éxito.")
+        return response
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['breadcrumb'] = {
+            'parent': {'name': 'Lista de Presidentes de Comunidad', 'url': '/gobierno/lista-presidentes-comu/'},
+            'child': {'name': 'Crear Nuevo Presidente de Comunidad', 'url': ''}
+        }
+        ctx['sidebar'] = 'gabinete'
+        return ctx
+
+
+class PresidenteComuUpdateView(LoginRequiredMixin, UpdateView):
+    model = MiembroGabinetePresidentesComu
+    form_class = MiembroGabinetePresidentesComuForm
+    template_name = 'admin/presidentes_comu_form.html'
+    success_url = reverse_lazy('ListarGabineteView')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Presidente de Comunidad actualizado con éxito.")
+        return response
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['breadcrumb'] = {
+            'parent': {'name': 'Lista de Presidentes de Comunidad', 'url': '/gobierno/lista-presidentes-comu/'},
+            'child': {'name': 'Editar Presidente de Comunidad', 'url': ''}
+        }
+        ctx['sidebar'] = 'gabinete'
+        return ctx
+
+
+class CoordinadorDifCreateView(LoginRequiredMixin, CreateView):
+    model = MiembroGabineteCoordinadoresDif
+    form_class = MiembroGabineteCoordinadoresDifForm
+    template_name = 'admin/coordinadores_dif_form.html'
+    success_url = reverse_lazy('ListarGabineteView')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Coordinador DIF creado con éxito.")
+        return response
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['breadcrumb'] = {
+            'parent': {'name': 'Lista de Coordinadores DIF', 'url': '/gobierno/lista-coordinadores-dif/'},
+            'child': {'name': 'Crear Nuevo Coordinador DIF', 'url': ''}
+        }
+        ctx['sidebar'] = 'gabinete'
+        return ctx
+
+
+class CoordinadorDifUpdateView(LoginRequiredMixin, UpdateView):
+    model = MiembroGabineteCoordinadoresDif
+    form_class = MiembroGabineteCoordinadoresDifForm
+    template_name = 'admin/coordinadores_dif_form.html'
+    success_url = reverse_lazy('ListarGabineteView')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Coordinador DIF actualizado con éxito.")
+        return response
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['breadcrumb'] = {
+            'parent': {'name': 'Lista de Coordinadores DIF', 'url': '/gobierno/lista-coordinadores-dif/'},
+            'child': {'name': 'Editar Coordinador DIF', 'url': ''}
+        }
+        ctx['sidebar'] = 'gabinete'
+        return ctx

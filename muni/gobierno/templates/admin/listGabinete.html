@@ -26,7 +26,6 @@
         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
         gap: 3rem !important;
         width: 100% !important;
-        max-width: 1200px !important;
         margin-bottom: 60px;
     }
     
@@ -142,9 +141,9 @@
 <div class="container-fluid mt-5">
 
     <div class="dashboard">
-        <!-- Tarjeta: Total de Secciones -->
-        <div class="row ">
-            <div class="col-12 col-sm-4 col-md-4 col-lg-4">
+        <div class="row">
+            <!-- Principales -->
+            <div class="col-12 col-sm-4 col-md-4 col-lg-4 mt-2">
                 <div class="cardash">
                     <div class="cardash-header">
                         <span class="cardash-title">Principales</span>
@@ -157,8 +156,9 @@
                     </div>
                 </div>
             </div>
-
-            <div class="col-12 col-sm-4 col-md-4 col-lg-4">
+    
+            <!-- Regidores -->
+            <div class="col-12 col-sm-4 col-md-4 col-lg-4 mt-2">
                 <div class="cardash">
                     <div class="cardash-header">
                         <span class="cardash-title">Regidores</span>
@@ -171,8 +171,9 @@
                     </div>
                 </div>
             </div>
-
-            <div class="col-12 col-sm-4 col-md-4 col-lg-4">
+    
+            <!-- Directores -->
+            <div class="col-12 col-sm-4 col-md-4 col-lg-4 mt-2">
                 <div class="cardash">
                     <div class="cardash-header">
                         <span class="cardash-title">Directores</span>
@@ -185,12 +186,39 @@
                     </div>
                 </div>
             </div>
+    
+            <!-- Presidentes Comunales -->
+            <div class="col-12 col-sm-4 col-md-4 col-lg-4 mt-2">
+                <div class="cardash">
+                    <div class="cardash-header">
+                        <span class="cardash-title">Presidentes de Comunidad</span>
+                        <div class="cardash-icon">
+                            <span class="emoji-transition">🏘️</span>
+                        </div>
+                    </div>
+                    <div class="cardash-content" style="font-size: 30px;">
+                        {{ contacts_data.presidentes_comu }}
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Coordinadores DIF -->
+            <div class="col-12 col-sm-4 col-md-4 col-lg-4 mt-2">
+                <div class="cardash">
+                    <div class="cardash-header">
+                        <span class="cardash-title">Coordinadores DIF</span>
+                        <div class="cardash-icon">
+                            <span class="emoji-transition">🤝</span>
+                        </div>
+                    </div>
+                    <div class="cardash-content" style="font-size: 30px;">
+                        {{ contacts_data.coordinadores_dif }}
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        
-
     </div>
-
+    
 
     <div class="row">
         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
@@ -280,34 +308,107 @@
         </a>
     </div>
 
-<div class="card shadow">
-    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <h2 class="mb-0">Directores</h2>
-        <div class="drag-hint">
-            <i class="fa fa-info-circle me-2"></i>
-            <span>Arrastra las filas para reorganizar</span>
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">Directores</h2>
+            <div class="drag-hint">
+                <i class="fa fa-info-circle me-2"></i>
+                <span>Arrastra las filas para reorganizar</span>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="directoresTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nombre</th><th>Cargo</th><th>Área</th>
+                            <th>Estado</th><th class="text-center">Posición</th>
+                            <th class="text-center">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="directoresTableBody" class="sortable-table"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer text-muted">
+            <div id="statusMessageDirectores" class="text-center"></div>
+        </div>
+    </div>
+    {# Botón y lista de Presidentes Comunales #}
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <a href="{% url 'crear-presidente-comu' %}" class="btn btn-add w-100 mb-3">
+            <i class="fa fa-user-plus"></i> Agregar Presidente de Comunidad
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">Presidentes de Comunidades</h2>
+            <div class="drag-hint">
+                <i class="fa fa-info-circle me-2"></i>
+                <span>Arrastra las filas para reorganizar</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="presidentesComuTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Cargo</th>
+                            <th>Área</th>
+                            <th>Estado</th>
+                            <th class="text-center">Posición</th>
+                            <th class="text-center">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="presidentesComuTableBody" class="sortable-table"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer text-muted">
+            <div id="statusMessagePresidentesComu" class="text-center"></div>
         </div>
     </div>
 
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover" id="directoresTable">
-                <thead class="table-light">
-                    <tr>
-                        <th>Nombre</th><th>Cargo</th><th>Área</th>
-                        <th>Estado</th><th class="text-center">Posición</th>
-                        <th class="text-center">Acción</th>
-                    </tr>
-                </thead>
-                <tbody id="directoresTableBody" class="sortable-table"></tbody>
-            </table>
-        </div>
+    {# Botón y lista de Coordinadores DIF #}
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <a href="{% url 'crear-coordinador-dif' %}" class="btn btn-add w-100 mb-3">
+            <i class="fa fa-user-plus"></i> Agregar Coordinador DIF
+        </a>
     </div>
 
-    <div class="card-footer text-muted">
-        <div id="statusMessageDirectores" class="text-center"></div>
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">Coordinadores DIF</h2>
+            <div class="drag-hint">
+                <i class="fa fa-info-circle me-2"></i>
+                <span>Arrastra las filas para reorganizar</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="coordinadoresDifTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Cargo</th>
+                            <th>Área</th>
+                            <th>Estado</th>
+                            <th class="text-center">Posición</th>
+                            <th class="text-center">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="coordinadoresDifTableBody" class="sortable-table"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer text-muted">
+            <div id="statusMessageCoordinadoresDif" class="text-center"></div>
+        </div>
     </div>
-</div>
 
 
 </div>
@@ -449,31 +550,47 @@
     document.addEventListener("DOMContentLoaded", () => {
     
         /* ---------- CONFIGURACIÓN PARA CADA TABLA ---------- */
-        /* ---------- CONFIGURACIÓN ---------- */
         const tablas = [
-        {
-            tbodyId:  "regidoresTableBody",
-            statusId: "statusMessageRegidores",
-            listUrl:  "{% url 'regidores_list_api' %}",
-            orderUrl: "{% url 'regidores_update_order_api' %}",
-            editUrlPattern: "{% url 'regidor_edit' 99999 %}",   // ← marcador
-        },
-        {
-            tbodyId:  "directoresTableBody",
-            statusId: "statusMessageDirectores",
-            listUrl:  "{% url 'directores_list_api' %}",
-            orderUrl: "{% url 'directores_update_order_api' %}",
-            editUrlPattern: "{% url 'director_edit' 99999 %}",  // ← marcador
-        },
+            /* Regidores */
+            {
+                tbodyId:  "regidoresTableBody",
+                statusId: "statusMessageRegidores",
+                listUrl:  "{% url 'regidores_list_api' %}",
+                orderUrl: "{% url 'regidores_update_order_api' %}",
+                editUrlPattern: "{% url 'regidor_edit' 99999 %}",   // 99999 = marcador
+            },
+            /* Directores */
+            {
+                tbodyId:  "directoresTableBody",
+                statusId: "statusMessageDirectores",
+                listUrl:  "{% url 'directores_list_api' %}",
+                orderUrl: "{% url 'directores_update_order_api' %}",
+                editUrlPattern: "{% url 'director_edit' 99999 %}",
+            },
+            /* Presidentes de Comunidad */
+            {
+                tbodyId:  "presidentesComuTableBody",
+                statusId: "statusMessagePresidentesComu",
+                listUrl:  "{% url 'api-presidentes-comu' %}",
+                orderUrl: "{% url 'api-update-order-presidentes-comu' %}",
+                editUrlPattern: "{% url 'editar-presidente-comu' 99999 %}",
+            },
+            /* Coordinadores DIF */
+            {
+                tbodyId:  "coordinadoresDifTableBody",
+                statusId: "statusMessageCoordinadoresDif",
+                listUrl:  "{% url 'api-coordinadores-dif' %}",
+                orderUrl: "{% url 'api-update-order-coordinadores-dif' %}",
+                editUrlPattern: "{% url 'editar-coordinador-dif' 99999 %}",
+            },
         ];
-
     
         /* ---------- INICIALIZAR CADA TABLA ---------- */
         tablas.forEach(cfg => {
             fetchAndRender(cfg);
         });
     
-        /* ---------- FUNCIONES ---------- */
+        /* ---------- FUNCIONES (ya las tenías) ---------- */
         function fetchAndRender(cfg){
             fetch(cfg.listUrl)
                 .then(r => r.json())
@@ -485,33 +602,32 @@
         function renderRows(rows, cfg){
             const tbody = document.getElementById(cfg.tbodyId);
             tbody.innerHTML = "";
-          
+    
             rows.forEach(m => {
-              const tr = document.createElement("tr");
-              tr.dataset.id = m.id;
-          
-              const stClass = m.status === "Activo" ? "text-success" : "text-danger";
-              const editUrl = cfg.editUrlPattern.replace("99999", m.id);  // ← aquí
-          
-              tr.innerHTML = `
-                <td>${m.nombre}</td>
-                <td>${m.cargo}</td>
-                <td>${m.area}</td>
-                <td><span class="${stClass}">${m.status}</span></td>
-                <td class="text-center">${m.orden}</td>
-                <td class="text-center">
-                    <a href="${editUrl}" class="me-2"><i class="fa fa-edit"></i></a>
-                    <div class="drag-handle d-inline-block"><i class="fa fa-th"></i></div>
-                </td>`;
-              tbody.appendChild(tr);
+                const tr = document.createElement("tr");
+                tr.dataset.id = m.id;
+    
+                const stClass = m.status === "Activo" ? "text-success" : "text-danger";
+                const editUrl = cfg.editUrlPattern.replace("99999", m.id);
+    
+                tr.innerHTML = `
+                    <td>${m.nombre}</td>
+                    <td>${m.cargo}</td>
+                    <td>${m.area}</td>
+                    <td><span class="${stClass}">${m.status}</span></td>
+                    <td class="text-center">${m.orden}</td>
+                    <td class="text-center">
+                        <a href="${editUrl}" class="me-2"><i class="fa fa-edit"></i></a>
+                        <div class="drag-handle d-inline-block"><i class="fa fa-th"></i></div>
+                    </td>`;
+                tbody.appendChild(tr);
             });
-          }
-          
+        }
     
         function initSortable(cfg){
             new Sortable(document.getElementById(cfg.tbodyId), {
-                animation:150,
-                handle:'.drag-handle',
+                animation: 150,
+                handle: '.drag-handle',
                 onEnd: () => updateOrder(cfg)
             });
         }
@@ -525,17 +641,17 @@
             showStatus("Actualizando posiciones...", "info", cfg);
     
             fetch(cfg.orderUrl, {
-                method:'POST',
+                method: 'POST',
                 headers:{
-                    "X-CSRFToken":"{{ csrf_token }}",
-                    "Content-Type":"application/x-www-form-urlencoded"
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/x-www-form-urlencoded"
                 },
                 body: params
             })
             .then(r => r.json())
             .then(j => {
                 showStatus(j.message, "success", cfg);
-                fetchAndRender(cfg);          // <‑‑ vuelve a pintar la tabla
+                fetchAndRender(cfg);          // vuelve a pintar la tabla
             })
             .catch(() => showStatus("Error al actualizar", "danger", cfg));
         }
@@ -547,5 +663,6 @@
         }
     });
     </script>
+    
     
 {% endblock content %}

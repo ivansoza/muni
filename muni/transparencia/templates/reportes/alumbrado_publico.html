@@ -1,0 +1,602 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+
+<style>
+  :root {
+    --primary-color: var(--color-primario);
+    --primary-dark: var(--color-secundario);
+    --success-color: #198754;
+    --light-bg: #f8f9fa;
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --border-radius: 10px;
+    --transition-speed: 0.3s;
+  }
+
+  /* Estilos para el contenedor principal */
+  .water-report-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 50px;
+  }
+
+  /* Estilos para el encabezado */
+  .report-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .report-title {
+    font-weight: 600;
+    color: #212529;
+    margin: 0;
+  }
+
+  .report-title span {
+    color: var(--primary-color);
+    font-weight: 400;
+  }
+
+  /* Estilos para el contenedor del formulario */
+  .form-container {
+    padding: 0.5rem;
+  }
+
+  /* Personalizaciones para Bootstrap */
+  .form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+    border-color: var(--primary-color);
+  }
+
+  .form-floating > .form-control:focus ~ label,
+  .form-floating > .form-control:not(:placeholder-shown) ~ label {
+    color: var(--primary-color);
+  }
+
+  .form-floating > .form-control:focus,
+  .form-floating > .form-control:not(:placeholder-shown) {
+    padding-top: 1.625rem;
+    padding-bottom: 0.625rem;
+  }
+
+  /* Estilizar input de archivos */
+  .custom-file-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+
+  .custom-file-label i {
+    margin-right: 0.5rem;
+    color: var(--primary-color);
+  }
+
+  /* Botón de enviar */
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 2rem;
+  }
+
+  .submit-btn {
+    padding: 0.6rem 2rem;
+    font-weight: 500;
+    border-radius: 50px;
+    transition: all var(--transition-speed);
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+  }
+
+  .submit-btn i {
+    margin-right: 0.5rem;
+  }
+
+  /* Modal personalizado */
+  .modal-content {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+  }
+
+  .modal-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+  }
+
+  .modal-header .modal-title {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .modal-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1.25rem 1.5rem;
+  }
+
+  /* Tarjeta de código de seguimiento */
+  .tracking-code-card {
+    background-color: var(--light-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    text-align: center;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.03);
+    border: 1px dashed rgba(0, 0, 0, 0.1);
+  }
+
+  .tracking-code-header {
+    font-weight: 600;
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .tracking-code {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--primary-color);
+    margin: 1rem 0;
+    word-break: break-all;
+    font-family: 'Courier New', monospace;
+  }
+
+  .tracking-code-footer {
+    color: #6c757d;
+    font-size: 0.85rem;
+  }
+
+  /* Alerta de error personalizada */
+  .error-alert {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    max-width: 400px;
+    opacity: 0;
+    transform: translateX(30px);
+    transition: all var(--transition-speed);
+    z-index: 9999;
+  }
+
+  .error-alert.show {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .error-alert-content {
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    border-left: 4px solid #dc3545;
+  }
+
+  .error-alert-header {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+  }
+
+  .error-alert-header i {
+    color: #dc3545;
+    font-size: 1.25rem;
+    margin-right: 0.75rem;
+  }
+
+  .error-alert-header h5 {
+    margin: 0;
+    font-weight: 600;
+    flex: 1;
+  }
+
+  .error-alert-body {
+    padding: 1rem;
+  }
+
+  .error-alert-body p {
+    margin: 0;
+    white-space: pre-line;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .water-report-container {
+      padding: 1.5rem 1rem;
+    }
+    
+    .tracking-code {
+      font-size: 1.5rem;
+    }
+    
+    .error-alert {
+      left: 1rem;
+      right: 1rem;
+      max-width: calc(100% - 2rem);
+    }
+  }
+
+
+  /* Botón de regresar personalizado */
+.report-header .btn-secondary {
+  background-color: var(--light-bg);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+.report-header .btn-secondary:hover {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+
+
+</style>
+
+
+<div class="water-report-container">
+  <div class="report-header">
+    <h2 class="report-title">Reportes <span>| Alumbrado Publico</span></h2>
+
+     <button
+      type="button"
+      class="btn btn-secondary btn-sm mt-2"
+      onclick="history.back();"
+    >
+      <i class="bi bi-arrow-left-circle"></i> Regresar
+    </button>
+
+
+  </div>
+
+  <div class="form-container">
+    <form id="reporte-agua-form" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      
+      <div class="form-floating mb-3">
+        <input
+          type="text"
+          name="nombre_solicitante"
+          id="id_nombre_solicitante"
+          class="form-control"
+          placeholder="Tu nombre"
+          required
+        >
+        <label for="id_nombre_solicitante">Nombre de quien reporta</label>
+      </div>
+
+      <div class="form-floating mb-3">
+        <textarea
+          name="descripcion"
+          id="id_descripcion"
+          class="form-control"
+          placeholder="Describe el problema"
+          style="height: 120px"
+          required
+        ></textarea>
+        <label for="id_descripcion">Descripción / comentarios</label>
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="id_foto" class="form-label custom-file-label">
+          <i class="bi bi-camera"></i> Fotografía (opcional)
+        </label>
+        <input
+          type="file"
+          name="foto"
+          id="id_foto"
+          class="form-control"
+          accept="image/*"
+        >
+      </div>
+
+      <div class="form-floating mb-3">
+        <input
+          type="text"
+          name="ubicacion"
+          id="id_ubicacion"
+          class="form-control"
+          placeholder="Dirección o referencia"
+          required
+        >
+        <label for="id_ubicacion">Ubicación</label>
+      </div>
+      <div id="map" style="height:300px;border-radius:10px;"></div>
+      <input type="hidden" name="place_id" id="id_place_id">
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <div class="form-floating">
+<input type="hidden" name="latitud"  id="id_latitud">
+
+            <label for="id_latitud"></label>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-floating">
+<input type="hidden" name="longitud" id="id_longitud">
+
+            <label for="id_longitud"></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary submit-btn">
+          <i class="bi bi-send-fill"></i> Enviar reporte
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal de resultado mejorado -->
+<div
+  class="modal fade"
+  id="modalResultadoReporte"
+  tabindex="-1"
+  aria-labelledby="modalResultadoLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalResultadoLabel">
+          <i class="bi bi-check-circle-fill text-success"></i> ¡Reporte enviado!
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Cerrar"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-center">Tu reporte se ha enviado con éxito.</p>
+        
+        <div class="tracking-code-card">
+          <div class="tracking-code-header">Código de seguimiento</div>
+          <div class="tracking-code" id="codigo-reporte-modal"></div>
+          <div class="tracking-code-footer">Guarda este código para consultas futuras</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          data-bs-dismiss="modal"
+        >Cerrar</button>
+        <button
+          type="button"
+          class="btn btn-success"
+          id="btn-nuevo-reporte"
+        >
+          <i class="bi bi-plus-circle"></i> Generar otro reporte
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+
+
+<script
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZ0B23l-LuHTGJl9R2eC176jQE67s8-Ec&callback=initMap&libraries=places"
+  async defer>
+</script>
+
+
+
+
+<script>
+
+let map, marker, autocomplete, geocoder;
+
+function initMap() {
+  const start = { lat: 19.3061, lng: -98.2403 };
+
+  map = new google.maps.Map(document.getElementById("map"), {
+    center: start,
+    zoom: 14,
+  });
+
+  // ─── marcador arrastrable ───
+  marker = new google.maps.Marker({
+    map,
+    position: start,
+    draggable: true,
+  });
+
+  geocoder = new google.maps.Geocoder();
+
+  /* ---------------  AUTOCOMPLETE  --------------- */
+  const input = document.getElementById("id_ubicacion");
+  autocomplete = new google.maps.places.Autocomplete(input, {
+    fields: ["geometry", "place_id", "formatted_address"],
+    types: ["geocode"],
+  });
+
+  autocomplete.addListener("place_changed", () => {
+    const place = autocomplete.getPlace();
+    if (!place.geometry) return;
+
+    const { lat, lng } = place.geometry.location;
+    setPosition(lat(), lng(), place.formatted_address, place.place_id);
+  });
+
+  /* ---------------  MAP CLICK  --------------- */
+  map.addListener("click", (e) => {
+    const { latLng } = e;
+    setPosition(latLng.lat(), latLng.lng());
+  });
+
+  /* ---------------  DRAG END  --------------- */
+  marker.addListener("dragend", (e) => {
+    const { latLng } = e;
+    setPosition(latLng.lat(), latLng.lng());
+  });
+}
+
+/**
+ * Actualiza inputs y marcador.  Si no enviamos address/placeId
+ * hace reverse-geocoding para rellenar la dirección.
+ */
+function setPosition(lat, lng, address = null, placeId = null) {
+  // 1. mover marcador y centrar mapa
+  marker.setPosition({ lat, lng });
+  map.panTo({ lat, lng });
+
+  // 2. actualizar campos ocultos / visibles
+  document.getElementById("id_latitud").value  = lat.toFixed(6);
+  document.getElementById("id_longitud").value = lng.toFixed(6);
+  if (placeId) document.getElementById("id_place_id").value = placeId;
+  if (address) document.getElementById("id_ubicacion").value = address;
+
+  // 3. si no tenemos dirección, la buscamos (reverse geocoding)
+  if (!address) {
+    geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+      if (status === "OK" && results[0]) {
+        document.getElementById("id_ubicacion").value = results[0].formatted_address;
+        document.getElementById("id_place_id").value = results[0].place_id;
+      }
+    });
+  }
+}
+
+
+  // Función para leer CSRF
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      document.cookie
+        .split(';')
+        .forEach(cookie => {
+          cookie = cookie.trim();
+          if (cookie.startsWith(name + '=')) {
+            cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
+          }
+        });
+    }
+    return cookieValue;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlCrear = "{% url 'reportes_alumbrado' %}";
+    const form = document.getElementById('reporte-agua-form');
+    const modalEl = document.getElementById('modalResultadoReporte');
+    const codigoModal = document.getElementById('codigo-reporte-modal');
+    const bsModal = new bootstrap.Modal(modalEl);
+    const btnNuevoReporte = document.getElementById('btn-nuevo-reporte');
+
+    // Gestionar envío de formulario
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const submitBtn = form.querySelector('button[type="submit"]');
+      
+      // Deshabilitar botón durante el envío
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enviando...';
+
+      try {
+        const resp = await fetch(urlCrear, {
+          method: 'POST',
+          headers: { 'X-CSRFToken': getCookie('csrftoken') },
+          body: formData
+        });
+
+        if (!resp.ok) {
+          const err = await resp.json();
+          const mensajes = Object.entries(err.errors || {})
+            .map(([f, m]) => `${f}: ${m.join(', ')}`)
+            .join('\n') || 'Error desconocido';
+          
+          // Mostrar error en una alerta estilizada
+          showErrorAlert('No se pudo crear el reporte', mensajes);
+          return;
+        }
+
+        const data = await resp.json();
+        // Rellenar modal y mostrarlo
+        codigoModal.textContent = data.codigo_seguimiento;
+        bsModal.show();
+        form.reset();
+      } catch (error) {
+        console.error('Error AJAX:', error);
+        showErrorAlert('Error inesperado', 'Ocurrió un problema al procesar tu solicitud. Por favor, intenta nuevamente.');
+      } finally {
+        // Restaurar botón
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Enviar reporte';
+      }
+    });
+
+    // Función para mostrar alerta de error estilizada
+    function showErrorAlert(title, message) {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = 'error-alert';
+      alertDiv.innerHTML = `
+        <div class="error-alert-content">
+          <div class="error-alert-header">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <h5>${title}</h5>
+            <button type="button" class="btn-close" aria-label="Cerrar"></button>
+          </div>
+          <div class="error-alert-body">
+            <p>${message}</p>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(alertDiv);
+      
+      setTimeout(() => {
+        alertDiv.classList.add('show');
+      }, 10);
+      
+      alertDiv.querySelector('.btn-close').addEventListener('click', () => {
+        alertDiv.classList.remove('show');
+        setTimeout(() => {
+          alertDiv.remove();
+        }, 300);
+      });
+      
+      setTimeout(() => {
+        alertDiv.classList.remove('show');
+        setTimeout(() => {
+          alertDiv.remove();
+        }, 300);
+      }, 5000);
+    }
+
+    // Evento para generar nuevo reporte
+    btnNuevoReporte.addEventListener('click', () => {
+      bsModal.hide();
+      form.reset();
+      setTimeout(() => {
+        document.getElementById('id_nombre_solicitante').focus();
+      }, 500);
+    });
+  });
+</script>
+{% endblock %}
+
