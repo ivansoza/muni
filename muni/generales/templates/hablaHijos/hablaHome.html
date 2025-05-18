@@ -1,0 +1,211 @@
+{% extends "baseTemplate.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+  .tarjeta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+  }
+
+  .tarjeta {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease;
+  }
+
+  .tarjeta:hover {
+    transform: translateY(-4px);
+  }
+
+  .tarjeta img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .tarjeta-contenido {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  .tarjeta h3 {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+  }
+
+  .tarjeta p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 6px;
+  }
+
+  .tarjeta .acciones {
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .tarjeta .acciones a,
+  .tarjeta .acciones button {
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .tarjeta .acciones a:hover,
+  .tarjeta .acciones button:hover {
+    text-decoration: underline;
+  }
+
+
+
+</style>
+
+<div class="container-fluid">
+  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div>
+     <br>
+      <h1>Artículos</h1>
+      <p class="text-muted mt-1">Administra todos los artículos del blog habla con tus hijos</p>
+    </div>
+    <a href="{% url 'registro_articulo' %}" class="btn btn-primary" style="background:linear-gradient(90deg, #3A6284 20%, #28455E 100%) !important; color: white; padding: 10px 20px; border-radius: 8px;">
+      <i class="fas fa-plus mr-2"></i> Nuevo artículo
+    </a>
+  </div>
+  <div style="width: 100%; max-width: 400px; margin-top: 1rem; margin-bottom: 1rem; position: relative;">
+    <input type="text" id="buscador" placeholder="Buscar Articulo..." autocomplete="off" style="
+      width: 100%;
+      padding: 10px 40px 10px 40px;  /* espacio para icono izquierda */
+      border-radius: 12px;
+      border: none;
+      box-shadow: 0 2px 6px rgb(61 84 120 / 15%);
+      font-size: 16px;
+      background: #fff;
+      color: #333;
+    ">
+    <i class="fas fa-search" style="
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #45638e;
+      font-size: 18px;
+    "></i>
+  </div>
+  
+  
+  <div class="tarjeta-grid">
+    {% for articulo in articulos %}
+    <div class="tarjeta">
+      <img src="{{ articulo.imagen.url }}" alt="Imagen del artículo">
+      <div class="tarjeta-contenido">
+        <h3>{{ articulo.titulo }}</h3>
+        <p><strong>Categoría:</strong> {{ articulo.categoria }}</p>
+        <p><strong>Autor:</strong> {{ articulo.autor }}</p>
+        <p><strong>Fecha:</strong> {{ articulo.fecha_publicacion|date:"d/m/Y H:i" }}</p>
+        <div class="acciones">
+          <a href="{% url 'articuloHabla' articulo.id %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye mr-1"></i> Ver</a>
+          <a href="{% url "articulo_editar" articulo.id %}" class="editar btn btn-sm btn-outline-warning"><i class="fas fa-pen mr-1"></i> Editar</a>
+          <form action="{% url 'eliminar_articulo' articulo.id %}" method="post" class="form-eliminar"
+          data-titulo="{{ articulo.titulo }}" data-categoria="{{ articulo.categoria }}">
+      {% csrf_token %}
+      <button type="submit" class="eliminar btn btn-sm btn-outline-danger btn-eliminar">
+        <i class="fas fa-trash-alt mr-1"></i> Eliminar
+      </button>
+    </form>
+    
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p style="text-align: center; color: #999; grid-column: span 3;">No hay artículos disponibles.</p>
+    {% endfor %}
+  </div>
+</div>
+<br>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const inputBuscador = document.getElementById("buscador");
+    inputBuscador.addEventListener("input", function () {
+      const filtro = this.value.toLowerCase();
+      const tarjetas = document.querySelectorAll(".tarjeta");
+
+      tarjetas.forEach(function (tarjeta) {
+        const titulo = tarjeta.querySelector("h3").textContent.toLowerCase();
+        if (titulo.includes(filtro)) {
+          tarjeta.style.display = "";
+        } else {
+          tarjeta.style.display = "none";
+        }
+      });
+    });
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Buscador (tu código ya existente)
+    const inputBuscador = document.getElementById("buscador");
+    inputBuscador.addEventListener("input", function () {
+      const filtro = this.value.toLowerCase();
+      const tarjetas = document.querySelectorAll(".tarjeta");
+
+      tarjetas.forEach(function (tarjeta) {
+        const titulo = tarjeta.querySelector("h3").textContent.toLowerCase();
+        if (titulo.includes(filtro)) {
+          tarjeta.style.display = "";
+        } else {
+          tarjeta.style.display = "none";
+        }
+      });
+    });
+
+    // Manejar confirmación de eliminación con SweetAlert2
+    const formsEliminar = document.querySelectorAll("form.form-eliminar");
+
+    formsEliminar.forEach(form => {
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const titulo = this.dataset.titulo;
+        const categoria = this.dataset.categoria;
+
+        Swal.fire({
+          title: '¿Eliminar artículo?',
+          html: `<strong>Título:</strong> ${titulo} <br> <strong>Categoría:</strong> ${categoria}`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#dc2626',
+          cancelButtonColor: '#6b7280',
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.submit();
+          }
+        });
+      });
+    });
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,490 @@
+{% extends "baseTemplate.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+{% block header %}
+{{ form.media }}
+{% endblock %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* El fondo del modal */
+/* El fondo del modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999; /* Asegura que esté por encima de otros elementos */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.6); /* Fondo oscuro con opacidad */
+    transition: all 0.3s ease;
+}
+
+/* Estilo del contenido del modal */
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 30px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    width: 80%;
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Cerrar el modal */
+.close {
+    color: #aaa;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Botón de cierre */
+.close:hover,
+.close:focus {
+    color: #333;
+    text-decoration: none;
+}
+
+/* Mostrar y ocultar el fondo al abrir y cerrar el modal */
+.modal-content {
+    transition: all 0.3s ease;
+}
+
+    /* Título del modal */
+    .modal-content h3 {
+        margin-top: 0;
+        font-size: 24px;
+        color: #333;
+        font-weight: bold;
+    }
+
+    /* Estilos para los inputs */
+    .form-control {
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+    }
+
+    /* Contenedor del campo select para categoría */
+    .form-half {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    /* Estilo para el botón de agregar categoría dentro del select */
+    .btn-add-category {
+    width: 70px;
+        background-color: #3E688C;
+        color: white;
+        border: none;
+        padding: 10px 12px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-40%);
+    }
+
+    .btn-add-category:hover {
+        background-color: #218838;
+    }
+
+    /* Estilo para el botón de agregar categoría dentro del modal */
+    .btn-submit-category {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        margin-top: 15px;
+        width: 100%;
+    }
+
+    .btn-submit-category:hover {
+        background-color: #0056b3;
+    }
+    .ocultarImgen {
+        display: none;  /* Ocultamos el input real */
+    }
+
+    .custom-file-upload {
+        display: block;
+        padding: 10px;
+        background-color: #f7f7f7;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .custom-file-upload:hover {
+        background-color: #e6e6e6;
+    }
+
+    .image-preview {
+        margin-top: 10px;
+        max-width: 100%;
+        height: auto;
+        display: none;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        padding: 5px;
+        background-color: #f7f7f7;
+    }
+    /* Estilos generales para el checkbox */
+/* Estilo para el checkbox y el texto de la etiqueta */
+.form-check {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+/* Estilo de la etiqueta */
+.form-check-label {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 8px; /* Espacio entre la etiqueta y el checkbox */
+}
+
+/* Estilo del checkbox */
+.form-check input[type="checkbox"] {
+    margin-bottom: 2px; /* Espacio entre el checkbox y el texto descriptivo */
+    cursor: pointer; /* Cambiar el cursor al pasar por encima */
+    width: 20px;
+    height: 20px;
+    accent-color: #007bff; /* Color del checkbox cuando está marcado */
+    margin-left: 5px;
+}
+
+/* Estilo cuando el checkbox está marcado */
+.form-check input[type="checkbox"]:checked {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+/* Estilo cuando el checkbox pasa el ratón sobre él */
+.form-check input[type="checkbox"]:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+/* Estilo para el texto debajo del checkbox */
+.form-text {
+    font-size: 14px;
+    color: #6c757d;
+    margin-top: 5px;
+}
+
+
+</style>
+
+<div class="container-fluid">
+    <div class="card mt-4">
+        <div class="card-header">
+            <h2>🧾 Editar Artículo</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Usamos crispy-forms para hacer el formulario más estilizado -->
+                <div class="form-group">
+                    {{ form.titulo|as_crispy_field }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.abstract|as_crispy_field }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.contenido|as_crispy_field }}
+                </div>
+
+                <div class="row">
+                    <!-- Primera fila con dos columnas -->
+                    <div class="col-md-6 form-group">
+                        {{ form.imagen|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6 form-group">
+                        {{ form.video_url|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <div class="form-half">
+                            {{ form.categoria|as_crispy_field }}
+                            <!-- Botón para abrir el modal dentro del campo de categoría -->
+                            <button type="button" class="btn-add-category" id="openModalButton" onclick="openCategoriaModal()">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Segunda fila con dos columnas -->
+                    <div class="col-md-6 form-group">
+                        {{ form.etiquetas|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <div class="form-half">
+                            {{ form.autor|as_crispy_field }}
+                            <!-- Botón para abrir el modal dentro del campo de autor -->
+                            <button type="button" class="btn-add-category" id="openModalButton" onclick="openAutorModal()">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tercera fila -->
+                    <div class="col-md-6 form-group">
+                        {{ form.tiempo_lectura|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6 form-group form-check">
+                        <!-- La etiqueta personalizada en lugar de la predeterminada -->
+                        <label for="{{ form.destacado.id_for_label }}" class="form-check-label">
+                            Marcar este artículo como destacado
+                        </label>
+                    
+                        <!-- Renderizamos el campo del formulario sin etiqueta -->
+                        {{ form.destacado }}
+                    
+                        <!-- Texto explicativo debajo del checkbox -->
+                        <small class="form-text text-muted">
+                            Será el primero en visualizarse en el home de los artículos.
+                        </small>
+                    </div>
+                    
+                    
+                </div>
+
+                
+
+                <button type="submit" class="btn btn-primary">Actualizar artículo</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para agregar nueva categoría -->
+<div id="categoryModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Agregar Nueva Categoría</h3>
+        <form id="createCategoryForm">
+            <div class="form-group">
+                <label for="categoryName">Nombre de la categoría</label>
+                <input type="text" class="form-control" id="categoryName" placeholder="Escribe el nombre de la nueva categoría">
+            </div>
+            <button type="submit" class="btn btn-primary btn-submit-category">Agregar Categoría</button>
+        </form>
+    </div>
+</div>
+<!-- Modal para agregar nuevo autor -->
+<div id="autorModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Agregar Nuevo Autor</h3>
+        <form id="createAutorForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="nombre_completo">Nombre Completo</label>
+                <input type="text" class="form-control" id="nombre_completo" placeholder="Introduce el nombre completo del autor">
+            </div>
+            <div class="form-group">
+                <label for="perfil">Perfil</label>
+                <input type="text" class="form-control" id="perfil" placeholder="Introduce el perfil del autor">
+            </div>
+            <div class="form-group">
+                <label for="trayectoria">Trayectoria</label>
+                <textarea class="form-control" id="trayectoria" rows="4" placeholder="Introduce la trayectoria del autor"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="fotografia">Fotografía</label>
+                <div class="custom-file-upload" onclick="document.getElementById('fotografia').click();">
+                    Seleccionar Fotografía
+                </div>
+                <input type="file" class="form-control-file ocultarImgen" id="fotografia" onchange="previewImage(event)">
+                <div id="imagePreviewContainer">
+                    <img id="imagePreview" class="image-preview" src="" alt="Vista previa de la imagen">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-submit-category">Agregar Autor</button>
+        </form>
+    </div>
+</div>
+<script>
+    // Función para abrir el modal
+    function openCategoriaModal() {
+    var modal = document.getElementById("categoryModal");
+    modal.style.display = "block";
+}
+
+// Obtener el modal y el botón que lo abre
+var modal = document.getElementById("categoryModal");
+var closeModal = document.getElementsByClassName("close")[0];
+
+// Cerrar el modal cuando se hace clic en "×"
+closeModal.onclick = function() {
+    modal.style.display = "none";
+}
+
+// Cerrar el modal si se hace clic fuera de él (en el fondo)
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+    // Agregar la nueva categoría al select y cerrar el modal
+    document.getElementById("createCategoryForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        var categoryName = document.getElementById("categoryName").value;
+
+        if (categoryName) {
+            // Hacer la petición AJAX para crear la categoría
+            $.ajax({
+                type: "POST",
+                url: "{% url 'agregar_categoria_habla' %}",  // URL de la vista para agregar categoría
+                data: {
+                    'categoria_nombre': categoryName,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'  // CSRF Token
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Si la categoría se creó correctamente, agregarla al select
+                        var selectElement = document.getElementById("id_categoria");  // Asegúrate de que este es el ID correcto del campo select
+                        
+                        // Crear la nueva opción y agregarla al select
+                        var newOption = document.createElement("option");
+                        newOption.text = response.categoria;  // Usamos el nombre de la categoría creada
+                        newOption.value = response.categoria_id;  // Usamos el ID de la categoría creada
+                        
+                        selectElement.add(newOption);  // Añadimos la nueva opción al select
+
+                        // Opcional: seleccionar la nueva categoría automáticamente
+                        newOption.selected = true;
+
+                        modal.style.display = "none";  // Cerrar el modal
+                    } else {
+                        alert(response.message || 'Hubo un error al agregar la categoría.');
+                    }
+                },
+                error: function() {
+                    alert('Ocurrió un error. Intenta nuevamente.');
+                }
+            });
+        } else {
+            alert('El nombre de la categoría no puede estar vacío.');
+        }
+    });
+</script>
+
+<script>
+    // Función para abrir el modal
+    function openAutorModal() {
+    var modal = document.getElementById("autorModal");
+    modal.style.display = "block";
+}
+
+// Obtener el modal y el botón que lo abre
+var autorModal = document.getElementById("autorModal");
+var closeAutorModal = document.getElementsByClassName("close")[1]; // Segunda clase "close" (para el modal de autor)
+
+// Cerrar el modal cuando se hace clic en "×"
+closeAutorModal.onclick = function() {
+    autorModal.style.display = "none";
+}
+
+// Cerrar el modal si se hace clic fuera de él (en el fondo)
+window.onclick = function(event) {
+    if (event.target == autorModal) {
+        autorModal.style.display = "none";
+    }
+}
+
+    // Agregar el nuevo autor al select y cerrar el modal
+    document.getElementById("createAutorForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        
+        var nombre_completo = document.getElementById("nombre_completo").value;
+        var perfil = document.getElementById("perfil").value;
+        var trayectoria = document.getElementById("trayectoria").value;
+        var fotografia = document.getElementById("fotografia").files[0];
+
+        if (nombre_completo && perfil && trayectoria) {
+            // Hacer la petición AJAX para crear el autor
+            var formData = new FormData();
+            formData.append('nombre_completo', nombre_completo);
+            formData.append('perfil', perfil);
+            formData.append('trayectoria', trayectoria);
+            formData.append('fotografia', fotografia);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'agregar_autor' %}",  // URL de la vista para agregar autor
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        // Si el autor se creó correctamente, agregarlo al select
+                        var selectElement = document.getElementById("id_autor");  // Asegúrate de que este es el ID correcto del campo select
+                        
+                        // Crear la nueva opción y agregarla al select
+                        var newOption = document.createElement("option");
+                        newOption.text = response.autor;  // Usamos el nombre del autor creado
+                        newOption.value = response.autor_id;  // Usamos el ID del autor creado
+                        
+                        selectElement.add(newOption);  // Añadimos la nueva opción al select
+
+                        // Seleccionar automáticamente el nuevo autor agregado
+                        selectElement.value = response.autor_id;
+
+                        // Cerrar el modal después de agregar el autor
+                        modal.style.display = "none";
+                    } else {
+                        alert(response.message || 'Hubo un error al agregar el autor.');
+                    }
+                },
+                error: function() {
+                    alert('Ocurrió un error. Intenta nuevamente.');
+                }
+            });
+        } else {
+            alert('Todos los campos son obligatorios.');
+        }
+    });
+</script>
+
+<script>
+    function previewImage(event) {
+        var output = document.getElementById('imagePreview');
+        var file = event.target.files[0];
+
+        // Si el archivo es una imagen, mostramos la vista previa
+        if (file && file.type.match('image.*')) {
+            var reader = new FileReader();
+            reader.onload = function() {
+                output.src = reader.result;
+                output.style.display = 'block';  // Mostrar la vista previa
+            };
+            reader.readAsDataURL(file);
+        } else {
+            output.style.display = 'none';  // Ocultar la vista previa si no es una imagen
+        }
+    }
+</script>
+
+
+{% endblock %}
