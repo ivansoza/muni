@@ -132,6 +132,15 @@ class Contacto(models.Model):
         null=True,
         help_text="Longitud de la ubicación"
     )
+    # Imagen del contacto
+    imagen = models.ImageField(
+        "Imagen del Contacto",
+        upload_to="contactos/",
+        blank=True,
+        null=True,
+        help_text="Imagen representativa del contacto (opcional)"
+    )
+
     class Meta:
         verbose_name = "Contacto"
         verbose_name_plural = "Contactos"

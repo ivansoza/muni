@@ -2,14 +2,20 @@
 from django.contrib import admin
 from .models import Contacto
 
+from django.utils.html import format_html
+
+
 @admin.register(Contacto)
 class ContactoAdmin(admin.ModelAdmin):
-    """
-    Admin para el modelo Contacto
-    """
+    def imagen_preview(self, obj):
+        if obj.imagen:
+            return format_html('<img src="{}" style="height: 120px; border-radius: 6px;" />', obj.imagen.url)
+        return "Sin imagen"
+    imagen_preview.short_description = "Vista previa"
 
     list_display = (
         "municipio",
+        "imagen_preview",  # miniatura en listado
         "telefono_directo",
         "correo_electronico",
         "status",
@@ -17,32 +23,26 @@ class ContactoAdmin(admin.ModelAdmin):
     )
 
     search_fields = (
-        "municipio__nombre",  # Permite buscar por el nombre del municipio
+        "municipio__nombre",
         "telefono_directo",
         "correo_electronico",
         "direccion_oficinas",
     )
 
-    list_filter = (
-        "status",
-        "municipio",
-    )
+    list_filter = ("status", "municipio")
+    ordering = ("-ultima_actualizacion",)
 
-    ordering = ("-ultima_actualizacion",)  # Orden por última actualización
-
-    readonly_fields = (
-        "ultima_actualizacion",
-    )
-
-    autocomplete_fields = ("municipio",)  # Para mejorar la búsqueda del municipio
-
-    list_editable = ("status",)  # Permite editar directamente en la lista de registros
+    readonly_fields = ("ultima_actualizacion", "imagen_preview")
+    autocomplete_fields = ("municipio",)
+    list_editable = ("status",)
 
     fieldsets = (
         (None, {
             "fields": (
                 "municipio",
                 "status",
+                "imagen",
+                "imagen_preview",
             )
         }),
         ("Información de Contacto", {
@@ -56,6 +56,8 @@ class ContactoAdmin(admin.ModelAdmin):
             "fields": (
                 "enlace_mapa",
                 "ubicacion",
+                "latitud",
+                "longitud",
             )
         }),
         ("Horario de Servicio", {

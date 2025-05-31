@@ -400,10 +400,16 @@
 </style>
 
 <div class="contact-container">
-    <div class="contact-hero">
-        <img src="{% static 'img/presidencia.webp' %}" alt="Edificio Municipal" class="contact-bg">
-        <div class="overlay"></div>
-    </div>
+<div class="contact-hero">
+    {% with municipio.contactos.all.0 as contacto %}
+        {% if contacto and contacto.imagen %}
+            <img src="{{ contacto.imagen.url }}" alt="Imagen del contacto" class="contact-bg">
+        {% else %}
+            <img src="{% static 'img/presidencia.webp' %}" alt="Edificio Municipal" class="contact-bg">
+        {% endif %}
+    {% endwith %}
+    <div class="overlay"></div>
+</div>
 
     <div class="contact-wrapper">
         <div class="contact-box" id="atencion-ciudadana">
