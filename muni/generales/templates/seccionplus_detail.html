@@ -370,6 +370,12 @@
             <h4>{{ seccion.detalles }}</h4>
             {% if seccion.archivo %}
                     <div style="margin: 20px 0;">
+                         <div style="margin-top: 20px;">
+                <a href="{{ seccion.archivo.url }}" target="_blank" style="text-decoration: none; color:black;" title="Abrir archivo en nueva ventana">
+                    <!-- Icono de FontAwesome para abrir en nueva ventana -->
+                    <i class="fa fa-external-link" style="font-size: 20px; color: var(--color-primario); cursor: pointer;" title="Abrir en nueva ventana"></i> Abrir archivo 
+                </a>
+            </div>
             <!-- Contenedor para el PDF -->
             <div id="pdf-container" style="width: 100%; height: 700px; overflow: auto; border: 1px solid #ccc; padding: 10px;">
                 <!-- El canvas se añadirá aquí -->
@@ -940,7 +946,6 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Verificar si seccion.archivo existe y tiene un archivo asociado
         {% if seccion.archivo %}
             var url = '{{ seccion.archivo.url }}'; // URL del archivo PDF
 
@@ -948,11 +953,10 @@
             pdfjsLib.getDocument(url).promise.then(function(pdf) {
                 console.log("PDF cargado");
 
-                // Renderizar las páginas del PDF
                 var totalPages = pdf.numPages;
                 console.log("Total de páginas: " + totalPages);
 
-                // Método para renderizar una página específica
+                // Método para renderizar todas las páginas
                 function renderPage(pageNum) {
                     pdf.getPage(pageNum).then(function(page) {
                         var scale = 1.5; // Escala del PDF
@@ -983,8 +987,10 @@
                     });
                 }
 
-                // Renderizar la primera página
-                renderPage(1);
+                // Renderizar todas las páginas
+                for (var pageNum = 1; pageNum <= totalPages; pageNum++) {
+                    renderPage(pageNum);
+                }
             }, function(error) {
                 console.log("Error al cargar el PDF: " + error.message);
             });
