@@ -314,7 +314,16 @@ class SeccionPlus(models.Model):
         null=True,
         help_text="Campo opcional para agregar detalles adicionales de la sección."
     )
-
+    es_general = models.BooleanField(
+        default=False,
+        help_text="Marcar si esta sección es de tipo general."
+    )
+    archivo = models.FileField(
+        upload_to='archivos_secciones/',
+        blank=True,
+        null=True,
+        help_text="Archivo opcional relacionado con la sección."
+    )
     def __str__(self):
         return self.nombre
 
