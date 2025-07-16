@@ -195,13 +195,15 @@ class SeccionesForm(forms.ModelForm):
 class SeccionPlusForm(forms.ModelForm):
     class Meta:
         model = SeccionPlus
-        fields = ['categoria_convocatoria', 'nombre', 'banner', 'status', 'detalles']
+        fields = ['categoria_convocatoria', 'nombre', 'banner', 'status', 'detalles', 'es_general', 'archivo']
         widgets = {
             'categoria_convocatoria': forms.Select(attrs={'class': 'form-control'}),
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'banner': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'status': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'detalles': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'es_general': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'archivo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
 
 

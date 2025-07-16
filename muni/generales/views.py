@@ -3361,7 +3361,7 @@ class HablaHome(TemplateView, LoginRequiredMixin):
     template_name = 'HablaHijos/hablaHome.html'
     # --- control de permisos ---
     def dispatch(self, request, *args, **kwargs):
-        if not (request.user.is_superuser or request.user.has_perm("eventos.view_articulos")):
+        if not (request.user.is_superuser or request.user.has_perm("eventos.view_articulo")):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 

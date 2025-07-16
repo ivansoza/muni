@@ -365,7 +365,18 @@
     </style>
 
     <div class="container-convocatoria" data-seccion-pk="{{ seccion.pk }}">
-        <h2 class="news-title">{{ seccion.nombre }} <span>| Convocatorias</span></h2>
+        <h2 class="news-title">{{ seccion.nombre }} {% if seccion.es_general %}  {% else %}<span>| Convocatorias</span>{% endif %}</h2>
+        {% if seccion.es_general %}
+            <h4>{{ seccion.detalles }}</h4>
+            {% if seccion.archivo %}
+                    <div style="margin: 20px 0;">
+            <!-- Contenedor para el PDF -->
+            <div id="pdf-container" style="width: 100%; height: 700px; overflow: auto; border: 1px solid #ccc; padding: 10px;">
+                <!-- El canvas se añadirá aquí -->
+            </div>
+        </div>
+            {% endif %}
+        {% else %}
 
         <!-- Controles de filtrado y búsqueda -->
         <div class="controls">
@@ -501,6 +512,8 @@
                 <img id="modalImage" class="modal-content">
             </div>
         </div>
+        {% endif %}
+
     </div>
 
     <script>
@@ -923,6 +936,57 @@
 
 {% endif %}
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var url = '{{ seccion.archivo.url }}'; // URL del archivo PDF
+
+        // Configura PDF.js
+        pdfjsLib.getDocument(url).promise.then(function(pdf) {
+            console.log("PDF cargado");
+
+            // Renderizar las páginas del PDF
+            var totalPages = pdf.numPages;
+            console.log("Total de páginas: " + totalPages);
+
+            // Método para renderizar una página específica
+            function renderPage(pageNum) {
+                pdf.getPage(pageNum).then(function(page) {
+                    var scale = 1.5; // Escala del PDF
+                    var viewport = page.getViewport({ scale: scale });
+
+                    // Crear un canvas para renderizar la página
+                    var canvas = document.createElement("canvas");
+                    var context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    // Renderizar la página en el canvas
+                    page.render({
+                        canvasContext: context,
+                        viewport: viewport
+                    });
+
+                    // Añadir el canvas al contenedor
+                    document.getElementById('pdf-container').appendChild(canvas);
+
+                    // Ajustar el tamaño del canvas para que se ajuste al contenedor
+                    var container = document.getElementById('pdf-container');
+                    var containerWidth = container.offsetWidth; // Ancho del contenedor
+                    var scaleFactor = containerWidth / canvas.width; // Escala proporcional
+
+                    canvas.style.width = (canvas.width * scaleFactor) + "px";
+                    canvas.style.height = (canvas.height * scaleFactor) + "px";
+                });
+            }
+
+            // Renderizar la primera página
+            renderPage(1);
+        }, function(error) {
+            console.log("Error al cargar el PDF: " + error.message);
+        });
+    });
+</script>
 
 {% endblock content %}
