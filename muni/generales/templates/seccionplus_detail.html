@@ -940,52 +940,57 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        var url = '{{ seccion.archivo.url }}'; // URL del archivo PDF
+        // Verificar si seccion.archivo existe y tiene un archivo asociado
+        {% if seccion.archivo %}
+            var url = '{{ seccion.archivo.url }}'; // URL del archivo PDF
 
-        // Configura PDF.js
-        pdfjsLib.getDocument(url).promise.then(function(pdf) {
-            console.log("PDF cargado");
+            // Configura PDF.js
+            pdfjsLib.getDocument(url).promise.then(function(pdf) {
+                console.log("PDF cargado");
 
-            // Renderizar las páginas del PDF
-            var totalPages = pdf.numPages;
-            console.log("Total de páginas: " + totalPages);
+                // Renderizar las páginas del PDF
+                var totalPages = pdf.numPages;
+                console.log("Total de páginas: " + totalPages);
 
-            // Método para renderizar una página específica
-            function renderPage(pageNum) {
-                pdf.getPage(pageNum).then(function(page) {
-                    var scale = 1.5; // Escala del PDF
-                    var viewport = page.getViewport({ scale: scale });
+                // Método para renderizar una página específica
+                function renderPage(pageNum) {
+                    pdf.getPage(pageNum).then(function(page) {
+                        var scale = 1.5; // Escala del PDF
+                        var viewport = page.getViewport({ scale: scale });
 
-                    // Crear un canvas para renderizar la página
-                    var canvas = document.createElement("canvas");
-                    var context = canvas.getContext('2d');
-                    canvas.height = viewport.height;
-                    canvas.width = viewport.width;
+                        // Crear un canvas para renderizar la página
+                        var canvas = document.createElement("canvas");
+                        var context = canvas.getContext('2d');
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
 
-                    // Renderizar la página en el canvas
-                    page.render({
-                        canvasContext: context,
-                        viewport: viewport
+                        // Renderizar la página en el canvas
+                        page.render({
+                            canvasContext: context,
+                            viewport: viewport
+                        });
+
+                        // Añadir el canvas al contenedor
+                        document.getElementById('pdf-container').appendChild(canvas);
+
+                        // Ajustar el tamaño del canvas para que se ajuste al contenedor
+                        var container = document.getElementById('pdf-container');
+                        var containerWidth = container.offsetWidth; // Ancho del contenedor
+                        var scaleFactor = containerWidth / canvas.width; // Escala proporcional
+
+                        canvas.style.width = (canvas.width * scaleFactor) + "px";
+                        canvas.style.height = (canvas.height * scaleFactor) + "px";
                     });
+                }
 
-                    // Añadir el canvas al contenedor
-                    document.getElementById('pdf-container').appendChild(canvas);
-
-                    // Ajustar el tamaño del canvas para que se ajuste al contenedor
-                    var container = document.getElementById('pdf-container');
-                    var containerWidth = container.offsetWidth; // Ancho del contenedor
-                    var scaleFactor = containerWidth / canvas.width; // Escala proporcional
-
-                    canvas.style.width = (canvas.width * scaleFactor) + "px";
-                    canvas.style.height = (canvas.height * scaleFactor) + "px";
-                });
-            }
-
-            // Renderizar la primera página
-            renderPage(1);
-        }, function(error) {
-            console.log("Error al cargar el PDF: " + error.message);
-        });
+                // Renderizar la primera página
+                renderPage(1);
+            }, function(error) {
+                console.log("Error al cargar el PDF: " + error.message);
+            });
+        {% else %}
+            console.log("No se encontró un archivo PDF asociado.");
+        {% endif %}
     });
 </script>
 

@@ -162,20 +162,21 @@
             transform: rotate(-180deg);
         }
         
-        .dropdown-menu {
-            background-color: var(--color-primario);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            border-radius: 8px;
-            margin-top: 0.5rem;
-        
-            max-width: 250px;               /* Ajusta a tu preferencia */
-            width: auto;                    /* Para no forzar un ancho fijo */
-            white-space: normal;            /* Permite saltos de línea */
-            word-wrap: break-word;          /* En caso de palabras muy largas */
-            overflow-wrap: break-word;      /* Equivalente moderno */
-            word-break: break-word;         /* Rompe las palabras cuando sea necesario */
-        }
+.dropdown-menu {
+    background-color: var(--color-primario);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    margin-top: 0.5rem;
+
+    max-width: 350px;             /* Aumenta el ancho máximo según lo necesites */
+    width: auto;                  /* Esto permite que el ancho se ajuste al contenido */
+    white-space: normal;          /* Permite saltos de línea */
+    word-wrap: break-word;        /* Rompe palabras largas si es necesario */
+    overflow-wrap: break-word;    /* Rompe palabras si es necesario */
+    word-break: break-word;       /* Rompe palabras largas */
+}
+
         
         .dropdown-item {
 
