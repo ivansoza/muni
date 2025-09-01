@@ -66,7 +66,9 @@ from noticias.forms import ImagenGaleriaForm
 
 from eventos.models import Articulo, Categoria as CategoriaHabla, Autor
 from eventos.forms import ArticuloForm
-
+from .forms import SeccionPlusForm, SeccionPlusArchivoFormSet
+from django.db import transaction
+from django.http import HttpResponseRedirect
 class VideoView(LoginRequiredMixin,TemplateView):
     template_name = 'generales/video.html'
 
@@ -443,21 +445,48 @@ class CrearSeccionPlusView(LoginRequiredMixin, CreateView):
     model = SeccionPlus
     form_class = SeccionPlusForm
     template_name = 'secciones/crear_seccion.html'
-    success_url = reverse_lazy('SeccionesNuevasView')  # O el nombre de la vista principal
+    success_url = reverse_lazy('SeccionesNuevasView')
 
     def dispatch(self, request, *args, **kwargs):
         if not (request.user.is_superuser or request.user.has_perm("generales.add_seccionplus")):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
-    
-    def form_valid(self, form):
-        municipio_activo = Municipio.objects.filter(status='activo').first()
-        if municipio_activo:
-            form.instance.municipio = municipio_activo
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        if self.request.method == 'POST':
+            ctx['formset'] = SeccionPlusArchivoFormSet(
+                self.request.POST, self.request.FILES, prefix='archivos'
+            )
         else:
+            ctx['formset'] = SeccionPlusArchivoFormSet(prefix='archivos')
+        return ctx
+
+    def form_valid(self, form):
+        ctx = self.get_context_data()
+        formset = ctx['formset']
+
+        municipio_activo = Municipio.objects.filter(status='activo').first()
+        if not municipio_activo:
             form.add_error(None, "No hay un municipio activo disponible.")
             return self.form_invalid(form)
-        return super().form_valid(form)
+
+        form.instance.municipio = municipio_activo
+
+        # Validamos primero el formset para no guardar si hay errores en archivos
+        if not formset.is_valid():
+            return self.render_to_response(self.get_context_data(form=form))
+
+        with transaction.atomic():
+            self.object = form.save()
+            formset.instance = self.object
+            formset.save()
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form):
+        # Re-render con formset (y sus errores si los hay)
+        return self.render_to_response(self.get_context_data(form=form))
     
 class EditarSeccionPlusView(LoginRequiredMixin, UpdateView):
     model = SeccionPlus
@@ -2661,26 +2690,40 @@ class GroupUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 class SeccionPlusDetailView(TemplateView):
     template_name = 'seccionplus_detail.html'
 
-    def get_object(self):
-        pk = self.kwargs.get('pk')
-        slug = self.kwargs.get('slug')
-        seccion = get_object_or_404(SeccionPlus, pk=pk, status=True)
-        # Redirige si el slug no coincide
+    def get(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
+        slug = kwargs.get('slug')
+
+        # Trae la sección con prefetch de archivos
+        seccion = get_object_or_404(
+            SeccionPlus.objects.prefetch_related('archivos'),
+            pk=pk, status=True
+        )
+
+        # Redirección si el slug no coincide
         if seccion.slug != slug:
             return redirect('seccionplus_detail', pk=seccion.pk, slug=seccion.slug)
-        return seccion
+
+        self.seccion = seccion
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        seccion = self.get_object()
+        seccion = getattr(self, 'seccion', None)
+        if seccion is None:
+            # Fallback solo por seguridad (no debería ocurrir si pasa por get())
+            seccion = get_object_or_404(SeccionPlus, pk=self.kwargs.get('pk'), status=True)
 
         context['seccion'] = seccion
         context['sidebar'] = 'mas'
 
-        categoria = seccion.categoria_convocatoria
+        # QS de archivos adicionales (del formset)
+        context['archivos'] = seccion.archivos.all().order_by('-id')  # related_name='archivos'
+        # (Opcional) bandera rápida en template
+        context['tiene_archivos'] = context['archivos'].exists()
 
+        categoria = seccion.categoria_convocatoria
         if categoria:
-            # Si hay categoría, filtra por ella
             context['convocatorias_activas'] = Convocatoria.objects.filter(
                 estado__in=['ABIERTA', 'PRÓXIMA'],
                 categoria=categoria
@@ -2691,7 +2734,6 @@ class SeccionPlusDetailView(TemplateView):
             ).order_by('-id')
             context['categorias'] = CategoriaConvocatoria.objects.filter(pk=categoria.pk)
         else:
-            # Si no hay categoría, muestra solo por estado (o vacío si prefieres)
             context['convocatorias_activas'] = Convocatoria.objects.filter(
                 estado__in=['ABIERTA', 'PRÓXIMA']
             ).order_by('-id')

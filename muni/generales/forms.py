@@ -8,7 +8,8 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 
 from generales.models import SeccionPlus, Secciones, VideoMunicipio
 from informacion_municipal.models import ElementoLista, InformacionCiudad
-
+from django.forms import inlineformset_factory
+from .models import SeccionPlus, SeccionPlusArchivo
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
         max_length=254,
@@ -206,6 +207,24 @@ class SeccionPlusForm(forms.ModelForm):
             'archivo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
 
+class SeccionPlusArchivoForm(forms.ModelForm):
+    class Meta:
+        model = SeccionPlusArchivo
+        fields = ['descripcion', 'archivo']
+        widgets = {
+            'descripcion': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Descripción del archivo'}),
+            'archivo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }
+
+# Inline formset: varios archivos por SeccionPlus
+SeccionPlusArchivoFormSet = inlineformset_factory(
+    parent_model=SeccionPlus,
+    model=SeccionPlusArchivo,
+    form=SeccionPlusArchivoForm,
+    fields=['descripcion', 'archivo'],
+    extra=3,           # cantidad inicial de formularios vacíos
+    can_delete=True    # permitir marcar para eliminar en edición
+)
 
 class InformacionCiudadForm(forms.ModelForm):
     class Meta:
