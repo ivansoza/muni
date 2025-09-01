@@ -1,6 +1,6 @@
 # admin.py
 from django.contrib import admin
-from .models import ArchivoRelacionadoRecomendacion, ContadorVisitas, MetaMunicipio, Recomendaciones, SeccionPlus, Secciones, SocialNetwork, personalizacionPlantilla, VideoMunicipio
+from .models import ArchivoRelacionadoRecomendacion, ContadorVisitas, MetaMunicipio, Recomendaciones, SeccionPlus, Secciones, SocialNetwork, personalizacionPlantilla, VideoMunicipio, SeccionPlusArchivo
 
 @admin.register(SocialNetwork)
 class SocialNetworkAdmin(admin.ModelAdmin):
@@ -61,3 +61,4 @@ class ArchivoRelacionadoRecomendacionAdmin(admin.ModelAdmin):
 
 
 admin.site.register(VideoMunicipio)
+admin.site.register(SeccionPlusArchivo)

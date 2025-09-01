@@ -331,7 +331,30 @@ class SeccionPlus(models.Model):
         self.slug = slugify(self.nombre)
         super().save(*args, **kwargs)
 
+class SeccionPlusArchivo(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
+    # Relación muchos-a-uno: varios archivos por SeccionPlus
+    seccion = models.ForeignKey(
+        SeccionPlus,
+        on_delete=models.CASCADE,
+        related_name='archivos'  # seccion.archivos.all()
+    )
+
+    descripcion = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Descripción breve del archivo."
+    )
+
+    archivo = models.FileField(
+        upload_to='archivos_seccion_plus/',
+        help_text="Archivo relacionado a la sección."
+    )
+
+    def __str__(self):
+        return self.descripcion or f'Archivo {self.pk} de {self.seccion.nombre}'
 
 
 class Recomendaciones(models.Model):

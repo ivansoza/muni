@@ -365,24 +365,77 @@
     </style>
 
     <div class="container-convocatoria" data-seccion-pk="{{ seccion.pk }}">
-        <h2 class="news-title">{{ seccion.nombre }} {% if seccion.es_general %}  {% else %}<span>| Convocatorias</span>{% endif %}</h2>
-        {% if seccion.es_general %}
-            <h4>{{ seccion.detalles }}</h4>
-            {% if seccion.archivo %}
-                    <div style="margin: 20px 0;">
-                         <div style="margin-top: 20px;">
-                <a href="{{ seccion.archivo.url }}" target="_blank" style="text-decoration: none; color:black;" title="Abrir archivo en nueva ventana">
-                    <!-- Icono de FontAwesome para abrir en nueva ventana -->
-                    <i class="fa fa-external-link" style="font-size: 20px; color: var(--color-primario); cursor: pointer;" title="Abrir en nueva ventana"></i> Abrir archivo 
-                </a>
-            </div>
-            <!-- Contenedor para el PDF -->
-            <div id="pdf-container" style="width: 100%; height: 700px; overflow: auto; border: 1px solid #ccc; padding: 10px;">
-                <!-- El canvas se añadirá aquí -->
-            </div>
+  <h2 class="news-title">{{ seccion.nombre }} {% if seccion.es_general %}  {% else %}<span>| Convocatorias</span>{% endif %}</h2>
+
+{% if seccion.es_general %}
+  <h4>{{ seccion.detalles }}</h4>
+
+  {# ====== ARCHIVO PRINCIPAL (auto-embed si es PDF) ====== #}
+  {% if seccion.archivo %}
+    {% with u=seccion.archivo.url|lower %}
+    <div style="margin: 20px 0;">
+      <div style="margin-top: 20px;">
+        <a href="{{ seccion.archivo.url }}" target="_blank" style="text-decoration: none; color:black;" title="Abrir archivo en nueva ventana">
+          <i class="fa fa-external-link" style="font-size: 20px; color: var(--color-primario); cursor: pointer;"></i> Abrir archivo
+        </a>
+      </div>
+
+      {% if u|slice:"-4" == ".pdf" %}
+        <div style="width: 100%; height: 700px; border: 1px solid #ccc; margin-top: 12px;" style="display:none">
+          <iframe
+            src="{{ seccion.archivo.url }}#view=FitH&toolbar=1&navpanes=0&scrollbar=1"
+            width="100%" height="100%" style="border:0;"
+            title="Previsualizador PDF (principal)">
+          </iframe>
         </div>
+      {% else %}
+        <div class="alert alert-info mt-2">El archivo principal no es PDF. Ábrelo desde el enlace.</div>
+      {% endif %}
+    </div>
+    {% endwith %}
+  {% endif %}
+
+  {# ===== Archivos adicionales (modelo SeccionPlusArchivo) ===== #}
+  {% with adjuntos=seccion.archivos.all %}
+  {% if adjuntos %}
+    <hr style="margin: 24px 0;">
+    <h5 class="mb-3" style='display:none'>📎 Archivos adicionales</h5>
+
+    {% for a in adjuntos %}
+      {% with url=a.archivo.url|default_if_none:""|lower %}
+      <div class="card mb-3" style="display:none">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ a.descripcion|default:"Archivo adjunto" }}</strong>
+            {% if a.archivo %}
+              <div class="text-muted small">{{ a.archivo.name }}</div>
             {% endif %}
-        {% else %}
+          </div>
+          {% if a.archivo %}
+          <a href="{{ a.archivo.url }}" target="_blank" class="btn btn-outline-secondary btn-sm" style="text-decoration:none;">
+            <i class="fa fa-external-link"></i> Abrir / Descargar
+          </a>
+          {% endif %}
+        </div>
+
+        {% if url and url|slice:"-4" == ".pdf" %}
+          <div class="card-body p-0">
+            <iframe
+              src="{{ a.archivo.url }}#view=FitH&toolbar=1&navpanes=0&scrollbar=1"
+              width="100%" height="600" style="border:0;"
+              title="Previsualizador PDF (adjunto)">
+            </iframe>
+          </div>
+        {% endif %}
+      </div>
+      {% endwith %}
+    {% endfor %}
+  {% endif %}
+  {% endwith %}
+
+{% else %}
+
+
 
         <!-- Controles de filtrado y búsqueda -->
         <div class="controls">
@@ -944,60 +997,190 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
+{# Contenedor donde aparecerán TODOS los visores #}
+<div id="pdf-galeria" class="visor-compacto"></div>
+
+{# (Opcional) aquí listaremos archivos no-PDF #}
+<div id="no-pdf-list" class="mt-3"></div>
+<style>
+  /* Modo compacto del visor */
+  #pdf-galeria.visor-compacto .pdf-section{
+    max-width: 1000px;   /* antes 920-980px */
+    margin: 12px auto;
+  }
+  #pdf-galeria.visor-compacto .pdf-pages{
+    max-height: 560px;  /* antes 480-500px */
+    overflow: auto;
+    padding: 10px;
+  }
+  /* Canvases más angostos (escala visual) */
+  #pdf-galeria.visor-compacto .pdf-canvas{
+    width: 100% !important;   /* antes 85% */
+    height: auto !important;
+    margin: 6px auto 12px;
+  }
+    #pdf-galeria .pdf-header .title{
+    font-size: 1.2rem;   /* <-- más grande */
+    font-weight: 600;
+    line-height: 1.2;
+    margin: 0;
+    overflow: hidden;           /* opcional: cortar si es muy largo */
+    text-overflow: ellipsis;    /* opcional */
+    white-space: nowrap;        /* opcional */
+  }
+  #pdf-galeria .pdf-header .actions{
+    margin-left: auto;   /* fuerza el botón al extremo derecho */
+  }
+  #pdf-galeria .pdf-header .actions .btn{
+    white-space: nowrap;
+  }
+  /* Mantén el botón a la derecha y el título grande */
+  #pdf-galeria .pdf-header{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; padding:10px 14px; background:#f8f9fa; border-bottom:1px solid #e9ecef;
+  }
+  #pdf-galeria .pdf-header .title{
+    font-size: 1.2rem; font-weight:600; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  #pdf-galeria .pdf-header .actions{ margin-left:auto; }
+</style>
+
+
+
+
+
+{# PDF.js desde CDN #}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        {% if seccion.archivo %}
-            var url = '{{ seccion.archivo.url }}'; // URL del archivo PDF
+  // Worker de PDF.js
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-            // Configura PDF.js
-            pdfjsLib.getDocument(url).promise.then(function(pdf) {
-                console.log("PDF cargado");
-
-                var totalPages = pdf.numPages;
-                console.log("Total de páginas: " + totalPages);
-
-                // Método para renderizar todas las páginas
-                function renderPage(pageNum) {
-                    pdf.getPage(pageNum).then(function(page) {
-                        var scale = 1.5; // Escala del PDF
-                        var viewport = page.getViewport({ scale: scale });
-
-                        // Crear un canvas para renderizar la página
-                        var canvas = document.createElement("canvas");
-                        var context = canvas.getContext('2d');
-                        canvas.height = viewport.height;
-                        canvas.width = viewport.width;
-
-                        // Renderizar la página en el canvas
-                        page.render({
-                            canvasContext: context,
-                            viewport: viewport
-                        });
-
-                        // Añadir el canvas al contenedor
-                        document.getElementById('pdf-container').appendChild(canvas);
-
-                        // Ajustar el tamaño del canvas para que se ajuste al contenedor
-                        var container = document.getElementById('pdf-container');
-                        var containerWidth = container.offsetWidth; // Ancho del contenedor
-                        var scaleFactor = containerWidth / canvas.width; // Escala proporcional
-
-                        canvas.style.width = (canvas.width * scaleFactor) + "px";
-                        canvas.style.height = (canvas.height * scaleFactor) + "px";
-                    });
-                }
-
-                // Renderizar todas las páginas
-                for (var pageNum = 1; pageNum <= totalPages; pageNum++) {
-                    renderPage(pageNum);
-                }
-            }, function(error) {
-                console.log("Error al cargar el PDF: " + error.message);
-            });
-        {% else %}
-            console.log("No se encontró un archivo PDF asociado.");
+  document.addEventListener("DOMContentLoaded", function() {
+    // 1) Construimos la lista de archivos (principal + adjuntos)
+    const archivos = [
+      {% if seccion.archivo %}
+        { url: "{{ seccion.archivo.url|escapejs }}", titulo: "Archivo principal: {{ seccion.archivo.name|escapejs }}" }
+        {% if seccion.archivos.all %},{% endif %}
+      {% endif %}
+      {% for a in seccion.archivos.all %}
+        {% if a.archivo %}
+          { url: "{{ a.archivo.url|escapejs }}", titulo: "{{ a.descripcion|default:'Archivo adjunto'|escapejs }}" }{% if not forloop.last %},{% endif %}
         {% endif %}
+      {% endfor %}
+    ];
+
+    const galeria = document.getElementById('pdf-galeria');
+    const noPdfBox = document.getElementById('no-pdf-list');
+    const noPdfs = [];
+
+    if (!archivos.length) return; // No hay nada que mostrar
+
+    // 2) Función que renderiza un PDF completo (todas sus páginas) en un contenedor
+    function renderPdf(url, containerEl) {
+      pdfjsLib.getDocument(url).promise.then(function(pdf) {
+        const pagesWrapper = document.createElement('div');
+        pagesWrapper.className = 'pdf-pages';
+        containerEl.appendChild(pagesWrapper);
+
+        const deviceScale = window.devicePixelRatio || 1;
+
+        function renderPage(num) {
+          pdf.getPage(num).then(function(page) {
+            // Escala para ajustar al ancho del contenedor
+            const tmpViewport = page.getViewport({ scale: 1 });
+            const containerWidth = containerEl.clientWidth - 20; // padding aprox
+            const scale = Math.max(0.6, containerWidth / tmpViewport.width);
+
+            const viewport = page.getViewport({ scale: scale * deviceScale });
+            const canvas = document.createElement('canvas');
+            canvas.className = 'pdf-canvas';
+            const context = canvas.getContext('2d');
+
+            canvas.width = Math.floor(viewport.width);
+            canvas.height = Math.floor(viewport.height);
+
+            page.render({ canvasContext: context, viewport: viewport }).promise.then(function() {
+              // Mostrar en CSS pixels (no físicos) para HiDPI
+              canvas.style.width = (viewport.width / deviceScale) + 'px';
+              canvas.style.height = (viewport.height / deviceScale) + 'px';
+            });
+
+            pagesWrapper.appendChild(canvas);
+          });
+        }
+
+        for (let i = 1; i <= pdf.numPages; i++) renderPage(i);
+      }).catch(function(err) {
+        console.error('Error al cargar PDF:', err);
+        // Si falla como PDF, lo pasamos a la lista de no-PDF
+        noPdfs.push({ url, titulo: 'Archivo (no pudo previsualizarse como PDF)' });
+        pintarNoPdfs();
+      });
+    }
+
+    function esPdf(url) {
+      return /\.pdf(\?|$)/i.test(url || '');
+    }
+
+    function pintarNoPdfs() {
+      if (!noPdfs.length || !noPdfBox) return;
+      let html = '<div class="alert alert-info"><strong>Archivos no PDF:</strong></div><ul class="list-group">';
+      noPdfs.forEach(item => {
+        html += `
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>${item.titulo || 'Archivo'}</span>
+            <a href="${item.url}" target="_blank" class="btn btn-outline-secondary btn-sm">Abrir / Descargar</a>
+          </li>`;
+      });
+      html += '</ul>';
+      noPdfBox.innerHTML = html;
+    }
+
+    // 3) Para cada archivo, creamos un bloque y lo renderizamos si es PDF
+    archivos.forEach((item, idx) => {
+      if (!item?.url) return;
+
+      if (!esPdf(item.url)) {
+        noPdfs.push(item);
+        return;
+      }
+
+      // Estructura visual del bloque
+      const section = document.createElement('section');
+      section.className = 'pdf-section';
+section.innerHTML = `
+  <div class="pdf-header">
+    <div class="title">${item.titulo || 'Documento'}</div>
+    <div class="actions">
+      <a href="${item.url}" target="_blank" class="btn btn-sm btn-outline-secondary">Abrir / Descargar</a>
+    </div>
+  </div>
+`;
+
+
+      galeria.appendChild(section);
+      renderPdf(item.url, section);
     });
+
+    // 4) Pintamos (si hay) los no-PDF
+    pintarNoPdfs();
+
+    // 5) (Opcional) Re-render básico al redimensionar para ajustar ancho
+    //    Para rendimiento, solo recarga la página si cambió mucho el ancho.
+    //    Puedes quitar este bloque si no lo necesitas.
+    let lastW = window.innerWidth;
+    window.addEventListener('resize', () => {
+      const w = window.innerWidth;
+      if (Math.abs(w - lastW) > 120) {
+        lastW = w;
+        // Recarga para recalcular escalas de lienzos
+        // (PDF.js no reescala canvas ya renderizados).
+        // Si quieres evitar reload, habría que guardar el doc y re-renderizar.
+        location.reload();
+      }
+    });
+  });
 </script>
+
 
 {% endblock content %}

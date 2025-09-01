@@ -12,9 +12,11 @@
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
+                {{ form.non_field_errors }}
+
                 <div class="form-group mb-3">
                     <label for="id_categoria_convocatoria">Categoría</label>
-                    {{ form.categoria_convocatoria}}
+                    {{ form.categoria_convocatoria }}
                 </div>
 
                 <div class="form-group mb-3">
@@ -32,7 +34,7 @@
                     <label class="form-check-label" for="id_status">Activa</label>
                 </div>
 
-                 <div class="form-group form-check mb-3">
+                <div class="form-group form-check mb-3">
                     {{ form.es_general }}
                     <label class="form-check-label" for="id_es_general">¿Es general?</label>
                 </div>
@@ -41,16 +43,65 @@
                     <label for="id_detalles">Detalles</label>
                     {{ form.detalles }}
                 </div>
-                 <div class="form-group mb-4">
+
+                <!-- Si mantienes el archivo único del modelo padre -->
+                <div class="form-group mb-4">
                     <label for="id_archivo">Archivo</label>
                     {{ form.archivo }}
                 </div>
-            
+
+                <!-- ===================== -->
+                <!--   FORMSET DE ARCHIVOS -->
+                <!-- ===================== -->
+                <hr class="my-4">
+                <h4 class="mb-3">📎 Archivos adicionales de la sección</h4>
+
+                {{ formset.non_field_errors }}
+                {{ formset.management_form }}
+
+                {% for f in formset %}
+                    <div class="border rounded p-3 mb-3">
+                        {{ f.non_field_errors }}
+                        {{ f.id }}
+
+                        <div class="row g-3">
+                            <div class="col-md-7">
+                                <label for="{{ f.descripcion.id_for_label }}" class="form-label">Descripción</label>
+                                {{ f.descripcion }}
+                                {% if f.descripcion.errors %}
+                                    <div class="text-danger small">{{ f.descripcion.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-5">
+                                <label for="{{ f.archivo.id_for_label }}" class="form-label">Archivo</label>
+                                {{ f.archivo }}
+                                {% if f.archivo.errors %}
+                                    <div class="text-danger small">{{ f.archivo.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {% if f.instance.pk and f.instance.archivo %}
+                            <div class="mt-2">
+                                <a href="{{ f.instance.archivo.url }}" target="_blank" class="btn btn-outline-secondary btn-sm">
+                                    Ver archivo actual
+                                </a>
+                            </div>
+                        {% endif %}
+
+                        {% if formset.can_delete %}
+                            <div class="form-check mt-2">
+                                {{ f.DELETE }}
+                                <label class="form-check-label" for="{{ f.DELETE.id_for_label }}">Eliminar este archivo</label>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
 
                 <div class="form-group text-center">
                     <button type="submit" class="btn btn-primary btn-lg me-3">
                         💾 {% if form.instance.pk %}Guardar Cambios{% else %}Crear Sección{% endif %}
-                    </button>                    
+                    </button>
                     <a href="{% url 'SeccionesNuevasView' %}" class="btn btn-secondary btn-lg">
                         ❌ Volver
                     </a>
