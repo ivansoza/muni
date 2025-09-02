@@ -222,8 +222,8 @@ SeccionPlusArchivoFormSet = inlineformset_factory(
     model=SeccionPlusArchivo,
     form=SeccionPlusArchivoForm,
     fields=['descripcion', 'archivo'],
-    extra=3,           # cantidad inicial de formularios vacíos
-    can_delete=True    # permitir marcar para eliminar en edición
+    extra=1,           # Mínimo un formulario vacío por defecto
+    can_delete=True    # Permitir que el formulario sea eliminado
 )
 
 class InformacionCiudadForm(forms.ModelForm):

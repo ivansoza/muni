@@ -455,10 +455,12 @@ class CrearSeccionPlusView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         if self.request.method == 'POST':
+            # Al hacer un POST, crear el formset con los datos
             ctx['formset'] = SeccionPlusArchivoFormSet(
                 self.request.POST, self.request.FILES, prefix='archivos'
             )
         else:
+            # Al hacer un GET, solo pasar el formset vacío
             ctx['formset'] = SeccionPlusArchivoFormSet(prefix='archivos')
         return ctx
 
@@ -466,6 +468,7 @@ class CrearSeccionPlusView(LoginRequiredMixin, CreateView):
         ctx = self.get_context_data()
         formset = ctx['formset']
 
+        # Asegurarse de que el municipio activo esté disponible
         municipio_activo = Municipio.objects.filter(status='activo').first()
         if not municipio_activo:
             form.add_error(None, "No hay un municipio activo disponible.")
@@ -473,25 +476,31 @@ class CrearSeccionPlusView(LoginRequiredMixin, CreateView):
 
         form.instance.municipio = municipio_activo
 
-        # Validamos primero el formset para no guardar si hay errores en archivos
+        # Validar el formset antes de guardar
         if not formset.is_valid():
             return self.render_to_response(self.get_context_data(form=form))
 
+        # Guardar en una transacción para que todo sea atómico
         with transaction.atomic():
+            # Guardar el formulario principal
             self.object = form.save()
+
+            # Asociar el formset con la instancia de SeccionPlus
             formset.instance = self.object
+
+            # Guardar todos los formularios del formset
             formset.save()
 
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form):
-        # Re-render con formset (y sus errores si los hay)
+        # Si el formulario es inválido, re-renderizamos la página con los errores
         return self.render_to_response(self.get_context_data(form=form))
     
 class EditarSeccionPlusView(LoginRequiredMixin, UpdateView):
     model = SeccionPlus
     form_class = SeccionPlusForm
-    template_name = 'secciones/crear_seccion.html'  # usamos la misma
+    template_name = 'secciones/crear_seccion.html'
     success_url = reverse_lazy('SeccionesNuevasView')
 
     def dispatch(self, request, *args, **kwargs):
@@ -499,9 +508,32 @@ class EditarSeccionPlusView(LoginRequiredMixin, UpdateView):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.method == 'POST':
+            context['formset'] = SeccionPlusArchivoFormSet(
+                self.request.POST, self.request.FILES, instance=self.object, prefix='archivos'
+            )
+        else:
+            context['formset'] = SeccionPlusArchivoFormSet(
+                instance=self.object, prefix='archivos'
+            )
+        return context
+
     def form_valid(self, form):
-        # El municipio ya está asignado en la instancia existente, no es necesario modificarlo
-        return super().form_valid(form)
+        context = self.get_context_data()
+        formset = context['formset']
+
+        if formset.is_valid():
+            self.object = form.save()
+            formset.instance = self.object
+            formset.save()
+            return super().form_valid(form)
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
     
 class EliminarSeccionPlusView(LoginRequiredMixin, View):
     def post(self, request, pk):
