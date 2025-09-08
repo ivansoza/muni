@@ -1,6 +1,8 @@
 from django import forms
 from .models import MiembroGabinete, MiembroGabineteCoordinadoresDif, MiembroGabineteDirectores, MiembroGabinetePresidentesComu, MiembroGabineteRegidores
 from django.utils.translation import gettext_lazy as _
+from django.forms import modelform_factory
+from django_ckeditor_5.widgets import CKEditor5Widget
 
 class MiembroGabineteForm(forms.ModelForm):
     class Meta:
@@ -602,3 +604,11 @@ class MiembroGabinetePresidentesComuForm(BaseMiembroGabineteForm):
 class MiembroGabineteCoordinadoresDifForm(BaseMiembroGabineteForm):
     class Meta(BaseMiembroGabineteForm.Meta):
         model = MiembroGabineteCoordinadoresDif
+
+
+def contenido_form_for(model_cls):
+    return modelform_factory(
+        model_cls,
+        fields=["contenido"],
+        widgets={"contenido": CKEditor5Widget(config_name="extends")},
+    )

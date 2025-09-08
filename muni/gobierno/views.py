@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic.base import TemplateView
 from django.urls import reverse
 from django.http import JsonResponse, HttpResponseBadRequest
@@ -16,6 +16,8 @@ from gobierno.models import MiembroGabinete, MiembroGabineteCoordinadoresDif, Mi
 from gobierno.forms import MiembroGabineteCoordinadoresDifForm, MiembroGabineteDirectorForm, MiembroGabineteForm, MiembroGabinetePresidentesComuForm, MiembroGabineteRegidorForm
 # Create your views here.
 # 
+from .forms import contenido_form_for
+
 from django.shortcuts import get_list_or_404
 
 from django.db import transaction
@@ -405,3 +407,108 @@ class CoordinadorDifUpdateView(LoginRequiredMixin, UpdateView):
         }
         ctx['sidebar'] = 'gabinete'
         return ctx
+    
+# Mapeo de 'tipo' -> (Modelo, etiqueta legible)
+TIPO_MODELOS = {
+    "gabinete": (MiembroGabinete, "Miembro principal"),
+    "regidor": (MiembroGabineteRegidores, "Regidor/Regidora"),
+    "director": (MiembroGabineteDirectores, "Director/Directora"),
+    "presidente": (MiembroGabinetePresidentesComu, "Presidente de Comunidad"),
+    "coordinador_dif": (MiembroGabineteCoordinadoresDif, "Coordinador(a) DIF"),
+}
+
+def _municipio_activo():
+    return Municipio.objects.filter(status="activo").first()
+
+from django.contrib.auth.decorators import login_required
+from django.http import Http404
+@login_required
+def pre_editar_persona(request, tipo, pk):
+    """
+    Pre-editar: muestra el perfil y abajo un CKEditor para 'contenido'.
+    Guarda en el mismo endpoint.
+    """
+    tipo_key = (tipo or "").lower().strip()
+    if tipo_key not in TIPO_MODELOS:
+        raise Http404("Tipo no válido.")
+
+    Model, tipo_label = TIPO_MODELOS[tipo_key]
+
+    municipio = _municipio_activo()
+    if not municipio:
+        raise Http404("No hay un municipio activo configurado.")
+
+    persona = get_object_or_404(Model, pk=pk, municipio=municipio)
+
+    # Form dinámico solo con 'contenido'
+    Form = contenido_form_for(Model)
+
+    if request.method == "POST":
+        form = Form(request.POST, instance=persona)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Contenido actualizado correctamente.")
+            # Redirige a la misma página para ver el contenido guardado
+            return redirect("pre_editar_persona", tipo=tipo_key, pk=persona.pk)
+    else:
+        form = Form(instance=persona)
+    url_configuracion = reverse("ListarGabineteView")
+
+    ctx = {
+        "persona": persona,
+        "tipo": tipo_key,
+        "tipo_label": tipo_label,
+        "form": form,          
+        "url_edicion": None,    
+        "breadcrumb": {
+            "parent": {"name": "Dashboard", "url": "/index"},
+            "child":  {"name": "Lista de Miembros del Gabinete Presidencial", "url": ""},
+        },
+        "sidebar": "gabinete",
+        "regreso_url": url_configuracion,
+
+    }
+    return render(request, "pre_editar_persona.html", ctx)
+
+
+from django.urls import reverse, NoReverseMatch
+
+def perfil_persona(request, tipo, pk):
+    """
+    Muestra el perfil público/único del miembro con su contenido (HTML)
+    guardado con CKEditor. Si el usuario está autenticado, muestra botón
+    para ir a editar (pre_editar_persona).
+    """
+    tipo_key = (tipo or "").strip().lower()
+    if tipo_key not in TIPO_MODELOS:
+        raise Http404("Tipo no válido.")
+
+    Model, tipo_label = TIPO_MODELOS[tipo_key]
+
+    municipio = _municipio_activo()
+    if not municipio:
+        raise Http404("No hay un municipio activo configurado.")
+
+    persona = get_object_or_404(Model, pk=pk, municipio=municipio)
+
+    # URL de regreso al directorio
+    try:
+        regreso_url = reverse("home_gobierno")
+    except NoReverseMatch:
+        # Fallback: usa tu ruta pública del directorio si es distinta
+        regreso_url = "/gobierno/"
+
+    ctx = {
+        "persona": persona,
+        "tipo": tipo_key,
+        "tipo_label": tipo_label,
+        "breadcrumb": {
+            "parent": {"name": "Gobierno | Directorio", "url": regreso_url},
+            "child":  {"name": persona.nombre, "url": ""},
+        },
+        "sidebar": "gobierno",
+        "regreso_url": regreso_url,
+        # Si está autenticado, mostramos un botón de edición
+        "url_edicion": reverse("pre_editar_persona", args=[tipo_key, persona.pk]) if request.user.is_authenticated else None,
+    }
+    return render(request, "perfil_persona.html", ctx)

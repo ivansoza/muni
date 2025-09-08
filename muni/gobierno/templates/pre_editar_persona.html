@@ -1,0 +1,740 @@
+{% extends "baseTemplate.html" %}
+{% load static %}
+
+}
+
+{% block content %}
+
+<style>
+  /* Variables de diseño personalizado */
+  :root {
+    --editor-primary: #6366f1;
+    --editor-primary-dark: #4f46e5;
+    --editor-primary-light: #818cf8;
+    --editor-secondary: #8b5cf6;
+    --editor-accent: #ec4899;
+    --editor-success: #10b981;
+    --editor-danger: #ef4444;
+    --editor-warning: #f59e0b;
+    --editor-dark: #1e293b;
+    --editor-gray: #64748b;
+    --editor-light-gray: #f1f5f9;
+    --editor-border: #e2e8f0;
+    --editor-shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --editor-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+    --editor-shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1);
+    --editor-shadow-xl: 0 25px 50px -12px rgba(0,0,0,0.15);
+    --editor-radius: 12px;
+    --editor-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Container principal del editor */
+  .editor-main-container {
+    min-height: 100vh;
+    padding: 2rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .editor-main-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: float-animation 20s ease-in-out infinite;
+  }
+
+  @keyframes float-animation {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(-30px, -30px) rotate(180deg); }
+  }
+
+  /* Card principal mejorada */
+  .editor-card-wrapper {
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .editor-main-card {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: var(--editor-radius);
+    box-shadow: var(--editor-shadow-xl);
+    overflow: hidden;
+    transition: var(--editor-transition);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  .editor-main-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 30px 60px -15px rgba(0,0,0,0.2);
+  }
+
+  /* Header personalizado */
+  .editor-header {
+    background: linear-gradient(135deg, var(--theme-default) 0%, var(--theme-default_dark) 100%);
+    padding: 1.75rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .editor-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  .editor-header-title {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .editor-header-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+  }
+
+  /* Body del editor */
+  .editor-body {
+    padding: 2.5rem;
+  }
+
+  /* Badge personalizado */
+  .editor-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, var(--theme-default), var(--theme-default_dark));
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    box-shadow: var(--editor-shadow-md);
+    margin-bottom: 1.5rem;
+  }
+
+  .editor-type-badge::before {
+    content: '✦';
+    font-size: 0.875rem;
+  }
+
+  /* Títulos y textos */
+  .editor-main-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--editor-dark);
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+
+  .editor-subtitle {
+    color: var(--editor-gray);
+    font-size: 1.125rem;
+    margin-bottom: 2rem;
+    font-weight: 400;
+  }
+
+  /* Grid de información */
+  .editor-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  /* Card de perfil */
+  .editor-profile-card {
+    background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
+    border: 2px solid var(--editor-border);
+    border-radius: var(--editor-radius);
+    padding: 1.5rem;
+    transition: var(--editor-transition);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .editor-profile-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--editor-primary), var(--editor-secondary), var(--editor-accent));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  .editor-profile-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .editor-profile-card:hover {
+    box-shadow: var(--editor-shadow-lg);
+    transform: translateY(-3px);
+    border-color: var(--editor-primary-light);
+  }
+
+  .editor-profile-content {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .editor-avatar-wrapper {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .editor-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    object-fit: cover;
+    border: 3px solid white;
+    box-shadow: var(--editor-shadow-md);
+    transition: var(--editor-transition);
+  }
+
+  .editor-avatar:hover {
+    transform: scale(1.05) rotate(2deg);
+  }
+
+  .editor-avatar-placeholder {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--editor-light-gray), #e2e8f0);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid white;
+    box-shadow: var(--editor-shadow-md);
+  }
+
+  .editor-avatar-placeholder i {
+    font-size: 2rem;
+    color: var(--editor-gray);
+  }
+
+  .editor-profile-info {
+    flex: 1;
+  }
+
+  .editor-profile-name {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--editor-dark);
+    margin-bottom: 0.25rem;
+    line-height: 1.2;
+  }
+
+  .editor-profile-role {
+    color: var(--editor-primary);
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+
+  .editor-profile-area {
+    color: var(--editor-gray);
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .editor-profile-area::before {
+    content: '▸';
+    color: var(--editor-primary-light);
+  }
+
+  /* Lista de detalles */
+  .editor-details-list {
+    background: white;
+    border: 2px solid var(--editor-border);
+    border-radius: var(--editor-radius);
+    overflow: hidden;
+    box-shadow: var(--editor-shadow-sm);
+  }
+
+  .editor-detail-item {
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--editor-border);
+    transition: var(--editor-transition);
+  }
+
+  .editor-detail-item:last-child {
+    border-bottom: none;
+  }
+
+  .editor-detail-item:hover {
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+    padding-left: 2rem;
+  }
+
+  .editor-detail-label {
+    color: var(--editor-gray);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+  }
+
+  .editor-detail-value {
+    font-weight: 600;
+    color: var(--editor-dark);
+    font-size: 0.9375rem;
+  }
+
+  .editor-status-active {
+    color: var(--editor-success);
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .editor-status-active::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--editor-success);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  .editor-status-inactive {
+    color: var(--editor-danger);
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .editor-status-inactive::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--editor-danger);
+    border-radius: 50%;
+    opacity: 0.5;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+  }
+
+  /* Sección del formulario */
+  .editor-form-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border-radius: var(--editor-radius);
+    padding: 2rem;
+    border: 1px solid var(--editor-border);
+    margin-top: 2rem;
+  }
+
+  .editor-form-label {
+    display: block;
+    font-weight: 600;
+    color: var(--editor-dark);
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+    position: relative;
+    padding-left: 1.5rem;
+  }
+
+  .editor-form-label::before {
+    content: '📝';
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  /* Contenedor del CKEditor */
+  .editor-ckeditor-wrapper {
+    border-radius: var(--editor-radius);
+    overflow: hidden;
+    box-shadow: var(--editor-shadow-md);
+    border: 2px solid var(--editor-border);
+    transition: var(--editor-transition);
+  }
+
+  .editor-ckeditor-wrapper:focus-within {
+    border-color: var(--editor-primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), var(--editor-shadow-lg);
+  }
+
+  /* Botones de acción */
+  .editor-actions-wrapper {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .editor-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    border: 2px solid transparent;
+    transition: var(--editor-transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .editor-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .editor-btn:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  .editor-btn-primary {
+    background: linear-gradient(135deg, var(--theme-default) 0%, var(--theme-default_dark) 100%);
+    color: white;
+    box-shadow: var(--editor-shadow-md);
+  }
+
+  .editor-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--editor-shadow-lg);
+    background: linear-gradient(135deg,rgb(32, 72, 98) 0%,rgb(12, 35, 50) 100%);
+  }
+
+  .editor-btn-secondary {
+    background: white;
+    color: var(--editor-gray);
+    border-color: var(--editor-border);
+  }
+
+  .editor-btn-secondary:hover {
+    background: var(--editor-light-gray);
+    border-color: var(--editor-primary-light);
+    color: var(--editor-primary);
+    transform: translateY(-2px);
+  }
+
+  .editor-btn-alt {
+    background: linear-gradient(135deg, var(--editor-gray) 0%, var(--editor-dark) 100%);
+    color: white;
+  }
+
+  .editor-btn-alt:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--editor-shadow-lg);
+  }
+
+  /* Animación de iconos en botones */
+  .editor-btn i {
+    transition: transform 0.3s ease;
+  }
+
+  .editor-btn:hover i {
+    transform: rotate(360deg);
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .editor-main-container {
+      padding: 1rem 0;
+    }
+
+    .editor-card-wrapper {
+      padding: 0 1rem;
+    }
+
+    .editor-body {
+      padding: 1.5rem;
+    }
+
+    .editor-info-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .editor-main-title {
+      font-size: 1.5rem;
+    }
+
+    .editor-profile-card {
+      padding: 1.25rem;
+    }
+
+    .editor-avatar,
+    .editor-avatar-placeholder {
+      width: 60px;
+      height: 60px;
+    }
+
+    .editor-actions-wrapper {
+      flex-direction: column;
+    }
+
+    .editor-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  /* Animación de entrada */
+  @keyframes slide-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .editor-main-card {
+    animation: slide-in 0.6s ease-out;
+  }
+
+  .editor-type-badge {
+    animation: slide-in 0.7s ease-out;
+  }
+
+  .editor-profile-card {
+    animation: slide-in 0.8s ease-out;
+  }
+
+  .editor-details-list {
+    animation: slide-in 0.9s ease-out;
+  }
+
+  .editor-form-section {
+    animation: slide-in 1s ease-out;
+  }
+
+  /* Loading state para botones */
+  .editor-btn.loading {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  .editor-btn.loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    margin: auto;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    border-top-color: currentColor;
+    animation: spinner 0.6s linear infinite;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  @keyframes spinner {
+    to { transform: translateY(-50%) rotate(360deg); }
+  }
+
+  /* Mejoras para CKEditor */
+  .ck-editor__editable {
+    min-height: 350px !important;
+  }
+
+  .ck.ck-editor {
+    border: none !important;
+  }
+
+  .ck-editor__main {
+    border-radius: 0 0 var(--editor-radius) var(--editor-radius);
+  }
+</style>
+
+
+<div class="editor-main-container">
+  <div class="editor-card-wrapper">
+    <div class="editor-main-card">
+      <div class="editor-header">
+        <h1 class="editor-header-title">
+          <span class="editor-header-icon">
+            <i class="fa fa-edit"></i>
+          </span>
+          Confirmación de Edición
+        </h1>
+      </div>
+
+      <div class="editor-body">
+        {# Carga los assets del CKEditor 5 #}
+        {{ form.media }}
+
+        <span class="editor-type-badge">
+          {{ tipo_label }}
+        </span>
+
+        <h2 class="editor-main-title">Estás a punto de editar esta persona</h2>
+        <p class="editor-subtitle">Revisa que los datos correspondan y edita el contenido abajo.</p>
+
+        <div class="editor-info-grid">
+          <div class="editor-profile-card">
+            <div class="editor-profile-content">
+              <div class="editor-avatar-wrapper">
+                {% if persona.imagen %}
+                  <img src="{{ persona.imagen.url }}" alt="Foto de {{ persona.nombre }}" class="editor-avatar">
+                {% else %}
+                  <div class="editor-avatar-placeholder">
+                    <i class="fa fa-user"></i>
+                  </div>
+                {% endif %}
+              </div>
+
+              <div class="editor-profile-info">
+                <div class="editor-profile-name">{{ persona.nombre }}</div>
+                <div class="editor-profile-role">{{ persona.cargo }}</div>
+                {% if persona.area %}
+                  <div class="editor-profile-area">{{ persona.area }}</div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="editor-details-list">
+            <div class="editor-detail-item">
+              <span class="editor-detail-label">Estado</span>
+              <span class="editor-detail-value">
+                {% if persona.status == 'activo' %}
+                  <span class="editor-status-active">Activo</span>
+                {% else %}
+                  <span class="editor-status-inactive">Inactivo</span>
+                {% endif %}
+              </span>
+            </div>
+
+            <div class="editor-detail-item">
+              <span class="editor-detail-label">Orden</span>
+              <span class="editor-detail-value">{{ persona.orden }}</span>
+            </div>
+
+            {% if persona.telefono %}
+            <div class="editor-detail-item">
+              <span class="editor-detail-label">Teléfono</span>
+              <span class="editor-detail-value">{{ persona.telefono }}</span>
+            </div>
+            {% endif %}
+
+            {% if persona.correo_electronico %}
+            <div class="editor-detail-item">
+              <span class="editor-detail-label">Correo</span>
+              <span class="editor-detail-value">{{ persona.correo_electronico }}</span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        {# --- CKEDITOR ABAJO DEL PERFIL --- #}
+        <div class="editor-form-section">
+          <form method="post" novalidate id="editorForm">
+            {% csrf_token %}
+            <div class="editor-form-group">
+              <label class="editor-form-label" for="{{ form.contenido.id_for_label }}">
+                Contenido del perfil
+              </label>
+              <div class="editor-ckeditor-wrapper">
+                {{ form.contenido }}
+              </div>
+            </div>
+
+            <div class="editor-actions-wrapper">
+              <a href="javascript:history.back()" class="editor-btn editor-btn-secondary">
+                <i class="fa fa-arrow-left"></i> 
+                Cancelar
+              </a>
+              
+              <button type="submit" class="editor-btn editor-btn-primary" id="saveBtn">
+                <i class="fa fa-save"></i> 
+                Guardar contenido
+              </button>
+
+              {% if url_edicion %}
+                <a href="{{ url_edicion }}" class="editor-btn editor-btn-alt">
+                  <i class="fa fa-edit"></i> 
+                  Otras ediciones
+                </a>
+              {% endif %}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Añadir efecto de loading al enviar el formulario
+  const form = document.getElementById('editorForm');
+  const saveBtn = document.getElementById('saveBtn');
+  
+  form.addEventListener('submit', function(e) {
+    saveBtn.classList.add('loading');
+    saveBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Guardando...';
+  });
+
+  // Efecto parallax suave en el background
+  const container = document.querySelector('.editor-main-container');
+  if (container) {
+    window.addEventListener('scroll', function() {
+      const scrolled = window.pageYOffset;
+      const parallax = container.querySelector('::before');
+      const speed = 0.5;
+      
+      if (parallax) {
+        parallax.style.transform = `translateY(${scrolled * speed}px)`;
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

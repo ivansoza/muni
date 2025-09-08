@@ -51,7 +51,8 @@ class MiembroGabinete(models.Model):
     experiencia = models.TextField("Experiencia en el Servicio Público", blank=True, null=True)
     area = models.CharField("Área de Trabajo", max_length=255, blank=True, null=True)
     descripcion_area = models.TextField("Descripción del Área de Trabajo", blank=True, null=True)
-    
+    contenido = CKEditor5Field('Contenido', config_name='extends', blank=True, null=True)
+
     # Relación con Dependencia
     dependencia = models.ForeignKey(
         Dependencia, 
@@ -117,7 +118,8 @@ class MiembroGabineteRegidores(models.Model):
     experiencia = models.TextField("Experiencia en el Servicio Público", blank=True, null=True)
     area = models.CharField("Área de Trabajo", max_length=255, blank=True, null=True)
     descripcion_area = models.TextField("Descripción del Área de Trabajo", blank=True, null=True)
-    
+    contenido = CKEditor5Field('Contenido', config_name='extends', blank=True, null=True)
+
     # Relación con Dependencia
     dependencia = models.ForeignKey(
         Dependencia, 
@@ -183,7 +185,8 @@ class MiembroGabineteDirectores(models.Model):
     experiencia = models.TextField("Experiencia en el Servicio Público", blank=True, null=True)
     area = models.CharField("Área de Trabajo", max_length=255, blank=True, null=True)
     descripcion_area = models.TextField("Descripción del Área de Trabajo", blank=True, null=True)
-    
+    contenido = CKEditor5Field('Contenido', config_name='extends', blank=True, null=True)
+  
     # Relación con Dependencia
     dependencia = models.ForeignKey(
         Dependencia, 
@@ -248,7 +251,7 @@ class MiembroGabinetePresidentesComu(models.Model):
     experiencia = models.TextField("Experiencia en el Servicio Público", blank=True, null=True)
     area = models.CharField("Área de Trabajo", max_length=255, blank=True, null=True)
     descripcion_area = models.TextField("Descripción del Área de Trabajo", blank=True, null=True)
-    
+    contenido = CKEditor5Field('Contenido', config_name='extends', blank=True, null=True)
     dependencia = models.ForeignKey(
         Dependencia,
         on_delete=models.CASCADE,
@@ -313,7 +316,7 @@ class MiembroGabineteCoordinadoresDif(models.Model):
     experiencia = models.TextField("Experiencia en el Servicio Público", blank=True, null=True)
     area = models.CharField("Área de Trabajo", max_length=255, blank=True, null=True)
     descripcion_area = models.TextField("Descripción del Área de Trabajo", blank=True, null=True)
-    
+    contenido = CKEditor5Field('Contenido', config_name='extends', blank=True, null=True)
     dependencia = models.ForeignKey(
         Dependencia,
         on_delete=models.CASCADE,

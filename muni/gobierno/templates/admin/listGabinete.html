@@ -137,6 +137,11 @@
     }
 </style>
 
+<style>
+  .action-icon { color:#6c757d; text-decoration:none; }
+  .action-icon:hover { color:#0d6efd; }
+</style>
+
 
 <div class="container-fluid mt-5">
 
@@ -423,6 +428,9 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        // NUEVO: patrón para PRE-EDITAR en Gabinete
+        const preUrlPatternGabinete = "{% url 'pre_editar_persona' 'gabinete' 99999 %}";
+
         // Carga inicial de datos
         fetchData();
         
@@ -446,10 +454,10 @@
                             statusClass = "text-danger";
                         }
                         
-                        // Generar la columna de acciones con ícono de edición y drag-handle
-                        // Ajusta la URL de edición según tu configuración de rutas en Django.
+                        // URLs de acción
                         const editUrl = "{% url 'gabinete_edit' 99999 %}".replace("99999", miembro.id);
-                        
+                        const preUrl  = preUrlPatternGabinete.replace("99999", miembro.id); // NUEVO
+
                         row.innerHTML = `
                             <td>${miembro.nombre}</td>
                             <td>${miembro.cargo}</td>
@@ -457,12 +465,16 @@
                             <td><span class="${statusClass}">${miembro.status}</span></td>
                             <td class="text-center">${miembro.orden}</td>
                             <td class="text-center">
-                                <!-- Ícono de edición con enlace -->
-                                <a href="${editUrl}" class="me-2 text-decoration-none">
+                                <!-- NUEVO: Perfil / Pre-editar -->
+                                <a href="${preUrl}" class="me-2 text-decoration-none" title="Perfil / Pre-editar" aria-label="Perfil">
+                                    <i class="fa fa-id-card"></i>
+                                </a>
+                                <!-- Ícono de edición existente -->
+                                <a href="${editUrl}" class="me-2 text-decoration-none" title="Editar" aria-label="Editar">
                                     <i class="fa fa-edit"></i>
                                 </a>
                                 <!-- Ícono para drag (no hace navegación) -->
-                                <div class="drag-handle d-inline-block">
+                                <div class="drag-handle d-inline-block" title="Arrastrar para reordenar" aria-label="Reordenar">
                                     <i class="fa fa-th"></i>
                                 </div>
                             </td>
@@ -557,7 +569,8 @@
                 statusId: "statusMessageRegidores",
                 listUrl:  "{% url 'regidores_list_api' %}",
                 orderUrl: "{% url 'regidores_update_order_api' %}",
-                editUrlPattern: "{% url 'regidor_edit' 99999 %}",   // 99999 = marcador
+                editUrlPattern: "{% url 'regidor_edit' 99999 %}",                 // edición directa
+                preUrlPattern:  "{% url 'pre_editar_persona' 'regidor' 99999 %}", // NUEVO: perfil / pre-editar
             },
             /* Directores */
             {
@@ -566,6 +579,7 @@
                 listUrl:  "{% url 'directores_list_api' %}",
                 orderUrl: "{% url 'directores_update_order_api' %}",
                 editUrlPattern: "{% url 'director_edit' 99999 %}",
+                preUrlPattern:  "{% url 'pre_editar_persona' 'director' 99999 %}", // NUEVO
             },
             /* Presidentes de Comunidad */
             {
@@ -574,6 +588,7 @@
                 listUrl:  "{% url 'api-presidentes-comu' %}",
                 orderUrl: "{% url 'api-update-order-presidentes-comu' %}",
                 editUrlPattern: "{% url 'editar-presidente-comu' 99999 %}",
+                preUrlPattern:  "{% url 'pre_editar_persona' 'presidente' 99999 %}", // NUEVO
             },
             /* Coordinadores DIF */
             {
@@ -582,6 +597,7 @@
                 listUrl:  "{% url 'api-coordinadores-dif' %}",
                 orderUrl: "{% url 'api-update-order-coordinadores-dif' %}",
                 editUrlPattern: "{% url 'editar-coordinador-dif' 99999 %}",
+                preUrlPattern:  "{% url 'pre_editar_persona' 'coordinador_dif' 99999 %}", // NUEVO
             },
         ];
     
@@ -609,6 +625,7 @@
     
                 const stClass = m.status === "Activo" ? "text-success" : "text-danger";
                 const editUrl = cfg.editUrlPattern.replace("99999", m.id);
+                const preUrl  = cfg.preUrlPattern.replace("99999", m.id); // NUEVO
     
                 tr.innerHTML = `
                     <td>${m.nombre}</td>
@@ -617,8 +634,17 @@
                     <td><span class="${stClass}">${m.status}</span></td>
                     <td class="text-center">${m.orden}</td>
                     <td class="text-center">
-                        <a href="${editUrl}" class="me-2"><i class="fa fa-edit"></i></a>
-                        <div class="drag-handle d-inline-block"><i class="fa fa-th"></i></div>
+                        <!-- NUEVO: Perfil / Pre-editar -->
+                        <a href="${preUrl}" class="me-2 text-decoration-none" title="Perfil / Pre-editar" aria-label="Perfil">
+                            <i class="fa fa-id-card"></i>
+                        </a>
+                        <!-- Editar existente -->
+                        <a href="${editUrl}" class="me-2 text-decoration-none" title="Editar" aria-label="Editar">
+                            <i class="fa fa-edit"></i>
+                        </a>
+                        <div class="drag-handle d-inline-block" title="Arrastrar para reordenar" aria-label="Reordenar">
+                            <i class="fa fa-th"></i>
+                        </div>
                     </td>`;
                 tbody.appendChild(tr);
             });
@@ -662,7 +688,6 @@
             setTimeout(() => div.innerHTML = "", 4000);
         }
     });
-    </script>
-    
-    
+</script>
+
 {% endblock content %}

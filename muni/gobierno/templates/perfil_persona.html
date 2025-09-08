@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+{# >>> Estilos de CKEditor 5 para la VISTA (no para editar) <<< #}
+<link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/44.3.0/ckeditor5.css">
+
+<style>
+  .perfil-wrap {max-width: 1100px; margin: 2rem auto; padding: 1rem;}
+  .perfil-card {background:#fff; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.06); overflow: hidden;}
+  .perfil-header {display:flex; gap:1.25rem; padding:1.25rem 1.25rem 0 1.25rem; align-items:center; flex-wrap:wrap;}
+  .perfil-foto {width:120px; height:120px; border-radius:50%; overflow:hidden; border:3px solid #f1f5f9; flex:0 0 auto;}
+  .perfil-foto img {width:100%; height:100%; object-fit:cover;}
+  .perfil-info h1 {font-size:1.5rem; margin:0; color:#0f172a;}
+  .perfil-info .cargo {color:#475569; margin-top:.25rem;}
+  .perfil-info .area {color:#64748b; font-size:.9rem; margin-top:.25rem;}
+  .perfil-body {padding:1.25rem;}
+  .perfil-actions {display:flex; gap:.5rem; padding:0 1.25rem 1.25rem 1.25rem;}
+  .btn {display:inline-flex; align-items:center; gap:.5rem; border-radius:10px; padding:.5rem .9rem; text-decoration:none;}
+  .btn-primary {background:#2563eb; color:#fff;}
+  .btn-outline {border:1px solid #cbd5e1; color:#0f172a; background:#fff;}
+
+  /* ---- Vista del contenido CKEditor ---- */
+  .perfil-contenido {padding:1rem; border-radius:12px; border:1px solid #e2e8f0; background:#fff;}
+  .perfil-contenido .ck-content {
+    /* Que el texto conserve el aspecto del editor */
+    line-height: 1.8;
+    color: #334155;
+    font-size: 1rem;
+  }
+  /* Asegurar imágenes/tablas responsivas en la vista */
+  .perfil-contenido .ck-content img {max-width:100%; height:auto;}
+  .perfil-contenido .ck-content table {width:100%; border-collapse:collapse;}
+  .perfil-contenido .ck-content table th,
+  .perfil-contenido .ck-content table td {border:1px solid #e5e7eb; padding:.5rem;}
+
+  /* Alineaciones que usa CKEditor para imágenes */
+  .perfil-contenido .ck-content figure.image.image-style-align-center {margin-left:auto; margin-right:auto;}
+  .perfil-contenido .ck-content figure.image.image-style-align-left {float:left; margin: .25rem .75rem .5rem 0;}
+  .perfil-contenido .ck-content figure.image.image-style-align-right {float:right; margin: .25rem 0 .5rem .75rem;}
+  .perfil-contenido .ck-content::after {content:""; display:block; clear:both;}
+
+  /* Si no quieres que los <a> se vean azules dentro de títulos/nombres */
+  .link-reset { color: inherit !important; text-decoration: none !important; }
+  .link-reset:hover { text-decoration: underline; }
+</style>
+
+<div class="perfil-wrap">
+  <div class="perfil-card">
+    <div class="perfil-header">
+      <div class="perfil-foto">
+        {% if persona.imagen %}
+          <img src="{{ persona.imagen.url }}" alt="{{ persona.nombre }}">
+        {% else %}
+          <img src="{% static 'img/user-placeholder.png' %}" alt="{{ persona.nombre }}">
+        {% endif %}
+      </div>
+      <div class="perfil-info">
+        <h1>{{ persona.nombre }}</h1>
+        <div class="cargo">{{ persona.cargo }}</div>
+        {% if persona.area %}<div class="area">{{ persona.area }}</div>{% endif %}
+      </div>
+    </div>
+
+    <div class="perfil-body">
+      <div class="perfil-contenido">
+        {% if persona.contenido %}
+          {# MUY IMPORTANTE: envolver con ck-content #}
+          <div class="ck-content">
+            {{ persona.contenido|safe }}
+          </div>
+        {% else %}
+          <p class="text-muted">Aún no hay contenido para este perfil.</p>
+        {% endif %}
+      </div>
+    </div>
+
+
+  </div>
+</div>
+{% endblock %}
