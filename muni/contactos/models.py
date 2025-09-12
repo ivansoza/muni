@@ -22,7 +22,7 @@ class Contacto(models.Model):
 
     telefono_directo = models.CharField(
         "Teléfono Directo",
-        max_length=20,
+        max_length=60,
         blank=True,
         null=True,
         help_text="Número de teléfono directo disponible en horario de oficina"
