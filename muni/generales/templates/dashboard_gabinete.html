@@ -1,0 +1,141 @@
+{% extends "baseTemplate.html" %}
+{% load static %}
+
+{% block sin_breadcumb %}{% endblock sin_breadcumb %}
+
+{% block content %}
+
+<style>
+  /* ===== Estilos del editor y card (compacto) ===== */
+  :root {
+    --editor-primary: #6366f1; --editor-primary-dark: #4f46e5; --editor-primary-light: #818cf8;
+    --editor-secondary: #8b5cf6; --editor-accent: #ec4899; --editor-success: #10b981;
+    --editor-danger: #ef4444; --editor-warning: #f59e0b; --editor-dark: #1e293b;
+    --editor-gray: #64748b; --editor-light-gray: #f1f5f9; --editor-border: #e2e8f0;
+    --editor-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1); --editor-radius: 12px;
+  }
+  .editor-form-section{background:linear-gradient(135deg,#f8fafc 0%,#ffffff 100%);border-radius:var(--editor-radius);padding:1.25rem;border:1px solid var(--editor-border);margin-top:1.25rem}
+  .editor-form-label{display:block;font-weight:600;color:var(--editor-dark);margin-bottom:.75rem;font-size:1.05rem}
+  .editor-ckeditor-wrapper{border-radius:var(--editor-radius);overflow:hidden;box-shadow:var(--editor-shadow-md);border:2px solid var(--editor-border)}
+  .editor-ckeditor-wrapper:focus-within{border-color:var(--editor-primary);box-shadow:0 0 0 3px rgba(99,102,241,.1),0 10px 20px -8px rgba(0,0,0,.15)}
+  .editor-actions-wrapper{display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap}
+  .editor-btn{padding:.65rem 1.2rem;border-radius:10px;font-weight:600;font-size:.95rem;border:2px solid transparent;display:inline-flex;align-items:center;gap:.5rem;text-decoration:none;cursor:pointer}
+  .editor-btn-primary{background:linear-gradient(135deg,#204862 0%,#0c2332 100%);color:#fff}
+  .editor-btn-primary:hover{filter:brightness(1.05)}
+  .editor-btn-secondary{background:#fff;color:var(--editor-gray);border-color:var(--editor-border)}
+  .editor-btn-secondary:hover{background:var(--editor-light-gray);border-color:var(--editor-primary-light);color:var(--editor-primary)}
+  .editor-btn.loading{pointer-events:none;opacity:.75}
+  .ck-editor__editable{min-height:320px !important}
+
+  .nuevo{
+    margin-top: 400px;
+  }
+
+
+</style>
+
+
+
+<div class="container-fluid nuevo mt-3">
+{# ===== Card de Miembro de Gabinete ===== #}
+<div style="margin-top:440px" class="card nuevo shadow-sm border-0 mt-4 mb-4">
+  <div class="card-header d-flex align-items-center justify-content-between" style="background: linear-gradient(135deg,#667eea,#764ba2); color:#fff;">
+    <div>
+      <strong>Miembro de Gabinete</strong>
+      {% if gabinete_member %}
+        <span class="badge bg-light text-dark ms-2">{{ gabinete_member_model }}</span>
+      {% else %}
+        <span class="badge bg-warning text-dark ms-2">Sin asociación</span>
+      {% endif %}
+    </div>
+    {% if is_gabinete_user %}
+      <span class="badge bg-success">Acceso Gabinete</span>
+    {% endif %}
+  </div>
+
+  <div class="card-body">
+    {% if gabinete_member %}
+      <div class="d-flex gap-3 align-items-start">
+        {% if gabinete_member.imagen %}
+          <img src="{{ gabinete_member.imagen.url }}" alt="Foto" class="rounded" style="width:90px;height:90px;object-fit:cover;">
+        {% else %}
+          <div class="rounded bg-light d-flex align-items-center justify-content-center" style="width:90px;height:90px;">
+            <i class="fa fa-user fa-2x text-muted"></i>
+          </div>
+        {% endif %}
+
+        <div class="flex-grow-1">
+          <h5 class="mb-1">{{ gabinete_member.nombre }}</h5>
+          <div class="text-muted mb-2">{{ gabinete_member.cargo|default:"(Cargo no especificado)" }}</div>
+
+          <div class="small">
+            <div><i class="fa fa-building me-2"></i><strong>Dependencia:</strong> {{ gabinete_member.dependencia|default:"—" }}</div>
+            <div><i class="fa fa-map-marker-alt me-2"></i><strong>Municipio:</strong> {{ gabinete_member.municipio|default:"—" }}</div>
+            <div class="mt-2">
+              {% if gabinete_member.correo_electronico %}
+                <a class="btn btn-sm btn-outline-primary me-2" href="mailto:{{ gabinete_member.correo_electronico }}"><i class="fa fa-envelope me-1"></i>Correo</a>
+              {% endif %}
+              {% if gabinete_member.numero_contacto %}
+                <a class="btn btn-sm btn-outline-success me-2" href="tel:{{ gabinete_member.numero_contacto }}"><i class="fa fa-phone me-1"></i>Llamar</a>
+              {% endif %}
+              {% if gabinete_member.pagina_web %}
+                <a class="btn btn-sm btn-outline-secondary" href="{{ gabinete_member.pagina_web }}" target="_blank"><i class="fa fa-globe me-1"></i>Sitio</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {# ===== Sección CKEditor (edición in-place) ===== #}
+      {% if can_edit_gabinete_content and contenido_form %}
+        {{ contenido_form.media }}
+        <div class="editor-form-section">
+          <form method="post" id="gabineteContenidoForm">
+            {% csrf_token %}
+            <label class="editor-form-label" for="{{ contenido_form.contenido.id_for_label }}">Contenido del perfil</label>
+            <div class="editor-ckeditor-wrapper">
+              {{ contenido_form.contenido }}
+            </div>
+            <div class="editor-actions-wrapper">
+              <button type="submit" class="editor-btn editor-btn-primary" id="saveBtn">
+                <i class="fa fa-save"></i> Guardar contenido
+              </button>
+      
+            </div>
+          </form>
+        </div>
+      {% else %}
+        <div class="mt-4 border rounded p-3 bg-light">
+          {{ gabinete_member.contenido|safe|default:"<em>Sin contenido.</em>" }}
+        </div>
+      {% endif %}
+
+    {% else %}
+      <div class="alert alert-info d-flex align-items-start" role="alert">
+        <i class="fa fa-info-circle me-2 mt-1"></i>
+        <div>
+          <div class="fw-semibold">Aún no estás asociado a un miembro del gabinete.</div>
+          <div class="small text-muted">
+            Por favor, comenta a <strong>Soporte Técnico</strong> que te asocie con tu miembro de gabinete correspondiente.
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    var form = document.getElementById('gabineteContenidoForm');
+    var btn  = document.getElementById('saveBtn');
+    if(form && btn){
+      form.addEventListener('submit', function(){
+        btn.classList.add('loading');
+        btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Guardando...';
+      });
+    }
+  });
+</script>
+
+{% endblock %}

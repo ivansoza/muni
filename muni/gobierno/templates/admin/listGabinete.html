@@ -145,280 +145,291 @@
 
 <div class="container-fluid mt-5">
 
-    <div class="dashboard">
-        <div class="row">
-            <!-- Principales -->
-            <div class="col-12 col-sm-4 col-md-4 col-lg-4 mt-2">
-                <div class="cardash">
-                    <div class="cardash-header">
-                        <span class="cardash-title">Principales</span>
-                        <div class="cardash-icon">
-                            <span class="emoji-transition">📁</span>
-                        </div>
-                    </div>
-                    <div class="cardash-content" style="font-size: 30px;">
-                        {{ contacts_data.gabinete }}
-                    </div>
-                </div>
-            </div>
-    
-            <!-- Regidores -->
-            <div class="col-12 col-sm-4 col-md-4 col-lg-4 mt-2">
-                <div class="cardash">
-                    <div class="cardash-header">
-                        <span class="cardash-title">Regidores</span>
-                        <div class="cardash-icon">
-                            <span class="emoji-transition">📁</span>
-                        </div>
-                    </div>
-                    <div class="cardash-content" style="font-size: 30px;">
-                        {{ contacts_data.regidores }}
-                    </div>
-                </div>
-            </div>
-    
-            <!-- Directores -->
-            <div class="col-12 col-sm-4 col-md-4 col-lg-4 mt-2">
-                <div class="cardash">
-                    <div class="cardash-header">
-                        <span class="cardash-title">Directores</span>
-                        <div class="cardash-icon">
-                            <span class="emoji-transition">📁</span>
-                        </div>
-                    </div>
-                    <div class="cardash-content" style="font-size: 30px;">
-                        {{ contacts_data.directores }}
-                    </div>
-                </div>
-            </div>
-    
-            <!-- Presidentes Comunales -->
-            <div class="col-12 col-sm-4 col-md-4 col-lg-4 mt-2">
-                <div class="cardash">
-                    <div class="cardash-header">
-                        <span class="cardash-title">Presidentes de Comunidad</span>
-                        <div class="cardash-icon">
-                            <span class="emoji-transition">🏘️</span>
-                        </div>
-                    </div>
-                    <div class="cardash-content" style="font-size: 30px;">
-                        {{ contacts_data.presidentes_comu }}
-                    </div>
-                </div>
-            </div>
-    
-            <!-- Coordinadores DIF -->
-            <div class="col-12 col-sm-4 col-md-4 col-lg-4 mt-2">
-                <div class="cardash">
-                    <div class="cardash-header">
-                        <span class="cardash-title">Coordinadores DIF</span>
-                        <div class="cardash-icon">
-                            <span class="emoji-transition">🤝</span>
-                        </div>
-                    </div>
-                    <div class="cardash-content" style="font-size: 30px;">
-                        {{ contacts_data.coordinadores_dif }}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-
+  <div class="dashboard">
     <div class="row">
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-            <a href="{% url 'gabinete_create' %}" class="btn btn-add w-100" style="margin-bottom: 20px; border-radius: 10px; padding: 12px 20px; font-size: 16px;">
-                <i class="fa fa-user-plus"></i> Agregar miembros principales
-            </a>
-        </div>
-    </div>
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h2 class="mb-0">Miembros Principales</h2>
-            <div class="drag-hint">
-                <i class="fa fa-info-circle me-2"></i>
-                <span>Arrastra las filas para reorganizar</span>
+      <!-- Principales -->
+      <div class="col-12 col-sm-4 col-md-4 col-lg-4 mt-2">
+        <div class="cardash">
+          <div class="cardash-header">
+            <span class="cardash-title">Principales</span>
+            <div class="cardash-icon">
+              <span class="emoji-transition">📁</span>
             </div>
+          </div>
+          <div class="cardash-content" style="font-size: 30px;">
+            {{ contacts_data.gabinete }}
+          </div>
         </div>
-        
-        <div class="card-body">
+      </div>
 
-            
-            <div class="table-responsive">
-                <table class="table table-hover" id="gabineteTable">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="border-0">Nombre</th>
-                            <th class="border-0">Cargo</th>
-                            <th class="border-0">Área</th>
-                            <th class="border-0">Estado</th>
-                            <th class="border-0 text-center">Posición</th>
-                            <th class="border-0 text-center">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="gabineteTableBody" class="sortable-table">
-                        <!-- Aquí se cargarán las filas dinámicamente mediante AJAX -->
-                    </tbody>
-                </table>
+      <!-- Regidores -->
+      <div class="col-12 col-sm-4 col-md-4 col-lg-4 mt-2">
+        <div class="cardash">
+          <div class="cardash-header">
+            <span class="cardash-title">Regidores</span>
+            <div class="cardash-icon">
+              <span class="emoji-transition">📁</span>
             </div>
+          </div>
+          <div class="cardash-content" style="font-size: 30px;">
+            {{ contacts_data.regidores }}
+          </div>
         </div>
-        
-        <div class="card-footer text-muted">
-            <div id="statusMessage" class="text-center"></div>
+      </div>
+
+      <!-- Directores -->
+      <div class="col-12 col-sm-4 col-md-4 col-lg-4 mt-2">
+        <div class="cardash">
+          <div class="cardash-header">
+            <span class="cardash-title">Directores</span>
+            <div class="cardash-icon">
+              <span class="emoji-transition">📁</span>
+            </div>
+          </div>
+          <div class="cardash-content" style="font-size: 30px;">
+            {{ contacts_data.directores }}
+          </div>
         </div>
+      </div>
+
+      <!-- Presidentes Comunales -->
+      <div class="col-12 col-sm-4 col-md-4 col-lg-4 mt-2">
+        <div class="cardash">
+          <div class="cardash-header">
+            <span class="cardash-title">Presidentes de Comunidad</span>
+            <div class="cardash-icon">
+              <span class="emoji-transition">🏘️</span>
+            </div>
+          </div>
+          <div class="cardash-content" style="font-size: 30px;">
+            {{ contacts_data.presidentes_comu }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Coordinadores DIF -->
+      <div class="col-12 col-sm-4 col-md-4 col-lg-4 mt-2">
+        <div class="cardash">
+          <div class="cardash-header">
+            <span class="cardash-title">Coordinadores DIF</span>
+            <div class="cardash-icon">
+              <span class="emoji-transition">🤝</span>
+            </div>
+          </div>
+          <div class="cardash-content" style="font-size: 30px;">
+            {{ contacts_data.coordinadores_dif }}
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 
 
-    
-<div class="col-12 col-sm-6 col-md-4 col-lg-3">
-    <a href="{% url 'regidor_create' %}" class="btn btn-add w-100 mb-3">
-        <i class="fa fa-user-plus"></i> Agregar regidor
-    </a>
-</div>
-<div class="card shadow">
+  <div class="row">
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+      <a href="{% url 'gabinete_create' %}" class="btn btn-add w-100" style="margin-bottom: 20px; border-radius: 10px; padding: 12px 20px; font-size: 16px;">
+        <i class="fa fa-user-plus"></i> Agregar miembros principales
+      </a>
+    </div>
+  </div>
+
+  <!-- PRINCIPALES -->
+  <div class="card shadow">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <h2 class="mb-0">Regidores</h2>
-        <div class="drag-hint">
-            <i class="fa fa-info-circle me-2"></i>
-            <span>Arrastra las filas para reorganizar</span>
-        </div>
+      <h2 class="mb-0">Miembros Principales</h2>
+      <div class="drag-hint">
+        <i class="fa fa-info-circle me-2"></i>
+        <span>Arrastra las filas para reorganizar</span>
+      </div>
     </div>
 
     <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover" id="regidoresTable">
-                <thead class="table-light">
-                    <tr>
-                        <th>Nombre</th><th>Cargo</th><th>Área</th>
-                        <th>Estado</th><th class="text-center">Posición</th>
-                        <th class="text-center">Acción</th>
-                    </tr>
-                </thead>
-                <tbody id="regidoresTableBody" class="sortable-table"></tbody>
-            </table>
-        </div>
+      <div class="table-responsive">
+        <table class="table table-hover" id="gabineteTable">
+          <thead class="table-light">
+            <tr>
+              <th class="border-0">Nombre</th>
+              <th class="border-0">Cargo</th>
+              <th class="border-0">Área</th>
+              <th class="border-0">Estado</th>
+              <th class="border-0 text-center">Posición</th>
+              <th class="border-0 text-center">Usuario</th> <!-- NUEVO -->
+              <th class="border-0 text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="gabineteTableBody" class="sortable-table">
+            <!-- Filas dinámicas -->
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div class="card-footer text-muted">
-        <div id="statusMessageRegidores" class="text-center"></div>
+      <div id="statusMessage" class="text-center"></div>
     </div>
+  </div>
+
+
+  <!-- Botón Regidor -->
+  <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+    <a href="{% url 'regidor_create' %}" class="btn btn-add w-100 mb-3">
+      <i class="fa fa-user-plus"></i> Agregar regidor
+    </a>
+  </div>
+
+  <!-- REGIDORES -->
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h2 class="mb-0">Regidores</h2>
+      <div class="drag-hint">
+        <i class="fa fa-info-circle me-2"></i>
+        <span>Arrastra las filas para reorganizar</span>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover" id="regidoresTable">
+          <thead class="table-light">
+            <tr>
+              <th>Nombre</th>
+              <th>Cargo</th>
+              <th>Área</th>
+              <th>Estado</th>
+              <th class="text-center">Posición</th>
+              <th class="text-center">Usuario</th> <!-- NUEVO -->
+              <th class="text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="regidoresTableBody" class="sortable-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card-footer text-muted">
+      <div id="statusMessageRegidores" class="text-center"></div>
+    </div>
+  </div>
+
+
+  <!-- Botón Director -->
+  <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+    <a href="{% url 'director_create' %}" class="btn btn-add w-100 mb-3">
+      <i class="fa fa-user-plus"></i> Agregar director
+    </a>
+  </div>
+
+  <!-- DIRECTORES -->
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h2 class="mb-0">Directores</h2>
+      <div class="drag-hint">
+        <i class="fa fa-info-circle me-2"></i>
+        <span>Arrastra las filas para reorganizar</span>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover" id="directoresTable">
+          <thead class="table-light">
+            <tr>
+              <th>Nombre</th>
+              <th>Cargo</th>
+              <th>Área</th>
+              <th>Estado</th>
+              <th class="text-center">Posición</th>
+              <th class="text-center">Usuario</th> <!-- NUEVO -->
+              <th class="text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="directoresTableBody" class="sortable-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card-footer text-muted">
+      <div id="statusMessageDirectores" class="text-center"></div>
+    </div>
+  </div>
+
+  <!-- Botón y lista de Presidentes Comunales -->
+  <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+    <a href="{% url 'crear-presidente-comu' %}" class="btn btn-add w-100 mb-3">
+      <i class="fa fa-user-plus"></i> Agregar Presidente de Comunidad
+    </a>
+  </div>
+
+  <div class="card shadow mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h2 class="mb-0">Presidentes de Comunidades</h2>
+      <div class="drag-hint">
+        <i class="fa fa-info-circle me-2"></i>
+        <span>Arrastra las filas para reorganizar</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover" id="presidentesComuTable">
+          <thead class="table-light">
+            <tr>
+              <th>Nombre</th>
+              <th>Cargo</th>
+              <th>Área</th>
+              <th>Estado</th>
+              <th class="text-center">Posición</th>
+              <th class="text-center">Usuario</th> <!-- NUEVO -->
+              <th class="text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="presidentesComuTableBody" class="sortable-table"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card-footer text-muted">
+      <div id="statusMessagePresidentesComu" class="text-center"></div>
+    </div>
+  </div>
+
+  <!-- Botón y lista de Coordinadores DIF -->
+  <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+    <a href="{% url 'crear-coordinador-dif' %}" class="btn btn-add w-100 mb-3">
+      <i class="fa fa-user-plus"></i> Agregar Coordinador DIF
+    </a>
+  </div>
+
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h2 class="mb-0">Coordinadores DIF</h2>
+      <div class="drag-hint">
+        <i class="fa fa-info-circle me-2"></i>
+        <span>Arrastra las filas para reorganizar</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover" id="coordinadoresDifTable">
+          <thead class="table-light">
+            <tr>
+              <th>Nombre</th>
+              <th>Cargo</th>
+              <th>Área</th>
+              <th>Estado</th>
+              <th class="text-center">Posición</th>
+              <th class="text-center">Usuario</th> <!-- NUEVO -->
+              <th class="text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="coordinadoresDifTableBody" class="sortable-table"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card-footer text-muted">
+      <div id="statusMessageCoordinadoresDif" class="text-center"></div>
+    </div>
+  </div>
+
 </div>
-
-
-
-    <!-- Botón Director -->
-    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-        <a href="{% url 'director_create' %}" class="btn btn-add w-100 mb-3">
-            <i class="fa fa-user-plus"></i> Agregar director
-        </a>
-    </div>
-
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h2 class="mb-0">Directores</h2>
-            <div class="drag-hint">
-                <i class="fa fa-info-circle me-2"></i>
-                <span>Arrastra las filas para reorganizar</span>
-            </div>
-        </div>
-
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover" id="directoresTable">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Nombre</th><th>Cargo</th><th>Área</th>
-                            <th>Estado</th><th class="text-center">Posición</th>
-                            <th class="text-center">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="directoresTableBody" class="sortable-table"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="card-footer text-muted">
-            <div id="statusMessageDirectores" class="text-center"></div>
-        </div>
-    </div>
-    {# Botón y lista de Presidentes Comunales #}
-    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-        <a href="{% url 'crear-presidente-comu' %}" class="btn btn-add w-100 mb-3">
-            <i class="fa fa-user-plus"></i> Agregar Presidente de Comunidad
-        </a>
-    </div>
-
-    <div class="card shadow mb-4">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h2 class="mb-0">Presidentes de Comunidades</h2>
-            <div class="drag-hint">
-                <i class="fa fa-info-circle me-2"></i>
-                <span>Arrastra las filas para reorganizar</span>
-            </div>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover" id="presidentesComuTable">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Cargo</th>
-                            <th>Área</th>
-                            <th>Estado</th>
-                            <th class="text-center">Posición</th>
-                            <th class="text-center">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="presidentesComuTableBody" class="sortable-table"></tbody>
-                </table>
-            </div>
-        </div>
-        <div class="card-footer text-muted">
-            <div id="statusMessagePresidentesComu" class="text-center"></div>
-        </div>
-    </div>
-
-    {# Botón y lista de Coordinadores DIF #}
-    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-        <a href="{% url 'crear-coordinador-dif' %}" class="btn btn-add w-100 mb-3">
-            <i class="fa fa-user-plus"></i> Agregar Coordinador DIF
-        </a>
-    </div>
-
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h2 class="mb-0">Coordinadores DIF</h2>
-            <div class="drag-hint">
-                <i class="fa fa-info-circle me-2"></i>
-                <span>Arrastra las filas para reorganizar</span>
-            </div>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover" id="coordinadoresDifTable">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Cargo</th>
-                            <th>Área</th>
-                            <th>Estado</th>
-                            <th class="text-center">Posición</th>
-                            <th class="text-center">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="coordinadoresDifTableBody" class="sortable-table"></tbody>
-                </table>
-            </div>
-        </div>
-        <div class="card-footer text-muted">
-            <div id="statusMessageCoordinadoresDif" class="text-center"></div>
-        </div>
-    </div>
-
-
-</div>
-
-
 
 
 
@@ -427,267 +438,268 @@
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // NUEVO: patrón para PRE-EDITAR en Gabinete
-        const preUrlPatternGabinete = "{% url 'pre_editar_persona' 'gabinete' 99999 %}";
+  document.addEventListener("DOMContentLoaded", function() {
+    // Patrón para PRE-EDITAR en Gabinete
+    const preUrlPatternGabinete = "{% url 'pre_editar_persona' 'gabinete' 99999 %}";
+    const userUrlPatternGabinete = "{% url 'asociar_usuario' 'gabinete' 99999 %}"; // NUEVO
 
-        // Carga inicial de datos
-        fetchData();
-        
-        function fetchData() {
-            fetch("{% url 'gabinete_list_api' %}", { method: "GET" })
-                .then(response => response.json())
-                .then(data => {
-                    const tbody = document.getElementById("gabineteTableBody");
-                    tbody.innerHTML = "";
-                    
-                    data.miembros.forEach(miembro => {
-                        const row = document.createElement("tr");
-                        row.setAttribute("data-id", miembro.id);
-                        row.className = "position-relative";
-                        
-                        // Asignar clases para estilo según el estado
-                        let statusClass = "";
-                        if (miembro.status === "Activo") {
-                            statusClass = "text-success";
-                        } else if (miembro.status === "Inactivo") {
-                            statusClass = "text-danger";
-                        }
-                        
-                        // URLs de acción
-                        const editUrl = "{% url 'gabinete_edit' 99999 %}".replace("99999", miembro.id);
-                        const preUrl  = preUrlPatternGabinete.replace("99999", miembro.id); // NUEVO
+    // Carga inicial de datos
+    fetchData();
 
-                        row.innerHTML = `
-                            <td>${miembro.nombre}</td>
-                            <td>${miembro.cargo}</td>
-                            <td>${miembro.area}</td>
-                            <td><span class="${statusClass}">${miembro.status}</span></td>
-                            <td class="text-center">${miembro.orden}</td>
-                            <td class="text-center">
-                                <!-- NUEVO: Perfil / Pre-editar -->
-                                <a href="${preUrl}" class="me-2 text-decoration-none" title="Perfil / Pre-editar" aria-label="Perfil">
-                                    <i class="fa fa-id-card"></i>
-                                </a>
-                                <!-- Ícono de edición existente -->
-                                <a href="${editUrl}" class="me-2 text-decoration-none" title="Editar" aria-label="Editar">
-                                    <i class="fa fa-edit"></i>
-                                </a>
-                                <!-- Ícono para drag (no hace navegación) -->
-                                <div class="drag-handle d-inline-block" title="Arrastrar para reordenar" aria-label="Reordenar">
-                                    <i class="fa fa-th"></i>
-                                </div>
-                            </td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                    
-                    initSortable();
-                })
-                .catch(error => {
-                    console.error("Error al cargar datos:", error);
-                    showStatusMessage("Error al cargar los datos", "danger");
-                });
+    function fetchData() {
+      fetch("{% url 'gabinete_list_api' %}", { method: "GET" })
+        .then(response => response.json())
+        .then(data => {
+          const tbody = document.getElementById("gabineteTableBody");
+          tbody.innerHTML = "";
+
+          data.miembros.forEach(miembro => {
+            const row = document.createElement("tr");
+            row.setAttribute("data-id", miembro.id);
+            row.className = "position-relative";
+
+            let statusClass = miembro.status === "Activo" ? "text-success" : "text-danger";
+
+            // URLs de acción
+            const editUrl = "{% url 'gabinete_edit' 99999 %}".replace("99999", miembro.id);
+            const preUrl  = preUrlPatternGabinete.replace("99999", miembro.id);
+            const userUrl = userUrlPatternGabinete.replace("99999", miembro.id); // NUEVO
+
+            const userIcon = miembro.tiene_usuario
+              ? `<i class="fa fa-user-circle text-success" title="Con usuario${miembro.usuario ? ': ' + miembro.usuario : ''}"></i>`
+              : `<i class="fa fa-user-circle text-danger" title="Sin usuario - clic para asociar"></i>`;
+
+            row.innerHTML = `
+              <td>${miembro.nombre}</td>
+              <td>${miembro.cargo}</td>
+              <td>${miembro.area}</td>
+              <td><span class="${statusClass}">${miembro.status}</span></td>
+              <td class="text-center">${miembro.orden}</td>
+              <td class="text-center">
+                <a href="${userUrl}" class="text-decoration-none" aria-label="Asociar/ver usuario">
+                  ${userIcon}
+                </a>
+              </td>
+              <td class="text-center">
+                <a href="${preUrl}" class="me-2 text-decoration-none" title="Perfil / Pre-editar" aria-label="Perfil">
+                  <i class="fa fa-id-card"></i>
+                </a>
+                <a href="${editUrl}" class="me-2 text-decoration-none" title="Editar" aria-label="Editar">
+                  <i class="fa fa-edit"></i>
+                </a>
+                <div class="drag-handle d-inline-block" title="Arrastrar para reordenar" aria-label="Reordenar">
+                  <i class="fa fa-th"></i>
+                </div>
+              </td>
+            `;
+            tbody.appendChild(row);
+          });
+
+          initSortable();
+        })
+        .catch(error => {
+          console.error("Error al cargar datos:", error);
+          showStatusMessage("Error al cargar los datos", "danger");
+        });
+    }
+
+    function showStatusMessage(message, type = "success") {
+      const statusDiv = document.getElementById("statusMessage");
+      statusDiv.innerHTML = `<div class="alert alert-${type} py-2 mb-0">${message}</div>`;
+      statusDiv.classList.add("fade-out");
+
+      setTimeout(() => {
+        statusDiv.innerHTML = "";
+        statusDiv.classList.remove("fade-out");
+      }, 5000);
+    }
+
+    function initSortable() {
+      let tbody = document.getElementById("gabineteTableBody");
+
+      new Sortable(tbody, {
+        animation: 150,
+        handle: '.drag-handle',
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        onStart: function() { document.body.style.cursor = 'grabbing'; },
+        onEnd: function() {
+          document.body.style.cursor = 'default';
+
+          let order = [];
+          tbody.querySelectorAll("tr").forEach((tr) => order.push(tr.getAttribute("data-id")));
+
+          showStatusMessage("Actualizando posiciones...", "info");
+
+          const params = new URLSearchParams();
+          order.forEach(id => params.append('order[]', id));
+
+          fetch("{% url 'gabinete_update_order_api' %}", {
+            method: "POST",
+            headers: {
+              "X-CSRFToken": "{{ csrf_token }}",
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: params
+          })
+          .then(res => res.json())
+          .then(data => {
+            showStatusMessage(data.message || "Posiciones actualizadas correctamente");
+            fetchData();
+          })
+          .catch(err => {
+            console.error(err);
+            showStatusMessage("Error al actualizar posiciones", "danger");
+          });
         }
-        
-        function showStatusMessage(message, type = "success") {
-            const statusDiv = document.getElementById("statusMessage");
-            statusDiv.innerHTML = `<div class="alert alert-${type} py-2 mb-0">${message}</div>`;
-            statusDiv.classList.add("fade-out");
-            
-            setTimeout(() => {
-                statusDiv.innerHTML = "";
-                statusDiv.classList.remove("fade-out");
-            }, 5000);
-        }
-        
-        function initSortable() {
-            let tbody = document.getElementById("gabineteTableBody");
-            
-            // Instancia Sortable
-            new Sortable(tbody, {
-                animation: 150,
-                handle: '.drag-handle',
-                ghostClass: 'sortable-ghost',
-                chosenClass: 'sortable-chosen',
-                
-                // onStart se dispara cuando comienza el arrastre
-                onStart: function(evt) {
-                    document.body.style.cursor = 'grabbing';
-                },
-                
-                // onEnd se dispara cuando termina el arrastre
-                onEnd: function(evt) {
-                    document.body.style.cursor = 'default';
-                    
-                    let order = [];
-                    tbody.querySelectorAll("tr").forEach((tr) => {
-                        order.push(tr.getAttribute("data-id"));
-                    });
-                    
-                    // Mostrar un indicador visual de carga
-                    showStatusMessage("Actualizando posiciones...", "info");
-                    
-                    // Construir los parámetros correctamente
-                    const params = new URLSearchParams();
-                    order.forEach(id => {
-                        params.append('order[]', id);
-                    });
-                    
-                    fetch("{% url 'gabinete_update_order_api' %}", {
-                        method: "POST",
-                        headers: {
-                            "X-CSRFToken": "{{ csrf_token }}",
-                            "Content-Type": "application/x-www-form-urlencoded"
-                        },
-                        body: params
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        showStatusMessage(data.message || "Posiciones actualizadas correctamente");
-                        fetchData(); // Recargar datos para reflejar el nuevo orden
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        showStatusMessage("Error al actualizar posiciones", "danger");
-                    });
-                }
-            });
-        }
-    });
+      });
+    }
+  });
 </script>
 
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-    
-        /* ---------- CONFIGURACIÓN PARA CADA TABLA ---------- */
-        const tablas = [
-            /* Regidores */
-            {
-                tbodyId:  "regidoresTableBody",
-                statusId: "statusMessageRegidores",
-                listUrl:  "{% url 'regidores_list_api' %}",
-                orderUrl: "{% url 'regidores_update_order_api' %}",
-                editUrlPattern: "{% url 'regidor_edit' 99999 %}",                 // edición directa
-                preUrlPattern:  "{% url 'pre_editar_persona' 'regidor' 99999 %}", // NUEVO: perfil / pre-editar
-            },
-            /* Directores */
-            {
-                tbodyId:  "directoresTableBody",
-                statusId: "statusMessageDirectores",
-                listUrl:  "{% url 'directores_list_api' %}",
-                orderUrl: "{% url 'directores_update_order_api' %}",
-                editUrlPattern: "{% url 'director_edit' 99999 %}",
-                preUrlPattern:  "{% url 'pre_editar_persona' 'director' 99999 %}", // NUEVO
-            },
-            /* Presidentes de Comunidad */
-            {
-                tbodyId:  "presidentesComuTableBody",
-                statusId: "statusMessagePresidentesComu",
-                listUrl:  "{% url 'api-presidentes-comu' %}",
-                orderUrl: "{% url 'api-update-order-presidentes-comu' %}",
-                editUrlPattern: "{% url 'editar-presidente-comu' 99999 %}",
-                preUrlPattern:  "{% url 'pre_editar_persona' 'presidente' 99999 %}", // NUEVO
-            },
-            /* Coordinadores DIF */
-            {
-                tbodyId:  "coordinadoresDifTableBody",
-                statusId: "statusMessageCoordinadoresDif",
-                listUrl:  "{% url 'api-coordinadores-dif' %}",
-                orderUrl: "{% url 'api-update-order-coordinadores-dif' %}",
-                editUrlPattern: "{% url 'editar-coordinador-dif' 99999 %}",
-                preUrlPattern:  "{% url 'pre_editar_persona' 'coordinador_dif' 99999 %}", // NUEVO
-            },
-        ];
-    
-        /* ---------- INICIALIZAR CADA TABLA ---------- */
-        tablas.forEach(cfg => {
-            fetchAndRender(cfg);
-        });
-    
-        /* ---------- FUNCIONES (ya las tenías) ---------- */
-        function fetchAndRender(cfg){
-            fetch(cfg.listUrl)
-                .then(r => r.json())
-                .then(json => renderRows(json.miembros, cfg))
-                .then(()  => initSortable(cfg))
-                .catch(()  => showStatus("Error al cargar datos", "danger", cfg));
-        }
-    
-        function renderRows(rows, cfg){
-            const tbody = document.getElementById(cfg.tbodyId);
-            tbody.innerHTML = "";
-    
-            rows.forEach(m => {
-                const tr = document.createElement("tr");
-                tr.dataset.id = m.id;
-    
-                const stClass = m.status === "Activo" ? "text-success" : "text-danger";
-                const editUrl = cfg.editUrlPattern.replace("99999", m.id);
-                const preUrl  = cfg.preUrlPattern.replace("99999", m.id); // NUEVO
-    
-                tr.innerHTML = `
-                    <td>${m.nombre}</td>
-                    <td>${m.cargo}</td>
-                    <td>${m.area}</td>
-                    <td><span class="${stClass}">${m.status}</span></td>
-                    <td class="text-center">${m.orden}</td>
-                    <td class="text-center">
-                        <!-- NUEVO: Perfil / Pre-editar -->
-                        <a href="${preUrl}" class="me-2 text-decoration-none" title="Perfil / Pre-editar" aria-label="Perfil">
-                            <i class="fa fa-id-card"></i>
-                        </a>
-                        <!-- Editar existente -->
-                        <a href="${editUrl}" class="me-2 text-decoration-none" title="Editar" aria-label="Editar">
-                            <i class="fa fa-edit"></i>
-                        </a>
-                        <div class="drag-handle d-inline-block" title="Arrastrar para reordenar" aria-label="Reordenar">
-                            <i class="fa fa-th"></i>
-                        </div>
-                    </td>`;
-                tbody.appendChild(tr);
-            });
-        }
-    
-        function initSortable(cfg){
-            new Sortable(document.getElementById(cfg.tbodyId), {
-                animation: 150,
-                handle: '.drag-handle',
-                onEnd: () => updateOrder(cfg)
-            });
-        }
-    
-        function updateOrder(cfg){
-            const ids = [...document.getElementById(cfg.tbodyId).querySelectorAll("tr")]
-                        .map(tr => tr.dataset.id);
-            const params = new URLSearchParams();
-            ids.forEach(id => params.append('order[]', id));
-    
-            showStatus("Actualizando posiciones...", "info", cfg);
-    
-            fetch(cfg.orderUrl, {
-                method: 'POST',
-                headers:{
-                    "X-CSRFToken": "{{ csrf_token }}",
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: params
-            })
-            .then(r => r.json())
-            .then(j => {
-                showStatus(j.message, "success", cfg);
-                fetchAndRender(cfg);          // vuelve a pintar la tabla
-            })
-            .catch(() => showStatus("Error al actualizar", "danger", cfg));
-        }
-    
-        function showStatus(msg, type, cfg){
-            const div = document.getElementById(cfg.statusId);
-            div.innerHTML = `<div class="alert alert-${type} py-2 mb-0">${msg}</div>`;
-            setTimeout(() => div.innerHTML = "", 4000);
-        }
+  document.addEventListener("DOMContentLoaded", () => {
+
+    /* ---------- CONFIGURACIÓN PARA CADA TABLA ---------- */
+    const tablas = [
+      /* Regidores */
+      {
+        tbodyId:  "regidoresTableBody",
+        statusId: "statusMessageRegidores",
+        listUrl:  "{% url 'regidores_list_api' %}",
+        orderUrl: "{% url 'regidores_update_order_api' %}",
+        editUrlPattern: "{% url 'regidor_edit' 99999 %}",
+        preUrlPattern:  "{% url 'pre_editar_persona' 'regidor' 99999 %}",
+        userUrlPattern: "{% url 'asociar_usuario' 'regidor' 99999 %}", // NUEVO
+      },
+      /* Directores */
+      {
+        tbodyId:  "directoresTableBody",
+        statusId: "statusMessageDirectores",
+        listUrl:  "{% url 'directores_list_api' %}",
+        orderUrl: "{% url 'directores_update_order_api' %}",
+        editUrlPattern: "{% url 'director_edit' 99999 %}",
+        preUrlPattern:  "{% url 'pre_editar_persona' 'director' 99999 %}",
+        userUrlPattern: "{% url 'asociar_usuario' 'director' 99999 %}", // NUEVO
+      },
+      /* Presidentes de Comunidad */
+      {
+        tbodyId:  "presidentesComuTableBody",
+        statusId: "statusMessagePresidentesComu",
+        listUrl:  "{% url 'api-presidentes-comu' %}",
+        orderUrl: "{% url 'api-update-order-presidentes-comu' %}",
+        editUrlPattern: "{% url 'editar-presidente-comu' 99999 %}",
+        preUrlPattern:  "{% url 'pre_editar_persona' 'presidente' 99999 %}",
+        userUrlPattern: "{% url 'asociar_usuario' 'presidente' 99999 %}", // NUEVO
+      },
+      /* Coordinadores DIF */
+      {
+        tbodyId:  "coordinadoresDifTableBody",
+        statusId: "statusMessageCoordinadoresDif",
+        listUrl:  "{% url 'api-coordinadores-dif' %}",
+        orderUrl: "{% url 'api-update-order-coordinadores-dif' %}",
+        editUrlPattern: "{% url 'editar-coordinador-dif' 99999 %}",
+        preUrlPattern:  "{% url 'pre_editar_persona' 'coordinador_dif' 99999 %}",
+        userUrlPattern: "{% url 'asociar_usuario' 'coordinador_dif' 99999 %}", // NUEVO
+      },
+    ];
+
+    /* ---------- INICIALIZAR CADA TABLA ---------- */
+    tablas.forEach(cfg => {
+      fetchAndRender(cfg);
     });
+
+    /* ---------- FUNCIONES ---------- */
+    function fetchAndRender(cfg){
+      fetch(cfg.listUrl)
+        .then(r => r.json())
+        .then(json => renderRows(json.miembros, cfg))
+        .then(()  => initSortable(cfg))
+        .catch(()  => showStatus("Error al cargar datos", "danger", cfg));
+    }
+
+    function renderRows(rows, cfg){
+      const tbody = document.getElementById(cfg.tbodyId);
+      tbody.innerHTML = "";
+
+      rows.forEach(m => {
+        const tr = document.createElement("tr");
+        tr.dataset.id = m.id;
+
+        const stClass = m.status === "Activo" ? "text-success" : "text-danger";
+        const editUrl = cfg.editUrlPattern.replace("99999", m.id);
+        const preUrl  = cfg.preUrlPattern.replace("99999", m.id);
+        const userUrl = cfg.userUrlPattern.replace("99999", m.id); // NUEVO
+
+        const userIcon = m.tiene_usuario
+          ? `<i class="fa fa-user-circle text-success" title="Con usuario${m.usuario ? ': ' + m.usuario : ''}"></i>`
+          : `<i class="fa fa-user-circle text-danger" title="Sin usuario - clic para asociar"></i>`;
+
+        tr.innerHTML = `
+          <td>${m.nombre}</td>
+          <td>${m.cargo}</td>
+          <td>${m.area}</td>
+          <td><span class="${stClass}">${m.status}</span></td>
+          <td class="text-center">${m.orden}</td>
+          <td class="text-center">
+            <a href="${userUrl}" class="text-decoration-none" aria-label="Asociar/ver usuario">
+              ${userIcon}
+            </a>
+          </td>
+          <td class="text-center">
+            <a href="${preUrl}" class="me-2 text-decoration-none" title="Perfil / Pre-editar" aria-label="Perfil">
+              <i class="fa fa-id-card"></i>
+            </a>
+            <a href="${editUrl}" class="me-2 text-decoration-none" title="Editar" aria-label="Editar">
+              <i class="fa fa-edit"></i>
+            </a>
+            <div class="drag-handle d-inline-block" title="Arrastrar para reordenar" aria-label="Reordenar">
+              <i class="fa fa-th"></i>
+            </div>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function initSortable(cfg){
+      new Sortable(document.getElementById(cfg.tbodyId), {
+        animation: 150,
+        handle: '.drag-handle',
+        onEnd: () => updateOrder(cfg)
+      });
+    }
+
+    function updateOrder(cfg){
+      const ids = [...document.getElementById(cfg.tbodyId).querySelectorAll("tr")]
+                  .map(tr => tr.dataset.id);
+      const params = new URLSearchParams();
+      ids.forEach(id => params.append('order[]', id));
+
+      showStatus("Actualizando posiciones...", "info", cfg);
+
+      fetch(cfg.orderUrl, {
+        method: 'POST',
+        headers:{
+          "X-CSRFToken": "{{ csrf_token }}",
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: params
+      })
+      .then(r => r.json())
+      .then(j => {
+        showStatus(j.message || "Posiciones actualizadas", "success", cfg);
+        fetchAndRender(cfg);
+      })
+      .catch(() => showStatus("Error al actualizar", "danger", cfg));
+    }
+
+    function showStatus(msg, type, cfg){
+      const div = document.getElementById(cfg.statusId);
+      div.innerHTML = `<div class="alert alert-${type} py-2 mb-0">${msg}</div>`;
+      setTimeout(() => div.innerHTML = "", 4000);
+    }
+  });
 </script>
 
 {% endblock content %}

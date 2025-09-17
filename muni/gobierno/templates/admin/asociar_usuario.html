@@ -1,0 +1,719 @@
+{% extends "baseTemplate.html" %}
+{% load static %}
+{% block content %}
+<style>
+/* Sistema de diseño personalizado */
+.page-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.main-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+
+
+
+
+.member-info {
+  font-size: 1.1rem;
+  color: #718096;
+  margin-bottom: 0.75rem;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.status-active {
+  background: rgba(72, 187, 120, 0.15);
+  color: #38a169;
+  border: 2px solid rgba(72, 187, 120, 0.3);
+}
+
+.status-inactive {
+  background: rgba(237, 137, 54, 0.15);
+  color: #dd6b20;
+  border: 2px solid rgba(237, 137, 54, 0.3);
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+  margin: 2rem 0;
+}
+
+.controls-section {
+  margin-bottom: 2rem;
+}
+
+.action-card {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 25px rgba(72, 187, 120, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(72, 187, 120, 0.4);
+}
+
+.action-card-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+}
+
+.action-info h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+}
+
+.action-info p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 0.95rem;
+}
+
+.create-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.create-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: white;
+  text-decoration: none;
+  transform: scale(1.05);
+}
+
+.search-container {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border: 2px solid #e2e8f0;
+  transition: border-color 0.3s ease;
+}
+
+.search-container:focus-within {
+  border-color: #667eea;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+}
+
+.search-input-group {
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  padding: 1rem 1.25rem;
+  color: #a0aec0;
+  background: #f7fafc;
+}
+
+.search-input {
+  flex: 1;
+  padding: 1rem;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  background: transparent;
+}
+
+.search-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.search-btn:hover {
+  background: linear-gradient(135deg, #5a6fd8, #6a42a0);
+  transform: translateX(-2px);
+}
+
+.search-hint {
+  color: #718096;
+  font-size: 0.9rem;
+  margin-top: 0.75rem;
+  text-align: center;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.result-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border: 2px solid #f1f5f9;
+  transition: all 0.3s ease;
+}
+
+.result-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  border-color: #e2e8f0;
+}
+
+.card-header {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.card-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin: 0;
+}
+
+.card-subtitle {
+  color: #718096;
+  font-size: 0.9rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+.card-body {
+  padding: 1.5rem;
+  min-height: 200px;
+}
+
+.empty-state {
+  text-align: center;
+  color: #a0aec0;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.user-item:hover {
+  border-color: #cbd5e0;
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0 0 0.25rem 0;
+}
+
+.user-details {
+  color: #718096;
+  font-size: 0.9rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.user-badge {
+  background: #667eea;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.select-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.select-btn-available {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+.select-btn-available:hover {
+  background: linear-gradient(135deg, #5a6fd8, #6a42a0);
+  transform: scale(1.05);
+}
+
+.select-btn-occupied {
+  background: linear-gradient(135deg, #ed8936, #dd6b20);
+  color: white;
+}
+
+.select-btn-occupied:hover {
+  background: linear-gradient(135deg, #e07628, #c05621);
+  transform: scale(1.05);
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: #718096;
+  padding: 2rem;
+  font-size: 1rem;
+}
+
+.loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #e2e8f0;
+  border-top: 3px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-state {
+  color: #e53e3e;
+  text-align: center;
+  padding: 2rem;
+  font-weight: 600;
+}
+
+/* Animaciones mejoradas */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.user-item {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page-container {
+    padding: 1rem;
+  }
+  
+  .main-card {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+  
+  .page-title {
+    font-size: 2rem;
+  }
+  
+  .results-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .action-card-content {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .search-input-group {
+    flex-direction: column;
+  }
+  
+  .search-btn {
+    border-radius: 0 0 14px 14px;
+  }
+}
+</style>
+
+<div class="page-container">
+  <div class="main-card">
+    <!-- Header -->
+    <header class="page-header2">
+      <h1 class="page-title2">Gestión de Usuario</h1>
+      <div class="member-info">
+        Asociar usuario para: <strong>{{ miembro.nombre }}</strong>
+        <small>({{ tipo }})</small>
+      </div>
+      
+      {% if miembro.usuario %}
+        <div class="status-badge status-active">
+          <i class="fa fa-check-circle"></i>
+          Usuario actual: {{ miembro.usuario.username }}
+        </div>
+      {% else %}
+        <div class="status-badge status-inactive">
+          <i class="fa fa-exclamation-triangle"></i>
+          Sin usuario asociado
+        </div>
+      {% endif %}
+    </header>
+
+    <div class="divider"></div>
+
+    <!-- Controls Section -->
+    <section class="controls-section">
+      <!-- Create User Action -->
+      <div class="action-card">
+        <div class="action-card-content">
+          <div class="action-info">
+            <h3><i class="fa fa-user-plus"></i> Crear Usuario Nuevo</h3>
+            <p>Acceso directo al panel de administración para crear un nuevo usuario</p>
+          </div>
+          <a href="{% url "usuario_create" %}" target="_blank" class="create-btn">
+            <i class="fa fa-external-link-alt"></i>
+            Crear Usuario
+          </a>
+        </div>
+      </div>
+
+      <!-- Search Section -->
+      <div class="search-container">
+        <div class="search-input-group">
+          <div class="search-icon">
+            <i class="fa fa-search"></i>
+          </div>
+          <input 
+            id="query" 
+            type="text" 
+            class="search-input" 
+            placeholder="Buscar por nombre de usuario, email o nombre completo..."
+          >
+          <button id="btnBuscar" class="search-btn">
+            <i class="fa fa-search"></i>
+            Buscar
+          </button>
+        </div>
+      </div>
+      
+      <div class="search-hint">
+        <i class="fa fa-info-circle"></i>
+        Se muestran primero los usuarios <strong>disponibles</strong>, seguidos de los <strong>ocupados</strong>
+      </div>
+    </section>
+
+    <!-- Results Grid -->
+    <div class="results-grid">
+      <!-- Available Users -->
+      <div class="result-card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <i class="fa fa-users"></i>
+            Usuarios Disponibles
+          </h2>
+          <p class="card-subtitle">Usuarios sin asignar a ningún miembro</p>
+        </div>
+        <div class="card-body" id="lista-disponibles">
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="fa fa-search"></i>
+            </div>
+            <div>Realiza una búsqueda para mostrar usuarios disponibles</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Occupied Users -->
+      <div class="result-card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <i class="fa fa-link"></i>
+            Usuarios Ocupados
+          </h2>
+          <p class="card-subtitle">Usuarios ya asociados a otros miembros</p>
+        </div>
+        <div class="card-body" id="lista-ocupados">
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="fa fa-search"></i>
+            </div>
+            <div>Realiza una búsqueda para mostrar usuarios ocupados</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Dependencias -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+(function(){
+  const buscarUrl = "{{ buscar_url }}";
+  const assignUrl = "{{ assign_url }}";
+  const csrfToken = "{{ csrf_token }}";
+  const miembroActual = {
+    id: {{ miembro.id }},
+    tipo: "{{ tipo }}"
+  };
+
+  const $q = document.getElementById('query');
+  const $btn = document.getElementById('btnBuscar');
+  const $disp = document.getElementById('lista-disponibles');
+  const $ocup = document.getElementById('lista-ocupados');
+
+  function renderLista(container, items, ocupado){
+    container.innerHTML = "";
+    if(!items.length){
+      const emptyIcon = ocupado ? 'fa-user-slash' : 'fa-user-plus';
+      const emptyText = ocupado ? 'No hay usuarios ocupados que coincidan' : 'No hay usuarios disponibles que coincidan';
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="fa ${emptyIcon}"></i>
+          </div>
+          <div>${emptyText}</div>
+        </div>
+      `;
+      return;
+    }
+    
+    items.forEach((u, index) => {
+      const userItem = document.createElement('div');
+      userItem.className = 'user-item';
+      userItem.style.animationDelay = `${index * 0.1}s`;
+
+      const userInfo = document.createElement('div');
+      userInfo.className = 'user-info';
+      
+      const linkedBadge = ocupado && u.linked_label ? 
+        `<span class="user-badge">${u.linked_label}</span>` : '';
+      
+      userInfo.innerHTML = `
+        <div class="user-name">${u.full_name}</div>
+        <div class="user-details">
+          <span><i class="fa fa-at"></i> ${u.username}</span>
+          ${u.email ? `<span><i class="fa fa-envelope"></i> ${u.email}</span>` : ''}
+          ${linkedBadge}
+        </div>
+      `;
+
+      const selectBtn = document.createElement('button');
+      selectBtn.className = `select-btn ${ocupado ? 'select-btn-occupied' : 'select-btn-available'}`;
+      selectBtn.innerHTML = `
+        <i class="fa fa-link"></i>
+        ${ocupado ? 'Reasignar' : 'Seleccionar'}
+      `;
+      selectBtn.addEventListener('click', () => onSelectUser(u, ocupado));
+
+      userItem.appendChild(userInfo);
+      userItem.appendChild(selectBtn);
+      container.appendChild(userItem);
+    });
+  }
+
+  function buscar(){
+    const params = new URLSearchParams({ q: $q.value.trim(), limit: 30 });
+    
+    // Loading states
+    $disp.innerHTML = `
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <span>Buscando usuarios disponibles...</span>
+      </div>
+    `;
+    $ocup.innerHTML = `
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <span>Buscando usuarios ocupados...</span>
+      </div>
+    `;
+    
+    fetch(`${buscarUrl}?${params.toString()}`, { credentials: 'same-origin' })
+      .then(r => r.json())
+      .then(data => {
+        renderLista($disp, data.disponibles || [], false);
+        renderLista($ocup, data.ocupados || [], true);
+      })
+      .catch(() => {
+        $disp.innerHTML = `<div class="error-state"><i class="fa fa-exclamation-triangle"></i> Error al buscar usuarios disponibles</div>`;
+        $ocup.innerHTML = `<div class="error-state"><i class="fa fa-exclamation-triangle"></i> Error al buscar usuarios ocupados</div>`;
+      });
+  }
+
+  function asignar(userId){
+    const body = new URLSearchParams({ user_id: userId });
+    fetch(assignUrl, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrfToken,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body
+    })
+    .then(r => r.json())
+    .then(j => {
+      if(j.ok){
+        Swal.fire({
+          icon: 'success',
+          title: '¡Éxito!',
+          text: j.message || 'Usuario asignado correctamente',
+          timer: 2000,
+          showConfirmButton: false,
+          background: '#fff',
+          customClass: {
+            popup: 'animated fadeInDown'
+          }
+        }).then(() => {
+          location.reload();
+        });
+      }else{
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: j.error || 'No se pudo asignar el usuario',
+          confirmButtonColor: '#667eea'
+        });
+      }
+    })
+    .catch(() => Swal.fire({
+      icon: 'error',
+      title: 'Error de conexión',
+      text: 'No se pudo procesar la solicitud',
+      confirmButtonColor: '#667eea'
+    }));
+  }
+
+  function onSelectUser(user, estabaOcupado){
+    if(estabaOcupado){
+      Swal.fire({
+        icon: 'warning',
+        title: 'Usuario Ya Asignado',
+        html: `
+          <div style="text-align: left; margin: 1rem 0;">
+            <p>El usuario <strong>@${user.username}</strong> ya está asociado a: <span style="color: #667eea; font-weight: 600;">${user.linked_label}</span></p>
+            <p style="margin-top: 1rem;"><strong>Si continúas:</strong></p>
+            <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+              <li>Se <u>desvinculará</u> del registro actual</li>
+              <li>Se <u>asociará</u> con <strong>{{ miembro.nombre }}</strong></li>
+            </ul>
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa fa-exchange-alt"></i> Sí, reasignar',
+        cancelButtonText: '<i class="fa fa-times"></i> Cancelar',
+        confirmButtonColor: '#ed8936',
+        cancelButtonColor: '#a0aec0',
+        reverseButtons: true
+      }).then(res => {
+        if(res.isConfirmed){
+          asignar(user.id);
+        }
+      });
+    } else {
+      Swal.fire({
+        icon: 'question',
+        title: 'Confirmar Asociación',
+        html: `
+          <div style="text-align: center; margin: 1rem 0;">
+            <p>¿Deseas asociar el usuario <strong>@${user.username}</strong> con <strong>{{ miembro.nombre }}</strong>?</p>
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa fa-link"></i> Sí, asociar',
+        cancelButtonText: '<i class="fa fa-times"></i> Cancelar',
+        confirmButtonColor: '#667eea',
+        cancelButtonColor: '#a0aec0',
+        reverseButtons: true
+      }).then(res => {
+        if(res.isConfirmed){
+          asignar(user.id);
+        }
+      });
+    }
+  }
+
+  // Event listeners
+  $btn.addEventListener('click', buscar);
+  $q.addEventListener('keydown', (e) => { 
+    if(e.key === 'Enter'){ 
+      buscar(); 
+    } 
+  });
+  
+  // Focus en el input al cargar
+
+  // Búsqueda inicial vacía
+  buscar();
+})();
+</script>
+{% endblock %}

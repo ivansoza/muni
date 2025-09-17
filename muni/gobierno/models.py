@@ -3,6 +3,7 @@ from django_ckeditor_5.fields import CKEditor5Field
 
 from informacion_municipal.models import Municipio
 from servicios.models import Dependencia
+from django.conf import settings   # 👈 para AUTH_USER_MODEL
 
 # Create your models here.
 class MiembroGabinete(models.Model):
@@ -62,6 +63,11 @@ class MiembroGabinete(models.Model):
         blank=True,  # Permite que este campo quede vacío en formularios
         null=True    # Permite que este campo sea nulo en la base de datos
     )
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        related_name="miembros_gabinete", blank=True, null=True
+    )
+
     class Meta:
         ordering = ['orden']
         verbose_name = "Miembro del Gabinete"
@@ -128,6 +134,10 @@ class MiembroGabineteRegidores(models.Model):
         verbose_name="Dependencia",
         blank=True,  # Permite que este campo quede vacío en formularios
         null=True    # Permite que este campo sea nulo en la base de datos
+    )
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        related_name="miembros_regidores", blank=True, null=True
     )
     class Meta:
         ordering = ['orden']
@@ -196,6 +206,10 @@ class MiembroGabineteDirectores(models.Model):
         blank=True,  # Permite que este campo quede vacío en formularios
         null=True    # Permite que este campo sea nulo en la base de datos
     )
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        related_name="miembros_directores", blank=True, null=True
+    )
     class Meta:
         ordering = ['orden']
         verbose_name = "Miembro del Gabinete"
@@ -260,6 +274,11 @@ class MiembroGabinetePresidentesComu(models.Model):
         blank=True,
         null=True
     )
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        related_name="miembros_presidentes_comu", blank=True, null=True
+    )
+
 
     class Meta:
         ordering = ['orden']
@@ -324,6 +343,10 @@ class MiembroGabineteCoordinadoresDif(models.Model):
         verbose_name="Dependencia",
         blank=True,
         null=True
+    )
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        related_name="miembros_coordinadores_dif", blank=True, null=True
     )
 
     class Meta:

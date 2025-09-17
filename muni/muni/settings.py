@@ -224,6 +224,7 @@ TEMPLATES = [
                 'generales.context_processors.user_info', 
                 'generales.context_processors.municipio',  # Aquí se agrega tu context processor
                 'generales.context_processors.contador_visitas_context',  # Agrega esto
+                'usuario.context_processors.gabinete_context',  # 👈 aquí
 
             ],
         },
