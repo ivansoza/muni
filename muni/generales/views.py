@@ -13,6 +13,9 @@ from django.contrib.auth.models import Group
 from django.views.decorators.http import require_http_methods
 from django.forms import modelformset_factory
 from django.forms import inlineformset_factory
+
+from gobierno.models import MiembroGabinete, MiembroGabineteCoordinadoresDif, MiembroGabineteDirectores, MiembroGabinetePresidentesComu, MiembroGabineteRegidores
+from gobierno.forms import contenido_form_for
 from .mixins import SuperuserOrReportPermissionMixin
 
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, View
@@ -773,27 +776,108 @@ class CustomLoginView(LoginView):
         return super().form_invalid(form)
     
 class DashboardView(LoginRequiredMixin, TemplateView):
-    template_name = 'dashboard.html'
-    login_url = reverse_lazy('login')  # Redirige al login si no está autenticado
+    template_name = "dashboard.html"
+    gabinete_template_name = "dashboard_gabinete.html"
+    login_url = reverse_lazy("login")
 
+    # ---- Helpers ----
+    def _is_gabinete_user(self, user):
+        if not user.is_authenticated:
+            return False
+        if user.groups.filter(name__iexact="Gabinete").exists():
+            return True
+        modelos = (
+            MiembroGabinete,
+            MiembroGabineteRegidores,
+            MiembroGabineteDirectores,
+            MiembroGabinetePresidentesComu,
+            MiembroGabineteCoordinadoresDif,
+        )
+        for Model in modelos:
+            if Model.objects.filter(usuario=user).exists():
+                return True
+        return False
+
+    def _get_first_gabinete_member(self, user):
+        modelos = [
+            ("MiembroGabinete", MiembroGabinete),
+            ("MiembroGabineteRegidores", MiembroGabineteRegidores),
+            ("MiembroGabineteDirectores", MiembroGabineteDirectores),
+            ("MiembroGabinetePresidentesComu", MiembroGabinetePresidentesComu),
+            ("MiembroGabineteCoordinadoresDif", MiembroGabineteCoordinadoresDif),
+        ]
+        for model_name, Model in modelos:
+            m = Model.objects.select_related("municipio", "dependencia").filter(usuario=user).first()
+            if m:
+                return m, model_name
+        return None, None
+
+    # ---- Selección de plantilla ----
+    def get_template_names(self):
+        return [self.gabinete_template_name] if self._is_gabinete_user(self.request.user) else [self.template_name]
+
+    # ---- GET (y también base para POST fallido) ----
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['breadcrumb'] = {
-            'parent': {'name': 'Dashboard', 'url': '/index'},
-            'child': {'name': 'Home comisión de agua potable'}
+        context["breadcrumb"] = {
+            "parent": {"name": "Dashboard", "url": "/index"},
+            "child": {"name": "Home comisión de agua potable"},
         }
-        context['sidebar'] = 'dashboard'
+        context["sidebar"] = "dashboard"
 
         try:
-            # Intentar obtener el contador de visitas
             contador = ContadorVisitas.objects.get(id=1)
-            context['contador_visitas'] = contador.visitas
+            context["contador_visitas"] = contador.visitas
         except ObjectDoesNotExist:
-            # Si no existe, asignamos 0 como valor por defecto
-            context['contador_visitas'] = 0
+            context["contador_visitas"] = 0
+
+        context["is_gabinete_user"] = self._is_gabinete_user(self.request.user)
+        miembro, modelo = self._get_first_gabinete_member(self.request.user)
+        context["gabinete_member"] = miembro
+        context["gabinete_member_model"] = modelo
+
+        # Puede editar si es el asociado (o staff/superuser)
+        can_edit = bool(
+            miembro and (
+                miembro.usuario_id == self.request.user.id or
+                self.request.user.is_staff or
+                self.request.user.is_superuser
+            )
+        )
+        context["can_edit_gabinete_content"] = can_edit
+
+        # Form de CKEditor (solo si puede editar)
+        if can_edit:
+            Form = contenido_form_for(type(miembro))
+            context["contenido_form"] = Form(instance=miembro)
+        else:
+            context["contenido_form"] = None
 
         return context
-    
+
+    # ---- POST: guardar CKEditor ----
+    def post(self, request, *args, **kwargs):
+        # Reutilizamos la lógica de miembro asociado
+        miembro, _ = self._get_first_gabinete_member(request.user)
+        if not miembro:
+            messages.error(request, "No tienes un miembro de gabinete asociado.")
+            return redirect(request.path)
+
+        if not (miembro.usuario_id == request.user.id or request.user.is_staff or request.user.is_superuser):
+            messages.error(request, "No estás autorizado para editar este contenido.")
+            return redirect(request.path)
+
+        Form = contenido_form_for(type(miembro))
+        form = Form(request.POST, instance=miembro)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Contenido actualizado correctamente.")
+            return redirect(request.path)
+
+        # Si hay errores, re-render con el form inválido
+        context = self.get_context_data(**kwargs)
+        context["contenido_form"] = form
+        return self.render_to_response(context)
 
 class GeneralesDashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'generales.html'

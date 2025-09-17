@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CoordinadorDifCreateView, CoordinadorDifUpdateView, DirectorCreateView, DirectorUpdateView, HomeGobiernoView, ListarGabineteView, MiembroGabineteCreateView, MiembroGabineteUpdateView, PresidenteComuCreateView, PresidenteComuUpdateView, RegidorCreateView, RegidorUpdateView, SemblanzaHomeView, coordinadores_dif_list_api, coordinadores_dif_update_order_api, directores_list_api, directores_update_order_api, gabinete_list_api, gabinete_update_order_api, perfil_persona, pre_editar_persona, presidentes_comu_list_api, presidentes_comu_update_order_api, regidores_list_api, regidores_update_order_api
+from .views import AsociarUsuarioView, CoordinadorDifCreateView, CoordinadorDifUpdateView, DirectorCreateView, DirectorUpdateView, HomeGobiernoView, ListarGabineteView, MiembroGabineteCreateView, MiembroGabineteUpdateView, PresidenteComuCreateView, PresidenteComuUpdateView, RegidorCreateView, RegidorUpdateView, SemblanzaHomeView, asignar_usuario_api, buscar_usuarios_api, coordinadores_dif_list_api, coordinadores_dif_update_order_api, directores_list_api, directores_update_order_api, gabinete_list_api, gabinete_update_order_api, perfil_persona, pre_editar_persona, presidentes_comu_list_api, presidentes_comu_update_order_api, regidores_list_api, regidores_update_order_api
 
 urlpatterns = [
     path('', HomeGobiernoView.as_view(), name='homeGobierno'), 
@@ -55,4 +55,11 @@ urlpatterns = [
         name="perfil_persona"
     ),
 
+    path('personas/<str:tipo>/<int:pk>/usuario/', 
+         AsociarUsuarioView.as_view(), 
+         name='asociar_usuario'),
+    # APIs
+    path('api/usuarios/buscar/', buscar_usuarios_api, name='buscar_usuarios_api'),
+    path('personas/<str:tipo>/<int:pk>/usuario/assign/',
+         asignar_usuario_api, name='asignar_usuario_api'),
 ]

@@ -97,8 +97,9 @@
               </a>
             </li>
 
-            <!-- Enlace Personalizar -->
-            {% if is_superuser or 'generales.view_personalizacionplantilla' in user_permissions %}
+
+            {% if  not is_gabinete%}
+                        {% if is_superuser or 'generales.view_personalizacionplantilla' in user_permissions %}
               <li class="sidebar-list {% if sidebar == 'perso' %}active{% endif %}">
                 <a class="sidebar-link sidebar-title" href="{% url 'personalizacion_view' %}">
                   <i class="fa fa-paint-brush stroke-icon"></i>
@@ -284,6 +285,11 @@
                 </div>
               </li>
             {% endif %}
+            
+            
+            {% endif %}
+            <!-- Enlace Personalizar -->
+
           </ul>
         </div>
         <div class="right-arrow" id="right-arrow"><i data-feather="arrow-right"></i></div>
