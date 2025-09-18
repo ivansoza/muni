@@ -9,6 +9,7 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.http import require_GET
 from django.apps import apps
 from django.utils import timezone
+from django.core.mail import send_mail
 
 from transparencia.forms import ReporteAlcantarilladoForm, ReporteAlumbradoPublicoForm, ReporteBacheForm, ReporteServicioAguaForm
 from reportes.models import ReporteStatus
@@ -289,6 +290,25 @@ class ReporteStatusMixin:
         form = form_cls(request.POST, request.FILES)
         if form.is_valid():
             reporte = form.save()
+            
+            # Enviar correo de notificación
+            destinatario = "gusgas30@gmail.com"  # Cambia esto por el correo del encargado
+            asunto = f"{reporte.codigo_seguimiento} - Nuevo reporte de bache recibido"
+            mensaje = (
+                f"Se ha recibido un nuevo reporte de bache.\n\n"
+                f"Nombre: {reporte.nombre_solicitante}\n"
+                f"Descripción: {reporte.descripcion}\n"
+                f"Ubicación: {reporte.ubicacion}\n"
+                f"Código de seguimiento: {reporte.codigo_seguimiento}\n"
+            )
+            send_mail(
+                asunto,
+                mensaje,
+                "no-responder@siptlax.com",  # Remitente
+                [destinatario],
+                fail_silently=True,
+            )
+
             return JsonResponse(
                 {"success": True, "codigo_seguimiento": reporte.codigo_seguimiento}
             )
