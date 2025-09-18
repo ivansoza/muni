@@ -291,11 +291,12 @@ class ReporteStatusMixin:
         if form.is_valid():
             reporte = form.save()
             
-            # Enviar correo de notificación
+            # Obtener el nombre del modelo para el asunto
+            tipo_reporte = reporte._meta.verbose_name.title()
             destinatario = "gusgas30@gmail.com"  # Cambia esto por el correo del encargado
-            asunto = f"{reporte.codigo_seguimiento} - Nuevo reporte de bache recibido"
+            asunto = f"{reporte.codigo_seguimiento} - Nuevo {tipo_reporte} recibido"
             mensaje = (
-                f"Se ha recibido un nuevo reporte de bache.\n\n"
+                f"Se ha recibido un nuevo {tipo_reporte}.\n\n"
                 f"Nombre: {reporte.nombre_solicitante}\n"
                 f"Descripción: {reporte.descripcion}\n"
                 f"Ubicación: {reporte.ubicacion}\n"
