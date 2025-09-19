@@ -290,10 +290,20 @@ class ReporteStatusMixin:
         form = form_cls(request.POST, request.FILES)
         if form.is_valid():
             reporte = form.save()
-            
-            # Obtener el nombre del modelo para el asunto
             tipo_reporte = reporte._meta.verbose_name.title()
-            destinatario = "gusgas30@gmail.com"  # Cambia esto por el correo del encargado
+            status = ReporteStatus.objects.get(pk=1)
+            # Selecciona el correo según el tipo de reporte
+            if tipo_reporte.lower() == "reporte de servicio de agua":
+                destinatario = status.correo_agua
+            elif tipo_reporte.lower() == "reporte de bache":
+                destinatario = status.correo_bache
+            elif tipo_reporte.lower() == "reporte de alcantarillado":
+                destinatario = status.correo_alcantarillado
+            elif tipo_reporte.lower() == "reporte de alumbrado público":
+                destinatario = status.correo_alumbrado
+            else:
+                destinatario = None
+
             asunto = f"{reporte.codigo_seguimiento} - Nuevo {tipo_reporte} recibido"
             mensaje = (
                 f"Se ha recibido un nuevo {tipo_reporte}.\n\n"
@@ -305,7 +315,7 @@ class ReporteStatusMixin:
             send_mail(
                 asunto,
                 mensaje,
-                "no-responder@siptlax.com",  # Remitente
+                "no-responder@siptlax.com",
                 [destinatario],
                 fail_silently=True,
             )
