@@ -171,6 +171,7 @@ class ReporteAlumbradoPublico(ReporteBase):
     class Meta(ReporteBase.Meta):
         verbose_name = _("reporte de alumbrado público")
         verbose_name_plural = _("reportes de alumbrado público")
+        
 class ReporteStatus(models.Model):
     """Debe existir **solo un** registro en toda la tabla."""
 
