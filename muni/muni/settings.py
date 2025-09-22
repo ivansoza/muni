@@ -303,3 +303,7 @@ EMAIL_HOST_PASSWORD = 'z2TSS9UdB7f3LbQU'
 EMAIL_USE_SSL = True
 EMAIL_USE_TLS = False  # ⚠️ Importante: No pongas True si ya usas SSL
 DEFAULT_FROM_EMAIL = 'siptlax <no-responder@siptlax.com>'
+
+SESSION_COOKIE_AGE = 30 * 60  # La sesión expira tras 30 minutos de inactividad
+SESSION_SAVE_EVERY_REQUEST = True  # Renueva la sesión en cada petición
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # La sesión se elimina al cerrar el navegador
