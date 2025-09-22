@@ -291,8 +291,15 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-
+LOGIN_URL = '/admin/'
 LOGIN_REDIRECT_URL = 'dashboard'   
 LOGOUT_REDIRECT_URL = 'home'
 
-
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'mail.siptlax.com'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'no-responder@siptlax.com'
+EMAIL_HOST_PASSWORD = 'z2TSS9UdB7f3LbQU'  
+EMAIL_USE_SSL = True
+EMAIL_USE_TLS = False  # ⚠️ Importante: No pongas True si ya usas SSL
+DEFAULT_FROM_EMAIL = 'siptlax <no-responder@siptlax.com>'
