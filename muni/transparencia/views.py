@@ -268,7 +268,25 @@ def lista_obligaciones(request):
 
 # ───────────────────  Mixin para evitar repetición ────────────────────
 class ReporteStatusMixin:
-    sidebar_value = "reportes"  # puedes sobreescribirlo si luego cambias
+    sidebar_value = "reportes"
+
+    def get_tipo_url(self, reporte):
+        # Relaciona el modelo con el tipo usado en la URL
+        from reportes.models import (
+            ReporteServicioAgua,
+            ReporteBache,
+            ReporteAlcantarillado,
+            ReporteAlumbradoPublico,
+        )
+        if isinstance(reporte, ReporteServicioAgua):
+            return "agua"
+        elif isinstance(reporte, ReporteBache):
+            return "bache"
+        elif isinstance(reporte, ReporteAlcantarillado):
+            return "alcantarillado"
+        elif isinstance(reporte, ReporteAlumbradoPublico):
+            return "alumbrado"
+        return "desconocido"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -304,23 +322,27 @@ class ReporteStatusMixin:
             else:
                 destinatario = None
 
-            asunto = f"{reporte.codigo_seguimiento} - Nuevo {tipo_reporte} recibido"
+            asunto = f"{reporte.codigo_seguimiento} - {tipo_reporte}"
+            tipo_url = self.get_tipo_url(reporte)
+            gestion_url = f"http://127.0.0.1:8000/reportes/admin/generales/reportes/{tipo_url}/{reporte.pk}/"
             mensaje = (
                 f"<h2 style='color:#2c3e50;'>Nuevo {tipo_reporte} recibido</h2>"
                 f"<p><strong>Nombre:</strong> {reporte.nombre_solicitante}</p>"
                 f"<p><strong>Descripción:</strong> {reporte.descripcion}</p>"
                 f"<p><strong>Ubicación:</strong> {reporte.ubicacion}</p>"
                 f"<p><strong>Código de seguimiento:</strong> <span style='color:#2980b9;'>{reporte.codigo_seguimiento}</span></p>"
+                f"<p><strong>Gestionar reporte:</strong> <a href='{gestion_url}' style='color:#27ae60;'>Abrir en panel de administración</a></p>"
             )
 
-            send_mail(
-                asunto,
-                mensaje,
-                "no-responder@siptlax.com",
-                [destinatario],
-                fail_silently=True,
-                html_message=mensaje
-            )
+            if destinatario:
+                send_mail(
+                    asunto,
+                    mensaje,
+                    "no-responder@siptlax.com",
+                    [destinatario],
+                    fail_silently=True,
+                    html_message=mensaje
+                )
 
             return JsonResponse(
                 {"success": True, "codigo_seguimiento": reporte.codigo_seguimiento}
