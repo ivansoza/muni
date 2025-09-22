@@ -324,7 +324,8 @@ class ReporteStatusMixin:
 
             asunto = f"{reporte.codigo_seguimiento} - {tipo_reporte}"
             tipo_url = self.get_tipo_url(reporte)
-            gestion_url = f"http://127.0.0.1:8000/reportes/admin/generales/reportes/{tipo_url}/{reporte.pk}/"
+            dominio = f"{request.scheme}://{request.get_host()}"
+            gestion_url = f"{dominio}/reportes/admin/generales/reportes/{tipo_url}/{reporte.pk}/"
             mensaje = (
                 f"<h2 style='color:#2c3e50;'>Nuevo {tipo_reporte} recibido</h2>"
                 f"<p><strong>Nombre:</strong> {reporte.nombre_solicitante}</p>"
