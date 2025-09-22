@@ -186,6 +186,26 @@ class ReporteStatus(models.Model):
     reporte_alumbrado_status = models.BooleanField(
         _("reporte de alumbrado público habilitado"), default=False
     )
+    correo_agua = models.EmailField(
+        _("correo de notificación para reporte de agua"),
+        max_length=254,
+        blank=True
+    )
+    correo_bache = models.EmailField(
+        _("correo de notificación para reporte de bache"),
+        max_length=254,
+        blank=True
+    )
+    correo_alcantarillado = models.EmailField(
+        _("correo de notificación para reporte de alcantarillado"),
+        max_length=254,
+        blank=True
+    )
+    correo_alumbrado = models.EmailField(
+        _("correo de notificación para reporte de alumbrado público"),
+        max_length=254,
+        blank=True
+    )
 
     class Meta:
         verbose_name = _("estatus de reportes")
