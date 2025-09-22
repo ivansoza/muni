@@ -306,18 +306,20 @@ class ReporteStatusMixin:
 
             asunto = f"{reporte.codigo_seguimiento} - Nuevo {tipo_reporte} recibido"
             mensaje = (
-                f"Se ha recibido un nuevo {tipo_reporte}.\n\n"
-                f"Nombre: {reporte.nombre_solicitante}\n"
-                f"Descripción: {reporte.descripcion}\n"
-                f"Ubicación: {reporte.ubicacion}\n"
-                f"Código de seguimiento: {reporte.codigo_seguimiento}\n"
+                f"<h2 style='color:#2c3e50;'>Nuevo {tipo_reporte} recibido</h2>"
+                f"<p><strong>Nombre:</strong> {reporte.nombre_solicitante}</p>"
+                f"<p><strong>Descripción:</strong> {reporte.descripcion}</p>"
+                f"<p><strong>Ubicación:</strong> {reporte.ubicacion}</p>"
+                f"<p><strong>Código de seguimiento:</strong> <span style='color:#2980b9;'>{reporte.codigo_seguimiento}</span></p>"
             )
+
             send_mail(
                 asunto,
                 mensaje,
                 "no-responder@siptlax.com",
                 [destinatario],
                 fail_silently=True,
+                html_message=mensaje
             )
 
             return JsonResponse(
