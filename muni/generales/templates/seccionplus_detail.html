@@ -368,7 +368,6 @@
   <h2 class="news-title">{{ seccion.nombre }} {% if seccion.es_general %}  {% else %}<span>| Convocatorias</span>{% endif %}</h2>
 
 {% if seccion.es_general %}
-  <h4>{{ seccion.detalles }}</h4>
 
   {# ====== ARCHIVO PRINCIPAL (auto-embed si es PDF) ====== #}
   {% if seccion.archivo %}
@@ -389,7 +388,7 @@
           </iframe>
         </div>
       {% else %}
-        <div class="alert alert-info mt-2">El archivo principal no es PDF. Ábrelo desde el enlace.</div>
+        <div></div>
       {% endif %}
     </div>
     {% endwith %}
