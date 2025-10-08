@@ -9,7 +9,7 @@ class ArticuloForm(forms.ModelForm):
 
     class Meta:
         model = Articulo
-        fields = ['titulo', 'abstract', 'contenido', 'imagen', 'categoria', 'etiquetas', 'autor', 'destacado', 'tiempo_lectura', 'video_url']
+        fields = ['titulo', 'abstract', 'contenido', 'imagen', 'categoria', 'etiquetas', 'autor', 'destacado', 'tiempo_lectura','habla','ven_vive', 'video_url']
 
         widgets = {
             'titulo': forms.TextInput(attrs={
@@ -42,6 +42,12 @@ class ArticuloForm(forms.ModelForm):
                 'placeholder': 'Tiempo estimado de lectura en minutos',
                 'class': 'form-control',
                 'min': 1
+            }),
+              'habla': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+              'ven_vive': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
             }),
             'video_url': forms.TextInput(attrs={
                 'placeholder': 'Pega la url del video',

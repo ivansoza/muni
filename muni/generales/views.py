@@ -3166,7 +3166,7 @@ class HablaHome(TemplateView, LoginRequiredMixin):
         url_configuracion = reverse('dashboard')
         context["breadcrumb"] = {
             'parent': {'name': 'Dashboard', 'url': url_configuracion},
-            'child': {'name': 'Habla con tus hijos', 'url': ''}
+            'child': {'name': 'Blogs', 'url': ''}
         }
         context['regreso_url'] = reverse('dashboard')
         context['sidebar'] = 'habla'

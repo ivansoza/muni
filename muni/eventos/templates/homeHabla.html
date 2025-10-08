@@ -680,157 +680,170 @@ button {
   }
   </style>
 <body>
-    <section class="hero-section">
-      <div class="container">
-        <div class="hero-content">
-          <h1 class="hero-title">Habla con tus Hijos</h1>
-          <p class="hero-description">
-            Un espacio para compartir experiencias, consejos y recursos para mejorar la comunicación con tus hijos y la convivencia familiar.
-          </p>
-          <div class="hero-buttons">
-            <a href="#" class="button button-primary">
-              <i data-feather="plus"></i>
-              Crea una sugerencia
-            </a>
-        
-          </div>
+<section class="hero-section">
+  <div class="container">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        {% if filtro == 'habla' %}
+          Habla con tus Hijos
+        {% elif filtro == 'ven_vive' %}
+          Ven, Vive y Vuelve a {{ municipio.nombre_municipio }}
+        {% else %}
+          ¡Bienvenido!
+        {% endif %}
+      </h1>
+      <p class="hero-description">
+        {% if filtro == 'habla' %}
+          Un espacio para compartir experiencias, consejos y recursos para mejorar la comunicación con tus hijos y la convivencia familiar.
+        {% elif filtro == 'ven_vive' %}
+          Un espacio para conocer más sobre la oportunidad de visitar a {{ municipio.nombre_municipio }} y lo que puede ofrecer.
+        {% else %}
+          ¡Explora nuestras publicaciones!
+        {% endif %}
+      </p>
+      <div class="hero-buttons">
+        <a href="#" class="button button-primary">
+          <i data-feather="plus"></i>
+          Crea una sugerencia
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if articulo_destacado %}
+<section class="featured-post-section">
+    <div class="container">
+        <h2 class="section-title">Destacado</h2>
+        <div class="featured-post">
+            <div class="featured-post-content">
+                <div class="featured-post-categories">
+                    <span class="badge badge-primary">Destacado</span>
+                    <span class="badge badge-outline"><i data-feather="tag"></i>{{ articulo_destacado.categoria.nombre }}</span>
+                </div>
+                <h3 class="featured-post-title">
+                    <a href="{% url 'articuloHabla' articulo_destacado.id %}">{{ articulo_destacado.titulo }}</a>
+                </h3>
+                <p class="featured-post-excerpt">
+                    {{ articulo_destacado.abstract }}
+                </p>
+                <div class="featured-post-meta">
+                    <div class="post-meta-item">
+                        <i data-feather="calendar"></i>
+                        <span>{{ articulo_destacado.fecha_publicacion|date:"j \\d\\e F, Y" }}</span>
+                    </div>
+                    <div class="post-meta-item">
+                        <i data-feather="clock"></i>
+                        <span>{{ articulo_destacado.tiempo_lectura }} min de lectura</span>
+                    </div>
+                </div>
+                <div class="featured-post-actions">
+                    <a href="{% url 'articuloHabla' articulo_destacado.id %}" class="button button-primary">Leer Artículo</a>
+                    <a href="{% url 'articuloHabla' articulo_destacado.id %}" class="button button-outline">
+                        Ver Comentarios ({{ articulo_destacado.comentarios.count }})
+                    </a>
+                </div>
+            </div>
+            <div class="featured-post-image">
+                <img src="{{ articulo_destacado.imagen.url }}" alt="{{ articulo_destacado.titulo }}">
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="recent-posts-section">
+  <div class="container">
+    <div class="recent-posts-header">
+      <h2 class="section-title">Publicaciones Recientes</h2>
+      <div class="search-filter">
+        <div class="search-box">
+          <i data-feather="search"></i>
+          <input type="search" placeholder="Buscar publicaciones...">
+        </div>
+        <button class="filter-button">
+          <i data-feather="menu"></i>
+          <span class="sr-only">Filtrar</span>
+        </button>
+        <div class="category-filter hidden">
+          <p class="category-title">
+            <i data-feather="tag"></i> Selecciona una categoría de tu interés
+          </p>                        
+          <hr>
+          <ul>
+            <li data-category="all">Todas</li> <!-- Opción para mostrar todas las categorías -->
+            {% for categoria in categorias %}
+              <li data-category="{{ categoria.nombre }}">{{ categoria.nombre }}</li>
+            {% endfor %}
+          </ul>
         </div>
       </div>
-    </section>
+    </div>
 
-    {% if articulo_destacado %}
-    <section class="featured-post-section">
-        <div class="container">
-            <h2 class="section-title">Destacado</h2>
-            <div class="featured-post">
-                <div class="featured-post-content">
-                    <div class="featured-post-categories">
-                        <span class="badge badge-primary">Destacado</span>
-                        <span class="badge badge-outline"><i data-feather="tag"></i>{{ articulo_destacado.categoria.nombre }}</span>
-                    </div>
-                    <h3 class="featured-post-title">
-                        <a href="{% url 'articuloHabla' articulo_destacado.id %}">{{ articulo_destacado.titulo }}</a>
-                    </h3>
-                    <p class="featured-post-excerpt">
-                        {{ articulo_destacado.abstract }}
-                    </p>
-                    <div class="featured-post-meta">
-                        <div class="post-meta-item">
-                            <i data-feather="calendar"></i>
-                            <span>{{ articulo_destacado.fecha_publicacion|date:"j \\d\\e F, Y" }}</span>
-                        </div>
-                        <div class="post-meta-item">
-                            <i data-feather="clock"></i>
-                            <span>{{ articulo_destacado.tiempo_lectura }} min de lectura</span>
-                        </div>
-                    </div>
-                    <div class="featured-post-actions">
-                        <a href="{% url 'articuloHabla' articulo_destacado.id %}" class="button button-primary">Leer Artículo</a>
-                        <a href="{% url 'articuloHabla' articulo_destacado.id %}" class="button button-outline">
-                            Ver Comentarios ({{ articulo_destacado.comentarios.count }})
-                        </a>
-                    </div>
-                </div>
-                <div class="featured-post-image">
-                    <img src="{{ articulo_destacado.imagen.url }}" alt="{{ articulo_destacado.titulo }}">
-                </div>
+    <div class="posts-grid">
+      {% for articulo in articulos %}
+        <article class="post-card {% if forloop.counter > 6 %}hidden{% endif %}" data-categories="{{ articulo.categoria.nombre|lower }}">
+          <div class="post-card-image">
+            <img src="{{ articulo.imagen.url }}" alt="{{ articulo.titulo }}">
+            <div class="post-type-badge">
+              <i data-feather="file-text"></i>
+              <span>Artículo</span>
             </div>
-        </div>
-    </section>
-    {% endif %}
-    <section class="recent-posts-section">
-        <div class="container">
-            <div class="recent-posts-header">
-                <h2 class="section-title">Publicaciones Recientes</h2>
-                <div class="search-filter">
-                    <div class="search-box">
-                        <i data-feather="search"></i>
-                        <input type="search" placeholder="Buscar publicaciones...">
-                    </div>
-                    <button class="filter-button">
-                        <i data-feather="menu"></i>
-                        <span class="sr-only">Filtrar</span>
-                    </button>
-                    <div class="category-filter hidden">
-                        <p class="category-title">
-                            <i data-feather="tag"></i> Selecciona una categoría de tu interés
-                        </p>                        
-                        <hr>
-                        <ul>
-                          <li data-category="all">Todas</li> <!-- Opción para mostrar todas las categorías -->
-                          {% for categoria in categorias %}
-                              <li data-category="{{ categoria.nombre }}">{{ categoria.nombre }}</li>
-                          {% endfor %}
-                      </ul>
-                    </div>
-                </div>
+          </div>
+          <div class="post-card-content">
+            <h3 class="post-card-title">
+              <a href="{% url 'articuloHabla' articulo.id %}">{{ articulo.titulo }}</a>
+            </h3>
+            <p class="post-card-excerpt">
+              {{ articulo.abstract }}
+            </p>
+            <div class="post-card-meta">
+              <div class="post-meta-item">
+                <i data-feather="calendar"></i>
+                <span>{{ articulo.fecha_publicacion|date:"j \\d\\e F, Y" }}</span>
+              </div>
+              <div class="post-meta-item">
+                <i data-feather="message-square"></i>
+                <span>{{ articulo.comentarios.count }} comentarios</span>
+              </div>
             </div>
-    
-            <div class="posts-grid">
-                {% for articulo in articulos_recientes %}
-                <article class="post-card {% if forloop.counter > 6 %}hidden{% endif %}" data-categories="{{ articulo.categoria.nombre|lower }}">
-                    <div class="post-card-image">
-                        <img src="{{ articulo.imagen.url }}" alt="{{ articulo.titulo }}">
-                        <div class="post-type-badge">
-                            <i data-feather="file-text"></i>
-                            <span>Artículo</span>
-                        </div>
-                    </div>
-                    <div class="post-card-content">
-                        <h3 class="post-card-title">
-                            <a href="{% url 'articuloHabla' articulo.id %}">{{ articulo.titulo }}</a>
-                        </h3>
-                        <p class="post-card-excerpt">
-                            {{ articulo.abstract }}
-                        </p>
-                        <div class="post-card-meta">
-                            <div class="post-meta-item">
-                                <i data-feather="calendar"></i>
-                                <span>{{ articulo.fecha_publicacion|date:"j \\d\\e F, Y" }}</span>
-                            </div>
-                            <div class="post-meta-item">
-                                <i data-feather="message-square"></i>
-                                <span>{{ articulo.comentarios.count }} comentarios</span>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-                {% endfor %}
-            </div>
-    
-            <div class="load-more-container">
-                <button id="loadMoreButton" class="button button-outline load-more-button">Cargar Más</button>
-            </div>
-        </div>
-    </section>
-    
-    
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+    <div class="load-more-container">
+      <button id="loadMoreButton" class="button button-outline load-more-button">Cargar Más</button>
+    </div>
+  </div>
+</section>
 
 <!-- Sugerencias de Temas -->
 <section id="sugerencias" class="newsletter-section">
-    <div class="container">
-      <div class="newsletter-container">
-        <div class="newsletter-icon">
-          <i data-feather="message-circle"></i>
-        </div>
-        <h2 class="newsletter-title">Sugiere un tema para el blog</h2>
-        <p class="newsletter-description">
-          ¿Hay algún tema sobre la crianza y comunicación con tus hijos que te gustaría que abordemos? Envíanos tu sugerencia y ayúdanos a crear contenido que realmente te interese.
-        </p>
-        <form class="newsletter-form">
-          <input type="text" placeholder="Escribe tu sugerencia aquí" class="newsletter-input" required>
-          <button type="submit" class="button button-primary">Enviar Sugerencia</button>
-        </form>
-        <div class="success-message hidden2">
-          <i data-feather="check-circle"></i>
-          <p>¡Gracias por tu sugerencia! La hemos recibido con éxito.</p>
-        </div>
-        <p class="newsletter-privacy">
-          Valoramos tu opinión y respetamos tu privacidad. Solo usaremos tu correo si deseas recibir actualizaciones sobre tu sugerencia.
-        </p>
+  <div class="container">
+    <div class="newsletter-container">
+      <div class="newsletter-icon">
+        <i data-feather="message-circle"></i>
       </div>
+      <h2 class="newsletter-title">Sugiere un tema para el blog</h2>
+      <p class="newsletter-description">
+        ¿Hay algún tema sobre la crianza y comunicación con tus hijos que te gustaría que abordemos? Envíanos tu sugerencia y ayúdanos a crear contenido que realmente te interese.
+      </p>
+      <form class="newsletter-form">
+        <input type="text" placeholder="Escribe tu sugerencia aquí" class="newsletter-input" required>
+        <button type="submit" class="button button-primary">Enviar Sugerencia</button>
+      </form>
+      <div class="success-message hidden2">
+        <i data-feather="check-circle"></i>
+        <p>¡Gracias por tu sugerencia! La hemos recibido con éxito.</p>
+      </div>
+      <p class="newsletter-privacy">
+        Valoramos tu opinión y respetamos tu privacidad. Solo usaremos tu correo si deseas recibir actualizaciones sobre tu sugerencia.
+      </p>
     </div>
-  </section>
+  </div>
+</section>
+
 
 
   <script>

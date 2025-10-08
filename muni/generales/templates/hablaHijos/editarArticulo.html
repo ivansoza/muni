@@ -250,6 +250,36 @@
                         {{ form.tiempo_lectura|as_crispy_field }}
                     </div>
                     <div class="col-md-6 form-group form-check">
+                    <!-- La etiqueta personalizada en lugar de la predeterminada -->
+                    <label for="{{ form.habla.id_for_label }}" class="form-check-label">
+                        {{ form.habla.label }}
+                    </label>
+                    
+                    <!-- Renderizamos el campo del formulario sin etiqueta -->
+                    {{ form.habla }}
+                    
+                    <!-- Texto explicativo debajo del checkbox -->
+                    <small class="form-text text-muted">
+                        Marcar este articulo para el blog Habla con tus hijos.
+                    </small>
+                </div>
+
+                <div class="col-md-6 form-group form-check">
+                    <!-- La etiqueta personalizada en lugar de la predeterminada -->
+                    <label for="{{ form.ven_vive.id_for_label }}" class="form-check-label">
+                        {{ form.ven_vive.label }}
+                    </label>
+                    
+                    <!-- Renderizamos el campo del formulario sin etiqueta -->
+                    {{ form.ven_vive }}
+                    
+                    <!-- Texto explicativo debajo del checkbox -->
+                    <small class="form-text text-muted">
+                        Marcar este articulo para el blog Ven, Vive y Vuelve.
+                    </small>
+                </div>
+
+                    <div class="col-md-6 form-group form-check">
                         <!-- La etiqueta personalizada en lugar de la predeterminada -->
                         <label for="{{ form.destacado.id_for_label }}" class="form-check-label">
                             Marcar este artículo como destacado

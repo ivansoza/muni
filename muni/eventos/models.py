@@ -21,12 +21,14 @@ class Articulo(models.Model):
     contenido = CKEditor5Field('Contenido', config_name='extends', blank=False, null=False)  
     imagen = models.ImageField(upload_to='habla_con_tus_hijos/imagenes/', verbose_name='Imagen principal')
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Categoría')  # Usamos ForeignKey en lugar de ManyToMany
-    etiquetas = models.CharField(max_length=225, verbose_name='Etiquetas del articulo')
-    autor = models.ForeignKey(Autor, on_delete=models.CASCADE, verbose_name='Autor del articulo')
+    etiquetas = models.CharField(max_length=225, verbose_name='Etiquetas del articulo', blank=True, null=True)
+    autor = models.ForeignKey(Autor, on_delete=models.CASCADE, verbose_name='Autor del articulo', blank=True, null=True)
     destacado = models.BooleanField(default=False)
     tiempo_lectura = models.PositiveIntegerField(default=1, verbose_name='Tiempo estimado de lectura')  # Tiempo en minutos
     fecha_publicacion = models.DateTimeField(auto_now_add=True)
     likes = models.PositiveIntegerField(default=0)  # Contador de likes
+    habla = models.BooleanField(default=False, verbose_name= "Habla con tus hijos")
+    ven_vive = models.BooleanField(default=False, verbose_name= "Ven vive y vuelve a tu municipio")
     video_url = models.URLField(
         verbose_name='Enlace de video',
         max_length=500,

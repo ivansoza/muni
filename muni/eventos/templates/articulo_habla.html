@@ -932,12 +932,13 @@ button {
   </style>
 <body>
     <!-- Navegación de regreso -->
-    <div class="container back-link-container">
-      <a href="{% url "homeHabla" %}" class="back-link">
-        <i data-feather="arrow-left"></i>
-        Volver al inicio
-      </a>
-    </div>
+<div class="container back-link-container">
+  <a href="{% url 'homeHabla' %}?filtro={% if articulo.habla %}habla{% elif articulo.ven_vive %}ven_vive{% else %}none{% endif %}" class="back-link">
+    <i data-feather="arrow-left"></i>
+    Volver al inicio
+  </a>
+</div>
+
 
     <!-- Imagen destacada -->
     <div class="featured-image">
@@ -961,7 +962,7 @@ button {
         <div class="article-meta-content">
           <div class="article-author">
             <div class="author-avatar">
-              <img src="{{ articulo.autor.fotografia.url }}" alt="María Rodríguez">
+              <img {% if articulo.autor %} src="{{ articulo.autor.fotografia.url }}" {% else %} src="{{ municipio.logotipo_claro.url }}" {% endif %} alt="María Rodríguez">
             </div>
             <div class="author-info">
               <div class="author-name">{{ articulo.autor.nombre_completo }}</div>
@@ -1044,12 +1045,14 @@ button {
             
             
               <!-- Etiquetas -->
+              {% if articulo.etiquetas %}
               <div class="article-tags">
                 <span class="tags-label">Etiquetas:</span>
                 {% for etiqueta in etiquetas %}
                 <a href="#" class="tag-link">{{ etiqueta }}</a>
                 {% endfor %}
-            </div>
+              </div>
+              {% endif %}
             
 
               <!-- Compartir móvil -->
@@ -1089,49 +1092,52 @@ button {
               </div>
 
               <!-- Autor -->
-              <div class="author-box">
-                <div class="author-box-content">
-                  <div class="author-avatar">
-                    <img src="{{ articulo.autor.fotografia.url }}" alt="María Rodríguez">
-                  </div>
-                  <div class="author-details">
-                    <h3 class="author-box-title">Sobre {{ articulo.autor.nombre_completo }}</h3>
-                    <p class="author-box-role">{{ articulo.autor.perfil }}</p>
-                    <p class="author-box-bio">
+               {% if articulo.autor %}
+               <div class="author-box">
+                 <div class="author-box-content">
+                   <div class="author-avatar">
+                     <img src="{{ articulo.autor.fotografia.url }}" alt="María Rodríguez">
+                    </div>
+                    <div class="author-details">
+                      <h3 class="author-box-title">Sobre {{ articulo.autor.nombre_completo }}</h3>
+                      <p class="author-box-role">{{ articulo.autor.perfil }}</p>
+                      <p class="author-box-bio">
                         {{ articulo.autor.trayectoria }}
-                    </p>
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+                {% endif %}
 
               <!-- Navegación entre artículos -->
-            <div class="article-navigation">
-                {% if articulo_anterior %}
-                <a href="{% url 'articuloHabla' articulo_anterior.id %}" class="prev-article">
-                    <div class="nav-article-content">
-                        <span class="nav-article-label">
-                            <i data-feather="arrow-left"></i> Anterior
-                        </span>
-                        <span class="nav-article-title">
-                            {{ articulo_anterior.titulo }}
-                        </span>
-                    </div>
-                </a>
-                {% endif %}
+              <div class="article-navigation">
+                  {% if articulo_anterior %}
+                      <a href="{% url 'articuloHabla' articulo_anterior.id %}" class="prev-article">
+                          <div class="nav-article-content">
+                              <span class="nav-article-label">
+                                  <i data-feather="arrow-left"></i> Anterior
+                              </span>
+                              <span class="nav-article-title">
+                                  {{ articulo_anterior.titulo }}
+                              </span>
+                          </div>
+                      </a>
+                  {% endif %}
 
-                {% if articulo_siguiente %}
-                <a href="{% url 'articuloHabla' articulo_siguiente.id %}" class="next-article">
-                    <div class="nav-article-content">
-                        <span class="nav-article-label">
-                            Siguiente <i data-feather="arrow-right"></i>
-                        </span>
-                        <span class="nav-article-title">
-                            {{ articulo_siguiente.titulo }}
-                        </span>
-                    </div>
-                </a>
-                {% endif %}
-            </div>
+                  {% if articulo_siguiente %}
+                      <a href="{% url 'articuloHabla' articulo_siguiente.id %}" class="next-article">
+                          <div class="nav-article-content">
+                              <span class="nav-article-label">
+                                  Siguiente <i data-feather="arrow-right"></i>
+                              </span>
+                              <span class="nav-article-title">
+                                  {{ articulo_siguiente.titulo }}
+                              </span>
+                          </div>
+                      </a>
+                  {% endif %}
+              </div>
+
 
             </div>
           </div>
@@ -1157,26 +1163,27 @@ button {
                     </a>
                     {% endfor %}
               </div>
-
+              {% if articulo.habla == True %}
               <div class="newsletter-box" style="background-color: #f9f9f9; padding: 20px; border-radius: 10px;">
                 <h3 class="newsletter-title" style="font-size: 20px; text-align: center; color: #333;">
-                    <i data-feather="message-square" style="margin-right: 10px; color: var(--color-primario);"></i> Consejos rápidos
+                  <i data-feather="message-square" style="margin-right: 10px; color: var(--color-primario);"></i> Consejos rápidos
                 </h3>
                 <div class="quick-tips">
-                    <div class="tip" style="padding: 10px; margin: 10px 0; border-radius: 5px;">
-                        <i data-feather="check-circle" style="margin-right: 10px; color: var(--color-primario);"></i>
-                        Escucha activamente a tus hijos.
-                    </div>
-                    <div class="tip" style="padding: 10px;  margin: 10px 0; border-radius: 5px;">
-                        <i data-feather="check-circle" style="margin-right: 10px; color: var(--color-primario);"></i>
-                        Crea un ambiente seguro y de confianza.
-                    </div>
-                    <div class="tip" style="padding: 10px; margin: 10px 0; border-radius: 5px;">
-                        <i data-feather="check-circle" style="margin-right: 10px; color: var(--color-primario);"></i>
-                        Fomenta la confianza mediante el respeto.
-                    </div>
+                  <div class="tip" style="padding: 10px; margin: 10px 0; border-radius: 5px;">
+                    <i data-feather="check-circle" style="margin-right: 10px; color: var(--color-primario);"></i>
+                    Escucha activamente a tus hijos.
+                  </div>
+                  <div class="tip" style="padding: 10px;  margin: 10px 0; border-radius: 5px;">
+                    <i data-feather="check-circle" style="margin-right: 10px; color: var(--color-primario);"></i>
+                    Crea un ambiente seguro y de confianza.
+                  </div>
+                  <div class="tip" style="padding: 10px; margin: 10px 0; border-radius: 5px;">
+                    <i data-feather="check-circle" style="margin-right: 10px; color: var(--color-primario);"></i>
+                    Fomenta la confianza mediante el respeto.
+                  </div>
                 </div>
-            </div>
+              </div>
+              {% endif %}
             
             
             

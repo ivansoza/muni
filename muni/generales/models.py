@@ -93,6 +93,7 @@ class Secciones(models.Model):
     transparencia = models.BooleanField(default=False)
     servicios = models.BooleanField(default=False)
     habla_con_tus_hijos = models.BooleanField(default=False)
+    ven_vive_y_vuelve = models.BooleanField(default=False)
     aviso_de_privacidad = models.BooleanField(default=False)
     gabinete = models.BooleanField(default=False)
     sevac = models.BooleanField(default=False)
