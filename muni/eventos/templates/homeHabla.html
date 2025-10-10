@@ -826,9 +826,16 @@ button {
         <i data-feather="message-circle"></i>
       </div>
       <h2 class="newsletter-title">Sugiere un tema para el blog</h2>
+      {% if filtro == 'habla' %}
       <p class="newsletter-description">
         ¿Hay algún tema sobre la crianza y comunicación con tus hijos que te gustaría que abordemos? Envíanos tu sugerencia y ayúdanos a crear contenido que realmente te interese.
       </p>
+      {% endif %}
+      {% if filtro == 'habla' %}
+      <p class="newsletter-description">
+        Queremos que más personas descubran la magia de nuestro municipio. Cuéntanos qué rincones, sabores o tradiciones te gustaría ver en Ven, Vive y Vuelve, y ayúdanos a mostrar el orgullo de nuestra tierra.
+      </p>
+      {% endif %}
       <form class="newsletter-form">
         <input type="text" placeholder="Escribe tu sugerencia aquí" class="newsletter-input" required>
         <button type="submit" class="button button-primary">Enviar Sugerencia</button>
