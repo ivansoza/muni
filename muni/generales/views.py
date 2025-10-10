@@ -3153,7 +3153,7 @@ def encuesta_toggle_estado(request, encuesta_id):
     return redirect("EncuestasView")
 
 class HablaHome(TemplateView, LoginRequiredMixin):
-    template_name = 'HablaHijos/hablaHome.html'
+    template_name = 'hablaHijos/hablaHome.html'
     # --- control de permisos ---
     def dispatch(self, request, *args, **kwargs):
         if not (request.user.is_superuser or request.user.has_perm("eventos.view_articulo")):
