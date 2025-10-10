@@ -389,12 +389,17 @@
                             {% endif %}
                 
                             <!-- Habla con tus hijos -->
-                            {% if municipio.secciones_hab and municipio.secciones_hab.habla_con_tus_hijos %}
+                          {% if municipio.secciones_hab and municipio.secciones_hab.habla_con_tus_hijos %}
                             <li>
-                                <a class="dropdown-item" href="{% url 'homeHabla' %}">Habla con tus hijos</a>
+                                <a class="dropdown-item" href="{% url 'homeHabla' %}?filtro=habla">Habla con tus hijos</a>
                             </li>
-                            {% endif %}
-                
+                        {% endif %}
+
+                        {% if municipio.secciones_hab and municipio.secciones_hab.ven_vive_y_vuelve %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'homeHabla' %}?filtro=ven_vive">Ven vive y Vuelve a {{ municipio.nombre_municipio }}</a>
+                            </li>
+                        {% endif %}
                   
          
                             {% if municipio.secciones_hab and municipio.secciones_hab.contacts %}

@@ -187,7 +187,7 @@ class SeccionesForm(forms.ModelForm):
         model  = Secciones
         fields = [
             'noticias', 'convocatorias', 'transparencia', 'servicios',
-            'habla_con_tus_hijos', 'aviso_de_privacidad', 'gabinete',
+            'habla_con_tus_hijos','ven_vive_y_vuelve', 'aviso_de_privacidad', 'gabinete',
             'sevac', 'contacts', 'reportes', 'encuestas',
             'servicios_en_linea', 'videos',                      # ← agregado
         ]
