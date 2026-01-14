@@ -3562,7 +3562,7 @@ class ArticuloCreateView(CreateView):
 class ArticuloUpdateView(UpdateView):
     model = Articulo
     form_class = ArticuloForm
-    template_name = 'HablaHijos/editarArticulo.html'  # crea esta plantilla
+    template_name = 'hablaHijos/editarArticulo.html'  # crea esta plantilla
     success_url = reverse_lazy('habla_home')  # URL para redirigir tras éxito
 
     # Opcional: controlar permisos si es necesario
