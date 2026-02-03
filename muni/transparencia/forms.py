@@ -1,7 +1,7 @@
 from django import forms
 
 from reportes.models import ReporteAlcantarillado, ReporteAlumbradoPublico, ReporteBache, ReporteServicioAgua
-from .models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga, LigaArchivo
+from .models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga, LigaArchivo, CarpetaTransparencia
 
 class SeccionTransparenciaForm(forms.ModelForm):
     class Meta:
@@ -60,19 +60,14 @@ class DocumentoTransparenciaForm(forms.ModelForm):
 class ListaObligacionesForm(forms.ModelForm):
     class Meta:
         model = ListaObligaciones
-        fields = ['titulo', 'articulo']
+        fields = ['titulo']
         labels = {
-            'titulo': 'Título de la lista',
-            'articulo': 'Título de artículo',
+            'titulo': 'Título de la carpeta',
         }
         widgets = {
             'titulo': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Ej. Obligaciones de transparencia'
-            }),
-            'articulo': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Ej. Artículo 70 de la Ley General'
             }),
         }
 
@@ -100,26 +95,62 @@ class ArticuloLigaForm(forms.ModelForm):
             self.fields['lista_obligaciones'].initial = lista_obligacion_id
 
 class ArticuloLigaArchivoForm(forms.ModelForm):
+    carpeta = forms.ModelChoiceField(
+        queryset=CarpetaTransparencia.objects.none(),
+        required=False,
+        label="Carpeta (opcional)",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
     class Meta:
         model = LigaArchivo
-        fields = ['articuloDe', 'ano', 'liga', 'archivo']
+        fields = ['articuloDe', 'carpeta', 'titulo_archivo', 'ano', 'liga', 'archivo']
         widgets = {
             'articuloDe': forms.Select(attrs={'class': 'form-control'}),
-            'ano': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Año fiscal', 'min': 1900, 'max': 2100}),
-            'liga': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el enlace completo del artículo'}),
-            'archivo': forms.ClearableFileInput(attrs={'class': 'custom-file-input', 'id': 'customFile'}),
+            'ano': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Año fiscal',
+                'min': 1900,
+                'max': 2100
+            }),
+            'liga': forms.URLInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ingrese el enlace completo del artículo'
+            }),
+            'archivo': forms.ClearableFileInput(attrs={
+                'class': 'custom-file-input',
+                'id': 'customFile'
+            }),
         }
-    
+
     def __init__(self, *args, **kwargs):
-        articulo_id = kwargs.pop('articuloDe_id', None)  # Asegúrate de que esto coincida con la clave pasada en kwargs
+        articulo_id = kwargs.pop('articuloDe_id', None)
         super().__init__(*args, **kwargs)
-        
+
+        # 1) Si viene articulo_id, encierra articuloDe al artículo fijo
         if articulo_id:
             self.fields['articuloDe'].queryset = ArticuloLiga.objects.filter(id=articulo_id)
             self.fields['articuloDe'].initial = articulo_id
-        
-        # Hacemos que el campo "ano" sea obligatorio en el formulario
+            self.fields['articuloDe'].disabled = True  # evita que lo cambien en UI
+
+        # 2) Año obligatorio
         self.fields['ano'].required = True
+
+        # 3) Cargar carpetas y mostrarlas con indentación (principal/sub/subsub)
+        qs = CarpetaTransparencia.objects.select_related('padre').order_by('orden', 'nombre')
+        self.fields['carpeta'].queryset = qs
+        self.fields['carpeta'].label_from_instance = self._label_carpeta
+
+    def _label_carpeta(self, carpeta):
+        # Indentación por profundidad + ruta completa (muy claro para admin)
+        depth = 0
+        p = carpeta.padre
+        while p:
+            depth += 1
+            p = p.padre
+        prefix = "— " * depth
+        # Si quieres ruta completa: carpeta.ruta_legible()
+        return f"{prefix}{carpeta.nombre}"
 
     def clean(self):
         cleaned_data = super().clean()
@@ -127,13 +158,16 @@ class ArticuloLigaArchivoForm(forms.ModelForm):
         archivo = cleaned_data.get('archivo')
         ano = cleaned_data.get('ano')
 
-        # Verificamos que se ingrese al menos un enlace o un archivo
+        # 1) Debe existir al menos liga o archivo (pero no es obligatorio que sean ambos)
         if not liga and not archivo:
             raise forms.ValidationError("Debe ingresar al menos un enlace o un archivo.")
 
-        # Verificamos que se ingrese el año fiscal
+        # 2) Año obligatorio (ya es required, pero lo reforzamos)
         if not ano:
-            raise forms.ValidationError("El año fiscal es obligatorio.")
+            self.add_error('ano', "El año fiscal es obligatorio.")
+
+        # 3) (Opcional) Si el usuario puso liga y archivo, lo permitimos.
+        # Si quisieras forzar solo uno, aquí lo validarías.
 
         return cleaned_data
 

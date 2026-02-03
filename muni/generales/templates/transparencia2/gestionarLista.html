@@ -1,277 +1,521 @@
 {% extends "baseTemplate.html" %}
 
 {% block content %}
-<style>
-    .btn-round {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-left: 5px;
-        cursor: pointer;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .btn-round i {
-        margin-left: 8px;
-        font-size: 14px;
-        color: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .btn-round:hover {
-        transform: scale(1.1);
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-    }
-    .actions {
-        display: flex;
-        align-items: center;
-    }
-    .card {
-        margin-bottom: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    }
-    .card-header {
-        padding: 15px;
-        font-size: 18px;
-    }
-    .card-body {
-        padding: 20px;
-    }
-    .list-group-item {
-        padding-left: 30px;  /* Sangría para los artículos */
-    }
-</style>
-
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
-<!-- Botones para agregar o editar -->
-<div class="d-flex justify-content-start mb-4">
-    <a href="{% url 'crear_articulo' lista_obligaciones.id %}" class="btn btn-sm btn-primary" style="margin-bottom: 20px; border-radius: 10px; padding: 12px 20px; font-size: 16px;">
-        <i class="fas fa-plus"></i> Crear Artículo
-    </a>
-</div>
+<style>
+/* ===========================
+   UI: Artículos (scoped)
+   =========================== */
+.art-wrap{
+  --a-bg: #f6f8fb;
+  --a-card: #ffffff;
+  --a-text: #0f172a;
+  --a-muted: #64748b;
+  --a-border: rgba(226, 232, 240, .9);
+  --a-shadow: 0 1px 2px rgba(0,0,0,.05), 0 24px 48px -24px rgba(0,0,0,.18);
+  --a-shadow-hover: 0 10px 15px -8px rgba(0,0,0,.12), 0 35px 70px -35px rgba(0,0,0,.18);
+  --a-radius: 16px;
+  --a-grad: linear-gradient(90deg, #3A6284 20%, #28455E 100%);
+  --a-grad-soft: linear-gradient(90deg, rgba(58,98,132,.15) 0%, rgba(40,69,94,.08) 100%);
+  background: var(--a-bg);
+  padding: 20px;
+  border-radius: 18px;
+}
 
-<div class="container-fluid">
-    <!-- Formulario de búsqueda -->
-    <!-- <div class="d-flex justify-content-start mb-4">
-        <input type="text" id="searchInput" class="form-control" placeholder="Buscar Artículos..." onkeyup="filterArticles()">
-    </div>-->
+.art-hero{
+  background: var(--a-card);
+  border: 1px solid var(--a-border);
+  border-radius: var(--a-radius);
+  box-shadow: var(--a-shadow);
+  padding: 18px 18px;
+  position: relative;
+  overflow: hidden;
+}
+.art-hero::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background: var(--a-grad-soft);
+  pointer-events:none;
+}
+.art-hero-inner{
+  position: relative;
+  display:flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+}
+.art-title{
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+  min-width: 240px;
+}
+.art-title h2{
+  margin:0;
+  font-weight: 900;
+  letter-spacing: .3px;
+  color: var(--a-text);
+}
+.art-title p{
+  margin:0;
+  color: var(--a-muted);
+  font-size: 13px;
+}
 
-    <!-- Contenedor para los artículos de la lista -->
-    <div class="card">
-        <div class="card-header">
-            <i class="fas fa-list"></i>  <!-- Icono de lista -->
-            Artículos de la Lista: <strong>{{ lista_obligaciones.titulo }}</strong>
+.art-actions{
+  display:flex;
+  gap: 10px;
+  align-items:center;
+  flex-wrap: wrap;
+}
+
+.art-btn{
+  border: none;
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform .2s ease, opacity .2s ease, box-shadow .2s ease;
+  text-decoration:none !important;
+}
+.art-btn-primary{
+  color: #fff !important;
+  background: var(--a-grad);
+  box-shadow: 0 10px 20px -12px rgba(40, 69, 94, .6);
+}
+.art-btn-primary:hover{ transform: translateY(-1px); opacity:.95; }
+
+.art-search{
+  position: relative;
+  min-width: 260px;
+  flex: 1;
+  max-width: 420px;
+}
+.art-search input{
+  width:100%;
+  border: 1px solid var(--a-border);
+  border-radius: 14px;
+  padding: 11px 14px 11px 40px;
+  outline: none;
+  background: rgba(255,255,255,.95);
+  transition: box-shadow .2s ease, border-color .2s ease;
+}
+.art-search input:focus{
+  border-color: rgba(58,98,132,.55);
+  box-shadow: 0 0 0 4px rgba(58,98,132,.12);
+}
+.art-search i{
+  position:absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+}
+
+/* Card container */
+.art-card{
+  margin-top: 16px;
+  background: var(--a-card);
+  border: 1px solid var(--a-border);
+  border-radius: var(--a-radius);
+  box-shadow: var(--a-shadow);
+  overflow: hidden;
+}
+.art-card-topbar{
+  height: 4px;
+  background: var(--a-grad);
+}
+.art-card-header{
+  padding: 14px 16px;
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid var(--a-border);
+}
+.art-card-header .left{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  min-width: 0;
+}
+.art-card-header .left i{
+  color: #3A6284;
+}
+.art-card-header h4{
+  margin:0;
+  font-weight: 900;
+  color: var(--a-text);
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.art-chip{
+  border-radius: 999px;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  background: #f8fafc;
+  border: 1px solid var(--a-border);
+  color: var(--a-muted);
+}
+
+/* List items */
+.art-list{
+  list-style:none;
+  margin:0;
+  padding: 10px 10px 12px 10px;
+}
+.art-item{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 12px;
+  margin: 10px 6px;
+  border-radius: 14px;
+  border: 1px solid var(--a-border);
+  background: #fff;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.art-item:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 14px 24px -18px rgba(0,0,0,.28);
+  border-color: rgba(148,163,184,.55);
+}
+.art-item-left{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  min-width: 0;
+}
+.art-fraccion{
+  font-weight: 900;
+  color: var(--a-text);
+  font-size: 14px;
+}
+.art-item-left .icon{
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: #f1f5f9;
+  color: #f59e0b;
+  font-size: 16px;
+}
+.art-drag{
+  color:#94a3b8;
+  font-size: 14px;
+  display:flex;
+  align-items:center;
+  gap: 8px;
+}
+.art-drag .handle{
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px dashed rgba(148,163,184,.6);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor: grab;
+  background: #fbfdff;
+}
+.art-drag small{ color: var(--a-muted); }
+
+/* Actions buttons */
+.art-icons{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.art-iconbtn{
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border: 1px solid var(--a-border);
+  background: #fff;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+  cursor:pointer;
+  text-decoration:none !important;
+}
+.art-iconbtn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px -14px rgba(0,0,0,.25);
+}
+.art-iconbtn i{ font-size: 16px; }
+.art-iconbtn.manage i{ color: #10b981; }
+.art-iconbtn.edit i{ color: #f59e0b; }
+.art-iconbtn.delete{
+  background: rgba(220,53,69,.08);
+  border-color: rgba(220,53,69,.18);
+}
+.art-iconbtn.delete i{ color: #dc3545; }
+
+/* Drop indicator */
+.art-item.drag-over{
+  border-top: 3px solid #3A6284;
+}
+</style>
+
+<div class="container-fluid art-wrap">
+
+  <!-- HERO -->
+  <div class="art-hero">
+    <div class="art-hero-inner">
+      <div class="art-title">
+        <h2>📄 Artículos de la Lista</h2>
+        <p><strong>{{ lista_obligaciones.titulo }}</strong> • Arrastra para ordenar y gestiona documentos por fracción.</p>
+      </div>
+
+      <div class="art-actions">
+        <div class="art-search">
+          <i class="fas fa-search"></i>
+          <input id="searchInput" type="text" placeholder="Buscar fracción…" onkeyup="filterArticles()">
         </div>
-        <div class="card-body">
-            <ul class="list-group" id="articulosList">
-                {% for articulo in articulos %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center articulo-item articulo" data-id="{{ articulo.id }}" draggable="true">
-                        <div>
-                            <i class="fas fa-scroll text-warning"></i> <strong>{{ articulo.articulo_fraccion }}</strong>
-                        </div>
-                        <div class="actions">
-                            <i class="fas fa-arrows-alt"></i> <!-- Icono de mover -->
 
-                           <!-- Botón Editar -->
-                           <a href="{% url 'gestionarArchivoLa' id=articulo.id %}" class="btn-round btn-primary" title="Gestionar">
-                                <i class="fa fa-hand-o-up"></i>
-                            </a>
-                            <!-- Botón Editar -->
-                            <a href="{% url 'editar_articulo' lista_obligacion_id=articulo.lista_obligaciones.id articulo_id=articulo.id %}" class="btn-round btn-warning" title="Editar">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            
-
-                            <!-- Botón Eliminar -->
-                            <button class="btn-round btn-danger eliminar-articulo" data-id="{{ articulo.id }}" data-nombre="{{ articulo.articulo_fraccion }}" title="Eliminar">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                            
-                        </div>
-                    </li>
-                {% empty %}
-                    <li class="list-group-item text-muted">No hay artículos disponibles en esta lista.</li>
-                {% endfor %}
-            </ul>
-        </div>
+        <a href="{% url 'crear_articulo' lista_obligaciones.id %}" class="art-btn art-btn-primary">
+          <i class="fas fa-plus"></i> Crear artículo
+        </a>
+      </div>
     </div>
+  </div>
+
+  <!-- LIST CARD -->
+  <div class="art-card">
+    <div class="art-card-topbar"></div>
+
+    <div class="art-card-header">
+      <div class="left">
+        <i class="fas fa-list"></i>
+        <h4>Artículos de: {{ lista_obligaciones.titulo }}</h4>
+      </div>
+      <span class="art-chip">
+        Total: {{ articulos|length }}
+      </span>
+    </div>
+
+    <ul class="art-list" id="articulosList">
+      {% for articulo in articulos %}
+        <li class="art-item articulo articulo-item"
+            data-id="{{ articulo.id }}"
+            data-name="{{ articulo.articulo_fraccion|lower }}"
+            draggable="true">
+
+          <div class="art-item-left">
+            <div class="icon"><i class="fas fa-scroll"></i></div>
+            <div style="min-width:0;">
+              <div class="art-fraccion">{{ articulo.articulo_fraccion }}</div>
+              <div class="art-drag">
+                <div class="handle" title="Arrastrar para reordenar">
+                  <i class="fas fa-grip-vertical"></i>
+                </div>
+                <small>Arrastra para cambiar el orden</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="art-icons">
+            <a href="{% url 'gestionarArchivoLa' id=articulo.id %}" class="art-iconbtn manage" title="Gestionar">
+              <i class="fas fa-cogs"></i>
+            </a>
+
+            <a href="{% url 'editar_articulo' lista_obligacion_id=articulo.lista_obligaciones.id articulo_id=articulo.id %}" class="art-iconbtn edit" title="Editar">
+              <i class="fas fa-edit"></i>
+            </a>
+
+            <button class="art-iconbtn delete eliminar-articulo"
+                    data-id="{{ articulo.id }}"
+                    data-nombre="{{ articulo.articulo_fraccion }}"
+                    title="Eliminar">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+        </li>
+      {% empty %}
+        <li style="padding:16px;">
+          <div class="alert alert-warning text-center mb-0">No hay artículos disponibles en esta lista.</div>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
 </div>
-<br>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-    function filterArticles() {
-        const input = document.getElementById('searchInput');
-        const filter = input.value.toLowerCase().trim();
-        const listItems = document.querySelectorAll('.articulo-item');
-    
-        let coincidencias = 0;  // Contador de coincidencias encontradas
-    
-        listItems.forEach((item) => {
-            const text = item.textContent.toLowerCase().trim();
-            const regex = new RegExp(filter, 'i');
-    
-    
-            if (regex.test(text)) {
-                item.style.display = '';  // Muestra los elementos que coinciden (vacío restaura el display original)
-                coincidencias++;  // Aumenta el contador si encuentra coincidencia
-            } else {
-                item.style.display = 'none';  // Oculta los elementos que no coinciden
-            }
-        });
-    
-        // Mostrar mensaje si no hay coincidencias
-        let noResultados = document.getElementById('noResultados');
-        if (coincidencias === 0) {
-            if (!noResultados) {
-                noResultados = document.createElement('li');
-                noResultados.id = 'noResultados';
-                noResultados.className = 'list-group-item text-muted';
-                noResultados.textContent = 'No se encontraron artículos que coincidan con la búsqueda.';
-                document.getElementById('articulosList').appendChild(noResultados);
-            }
-        } else {
-            if (noResultados) noResultados.remove();  // Quitar el mensaje si hay coincidencias
-        }
-    }     
+/* Filtro */
+function filterArticles() {
+  const input = document.getElementById('searchInput');
+  const filter = (input.value || '').toLowerCase().trim();
+  const items = document.querySelectorAll('.articulo-item');
+
+  let found = 0;
+  items.forEach(item => {
+    const name = item.dataset.name || '';
+    const ok = (!filter || name.includes(filter));
+    item.style.display = ok ? '' : 'none';
+    if (ok) found++;
+  });
+
+  // Mensaje si no hay resultados
+  let noResultados = document.getElementById('noResultados');
+  if (found === 0) {
+    if (!noResultados) {
+      noResultados = document.createElement('div');
+      noResultados.id = 'noResultados';
+      noResultados.className = 'alert alert-secondary text-center';
+      noResultados.style.margin = '10px 16px';
+      noResultados.textContent = 'No se encontraron artículos que coincidan con la búsqueda.';
+      document.getElementById('articulosList').prepend(noResultados);
+    }
+  } else {
+    if (noResultados) noResultados.remove();
+  }
+}
 </script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const deleteButtons = document.querySelectorAll(".eliminar-articulo");
-    
-        deleteButtons.forEach(button => {
-            button.addEventListener("click", function() {
-                const articuloId = this.getAttribute("data-id");
-                const articuloNombre = this.getAttribute("data-nombre");
-    
-                // Mostrar alerta de confirmación antes de eliminar
+/* Delete */
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll(".eliminar-articulo").forEach(button => {
+    button.addEventListener("click", function() {
+      const articuloId = this.getAttribute("data-id");
+      const articuloNombre = this.getAttribute("data-nombre");
+
+      Swal.fire({
+        title: "🗑️ Eliminar Artículo",
+        html: `
+          <p>Se eliminará la fracción <strong>${articuloNombre}</strong>.</p>
+          <p><strong>Esta acción no se puede deshacer.</strong></p>
+          <p>¿Deseas continuar?</p>
+        `,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          fetch(`/admin/eliminar_articulo/${articuloId}/`, {
+            method: "POST",
+            headers: {
+              "X-CSRFToken": "{{ csrf_token }}",
+              "Content-Type": "application/x-www-form-urlencoded"
+            }
+          }).then(response => response.json())
+            .then(data => {
+              if (data.success) {
                 Swal.fire({
-                    title: "🗑️ Eliminar Artículo: " + articuloNombre,
-                    html: `
-                        <p>Esta acción eliminará el artículo <strong>${articuloNombre}</strong>.</p>
-                        <p><strong>Esta acción no se puede deshacer.</strong></p>
-                        <p>¿Deseas continuar?</p>
-                    `,
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#dc3545",
-                    cancelButtonColor: "#6c757d",
-                    confirmButtonText: "Sí, eliminar",
-                    cancelButtonText: "Cancelar"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Usar Fetch API para eliminar el artículo
-                        fetch(`/admin/eliminar_articulo/${articuloId}/`, {
-                            method: "POST",
-                            headers: {
-                                "X-CSRFToken": "{{ csrf_token }}",
-                                "Content-Type": "application/x-www-form-urlencoded"
-                            }
-                        }).then(response => response.json())
-                          .then(data => {
-                              if (data.success) {
-                                  // Mostrar alerta de éxito
-                                  Swal.fire({
-                                      title: "¡Eliminado!",
-                                      text: data.message,
-                                      icon: "success",
-                                      timer: 2000,
-                                      showConfirmButton: false
-                                  }).then(() => {
-                                      // Recargar la página después de la eliminación exitosa
-                                      window.location.reload();
-                                  });
-                              } else {
-                                  // Mostrar alerta de error si falla la eliminación
-                                  Swal.fire({
-                                      title: "Error",
-                                      text: "No se pudo eliminar el artículo. Intenta de nuevo.",
-                                      icon: "error",
-                                      confirmButtonText: "Aceptar"
-                                  });
-                              }
-                          }).catch(error => {
-                              // Mostrar alerta de error si la petición falla
-                              Swal.fire({
-                                  title: "Error",
-                                  text: "Ocurrió un error. Intenta de nuevo.",
-                                  icon: "error",
-                                  confirmButtonText: "Aceptar"
-                              });
-                          });
-                    }
+                  title: "¡Eliminado!",
+                  text: data.message,
+                  icon: "success",
+                  timer: 1800,
+                  showConfirmButton: false
+                }).then(() => window.location.reload());
+              } else {
+                Swal.fire({
+                  title: "Error",
+                  text: "No se pudo eliminar el artículo. Intenta de nuevo.",
+                  icon: "error",
+                  confirmButtonText: "Aceptar"
                 });
-            });
-        });
-    });
-    
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const lista = document.getElementById("articulosList");
-        let draggingItem = null;
-    
-        document.querySelectorAll(".articulo").forEach(item => {
-            item.setAttribute("draggable", "true"); // Asegurar que sea arrastrable
-    
-            item.addEventListener("dragstart", function(e) {
-                draggingItem = this;
-                e.dataTransfer.effectAllowed = "move";
-            });
-    
-            item.addEventListener("dragend", function() {
-                draggingItem = null; // Resetear después del arrastre
-            });
-    
-            item.addEventListener("dragover", function(e) {
-                e.preventDefault();
-                this.style.borderTop = "2px solid blue"; // Indicar la posición
-            });
-    
-            item.addEventListener("dragleave", function() {
-                this.style.borderTop = "none";
-            });
-    
-            item.addEventListener("drop", function(e) {
-                e.preventDefault();
-                this.style.borderTop = "none";
-    
-                if (draggingItem && draggingItem !== this) {
-                    lista.insertBefore(draggingItem, this);
-                    actualizarOrden();
-                }
-            });
-        });
-    
-        function actualizarOrden() {
-            let orden = [];
-            document.querySelectorAll(".articulo").forEach((item, index) => {
-                orden.push({ id: item.getAttribute("data-id"), orden: index + 1 });
-            });
-    
-            fetch("{% url 'actualizar_orden' %}", {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": "{{ csrf_token }}",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ orden: orden })
-            }).then(response => response.json())
-              .then(data => {
-                  if (!data.success) {
-                      alert("Error al actualizar el orden.");
-                  }
+              }
+            }).catch(() => {
+              Swal.fire({
+                title: "Error",
+                text: "Ocurrió un error. Intenta de nuevo.",
+                icon: "error",
+                confirmButtonText: "Aceptar"
               });
+            });
         }
+      });
     });
-    
-    </script>
-    
+  });
+});
+</script>
 
+<script>
+/* Drag & Drop + actualizar orden */
+document.addEventListener("DOMContentLoaded", function() {
+  const lista = document.getElementById("articulosList");
+  let draggingItem = null;
+
+  document.querySelectorAll(".articulo").forEach(item => {
+    item.setAttribute("draggable", "true");
+
+    item.addEventListener("dragstart", function(e) {
+      draggingItem = this;
+      e.dataTransfer.effectAllowed = "move";
+      this.style.opacity = "0.8";
+    });
+
+    item.addEventListener("dragend", function() {
+      this.style.opacity = "1";
+      draggingItem = null;
+      document.querySelectorAll(".articulo").forEach(x => x.classList.remove("drag-over"));
+    });
+
+    item.addEventListener("dragover", function(e) {
+      e.preventDefault();
+      this.classList.add("drag-over");
+    });
+
+    item.addEventListener("dragleave", function() {
+      this.classList.remove("drag-over");
+    });
+
+    item.addEventListener("drop", function(e) {
+      e.preventDefault();
+      this.classList.remove("drag-over");
+
+      if (draggingItem && draggingItem !== this) {
+        lista.insertBefore(draggingItem, this);
+        actualizarOrden();
+      }
+    });
+  });
+
+  function actualizarOrden() {
+    let orden = [];
+    document.querySelectorAll(".articulo").forEach((item, index) => {
+      orden.push({ id: item.getAttribute("data-id"), orden: index + 1 });
+    });
+
+    fetch("{% url 'actualizar_orden' %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ orden: orden })
+    }).then(response => response.json())
+      .then(data => {
+        if (!data.success) {
+          Swal.fire({
+            title: "Error",
+            text: "No se pudo actualizar el orden.",
+            icon: "error",
+            confirmButtonText: "Aceptar"
+          });
+        }
+      });
+  }
+});
+</script>
 
 {% endblock %}

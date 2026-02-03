@@ -1,227 +1,531 @@
 {% extends "baseTemplate.html" %}
 
 {% block content %}
-<style>
-    .btn-round {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-left: 5px;
-        cursor: pointer;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .btn-round i {
-        margin-left: 8px;
-        font-size: 14px;
-        color: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .btn-round:hover {
-        transform: scale(1.1);
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-    }
-    .actions {
-        display: flex;
-        align-items: center;
-    }
-    .card {
-        margin-bottom: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    }
-    .card-header {
-        padding: 15px;
-        font-size: 18px;
-    }
-    .card-body {
-        padding: 20px;
-    }
-    .list-group-item {
-        padding-left: 30px;  /* Sangría para los artículos */
-    }
-</style>
-
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
-<!-- Botones para agregar o editar -->
-<div class="d-flex justify-content-start mb-4">
-    <a href="{% url 'crear_articulo_liga' articulo.id %}" class="btn btn-sm btn-primary" style="margin-bottom: 20px; border-radius: 10px; padding: 12px 20px; font-size: 16px;">
-        <i class="fas fa-plus"></i> Crear registro de año
-    </a>
-</div>
+<style>
+/* ===========================
+   UI: Registros por año (scoped)
+   =========================== */
+.year-wrap{
+  --y-bg: #f6f8fb;
+  --y-card: #ffffff;
+  --y-text: #0f172a;
+  --y-muted: #64748b;
+  --y-border: rgba(226, 232, 240, .9);
+  --y-shadow: 0 1px 2px rgba(0,0,0,.05), 0 24px 48px -24px rgba(0,0,0,.18);
+  --y-shadow-hover: 0 10px 15px -8px rgba(0,0,0,.12), 0 35px 70px -35px rgba(0,0,0,.18);
+  --y-radius: 16px;
+  --y-grad: linear-gradient(90deg, #3A6284 20%, #28455E 100%);
+  --y-grad-soft: linear-gradient(90deg, rgba(58,98,132,.15) 0%, rgba(40,69,94,.08) 100%);
+  background: var(--y-bg);
+  padding: 20px;
+  border-radius: 18px;
+}
 
-<div class="container-fluid">
-    <div class="card">
-        <div class="card-header">
-            <i class="fas fa-list"></i>  
-            Lista: <strong>{{ articulo.lista_obligaciones.titulo }}</strong> – Fracción: <strong>{{ articulo.articulo_fraccion }}</strong>
-        </div>
-        <div class="card-body">
-            <ul class="list-group articulo-container">
-                {% for ano, archivos in articulos_por_ano.items %}
-                    {% for archivo_info in archivos %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center articulo-item articulo" data-id="{{ archivo_info.articulo.id }}" draggable="true">
-                            <div>
-                                <i class="fas fa-calendar-alt text-secondary"></i> <strong>{{ ano }}</strong>
-                                –
-                                <span class="badge bg-primary">
-                                    {% if archivo_info.tipo == 'liga' %}
-                                        <i class="fas fa-link"></i> Liga
-                                    {% else %}
-                                        <i class="fas fa-file-pdf"></i> Archivo
-                                    {% endif %}
-                                </span>
-                                <br>
-                            </div>
-                            <div class="actions">
-                                {% if archivo_info.tipo == 'liga' %}
-                                    {% if archivo_info.archivo and archivo_info.archivo.liga %}
-                                        <a href="{{ archivo_info.archivo.liga }}" class="btn-round btn-primary" title="Ir al Artículo" target="_blank">
-                                            <i class="fas fa-link"></i>
-                                        </a>
-                                    {% else %}
-                                        <span class="text-muted">No hay documento</span>
-                                    {% endif %}
-                                {% else %}
-                                    {% if archivo_info.archivo and archivo_info.archivo.archivo %}
-                                        <a href="{{ archivo_info.archivo.archivo.url }}" class="btn-round btn-success" title="Ver Documento" target="_blank">
-                                            <i class="fas fa-file-pdf"></i>
-                                        </a>
-                                    {% else %}
-                                        <span class="text-muted">No hay documento</span>
-                                    {% endif %}
-                                {% endif %}
+.year-hero{
+  background: var(--y-card);
+  border: 1px solid var(--y-border);
+  border-radius: var(--y-radius);
+  box-shadow: var(--y-shadow);
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+}
+.year-hero::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background: var(--y-grad-soft);
+  pointer-events:none;
+}
+.year-hero-inner{
+  position: relative;
+  display:flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items:center;
+  justify-content: space-between;
+}
+.year-title{
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+  min-width: 240px;
+}
+.year-title h2{
+  margin:0;
+  font-weight: 900;
+  color: var(--y-text);
+  letter-spacing: .3px;
+}
+.year-title p{
+  margin:0;
+  color: var(--y-muted);
+  font-size: 13px;
+}
 
-                                <a href="{% url 'editar_articulo_liga' archivo_info.archivo.id %}" class="btn-round btn-warning" title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <button class="btn-round btn-danger eliminar-articulo" data-id="{{ archivo_info.archivo.id }}" data-ano="{{ archivo_info.archivo.ano }}" title="Eliminar">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </div>
-                        </li>
-                    {% endfor %}
-                {% endfor %}
-            </ul>
+.year-actions{
+  display:flex;
+  gap: 10px;
+  align-items:center;
+  flex-wrap: wrap;
+}
+.year-btn{
+  border: none;
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform .2s ease, opacity .2s ease, box-shadow .2s ease;
+  text-decoration:none !important;
+}
+.year-btn-primary{
+  color: #fff !important;
+  background: var(--y-grad);
+  box-shadow: 0 10px 20px -12px rgba(40, 69, 94, .6);
+}
+.year-btn-primary:hover{ transform: translateY(-1px); opacity:.95; }
+
+.year-search{
+  position: relative;
+  min-width: 260px;
+  flex: 1;
+  max-width: 420px;
+}
+.year-search input{
+  width:100%;
+  border: 1px solid var(--y-border);
+  border-radius: 14px;
+  padding: 11px 14px 11px 40px;
+  outline: none;
+  background: rgba(255,255,255,.95);
+  transition: box-shadow .2s ease, border-color .2s ease;
+}
+.year-search input:focus{
+  border-color: rgba(58,98,132,.55);
+  box-shadow: 0 0 0 4px rgba(58,98,132,.12);
+}
+.year-search i{
+  position:absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+}
+
+/* Card container */
+.year-card{
+  margin-top: 16px;
+  background: var(--y-card);
+  border: 1px solid var(--y-border);
+  border-radius: var(--y-radius);
+  box-shadow: var(--y-shadow);
+  overflow: hidden;
+}
+.year-card-topbar{
+  height: 4px;
+  background: var(--y-grad);
+}
+.year-card-header{
+  padding: 14px 16px;
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid var(--y-border);
+}
+.year-card-header .left{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  min-width: 0;
+}
+.year-card-header .left i{ color: #3A6284; }
+.year-card-header h4{
+  margin:0;
+  font-weight: 900;
+  color: var(--y-text);
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.year-chip{
+  border-radius: 999px;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  background: #f8fafc;
+  border: 1px solid var(--y-border);
+  color: var(--y-muted);
+}
+
+/* list */
+.year-list{
+  list-style:none;
+  margin:0;
+  padding: 10px 10px 14px 10px;
+}
+.year-item{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 12px;
+  margin: 10px 6px;
+  border-radius: 14px;
+  border: 1px solid var(--y-border);
+  background: #fff;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.year-item:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 14px 24px -18px rgba(0,0,0,.28);
+  border-color: rgba(148,163,184,.55);
+}
+.year-left{
+  display:flex;
+  align-items:flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+.year-icon{
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 16px;
+  flex: 0 0 auto;
+}
+.year-meta{
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+  min-width: 0;
+}
+.year-topline{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items:center;
+}
+.year-year{
+  font-weight: 900;
+  color: var(--y-text);
+  font-size: 14px;
+  display:flex;
+  gap: 8px;
+  align-items:center;
+}
+.year-titlefile{
+  font-weight: 800;
+  color: var(--y-text);
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 520px;
+}
+@media (max-width: 768px){
+  .year-titlefile{ max-width: 260px; }
+}
+.year-sub{
+  color: var(--y-muted);
+  font-size: 12px;
+  display:flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items:center;
+}
+.badge-soft{
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 900;
+  border: 1px solid var(--y-border);
+  background: #f8fafc;
+  color: #0f172a;
+  white-space: nowrap;
+}
+.badge-soft.link{
+  background: rgba(59,130,246,.10);
+  border-color: rgba(59,130,246,.22);
+  color: #1d4ed8;
+}
+.badge-soft.file{
+  background: rgba(16,185,129,.10);
+  border-color: rgba(16,185,129,.22);
+  color: #065f46;
+}
+
+/* action buttons */
+.year-icons{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.year-iconbtn{
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border: 1px solid var(--y-border);
+  background: #fff;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+  cursor:pointer;
+  text-decoration:none !important;
+}
+.year-iconbtn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px -14px rgba(0,0,0,.25);
+}
+.year-iconbtn i{ font-size: 16px; }
+.year-iconbtn.open i{ color: #0ea5e9; }
+.year-iconbtn.edit i{ color: #f59e0b; }
+.year-iconbtn.delete{
+  background: rgba(220,53,69,.08);
+  border-color: rgba(220,53,69,.18);
+}
+.year-iconbtn.delete i{ color: #dc3545; }
+</style>
+
+<div class="container-fluid year-wrap">
+
+  <!-- HERO -->
+  <div class="year-hero">
+    <div class="year-hero-inner">
+      <div class="year-title">
+        <h2>🗂️ Registros por año</h2>
+        <p>
+          Lista: <strong>{{ articulo.lista_obligaciones.titulo }}</strong> •
+          Fracción: <strong>{{ articulo.articulo_fraccion }}</strong>
+        </p>
+      </div>
+
+      <div class="year-actions">
+        <div class="year-search">
+          <i class="fas fa-search"></i>
+          <input id="searchInput" type="text" placeholder="Buscar por año o título…" onkeyup="filterArticles()">
         </div>
+
+        <a href="{% url 'crear_articulo_liga' articulo.id %}" class="year-btn year-btn-primary">
+          <i class="fas fa-plus"></i> Crear registro de año
+        </a>
+      </div>
     </div>
-</div>
+  </div>
 
+  <!-- LIST CARD -->
+  <div class="year-card">
+    <div class="year-card-topbar"></div>
+
+    <div class="year-card-header">
+      <div class="left">
+        <i class="fas fa-list"></i>
+        <h4>Documentos / ligas por año</h4>
+      </div>
+      <span class="year-chip">Se muestran todos los registros</span>
+    </div>
+
+    <ul class="year-list" id="articulosList">
+      {% for ano, archivos in articulos_por_ano.items %}
+        {% for archivo_info in archivos %}
+          <li class="year-item articulo-item"
+              data-text="{{ ano }} {{ archivo_info.archivo.titulo_archivo|default_if_none:''|lower }}"
+              data-ano="{{ ano }}">
+
+            <div class="year-left">
+              <div class="year-icon">
+                <i class="fas fa-calendar-alt"></i>
+              </div>
+
+              <div class="year-meta">
+                <div class="year-topline">
+                  <div class="year-year">
+                    <i class="fas fa-calendar-alt" style="color:#94a3b8;"></i>
+                    {{ ano }}
+                  </div>
+
+                  {% if archivo_info.archivo.titulo_archivo %}
+                    <div class="year-titlefile" title="{{ archivo_info.archivo.titulo_archivo }}">
+                      {{ archivo_info.archivo.titulo_archivo }}
+                    </div>
+                  {% else %}
+                    <div class="year-titlefile" style="color:#94a3b8;">
+                      Sin título (opcional)
+                    </div>
+                  {% endif %}
+                </div>
+
+                <div class="year-sub">
+                  {% if archivo_info.tipo == 'liga' %}
+                    <span class="badge-soft link">
+                      <i class="fas fa-link"></i> Liga
+                    </span>
+                  {% else %}
+                    <span class="badge-soft file">
+                      <i class="fas fa-file-pdf"></i> Archivo
+                    </span>
+                  {% endif %}
+
+                  {% if archivo_info.tipo == 'liga' and archivo_info.archivo and archivo_info.archivo.liga %}
+                    <span><i class="fas fa-globe" style="color:#94a3b8;"></i> Enlace disponible</span>
+                  {% elif archivo_info.tipo != 'liga' and archivo_info.archivo and archivo_info.archivo.archivo %}
+                    <span><i class="fas fa-paperclip" style="color:#94a3b8;"></i> Archivo cargado</span>
+                  {% else %}
+                    <span class="text-muted"><i class="fas fa-ban"></i> Sin documento</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <div class="year-icons">
+              {% if archivo_info.tipo == 'liga' %}
+                {% if archivo_info.archivo and archivo_info.archivo.liga %}
+                  <a href="{{ archivo_info.archivo.liga }}" class="year-iconbtn open" title="Abrir liga" target="_blank" rel="noopener">
+                    <i class="fas fa-link"></i>
+                  </a>
+                {% else %}
+                  <span class="text-muted" style="font-size:12px;">No hay enlace</span>
+                {% endif %}
+              {% else %}
+                {% if archivo_info.archivo and archivo_info.archivo.archivo %}
+                  <a href="{{ archivo_info.archivo.archivo.url }}" class="year-iconbtn open" title="Ver documento" target="_blank" rel="noopener">
+                    <i class="fas fa-file-pdf"></i>
+                  </a>
+                {% else %}
+                  <span class="text-muted" style="font-size:12px;">No hay archivo</span>
+                {% endif %}
+              {% endif %}
+
+              <a href="{% url 'editar_articulo_liga' archivo_info.archivo.id %}" class="year-iconbtn edit" title="Editar">
+                <i class="fas fa-edit"></i>
+              </a>
+
+              <button class="year-iconbtn delete eliminar-articulo"
+                      data-id="{{ archivo_info.archivo.id }}"
+                      data-ano="{{ archivo_info.archivo.ano }}"
+                      title="Eliminar">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </li>
+        {% endfor %}
+      {% empty %}
+        <li style="padding:16px;">
+          <div class="alert alert-warning text-center mb-0">No hay registros disponibles.</div>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
 
 <br>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-    function filterArticles() {
-        const input = document.getElementById('searchInput');
-        const filter = input.value.toLowerCase().trim();
-        const listItems = document.querySelectorAll('.articulo-item');
-    
-        let coincidencias = 0;  // Contador de coincidencias encontradas
-    
-        listItems.forEach((item) => {
-            const text = item.textContent.toLowerCase().trim();
-            const regex = new RegExp(filter, 'i');
-    
-    
-            if (regex.test(text)) {
-                item.style.display = '';  // Muestra los elementos que coinciden (vacío restaura el display original)
-                coincidencias++;  // Aumenta el contador si encuentra coincidencia
-            } else {
-                item.style.display = 'none';  // Oculta los elementos que no coinciden
-            }
-        });
-    
-        // Mostrar mensaje si no hay coincidencias
-        let noResultados = document.getElementById('noResultados');
-        if (coincidencias === 0) {
-            if (!noResultados) {
-                noResultados = document.createElement('li');
-                noResultados.id = 'noResultados';
-                noResultados.className = 'list-group-item text-muted';
-                noResultados.textContent = 'No se encontraron artículos que coincidan con la búsqueda.';
-                document.getElementById('articulosList').appendChild(noResultados);
-            }
-        } else {
-            if (noResultados) noResultados.remove();  // Quitar el mensaje si hay coincidencias
-        }
-    }     
+/* Buscar por año o título */
+function filterArticles() {
+  const q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  const items = document.querySelectorAll('.articulo-item');
+
+  let found = 0;
+  items.forEach(item => {
+    const text = item.dataset.text || '';
+    const ok = (!q || text.includes(q));
+    item.style.display = ok ? '' : 'none';
+    if (ok) found++;
+  });
+
+  let noResultados = document.getElementById('noResultados');
+  if (found === 0) {
+    if (!noResultados) {
+      noResultados = document.createElement('div');
+      noResultados.id = 'noResultados';
+      noResultados.className = 'alert alert-secondary text-center';
+      noResultados.style.margin = '10px 16px';
+      noResultados.textContent = 'No se encontraron registros que coincidan con la búsqueda.';
+      document.getElementById('articulosList').prepend(noResultados);
+    }
+  } else {
+    if (noResultados) noResultados.remove();
+  }
+}
 </script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const deleteButtons = document.querySelectorAll(".eliminar-articulo");
-    
-        deleteButtons.forEach(button => {
-            button.addEventListener("click", function() {
-                const articuloId = this.getAttribute("data-id");
-                const articuloNombre = this.getAttribute("data-ano");
-    
-                // Mostrar alerta de confirmación antes de eliminar
+/* Delete */
+document.addEventListener("DOMContentLoaded", function() {
+  const deleteButtons = document.querySelectorAll(".eliminar-articulo");
+
+  deleteButtons.forEach(button => {
+    button.addEventListener("click", function() {
+      const articuloId = this.getAttribute("data-id");
+      const articuloNombre = this.getAttribute("data-ano");
+
+      Swal.fire({
+        title: "🗑️ Eliminar Documento o Enlace",
+        html: `
+          <p>Se eliminará el enlace o documento relacionado al año <strong>${articuloNombre}</strong>.</p>
+          <p><strong>Esta acción no se puede deshacer.</strong></p>
+          <p>¿Deseas continuar?</p>
+        `,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          fetch(`/admin/eliminar_articulo_liga/${articuloId}/`, {
+            method: "POST",
+            headers: {
+              "X-CSRFToken": "{{ csrf_token }}",
+              "Content-Type": "application/x-www-form-urlencoded"
+            }
+          }).then(response => response.json())
+            .then(data => {
+              if (data.success) {
                 Swal.fire({
-                    title: "🗑️ Eliminar Documento o Enlace",
-                    html: `
-                        <p>Esta acción eliminará el enlace o documento relacionado al año <strong>${articuloNombre}</strong>.</p>
-                        <p><strong>Esta acción no se puede deshacer.</strong></p>
-                        <p>¿Deseas continuar?</p>
-                    `,
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#dc3545",
-                    cancelButtonColor: "#6c757d",
-                    confirmButtonText: "Sí, eliminar",
-                    cancelButtonText: "Cancelar"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Usar Fetch API para eliminar el artículo
-                        fetch(`/admin/eliminar_articulo_liga/${articuloId}/`, {
-                            method: "POST",
-                            headers: {
-                                "X-CSRFToken": "{{ csrf_token }}",
-                                "Content-Type": "application/x-www-form-urlencoded"
-                            }
-                        }).then(response => response.json())
-                          .then(data => {
-                              if (data.success) {
-                                  // Mostrar alerta de éxito
-                                  Swal.fire({
-                                      title: "¡Eliminado!",
-                                      text: data.message,
-                                      icon: "success",
-                                      timer: 2000,
-                                      showConfirmButton: false
-                                  }).then(() => {
-                                      // Recargar la página después de la eliminación exitosa
-                                      window.location.reload();
-                                  });
-                              } else {
-                                  // Mostrar alerta de error si falla la eliminación
-                                  Swal.fire({
-                                      title: "Error",
-                                      text: "No se pudo eliminar el artículo. Intenta de nuevo.",
-                                      icon: "error",
-                                      confirmButtonText: "Aceptar"
-                                  });
-                              }
-                          }).catch(error => {
-                              // Mostrar alerta de error si la petición falla
-                              Swal.fire({
-                                  title: "Error",
-                                  text: "Ocurrió un error. Intenta de nuevo.",
-                                  icon: "error",
-                                  confirmButtonText: "Aceptar"
-                              });
-                          });
-                    }
+                  title: "¡Eliminado!",
+                  text: data.message,
+                  icon: "success",
+                  timer: 1800,
+                  showConfirmButton: false
+                }).then(() => window.location.reload());
+              } else {
+                Swal.fire({
+                  title: "Error",
+                  text: "No se pudo eliminar. Intenta de nuevo.",
+                  icon: "error",
+                  confirmButtonText: "Aceptar"
                 });
+              }
+            }).catch(() => {
+              Swal.fire({
+                title: "Error",
+                text: "Ocurrió un error. Intenta de nuevo.",
+                icon: "error",
+                confirmButtonText: "Aceptar"
+              });
             });
-        });
+        }
+      });
     });
-    
+  });
+});
 </script>
 
 {% endblock %}

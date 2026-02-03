@@ -5,266 +5,464 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
 <style>
-    .dashboard {
-        display: grid !important;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
-        gap: 3rem !important;
-        width: 100% !important;
-        max-width: 1200px !important;
-        margin-bottom: 60px;
-    }
-    
-    .cardash {
-        background: white !important;
-        border-radius: 1rem !important;
-        padding: 1.5rem !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px -20px rgba(0, 0, 0, 0.1) !important;
-        border: 1px solid rgba(241, 245, 249, 0.8) !important;
-        transition: transform 0.3s ease, box-shadow 0.3s ease !important;
-        position: relative !important;
-        overflow: hidden !important;
-    }
-    
-    .cardash:hover {
-        transform: translateY(-4px) !important;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 25px 50px -12px rgba(0, 0, 0, 0.1) !important;
-    }
-    
-    .cardash::before {
-        content: '' !important;
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        height: 4px !important;
-        background: linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #ec4899 100%) !important;
-    }
-    
-    .cardash-header {
-        display: flex !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-        margin-bottom: 1.5rem !important;
-    }
-    
-    .cardash-title {
-        font-size: 1rem !important;
-        font-weight: 600 !important;
-        color: #64748b !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.05em !important;
-    }
-    
-    .cardash-icon {
-        width: 48px !important;
-        height: 48px !important;
-        border-radius: 0.75rem !important;
-        background: #f1f5f9 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        transition: all 0.3s ease !important;
-        font-size: 1.5rem !important;
-    }
-    
-    .cardash-content {
-        max-height: 100px; /* Ajusta la altura según lo que necesites */
-        overflow-y: auto; /* Activa el scroll si el contenido excede la altura */
-        padding-right: 8px; /* Espacio para evitar que el scroll tape el contenido */
-        padding-top: 4px; /* Añadir un pequeño padding superior */
-        scroll-padding-top: 10px; /* Ayuda a que el primer elemento no quede oculto */
-    }
-    .btn-round {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 5px;
-        cursor: pointer;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .btn-round i {
-        font-size: 18px;
-        color: #fff;
-    }
-    .btn-round:hover {
-        transform: scale(1.1);
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    }
-    .btn-success {
-        background-color: #28a745;
-        border: none;
-    }
-    .btn-warning {
-        background-color: #ffc107;
-        border: none;
-    }
-    .btn-danger {
-        background-color: #dc3545;
-        border: none;
-    }
-    .card-footer {
-        display: flex;
-        justify-content: center;
-        padding: 10px;
-        background-color: #f8f9fa;
-        border-top: 1px solid #e9ecef;
-    }
-    .card-footer a, .card-footer button {
-        text-decoration: none;
-        outline: none;
-    }
+/* ===========================
+   UI: Obligaciones (scoped)
+   =========================== */
+.obli-wrap{
+  --obli-bg: #f6f8fb;
+  --obli-card: #ffffff;
+  --obli-text: #0f172a;
+  --obli-muted: #64748b;
+  --obli-border: rgba(226, 232, 240, .9);
+  --obli-shadow: 0 1px 2px rgba(0,0,0,.05), 0 24px 48px -24px rgba(0,0,0,.18);
+  --obli-shadow-hover: 0 10px 15px -8px rgba(0,0,0,.12), 0 35px 70px -35px rgba(0,0,0,.18);
+  --obli-radius: 16px;
+  --obli-grad: linear-gradient(90deg, #3A6284 20%, #28455E 100%);
+  --obli-grad-soft: linear-gradient(90deg, rgba(58,98,132,.15) 0%, rgba(40,69,94,.08) 100%);
+  background: var(--obli-bg);
+  padding: 20px;
+  border-radius: 18px;
+}
+
+.obli-hero{
+  background: var(--obli-card);
+  border: 1px solid var(--obli-border);
+  border-radius: var(--obli-radius);
+  box-shadow: var(--obli-shadow);
+  padding: 22px 22px;
+  position: relative;
+  overflow: hidden;
+}
+.obli-hero::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background: var(--obli-grad-soft);
+  pointer-events:none;
+}
+.obli-hero-inner{
+  position: relative;
+  display:flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+}
+.obli-hero-title{
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+}
+.obli-hero-title h2{
+  margin:0;
+  font-weight: 800;
+  letter-spacing: .4px;
+  color: var(--obli-text);
+}
+.obli-hero-title p{
+  margin:0;
+  color: var(--obli-muted);
+}
+
+.obli-hero-actions{
+  display:flex;
+  gap: 10px;
+  align-items:center;
+  flex-wrap: wrap;
+}
+.obli-btn{
+  border: none;
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease;
+  text-decoration:none !important;
+}
+.obli-btn-primary{
+  color: #fff !important;
+  background: var(--obli-grad);
+  box-shadow: 0 10px 20px -12px rgba(40, 69, 94, .6);
+}
+.obli-btn-primary:hover{ transform: translateY(-1px); opacity:.95; }
+
+.obli-search{
+  position: relative;
+  min-width: 260px;
+  flex: 1;
+  max-width: 420px;
+}
+.obli-search input{
+  width:100%;
+  border: 1px solid var(--obli-border);
+  border-radius: 14px;
+  padding: 11px 14px 11px 40px;
+  outline: none;
+  background: rgba(255,255,255,.95);
+  transition: box-shadow .2s ease, border-color .2s ease;
+}
+.obli-search input:focus{
+  border-color: rgba(58,98,132,.55);
+  box-shadow: 0 0 0 4px rgba(58,98,132,.12);
+}
+.obli-search i{
+  position:absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+}
+
+/* Stats */
+.obli-stats{
+  margin-top: 14px;
+  display:grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 14px;
+}
+@media (max-width: 768px){
+  .obli-stats{ grid-template-columns: 1fr; }
+}
+.obli-stat{
+  background: var(--obli-card);
+  border: 1px solid var(--obli-border);
+  border-radius: var(--obli-radius);
+  box-shadow: var(--obli-shadow);
+  padding: 16px 18px;
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+}
+.obli-stat .meta{
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+}
+.obli-stat .meta .label{
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  font-weight: 700;
+}
+.obli-stat .meta .value{
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--obli-text);
+  line-height: 1;
+}
+.obli-stat .meta .hint{
+  color: var(--obli-muted);
+  margin:0;
+  font-size: 13px;
+}
+.obli-stat .icon{
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  background: #f1f5f9;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size: 22px;
+}
+
+/* Cards grid */
+.obli-grid{
+  margin-top: 18px;
+  display:grid;
+  grid-template-columns: repeat(3, minmax(260px, 1fr));
+  gap: 14px;
+}
+@media (max-width: 992px){ .obli-grid{ grid-template-columns: repeat(2, minmax(260px, 1fr)); } }
+@media (max-width: 640px){ .obli-grid{ grid-template-columns: 1fr; } }
+
+.obli-card{
+  background: var(--obli-card);
+  border: 1px solid var(--obli-border);
+  border-radius: var(--obli-radius);
+  box-shadow: var(--obli-shadow);
+  overflow:hidden;
+  position:relative;
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+.obli-card:hover{
+  transform: translateY(-3px);
+  box-shadow: var(--obli-shadow-hover);
+}
+.obli-card-topbar{
+  height: 4px;
+  background: var(--obli-grad);
+}
+.obli-card-head{
+  padding: 14px 16px 10px 16px;
+  display:flex;
+  align-items:flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.obli-card-title{
+  display:flex;
+  gap: 10px;
+  align-items:flex-start;
+  min-width: 0;
+}
+.obli-card-title i{
+  font-size: 18px;
+  color: #3A6284;
+  margin-top: 2px;
+}
+.obli-card-title h5{
+  margin:0;
+  font-weight: 800;
+  color: var(--obli-text);
+  font-size: 15px;
+  line-height: 1.25;
+  word-break: break-word;
+}
+.obli-badge{
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  border: 1px solid var(--obli-border);
+  background: #f8fafc;
+  color: #0f172a;
+  white-space: nowrap;
+}
+.obli-badge.inactive{
+  background: rgba(245,158,11,.12);
+  border-color: rgba(245,158,11,.25);
+  color: #92400e;
+}
+.obli-badge.active{
+  background: rgba(16,185,129,.12);
+  border-color: rgba(16,185,129,.22);
+  color: #065f46;
+}
+
+.obli-card-body{
+  padding: 0 16px 14px 16px;
+  color: var(--obli-muted);
+  font-size: 13px;
+  display:flex;
+  gap: 10px;
+  align-items:center;
+}
+.obli-pill{
+  display:inline-flex;
+  gap: 8px;
+  align-items:center;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid var(--obli-border);
+  color: var(--obli-muted);
+  font-weight: 600;
+  width: 100%;
+}
+.obli-pill i{ color:#94a3b8; }
+
+.obli-card-footer{
+  padding: 12px 14px;
+  border-top: 1px solid var(--obli-border);
+  background: #fbfdff;
+  display:flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* icon buttons */
+.obli-iconbtn{
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border: 1px solid var(--obli-border);
+  background: #fff;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+  cursor:pointer;
+}
+.obli-iconbtn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px -14px rgba(0,0,0,.25);
+}
+.obli-iconbtn i{ font-size: 16px; }
+.obli-iconbtn.manage i{ color: #10b981; }
+.obli-iconbtn.edit i{ color: #f59e0b; }
+.obli-iconbtn.delete{
+  background: rgba(220,53,69,.08);
+  border-color: rgba(220,53,69,.18);
+}
+.obli-iconbtn.delete i{ color: #dc3545; }
 </style>
 
-<div class="container-fluid">
-    <div class="dashboard">
-        <!-- Tarjeta: Total de Listas de Obligaciones -->
-        <div class="cardash">
-            <div class="cardash-header">
-                <span class="cardash-title">Total de Listas de Obligaciones</span>
-                <div class="cardash-icon">
-                    <span class="emoji-transition">📁</span>
-                </div>
-            </div>
-            <div class="cardash-content" style="font-size: 30px;">{{ total_lista_obligaciones }}</div>
-            <h3 style="color: #64748b;">Listas de obligaciones activas</h3>
+<div class="container-fluid obli-wrap">
+
+  <!-- HERO -->
+  <div class="obli-hero">
+    <div class="obli-hero-inner">
+      <div class="obli-hero-title">
+        <h2>📚 Gestión de Obligaciones</h2>
+        <p>Administra carpetas principales (obligaciones) y accede a su contenido por niveles.</p>
+      </div>
+
+      <div class="obli-hero-actions">
+        <div class="obli-search">
+          <i class="fas fa-search"></i>
+          <input id="searchObli" type="text" placeholder="Buscar obligación por nombre…" onkeyup="filterObligaciones()">
         </div>
-    
-        <!-- Tarjeta: Total de Artículos -->
-        <div class="cardash">
-            <div class="cardash-header">
-                <span class="cardash-title">Total de Artículos Registrados</span>
-                <div class="cardash-icon">
-                    <span class="emoji-transition">📄</span>
-                </div>
-            </div>
-            <div class="cardash-content" style="font-size: 30px;">{{ total_articulos }}</div>
-            <h3 style="color: #64748b;">Artículos registrados hasta la fecha</h3>
-        </div>
-        
-    </div>
-    
-    <!-- Botón Crear Obligación Arriba -->
-    <div class="d-flex justify-content-start mb-4">
-        <a href="{% url "crear_lista_obligaciones" %}" class="btn btn-sm btn-primary" style="margin-bottom: 20px; border-radius: 10px; padding: 12px 20px; font-size: 16px;background:linear-gradient(90deg, #3A6284 20%, #28455E 100%) !important">
-            <i class="fas fa-plus-circle"></i> Crear Obligación
+
+        <a href="{% url "crear_lista_obligaciones" %}" class="obli-btn obli-btn-primary">
+          <i class="fas fa-plus-circle"></i> Crear obligación
         </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="obli-stats">
+    <div class="obli-stat">
+      <div class="meta">
+        <div class="label">Listas registradas</div>
+        <div class="value">{{ total_lista_obligaciones }}</div>
+        <p class="hint">Obligaciones activas en el sistema</p>
+      </div>
+      <div class="icon">📁</div>
     </div>
 
-    <div class="row">
-        {% for lista in lista_obligaciones %}
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm">
-                    <div class="card-header {% if lista.estatus == 'I' %}bg-danger{% else %}bg-primary{% endif %} text-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0" style="color:white; font-size: 15px;">
-                            <i class="fas fa-scroll"></i> {{ lista.titulo }}
-                        </h5>
-                        <span class="badge {% if lista.estatus == 'I' %}bg-warning text-dark{% else %}bg-light text-dark{% endif %}">
-                            {% if lista.estatus == 'I' %}Inactivo{% else %}{{ lista.get_estatus_display }}{% endif %}
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <h5><strong>📄 Artículo:</strong></h5>
-                        <ul class="list-group mb-3">
-                            <li class="list-group-item">
-                                <i class="fas fa-file-alt text-info"></i> 
-                                {{ lista.articulo }}
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="card-footer">
-                        <a href="{% url "gestionar_articulos" lista.id %}" class="btn-round btn-success" title="Gestionar">
-                            <i class="fas fa-cogs"></i>
-                        </a>
-                        <a href="{% url "editar_lista_obligaciones" lista.id %}" class="btn-round btn-warning" title="Editar">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <button class="btn-round btn-danger eliminar-obligacion" data-id="{{ lista.id }}" data-nombre="{{ lista.titulo }}" title="Eliminar">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        {% empty %}
-            <div class="col-12">
-                <div class="alert alert-warning text-center">No hay obligaciones disponibles.</div>
-            </div>
-        {% endfor %}
+    <div class="obli-stat">
+      <div class="meta">
+        <div class="label">Artículos registrados</div>
+        <div class="value">{{ total_articulos }}</div>
+        <p class="hint">Fracciones registradas hasta hoy</p>
+      </div>
+      <div class="icon">📄</div>
     </div>
+  </div>
+
+  <!-- GRID CARDS -->
+  <div class="obli-grid" id="obliGrid">
+    {% for lista in lista_obligaciones %}
+      <div class="obli-card obli-item" data-name="{{ lista.titulo|lower }}">
+        <div class="obli-card-topbar"></div>
+
+        <div class="obli-card-head">
+          <div class="obli-card-title">
+            <i class="fas fa-scroll"></i>
+            <h5>{{ lista.titulo }}</h5>
+          </div>
+
+          <span class="obli-badge {% if lista.estatus == 'I' %}inactive{% else %}active{% endif %}">
+            {% if lista.estatus == 'I' %}Inactivo{% else %}Activo{% endif %}
+          </span>
+        </div>
+
+        <div class="obli-card-body">
+          <div class="obli-pill">
+            <i class="fas fa-folder"></i>
+            <span>Carpeta principal creada automáticamente</span>
+          </div>
+        </div>
+
+        <div class="obli-card-footer">
+          <a href="{% url "gestionar_articulos" lista.id %}" class="obli-iconbtn manage" title="Gestionar">
+            <i class="fas fa-cogs"></i>
+          </a>
+
+          <a href="{% url "editar_lista_obligaciones" lista.id %}" class="obli-iconbtn edit" title="Editar">
+            <i class="fas fa-edit"></i>
+          </a>
+
+          <button class="obli-iconbtn delete eliminar-obligacion"
+                  data-id="{{ lista.id }}"
+                  data-nombre="{{ lista.titulo }}"
+                  title="Eliminar">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </div>
+      </div>
+    {% empty %}
+      <div class="alert alert-warning text-center">No hay obligaciones disponibles.</div>
+    {% endfor %}
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const deleteButtons = document.querySelectorAll(".eliminar-obligacion");
-        deleteButtons.forEach(button => {
-            button.addEventListener("click", function() {
-                const listaId = this.getAttribute("data-id");
-                const listaNombre = this.getAttribute("data-nombre");  // Capturar el nombre de la lista
+function filterObligaciones(){
+  const q = (document.getElementById('searchObli').value || '').toLowerCase().trim();
+  document.querySelectorAll('.obli-item').forEach(card => {
+    const name = card.dataset.name || '';
+    card.style.display = (!q || name.includes(q)) ? '' : 'none';
+  });
+}
+</script>
 
-                // Mostrar alerta intuitiva antes de eliminar
-                Swal.fire({
-                    title: "🗑️ Eliminar Obligación: " + listaNombre,
-                    html: `
-                        <p>Esta acción eliminará la obligación <strong>${listaNombre}</strong> junto con todos los artículos asociados.</p>
-                        <p><strong>Esta acción no se puede deshacer.</strong></p>
-                        <p>¿Deseas continuar?</p>
-                    `,
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#dc3545",
-                    cancelButtonColor: "#6c757d",
-                    confirmButtonText: "Sí, eliminar",
-                    cancelButtonText: "Cancelar"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Usar Fetch API para enviar el formulario sin recargar la página
-                        fetch("/admin/eliminar_lista_obligaciones/" + listaId + "/", {
-                            method: "POST",
-                            headers: {
-                                "X-CSRFToken": "{{ csrf_token }}",
-                                "Content-Type": "application/x-www-form-urlencoded"
-                            }
-                        }).then(response => {
-                            if (response.ok) {
-                                // Mostrar alerta de éxito después de eliminar
-                                Swal.fire({
-                                    title: "¡Eliminación exitosa!",
-                                    text: `La obligación "${listaNombre}" ha sido eliminada correctamente.`,
-                                    icon: "success",
-                                    timer: 2000,
-                                    showConfirmButton: false
-                                }).then(() => {
-                                    // Recargar la página después de mostrar la alerta
-                                    window.location.reload();
-                                });
-                            } else {
-                                // Mostrar alerta de error si falla la eliminación
-                                Swal.fire({
-                                    title: "Error",
-                                    text: "No se pudo eliminar la obligación. Intenta de nuevo.",
-                                    icon: "error",
-                                    confirmButtonText: "Aceptar"
-                                });
-                            }
-                        }).catch(error => {
-                            // Manejo de errores en caso de fallo en la petición
-                            Swal.fire({
-                                title: "Error",
-                                text: "Ocurrió un error. Intenta de nuevo.",
-                                icon: "error",
-                                confirmButtonText: "Aceptar"
-                            });
-                        });
-                    }
-                });
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const deleteButtons = document.querySelectorAll(".eliminar-obligacion");
+  deleteButtons.forEach(button => {
+    button.addEventListener("click", function() {
+      const listaId = this.getAttribute("data-id");
+      const listaNombre = this.getAttribute("data-nombre");
+
+      Swal.fire({
+        title: "🗑️ Eliminar obligación",
+        html: `
+          <p>Se eliminará <strong>${listaNombre}</strong> junto con artículos asociados.</p>
+          <p><strong>Esta acción no se puede deshacer.</strong></p>
+          <p>¿Deseas continuar?</p>
+        `,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          fetch("/admin/eliminar_lista_obligaciones/" + listaId + "/", {
+            method: "POST",
+            headers: {
+              "X-CSRFToken": "{{ csrf_token }}",
+              "Content-Type": "application/x-www-form-urlencoded"
+            }
+          }).then(response => {
+            if (response.ok) {
+              Swal.fire({
+                title: "¡Eliminado!",
+                text: `La obligación "${listaNombre}" fue eliminada correctamente.`,
+                icon: "success",
+                timer: 1800,
+                showConfirmButton: false
+              }).then(() => window.location.reload());
+            } else {
+              Swal.fire({
+                title: "Error",
+                text: "No se pudo eliminar la obligación. Intenta de nuevo.",
+                icon: "error",
+                confirmButtonText: "Aceptar"
+              });
+            }
+          }).catch(() => {
+            Swal.fire({
+              title: "Error",
+              text: "Ocurrió un error. Intenta de nuevo.",
+              icon: "error",
+              confirmButtonText: "Aceptar"
             });
-        });
+          });
+        }
+      });
     });
+  });
+});
 </script>
 
 {% endblock %}

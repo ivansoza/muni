@@ -5,30 +5,27 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
 <div class="container-fluid">
-    <div class="card shadow-lg">
-        <div class="card-header">
-            <h2 class="mb-0">
-                📄 Crear lista
-            </h2>
-        </div>
-        <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <div class="form-group text-center">
-                    <button type="submit" class="btn btn-primary btn-lg me-3">
-                        💾 Crear Lista
-                    </button>
-                        <!-- Redirección dinámica según el tipo de carpeta -->
-                        <a href="{% url 'lista_obligaciones'%}" class="btn btn-secondary btn-lg">
-                            ❌ Volver
-                        </a>
-                   
-                </div>
-
-            </form>
-        </div>
+  <div class="card shadow-lg">
+    <div class="card-header">
+      <h2 class="mb-0">📁 Crear carpeta principal</h2>
     </div>
-</div>
 
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+
+        <div class="form-group text-center">
+          <button type="submit" class="btn btn-primary btn-lg me-3">
+            💾 Crear carpeta
+          </button>
+
+          <a href="{% url 'lista_obligaciones' %}" class="btn btn-secondary btn-lg">
+            ❌ Volver
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}
