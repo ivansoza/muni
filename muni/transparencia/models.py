@@ -5,18 +5,28 @@ from informacion_municipal.models import Municipio
 import os
 
 def ruta_liga_archivo(instance, filename):
-    ext = filename.split('.')[-1]
-    safe_name = instance.articuloDe.articulo_fraccion.replace(' ', '_')
+    ext = filename.split('.')[-1].lower()
+
+    safe_name = (instance.titulo_archivo or instance.articuloDe.articulo_fraccion).strip()
+    safe_name = safe_name.replace(' ', '_').replace('/', '-').replace('\\', '-')
+
+    # nombre final
     filename = f"{safe_name}_{instance.ano or 'sin_ano'}.{ext}"
 
     # base
     base = "transparencia/ltaip"
 
-    # carpeta jerárquica
+    # 1) carpeta jerárquica (padre/subcarpeta/subsub...)
     if instance.carpeta:
-        base = os.path.join(base, instance.carpeta.ruta_fs())
+        base = os.path.join(base, instance.carpeta.ruta_fs())  # debe devolver ruta relativa
 
-    # año como subcarpeta (si quieres)
+    # 2) trimestre como subcarpeta
+    if instance.trimestre in (1, 2, 3, 4):
+        base = os.path.join(base, f"T{instance.trimestre}")
+    else:
+        base = os.path.join(base, "sin_trimestre")
+
+    # 3) año como subcarpeta (si quieres)
     if instance.ano:
         base = os.path.join(base, str(instance.ano))
 
@@ -229,13 +239,28 @@ class CarpetaTransparencia(models.Model):
         return "/".join(reversed(partes))
 
 class LigaArchivo(models.Model):
+    TRIMESTRES = (
+        (1, "Trimestre 1"),
+        (2, "Trimestre 2"),
+        (3, "Trimestre 3"),
+        (4, "Trimestre 4"),
+    )
+
     articuloDe = models.ForeignKey(ArticuloLiga, on_delete=models.CASCADE, verbose_name='Articulo')
+
     carpeta = models.ForeignKey(
         CarpetaTransparencia,
         null=True, blank=True,
         on_delete=models.SET_NULL,
         related_name='archivos'
     )
+
+    trimestre = models.PositiveSmallIntegerField(
+        choices=TRIMESTRES,
+        null=True, blank=True,
+        verbose_name="Trimestre"
+    )
+
     titulo_archivo = models.CharField(max_length=255, blank=True, null=True, verbose_name='Título del archivo')
     ano = models.PositiveIntegerField(null=True, blank=True, verbose_name='Año')
     liga = models.URLField(blank=True, null=True, verbose_name='link')
@@ -248,6 +273,7 @@ class LigaArchivo(models.Model):
 
     class Meta:
         ordering = ['-ano']
+
 
     def __str__(self):
         return f"ART. - {self.articuloDe} - {self.ano}"

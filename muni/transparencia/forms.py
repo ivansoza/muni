@@ -104,9 +104,15 @@ class ArticuloLigaArchivoForm(forms.ModelForm):
 
     class Meta:
         model = LigaArchivo
-        fields = ['articuloDe', 'carpeta', 'titulo_archivo', 'ano', 'liga', 'archivo']
+        # ✅ Agregamos trimestre
+        fields = ['articuloDe', 'carpeta', 'trimestre', 'titulo_archivo', 'ano', 'liga', 'archivo']
         widgets = {
             'articuloDe': forms.Select(attrs={'class': 'form-control'}),
+            'trimestre': forms.Select(attrs={'class': 'form-control'}),  # ✅ nuevo
+            'titulo_archivo': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Título del archivo (opcional)'
+            }),
             'ano': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Año fiscal',
@@ -131,10 +137,14 @@ class ArticuloLigaArchivoForm(forms.ModelForm):
         if articulo_id:
             self.fields['articuloDe'].queryset = ArticuloLiga.objects.filter(id=articulo_id)
             self.fields['articuloDe'].initial = articulo_id
-            self.fields['articuloDe'].disabled = True  # evita que lo cambien en UI
+            self.fields['articuloDe'].disabled = True
 
         # 2) Año obligatorio
         self.fields['ano'].required = True
+
+        # ✅ 2.1) Trimestre: (decide si lo quieres obligatorio siempre o solo con archivo)
+        # Opción A (recomendada): obligatorio solo si se sube archivo (validamos en clean)
+        self.fields['trimestre'].required = False
 
         # 3) Cargar carpetas y mostrarlas con indentación (principal/sub/subsub)
         qs = CarpetaTransparencia.objects.select_related('padre').order_by('orden', 'nombre')
@@ -142,14 +152,12 @@ class ArticuloLigaArchivoForm(forms.ModelForm):
         self.fields['carpeta'].label_from_instance = self._label_carpeta
 
     def _label_carpeta(self, carpeta):
-        # Indentación por profundidad + ruta completa (muy claro para admin)
         depth = 0
         p = carpeta.padre
         while p:
             depth += 1
             p = p.padre
         prefix = "— " * depth
-        # Si quieres ruta completa: carpeta.ruta_legible()
         return f"{prefix}{carpeta.nombre}"
 
     def clean(self):
@@ -157,17 +165,32 @@ class ArticuloLigaArchivoForm(forms.ModelForm):
         liga = cleaned_data.get('liga')
         archivo = cleaned_data.get('archivo')
         ano = cleaned_data.get('ano')
+        trimestre = cleaned_data.get('trimestre')
 
-        # 1) Debe existir al menos liga o archivo (pero no es obligatorio que sean ambos)
+        # 1) Debe existir al menos liga o archivo
         if not liga and not archivo:
             raise forms.ValidationError("Debe ingresar al menos un enlace o un archivo.")
 
-        # 2) Año obligatorio (ya es required, pero lo reforzamos)
+        # 2) Año obligatorio
         if not ano:
             self.add_error('ano', "El año fiscal es obligatorio.")
 
-        # 3) (Opcional) Si el usuario puso liga y archivo, lo permitimos.
-        # Si quisieras forzar solo uno, aquí lo validarías.
+        # ✅ 3) Trimestre: valida 1-4 y/o obligatorio si hay archivo
+        # Recomendación: si hay archivo, exige trimestre (para carpeta física)
+        if archivo:
+            if not trimestre:
+                self.add_error('trimestre', "El trimestre es obligatorio cuando subes un archivo.")
+            else:
+                try:
+                    t = int(trimestre)
+                except (TypeError, ValueError):
+                    self.add_error('trimestre', "Trimestre inválido.")
+                else:
+                    if t not in (1, 2, 3, 4):
+                        self.add_error('trimestre', "El trimestre debe ser 1, 2, 3 o 4.")
+
+        # Si quieres exigir trimestre también para ligas, cambia a:
+        # if not trimestre: self.add_error('trimestre', "...")
 
         return cleaned_data
 

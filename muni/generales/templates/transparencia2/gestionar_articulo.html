@@ -5,7 +5,7 @@
 
 <style>
 /* ===========================
-   UI: Registros por año (scoped)
+   UI: Años -> Trimestres (scoped)
    =========================== */
 .year-wrap{
   --y-bg: #f6f8fb;
@@ -14,15 +14,15 @@
   --y-muted: #64748b;
   --y-border: rgba(226, 232, 240, .9);
   --y-shadow: 0 1px 2px rgba(0,0,0,.05), 0 24px 48px -24px rgba(0,0,0,.18);
-  --y-shadow-hover: 0 10px 15px -8px rgba(0,0,0,.12), 0 35px 70px -35px rgba(0,0,0,.18);
   --y-radius: 16px;
   --y-grad: linear-gradient(90deg, #3A6284 20%, #28455E 100%);
-  --y-grad-soft: linear-gradient(90deg, rgba(58,98,132,.15) 0%, rgba(40,69,94,.08) 100%);
+  --y-grad-soft: linear-gradient(90deg, rgba(58,98,132,.12) 0%, rgba(40,69,94,.06) 100%);
   background: var(--y-bg);
   padding: 20px;
   border-radius: 18px;
 }
 
+/* HERO */
 .year-hero{
   background: var(--y-card);
   border: 1px solid var(--y-border);
@@ -34,8 +34,7 @@
 }
 .year-hero::before{
   content:'';
-  position:absolute;
-  inset:0;
+  position:absolute; inset:0;
   background: var(--y-grad-soft);
   pointer-events:none;
 }
@@ -57,7 +56,6 @@
   margin:0;
   font-weight: 900;
   color: var(--y-text);
-  letter-spacing: .3px;
 }
 .year-title p{
   margin:0;
@@ -79,7 +77,6 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  transition: transform .2s ease, opacity .2s ease, box-shadow .2s ease;
   text-decoration:none !important;
 }
 .year-btn-primary{
@@ -87,11 +84,11 @@
   background: var(--y-grad);
   box-shadow: 0 10px 20px -12px rgba(40, 69, 94, .6);
 }
-.year-btn-primary:hover{ transform: translateY(-1px); opacity:.95; }
+.year-btn-primary:hover{ opacity:.95; transform: translateY(-1px); }
 
 .year-search{
   position: relative;
-  min-width: 260px;
+  min-width: 240px;
   flex: 1;
   max-width: 420px;
 }
@@ -115,8 +112,21 @@
   transform: translateY(-50%);
   color: #94a3b8;
 }
+.year-select{
+  border: 1px solid var(--y-border);
+  border-radius: 14px;
+  padding: 11px 14px;
+  background: rgba(255,255,255,.95);
+  outline: none;
+  min-width: 170px;
+}
+@media (max-width:768px){
+  .year-actions{ width:100%; }
+  .year-search{ max-width:100%; min-width: 100%; }
+  .year-select{ min-width: 100%; }
+}
 
-/* Card container */
+/* Card */
 .year-card{
   margin-top: 16px;
   background: var(--y-card);
@@ -125,10 +135,7 @@
   box-shadow: var(--y-shadow);
   overflow: hidden;
 }
-.year-card-topbar{
-  height: 4px;
-  background: var(--y-grad);
-}
+.year-card-topbar{ height: 4px; background: var(--y-grad); }
 .year-card-header{
   padding: 14px 16px;
   display:flex;
@@ -138,10 +145,7 @@
   border-bottom: 1px solid var(--y-border);
 }
 .year-card-header .left{
-  display:flex;
-  align-items:center;
-  gap: 10px;
-  min-width: 0;
+  display:flex; align-items:center; gap: 10px;
 }
 .year-card-header .left i{ color: #3A6284; }
 .year-card-header h4{
@@ -149,9 +153,6 @@
   font-weight: 900;
   color: var(--y-text);
   font-size: 15px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 .year-chip{
   border-radius: 999px;
@@ -163,11 +164,64 @@
   color: var(--y-muted);
 }
 
-/* list */
+/* Accordion buttons */
+.acc-btn{
+  background: #fff !important;
+  border: 1px solid var(--y-border) !important;
+  border-radius: 14px !important;
+  padding: 14px 14px !important;
+  color: var(--y-text) !important;
+  font-weight: 900 !important;
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+  box-shadow: 0 10px 25px -22px rgba(0,0,0,.25);
+}
+.acc-btn .left{
+  display:flex; align-items:center; gap: 10px; min-width: 0;
+}
+.acc-btn .badge{
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 900;
+  background: rgba(58,98,132,.10);
+  border: 1px solid rgba(58,98,132,.18);
+  color: #28455E;
+  white-space: nowrap;
+}
+
+.q-wrap{ padding: 0 10px 12px 10px; }
+.q-item{ margin: 10px 0; }
+.q-btn{
+  background: #f8fafc !important;
+  border: 1px solid rgba(226, 232, 240, .95) !important;
+  border-radius: 14px !important;
+  padding: 12px 14px !important;
+  color: #0f172a !important;
+  font-weight: 900 !important;
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.q-btn .left{ display:flex; align-items:center; gap: 10px; min-width: 0; }
+.q-pill{
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 900;
+  background: rgba(245,158,11,.12);
+  border: 1px solid rgba(245,158,11,.22);
+  color: #92400e;
+}
+
+/* List items */
 .year-list{
   list-style:none;
   margin:0;
-  padding: 10px 10px 14px 10px;
+  padding: 8px 0 0 0;
 }
 .year-item{
   display:flex;
@@ -175,7 +229,7 @@
   justify-content: space-between;
   gap: 12px;
   padding: 12px 12px;
-  margin: 10px 6px;
+  margin: 10px 0;
   border-radius: 14px;
   border: 1px solid var(--y-border);
   background: #fff;
@@ -210,22 +264,8 @@
   gap: 6px;
   min-width: 0;
 }
-.year-topline{
-  display:flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items:center;
-}
-.year-year{
+.file-title{
   font-weight: 900;
-  color: var(--y-text);
-  font-size: 14px;
-  display:flex;
-  gap: 8px;
-  align-items:center;
-}
-.year-titlefile{
-  font-weight: 800;
   color: var(--y-text);
   font-size: 14px;
   white-space: nowrap;
@@ -233,14 +273,12 @@
   text-overflow: ellipsis;
   max-width: 520px;
 }
-@media (max-width: 768px){
-  .year-titlefile{ max-width: 260px; }
-}
-.year-sub{
+@media (max-width: 768px){ .file-title{ max-width: 240px; } }
+.subline{
   color: var(--y-muted);
   font-size: 12px;
   display:flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
   align-items:center;
 }
@@ -263,6 +301,17 @@
   background: rgba(16,185,129,.10);
   border-color: rgba(16,185,129,.22);
   color: #065f46;
+}
+.badge-soft.q{
+  background: rgba(245,158,11,.12);
+  border-color: rgba(245,158,11,.22);
+  color: #92400e;
+}
+.badge-soft.na{
+  background: rgba(100,116,139,.12);
+  border-color: rgba(100,116,139,.18);
+  color: #334155;
+  opacity: .9;
 }
 
 /* action buttons */
@@ -297,6 +346,19 @@
   border-color: rgba(220,53,69,.18);
 }
 .year-iconbtn.delete i{ color: #dc3545; }
+
+/* helpers */
+.empty-box{
+  margin:10px 0;
+  padding:12px;
+  border-radius:14px;
+  border: 1px dashed rgba(226,232,240,.95);
+  background:#fff;
+  color:#94a3b8;
+  text-align:center;
+  font-weight:800;
+  font-size: 13px;
+}
 </style>
 
 <div class="container-fluid year-wrap">
@@ -305,7 +367,7 @@
   <div class="year-hero">
     <div class="year-hero-inner">
       <div class="year-title">
-        <h2>🗂️ Registros por año</h2>
+        <h2>🗂️ Registros (Año → Trimestre)</h2>
         <p>
           Lista: <strong>{{ articulo.lista_obligaciones.titulo }}</strong> •
           Fracción: <strong>{{ articulo.articulo_fraccion }}</strong>
@@ -313,141 +375,613 @@
       </div>
 
       <div class="year-actions">
+        <select id="yearSelect" class="year-select" onchange="applyFilters()">
+          <option value="">Todos los años</option>
+          {% for ano, archivos in articulos_por_ano.items %}
+            <option value="{{ ano }}">{{ ano }}</option>
+          {% endfor %}
+        </select>
+
         <div class="year-search">
           <i class="fas fa-search"></i>
-          <input id="searchInput" type="text" placeholder="Buscar por año o título…" onkeyup="filterArticles()">
+          <input id="searchInput" type="text"
+                 placeholder="Buscar: título, trimestre, liga/archivo…"
+                 onkeyup="applyFilters()">
         </div>
 
         <a href="{% url 'crear_articulo_liga' articulo.id %}" class="year-btn year-btn-primary">
-          <i class="fas fa-plus"></i> Crear registro de año
+          <i class="fas fa-plus"></i> Crear registro
         </a>
       </div>
     </div>
   </div>
 
-  <!-- LIST CARD -->
+  <!-- CARD -->
   <div class="year-card">
     <div class="year-card-topbar"></div>
 
     <div class="year-card-header">
       <div class="left">
         <i class="fas fa-list"></i>
-        <h4>Documentos / ligas por año</h4>
+        <h4>Documentos / ligas por año y trimestre</h4>
       </div>
-      <span class="year-chip">Se muestran todos los registros</span>
+      <span class="year-chip">Todo colapsado • abre por año y trimestre</span>
     </div>
 
-    <ul class="year-list" id="articulosList">
+    <div class="accordion" id="yearsAccordion" style="padding: 12px 12px 16px;">
+
       {% for ano, archivos in articulos_por_ano.items %}
-        {% for archivo_info in archivos %}
-          <li class="year-item articulo-item"
-              data-text="{{ ano }} {{ archivo_info.archivo.titulo_archivo|default_if_none:''|lower }}"
-              data-ano="{{ ano }}">
+        <div class="accordion-item year-acc-item" data-year="{{ ano }}" style="border:none; background:transparent; margin-bottom: 10px;">
+          <h2 class="accordion-header" id="headingYear{{ ano }}">
+            <button class="accordion-button collapsed acc-btn"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseYear{{ ano }}"
+                    aria-expanded="false"
+                    aria-controls="collapseYear{{ ano }}">
+              <span class="left">
+                <i class="fas fa-folder-open" style="color:#3A6284;"></i>
+                <span style="white-space:nowrap;">Año {{ ano }}</span>
+                <span class="badge">{{ archivos|length }} registro(s)</span>
+              </span>
+              <span style="font-size:12px; color:#94a3b8; font-weight:800;">Click para expandir</span>
+            </button>
+          </h2>
 
-            <div class="year-left">
-              <div class="year-icon">
-                <i class="fas fa-calendar-alt"></i>
-              </div>
+          <div id="collapseYear{{ ano }}" class="accordion-collapse collapse"
+               aria-labelledby="headingYear{{ ano }}"
+               data-bs-parent="#yearsAccordion">
+            <div class="accordion-body" style="padding: 0; margin-top: 10px;">
 
-              <div class="year-meta">
-                <div class="year-topline">
-                  <div class="year-year">
-                    <i class="fas fa-calendar-alt" style="color:#94a3b8;"></i>
-                    {{ ano }}
+              <div class="accordion q-wrap" id="quartersAccordion{{ ano }}">
+
+                {# ====== TRIMESTRE 1 ====== #}
+                <div class="accordion-item q-item quarter-acc-item" data-year="{{ ano }}" data-quarter="1" style="border:none; background:transparent;">
+                  <h2 class="accordion-header" id="headingQ{{ ano }}_1">
+                    <button class="accordion-button collapsed q-btn" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseQ{{ ano }}_1"
+                            aria-expanded="false"
+                            aria-controls="collapseQ{{ ano }}_1">
+                      <span class="left">
+                        <i class="fas fa-layer-group" style="color:#f59e0b;"></i>
+                        <span>Trimestre 1</span>
+                        <span class="q-pill">T1</span>
+                      </span>
+                      <span style="font-size:12px; color:#94a3b8; font-weight:800;">Ver</span>
+                    </button>
+                  </h2>
+
+                  <div id="collapseQ{{ ano }}_1" class="accordion-collapse collapse"
+                       aria-labelledby="headingQ{{ ano }}_1"
+                       data-bs-parent="#quartersAccordion{{ ano }}">
+                    <div class="accordion-body" style="padding: 0 6px 6px 6px;">
+                      <ul class="year-list">
+                        {% for archivo_info in archivos %}
+                          {% if archivo_info.archivo.trimestre == 1 %}
+                            <li class="year-item articulo-item"
+                                data-year="{{ ano }}"
+                                data-quarter="1"
+                                data-text="{{ ano }} t1 trimestre 1 {{ archivo_info.archivo.titulo_archivo|default_if_none:''|lower }} {{ archivo_info.tipo|lower }}">
+                              <div class="year-left">
+                                <div class="year-icon">
+                                  {% if archivo_info.tipo == 'liga' %}<i class="fas fa-link"></i>{% else %}<i class="fas fa-file-alt"></i>{% endif %}
+                                </div>
+                                <div class="year-meta">
+                                  <div class="file-title" title="{{ archivo_info.archivo.titulo_archivo|default:'(Sin título)' }}">
+                                    {{ archivo_info.archivo.titulo_archivo|default:"(Sin título)" }}
+                                  </div>
+                                  <div class="subline">
+                                    <span class="badge-soft">{{ ano }}</span>
+                                    <span class="badge-soft q"><i class="fas fa-layer-group"></i> T1</span>
+                                    {% if archivo_info.tipo == 'liga' %}
+                                      <span class="badge-soft link"><i class="fas fa-link"></i> Liga</span>
+                                    {% else %}
+                                      <span class="badge-soft file"><i class="fas fa-file"></i> Archivo</span>
+                                    {% endif %}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="year-icons">
+                                {% if archivo_info.tipo == 'liga' %}
+                                  {% if archivo_info.archivo and archivo_info.archivo.liga %}
+                                    <a href="{{ archivo_info.archivo.liga }}" class="year-iconbtn open" title="Abrir liga" target="_blank" rel="noopener">
+                                      <i class="fas fa-link"></i>
+                                    </a>
+                                  {% else %}
+                                    <span class="text-muted" style="font-size:12px;">No hay enlace</span>
+                                  {% endif %}
+                                {% else %}
+                                  {% if archivo_info.archivo and archivo_info.archivo.archivo %}
+                                    <a href="{{ archivo_info.archivo.archivo.url }}" class="year-iconbtn open" title="Ver documento" target="_blank" rel="noopener">
+                                      <i class="fas fa-file-pdf"></i>
+                                    </a>
+                                  {% else %}
+                                    <span class="text-muted" style="font-size:12px;">No hay archivo</span>
+                                  {% endif %}
+                                {% endif %}
+
+                                <a href="{% url 'editar_articulo_liga' archivo_info.archivo.id %}" class="year-iconbtn edit" title="Editar">
+                                  <i class="fas fa-edit"></i>
+                                </a>
+
+                                <button class="year-iconbtn delete eliminar-articulo"
+                                        data-id="{{ archivo_info.archivo.id }}"
+                                        data-ano="{{ archivo_info.archivo.ano }}"
+                                        title="Eliminar">
+                                  <i class="fas fa-trash-alt"></i>
+                                </button>
+                              </div>
+                            </li>
+                          {% endif %}
+                        {% endfor %}
+                      </ul>
+                      <div class="empty-box" data-empty="q1">Sin registros en Trimestre 1.</div>
+                    </div>
                   </div>
-
-                  {% if archivo_info.archivo.titulo_archivo %}
-                    <div class="year-titlefile" title="{{ archivo_info.archivo.titulo_archivo }}">
-                      {{ archivo_info.archivo.titulo_archivo }}
-                    </div>
-                  {% else %}
-                    <div class="year-titlefile" style="color:#94a3b8;">
-                      Sin título (opcional)
-                    </div>
-                  {% endif %}
                 </div>
 
-                <div class="year-sub">
-                  {% if archivo_info.tipo == 'liga' %}
-                    <span class="badge-soft link">
-                      <i class="fas fa-link"></i> Liga
-                    </span>
-                  {% else %}
-                    <span class="badge-soft file">
-                      <i class="fas fa-file-pdf"></i> Archivo
-                    </span>
-                  {% endif %}
+                {# ====== TRIMESTRE 2 ====== #}
+                <div class="accordion-item q-item quarter-acc-item" data-year="{{ ano }}" data-quarter="2" style="border:none; background:transparent;">
+                  <h2 class="accordion-header" id="headingQ{{ ano }}_2">
+                    <button class="accordion-button collapsed q-btn" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseQ{{ ano }}_2"
+                            aria-expanded="false"
+                            aria-controls="collapseQ{{ ano }}_2">
+                      <span class="left">
+                        <i class="fas fa-layer-group" style="color:#f59e0b;"></i>
+                        <span>Trimestre 2</span>
+                        <span class="q-pill">T2</span>
+                      </span>
+                      <span style="font-size:12px; color:#94a3b8; font-weight:800;">Ver</span>
+                    </button>
+                  </h2>
 
-                  {% if archivo_info.tipo == 'liga' and archivo_info.archivo and archivo_info.archivo.liga %}
-                    <span><i class="fas fa-globe" style="color:#94a3b8;"></i> Enlace disponible</span>
-                  {% elif archivo_info.tipo != 'liga' and archivo_info.archivo and archivo_info.archivo.archivo %}
-                    <span><i class="fas fa-paperclip" style="color:#94a3b8;"></i> Archivo cargado</span>
-                  {% else %}
-                    <span class="text-muted"><i class="fas fa-ban"></i> Sin documento</span>
-                  {% endif %}
+                  <div id="collapseQ{{ ano }}_2" class="accordion-collapse collapse"
+                       aria-labelledby="headingQ{{ ano }}_2"
+                       data-bs-parent="#quartersAccordion{{ ano }}">
+                    <div class="accordion-body" style="padding: 0 6px 6px 6px;">
+                      <ul class="year-list">
+                        {% for archivo_info in archivos %}
+                          {% if archivo_info.archivo.trimestre == 2 %}
+                            <li class="year-item articulo-item"
+                                data-year="{{ ano }}"
+                                data-quarter="2"
+                                data-text="{{ ano }} t2 trimestre 2 {{ archivo_info.archivo.titulo_archivo|default_if_none:''|lower }} {{ archivo_info.tipo|lower }}">
+                              <div class="year-left">
+                                <div class="year-icon">
+                                  {% if archivo_info.tipo == 'liga' %}<i class="fas fa-link"></i>{% else %}<i class="fas fa-file-alt"></i>{% endif %}
+                                </div>
+                                <div class="year-meta">
+                                  <div class="file-title" title="{{ archivo_info.archivo.titulo_archivo|default:'(Sin título)' }}">
+                                    {{ archivo_info.archivo.titulo_archivo|default:"(Sin título)" }}
+                                  </div>
+                                  <div class="subline">
+                                    <span class="badge-soft">{{ ano }}</span>
+                                    <span class="badge-soft q"><i class="fas fa-layer-group"></i> T2</span>
+                                    {% if archivo_info.tipo == 'liga' %}
+                                      <span class="badge-soft link"><i class="fas fa-link"></i> Liga</span>
+                                    {% else %}
+                                      <span class="badge-soft file"><i class="fas fa-file"></i> Archivo</span>
+                                    {% endif %}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="year-icons">
+                                {% if archivo_info.tipo == 'liga' %}
+                                  {% if archivo_info.archivo and archivo_info.archivo.liga %}
+                                    <a href="{{ archivo_info.archivo.liga }}" class="year-iconbtn open" title="Abrir liga" target="_blank" rel="noopener">
+                                      <i class="fas fa-link"></i>
+                                    </a>
+                                  {% else %}
+                                    <span class="text-muted" style="font-size:12px;">No hay enlace</span>
+                                  {% endif %}
+                                {% else %}
+                                  {% if archivo_info.archivo and archivo_info.archivo.archivo %}
+                                    <a href="{{ archivo_info.archivo.archivo.url }}" class="year-iconbtn open" title="Ver documento" target="_blank" rel="noopener">
+                                      <i class="fas fa-file-pdf"></i>
+                                    </a>
+                                  {% else %}
+                                    <span class="text-muted" style="font-size:12px;">No hay archivo</span>
+                                  {% endif %}
+                                {% endif %}
+
+                                <a href="{% url 'editar_articulo_liga' archivo_info.archivo.id %}" class="year-iconbtn edit" title="Editar">
+                                  <i class="fas fa-edit"></i>
+                                </a>
+
+                                <button class="year-iconbtn delete eliminar-articulo"
+                                        data-id="{{ archivo_info.archivo.id }}"
+                                        data-ano="{{ archivo_info.archivo.ano }}"
+                                        title="Eliminar">
+                                  <i class="fas fa-trash-alt"></i>
+                                </button>
+                              </div>
+                            </li>
+                          {% endif %}
+                        {% endfor %}
+                      </ul>
+                      <div class="empty-box" data-empty="q2">Sin registros en Trimestre 2.</div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+
+                {# ====== TRIMESTRE 3 ====== #}
+                <div class="accordion-item q-item quarter-acc-item" data-year="{{ ano }}" data-quarter="3" style="border:none; background:transparent;">
+                  <h2 class="accordion-header" id="headingQ{{ ano }}_3">
+                    <button class="accordion-button collapsed q-btn" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseQ{{ ano }}_3"
+                            aria-expanded="false"
+                            aria-controls="collapseQ{{ ano }}_3">
+                      <span class="left">
+                        <i class="fas fa-layer-group" style="color:#f59e0b;"></i>
+                        <span>Trimestre 3</span>
+                        <span class="q-pill">T3</span>
+                      </span>
+                      <span style="font-size:12px; color:#94a3b8; font-weight:800;">Ver</span>
+                    </button>
+                  </h2>
+
+                  <div id="collapseQ{{ ano }}_3" class="accordion-collapse collapse"
+                       aria-labelledby="headingQ{{ ano }}_3"
+                       data-bs-parent="#quartersAccordion{{ ano }}">
+                    <div class="accordion-body" style="padding: 0 6px 6px 6px;">
+                      <ul class="year-list">
+                        {% for archivo_info in archivos %}
+                          {% if archivo_info.archivo.trimestre == 3 %}
+                            <li class="year-item articulo-item"
+                                data-year="{{ ano }}"
+                                data-quarter="3"
+                                data-text="{{ ano }} t3 trimestre 3 {{ archivo_info.archivo.titulo_archivo|default_if_none:''|lower }} {{ archivo_info.tipo|lower }}">
+                              <div class="year-left">
+                                <div class="year-icon">
+                                  {% if archivo_info.tipo == 'liga' %}<i class="fas fa-link"></i>{% else %}<i class="fas fa-file-alt"></i>{% endif %}
+                                </div>
+                                <div class="year-meta">
+                                  <div class="file-title" title="{{ archivo_info.archivo.titulo_archivo|default:'(Sin título)' }}">
+                                    {{ archivo_info.archivo.titulo_archivo|default:"(Sin título)" }}
+                                  </div>
+                                  <div class="subline">
+                                    <span class="badge-soft">{{ ano }}</span>
+                                    <span class="badge-soft q"><i class="fas fa-layer-group"></i> T3</span>
+                                    {% if archivo_info.tipo == 'liga' %}
+                                      <span class="badge-soft link"><i class="fas fa-link"></i> Liga</span>
+                                    {% else %}
+                                      <span class="badge-soft file"><i class="fas fa-file"></i> Archivo</span>
+                                    {% endif %}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="year-icons">
+                                {% if archivo_info.tipo == 'liga' %}
+                                  {% if archivo_info.archivo and archivo_info.archivo.liga %}
+                                    <a href="{{ archivo_info.archivo.liga }}" class="year-iconbtn open" title="Abrir liga" target="_blank" rel="noopener">
+                                      <i class="fas fa-link"></i>
+                                    </a>
+                                  {% else %}
+                                    <span class="text-muted" style="font-size:12px;">No hay enlace</span>
+                                  {% endif %}
+                                {% else %}
+                                  {% if archivo_info.archivo and archivo_info.archivo.archivo %}
+                                    <a href="{{ archivo_info.archivo.archivo.url }}" class="year-iconbtn open" title="Ver documento" target="_blank" rel="noopener">
+                                      <i class="fas fa-file-pdf"></i>
+                                    </a>
+                                  {% else %}
+                                    <span class="text-muted" style="font-size:12px;">No hay archivo</span>
+                                  {% endif %}
+                                {% endif %}
+
+                                <a href="{% url 'editar_articulo_liga' archivo_info.archivo.id %}" class="year-iconbtn edit" title="Editar">
+                                  <i class="fas fa-edit"></i>
+                                </a>
+
+                                <button class="year-iconbtn delete eliminar-articulo"
+                                        data-id="{{ archivo_info.archivo.id }}"
+                                        data-ano="{{ archivo_info.archivo.ano }}"
+                                        title="Eliminar">
+                                  <i class="fas fa-trash-alt"></i>
+                                </button>
+                              </div>
+                            </li>
+                          {% endif %}
+                        {% endfor %}
+                      </ul>
+                      <div class="empty-box" data-empty="q3">Sin registros en Trimestre 3.</div>
+                    </div>
+                  </div>
+                </div>
+
+                {# ====== TRIMESTRE 4 ====== #}
+                <div class="accordion-item q-item quarter-acc-item" data-year="{{ ano }}" data-quarter="4" style="border:none; background:transparent;">
+                  <h2 class="accordion-header" id="headingQ{{ ano }}_4">
+                    <button class="accordion-button collapsed q-btn" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseQ{{ ano }}_4"
+                            aria-expanded="false"
+                            aria-controls="collapseQ{{ ano }}_4">
+                      <span class="left">
+                        <i class="fas fa-layer-group" style="color:#f59e0b;"></i>
+                        <span>Trimestre 4</span>
+                        <span class="q-pill">T4</span>
+                      </span>
+                      <span style="font-size:12px; color:#94a3b8; font-weight:800;">Ver</span>
+                    </button>
+                  </h2>
+
+                  <div id="collapseQ{{ ano }}_4" class="accordion-collapse collapse"
+                       aria-labelledby="headingQ{{ ano }}_4"
+                       data-bs-parent="#quartersAccordion{{ ano }}">
+                    <div class="accordion-body" style="padding: 0 6px 6px 6px;">
+                      <ul class="year-list">
+                        {% for archivo_info in archivos %}
+                          {% if archivo_info.archivo.trimestre == 4 %}
+                            <li class="year-item articulo-item"
+                                data-year="{{ ano }}"
+                                data-quarter="4"
+                                data-text="{{ ano }} t4 trimestre 4 {{ archivo_info.archivo.titulo_archivo|default_if_none:''|lower }} {{ archivo_info.tipo|lower }}">
+                              <div class="year-left">
+                                <div class="year-icon">
+                                  {% if archivo_info.tipo == 'liga' %}<i class="fas fa-link"></i>{% else %}<i class="fas fa-file-alt"></i>{% endif %}
+                                </div>
+                                <div class="year-meta">
+                                  <div class="file-title" title="{{ archivo_info.archivo.titulo_archivo|default:'(Sin título)' }}">
+                                    {{ archivo_info.archivo.titulo_archivo|default:"(Sin título)" }}
+                                  </div>
+                                  <div class="subline">
+                                    <span class="badge-soft">{{ ano }}</span>
+                                    <span class="badge-soft q"><i class="fas fa-layer-group"></i> T4</span>
+                                    {% if archivo_info.tipo == 'liga' %}
+                                      <span class="badge-soft link"><i class="fas fa-link"></i> Liga</span>
+                                    {% else %}
+                                      <span class="badge-soft file"><i class="fas fa-file"></i> Archivo</span>
+                                    {% endif %}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="year-icons">
+                                {% if archivo_info.tipo == 'liga' %}
+                                  {% if archivo_info.archivo and archivo_info.archivo.liga %}
+                                    <a href="{{ archivo_info.archivo.liga }}" class="year-iconbtn open" title="Abrir liga" target="_blank" rel="noopener">
+                                      <i class="fas fa-link"></i>
+                                    </a>
+                                  {% else %}
+                                    <span class="text-muted" style="font-size:12px;">No hay enlace</span>
+                                  {% endif %}
+                                {% else %}
+                                  {% if archivo_info.archivo and archivo_info.archivo.archivo %}
+                                    <a href="{{ archivo_info.archivo.archivo.url }}" class="year-iconbtn open" title="Ver documento" target="_blank" rel="noopener">
+                                      <i class="fas fa-file-pdf"></i>
+                                    </a>
+                                  {% else %}
+                                    <span class="text-muted" style="font-size:12px;">No hay archivo</span>
+                                  {% endif %}
+                                {% endif %}
+
+                                <a href="{% url 'editar_articulo_liga' archivo_info.archivo.id %}" class="year-iconbtn edit" title="Editar">
+                                  <i class="fas fa-edit"></i>
+                                </a>
+
+                                <button class="year-iconbtn delete eliminar-articulo"
+                                        data-id="{{ archivo_info.archivo.id }}"
+                                        data-ano="{{ archivo_info.archivo.ano }}"
+                                        title="Eliminar">
+                                  <i class="fas fa-trash-alt"></i>
+                                </button>
+                              </div>
+                            </li>
+                          {% endif %}
+                        {% endfor %}
+                      </ul>
+                      <div class="empty-box" data-empty="q4">Sin registros en Trimestre 4.</div>
+                    </div>
+                  </div>
+                </div>
+
+                {# ====== SIN TRIMESTRE (opcional) ====== #}
+                <div class="accordion-item q-item quarter-acc-item" data-year="{{ ano }}" data-quarter="0" style="border:none; background:transparent;">
+                  <h2 class="accordion-header" id="headingQ{{ ano }}_0">
+                    <button class="accordion-button collapsed q-btn" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseQ{{ ano }}_0"
+                            aria-expanded="false"
+                            aria-controls="collapseQ{{ ano }}_0">
+                      <span class="left">
+                        <i class="fas fa-inbox" style="color:#64748b;"></i>
+                        <span>Sin trimestre</span>
+                        <span class="q-pill" style="background:rgba(100,116,139,.12); border-color:rgba(100,116,139,.18); color:#334155;">N/A</span>
+                      </span>
+                      <span style="font-size:12px; color:#94a3b8; font-weight:800;">Ver</span>
+                    </button>
+                  </h2>
+
+                  <div id="collapseQ{{ ano }}_0" class="accordion-collapse collapse"
+                       aria-labelledby="headingQ{{ ano }}_0"
+                       data-bs-parent="#quartersAccordion{{ ano }}">
+                    <div class="accordion-body" style="padding: 0 6px 6px 6px;">
+                      <ul class="year-list">
+                        {% for archivo_info in archivos %}
+                          {% if not archivo_info.archivo.trimestre %}
+                            <li class="year-item articulo-item"
+                                data-year="{{ ano }}"
+                                data-quarter="0"
+                                data-text="{{ ano }} sin trimestre {{ archivo_info.archivo.titulo_archivo|default_if_none:''|lower }} {{ archivo_info.tipo|lower }}">
+                              <div class="year-left">
+                                <div class="year-icon">
+                                  {% if archivo_info.tipo == 'liga' %}<i class="fas fa-link"></i>{% else %}<i class="fas fa-file-alt"></i>{% endif %}
+                                </div>
+                                <div class="year-meta">
+                                  <div class="file-title" title="{{ archivo_info.archivo.titulo_archivo|default:'(Sin título)' }}">
+                                    {{ archivo_info.archivo.titulo_archivo|default:"(Sin título)" }}
+                                  </div>
+                                  <div class="subline">
+                                    <span class="badge-soft">{{ ano }}</span>
+                                    <span class="badge-soft na"><i class="fas fa-layer-group"></i> Sin trimestre</span>
+                                    {% if archivo_info.tipo == 'liga' %}
+                                      <span class="badge-soft link"><i class="fas fa-link"></i> Liga</span>
+                                    {% else %}
+                                      <span class="badge-soft file"><i class="fas fa-file"></i> Archivo</span>
+                                    {% endif %}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="year-icons">
+                                {% if archivo_info.tipo == 'liga' %}
+                                  {% if archivo_info.archivo and archivo_info.archivo.liga %}
+                                    <a href="{{ archivo_info.archivo.liga }}" class="year-iconbtn open" title="Abrir liga" target="_blank" rel="noopener">
+                                      <i class="fas fa-link"></i>
+                                    </a>
+                                  {% else %}
+                                    <span class="text-muted" style="font-size:12px;">No hay enlace</span>
+                                  {% endif %}
+                                {% else %}
+                                  {% if archivo_info.archivo and archivo_info.archivo.archivo %}
+                                    <a href="{{ archivo_info.archivo.archivo.url }}" class="year-iconbtn open" title="Ver documento" target="_blank" rel="noopener">
+                                      <i class="fas fa-file-pdf"></i>
+                                    </a>
+                                  {% else %}
+                                    <span class="text-muted" style="font-size:12px;">No hay archivo</span>
+                                  {% endif %}
+                                {% endif %}
+
+                                <a href="{% url 'editar_articulo_liga' archivo_info.archivo.id %}" class="year-iconbtn edit" title="Editar">
+                                  <i class="fas fa-edit"></i>
+                                </a>
+
+                                <button class="year-iconbtn delete eliminar-articulo"
+                                        data-id="{{ archivo_info.archivo.id }}"
+                                        data-ano="{{ archivo_info.archivo.ano }}"
+                                        title="Eliminar">
+                                  <i class="fas fa-trash-alt"></i>
+                                </button>
+                              </div>
+                            </li>
+                          {% endif %}
+                        {% endfor %}
+                      </ul>
+                      <div class="empty-box" data-empty="q0">Sin registros sin trimestre.</div>
+                    </div>
+                  </div>
+                </div>
+
+              </div><!-- quartersAccordion -->
+
             </div>
-
-            <div class="year-icons">
-              {% if archivo_info.tipo == 'liga' %}
-                {% if archivo_info.archivo and archivo_info.archivo.liga %}
-                  <a href="{{ archivo_info.archivo.liga }}" class="year-iconbtn open" title="Abrir liga" target="_blank" rel="noopener">
-                    <i class="fas fa-link"></i>
-                  </a>
-                {% else %}
-                  <span class="text-muted" style="font-size:12px;">No hay enlace</span>
-                {% endif %}
-              {% else %}
-                {% if archivo_info.archivo and archivo_info.archivo.archivo %}
-                  <a href="{{ archivo_info.archivo.archivo.url }}" class="year-iconbtn open" title="Ver documento" target="_blank" rel="noopener">
-                    <i class="fas fa-file-pdf"></i>
-                  </a>
-                {% else %}
-                  <span class="text-muted" style="font-size:12px;">No hay archivo</span>
-                {% endif %}
-              {% endif %}
-
-              <a href="{% url 'editar_articulo_liga' archivo_info.archivo.id %}" class="year-iconbtn edit" title="Editar">
-                <i class="fas fa-edit"></i>
-              </a>
-
-              <button class="year-iconbtn delete eliminar-articulo"
-                      data-id="{{ archivo_info.archivo.id }}"
-                      data-ano="{{ archivo_info.archivo.ano }}"
-                      title="Eliminar">
-                <i class="fas fa-trash-alt"></i>
-              </button>
-            </div>
-          </li>
-        {% endfor %}
+          </div>
+        </div>
       {% empty %}
-        <li style="padding:16px;">
-          <div class="alert alert-warning text-center mb-0">No hay registros disponibles.</div>
-        </li>
+        <div class="alert alert-warning text-center mb-0" style="margin: 10px 16px;">
+          No hay registros disponibles.
+        </div>
       {% endfor %}
-    </ul>
-  </div>
+
+    </div><!-- yearsAccordion -->
+  </div><!-- card -->
 </div>
 
 <br>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
-/* Buscar por año o título */
-function filterArticles() {
+/* ===========================
+   FILTROS: año + buscador
+   - Oculta años sin resultados
+   - Oculta trimestres sin resultados
+   - Auto-expande coincidencias (solo cuando filtras/buscas)
+   =========================== */
+function applyFilters(){
+  const year = document.getElementById('yearSelect').value;
   const q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
-  const items = document.querySelectorAll('.articulo-item');
 
+  const items = Array.from(document.querySelectorAll('.articulo-item'));
   let found = 0;
+
+  // 1) filtra items
   items.forEach(item => {
-    const text = item.dataset.text || '';
-    const ok = (!q || text.includes(q));
-    item.style.display = ok ? '' : 'none';
-    if (ok) found++;
+    const itemYear = item.dataset.year || '';
+    const text = (item.dataset.text || '').toLowerCase();
+
+    const yearOk = !year || itemYear === year;
+    const textOk = !q || text.includes(q);
+    const visible = yearOk && textOk;
+
+    item.style.display = visible ? '' : 'none';
+    if (visible) found++;
   });
 
+  // 2) trimestres: visibles?
+  document.querySelectorAll('.quarter-acc-item').forEach(block => {
+    const visibles = Array.from(block.querySelectorAll('.articulo-item'))
+      .some(li => getComputedStyle(li).display !== 'none');
+
+    block.style.display = visibles ? '' : 'none';
+
+    // empty msg on/off
+    const emptyMsg = block.querySelector('[data-empty]');
+    if (emptyMsg) emptyMsg.style.display = visibles ? 'none' : '';
+
+    // auto-open trimestre si filtrando/buscando
+    const collapse = block.querySelector('.accordion-collapse');
+    const btn = block.querySelector('.accordion-button');
+    if (collapse && btn){
+      const shouldOpen = visibles && (q || year);
+      if (shouldOpen){
+        collapse.classList.add('show');
+        btn.classList.remove('collapsed');
+        btn.setAttribute('aria-expanded','true');
+      }else{
+        collapse.classList.remove('show');
+        btn.classList.add('collapsed');
+        btn.setAttribute('aria-expanded','false');
+      }
+    }
+  });
+
+  // 3) años: visibles?
+  document.querySelectorAll('.year-acc-item').forEach(yBlock => {
+    const y = yBlock.dataset.year || '';
+    const visibles = Array.from(yBlock.querySelectorAll('.quarter-acc-item'))
+      .some(el => getComputedStyle(el).display !== 'none');
+
+    yBlock.style.display = visibles ? '' : 'none';
+
+    const collapse = yBlock.querySelector('.accordion-collapse');
+    const btn = yBlock.querySelector('.accordion-button');
+    if (collapse && btn){
+      if (year){
+        // si hay año seleccionado => abre solo ese
+        if (y === year && visibles){
+          collapse.classList.add('show');
+          btn.classList.remove('collapsed');
+          btn.setAttribute('aria-expanded','true');
+        }else{
+          collapse.classList.remove('show');
+          btn.classList.add('collapsed');
+          btn.setAttribute('aria-expanded','false');
+        }
+      }else{
+        // si hay búsqueda => abre años con coincidencias
+        const shouldOpen = visibles && q;
+        if (shouldOpen){
+          collapse.classList.add('show');
+          btn.classList.remove('collapsed');
+          btn.setAttribute('aria-expanded','true');
+        }else{
+          // todo colapsado por defecto
+          collapse.classList.remove('show');
+          btn.classList.add('collapsed');
+          btn.setAttribute('aria-expanded','false');
+        }
+      }
+    }
+  });
+
+  // 4) no resultados global
   let noResultados = document.getElementById('noResultados');
   if (found === 0) {
     if (!noResultados) {
@@ -456,20 +990,21 @@ function filterArticles() {
       noResultados.className = 'alert alert-secondary text-center';
       noResultados.style.margin = '10px 16px';
       noResultados.textContent = 'No se encontraron registros que coincidan con la búsqueda.';
-      document.getElementById('articulosList').prepend(noResultados);
+      document.querySelector('.year-card').appendChild(noResultados);
     }
   } else {
     if (noResultados) noResultados.remove();
   }
 }
+
+document.addEventListener('DOMContentLoaded', applyFilters);
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 /* Delete */
 document.addEventListener("DOMContentLoaded", function() {
-  const deleteButtons = document.querySelectorAll(".eliminar-articulo");
-
-  deleteButtons.forEach(button => {
+  document.querySelectorAll(".eliminar-articulo").forEach(button => {
     button.addEventListener("click", function() {
       const articuloId = this.getAttribute("data-id");
       const articuloNombre = this.getAttribute("data-ano");
@@ -495,7 +1030,7 @@ document.addEventListener("DOMContentLoaded", function() {
               "X-CSRFToken": "{{ csrf_token }}",
               "Content-Type": "application/x-www-form-urlencoded"
             }
-          }).then(response => response.json())
+          }).then(r => r.json())
             .then(data => {
               if (data.success) {
                 Swal.fire({
@@ -506,21 +1041,9 @@ document.addEventListener("DOMContentLoaded", function() {
                   showConfirmButton: false
                 }).then(() => window.location.reload());
               } else {
-                Swal.fire({
-                  title: "Error",
-                  text: "No se pudo eliminar. Intenta de nuevo.",
-                  icon: "error",
-                  confirmButtonText: "Aceptar"
-                });
+                Swal.fire("Error", "No se pudo eliminar. Intenta de nuevo.", "error");
               }
-            }).catch(() => {
-              Swal.fire({
-                title: "Error",
-                text: "Ocurrió un error. Intenta de nuevo.",
-                icon: "error",
-                confirmButtonText: "Aceptar"
-              });
-            });
+            }).catch(() => Swal.fire("Error", "Ocurrió un error. Intenta de nuevo.", "error"));
         }
       });
     });

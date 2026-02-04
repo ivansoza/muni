@@ -15,22 +15,17 @@
   padding:10px 20px;
   background:transparent;
   position:relative;
-  margin-left:0; /* ✅ sin sangría */
+  margin-left:0;
 }
-/* ✅ QUITADO: la barra lateral izquierda */
-/* .sevac-wrapper .section-header::before{ ... } */
 
 .sevac-wrapper .header-left{
   background:transparent;
   color:#333;
-  padding:20px 10px 8px; /* ✅ más compacto sin logo */
+  padding:20px 10px 8px;
   border-radius:12px;
   box-shadow:none;
   position:relative;
 }
-
-/* ✅ QUITADO: logo */
-/* .sevac-wrapper .header-left .logo{ ... } */
 
 .sevac-wrapper .header-title1{
   font-size:42px; font-weight:800;
@@ -62,12 +57,13 @@
   border:1px solid rgba(226,232,240,.8);
 }
 
-/* Accordion buttons */
+/* Accordion base */
 .sevac-wrapper .accordion-item{
   border:0 !important;
   background: transparent !important;
 }
 .sevac-wrapper .accordion-header{ margin-bottom: 8px; }
+
 .sevac-wrapper .accordion-button{
   font-size:15px;
   color:#334155;
@@ -86,8 +82,52 @@
 .sevac-wrapper .accordion-button:focus{
   box-shadow:0 0 0 .2rem rgba(0,0,0,0);
 }
+
 .sevac-wrapper .fa-folder{ color:#F6C344; }
 .sevac-wrapper .fa-folder-open{ opacity:.95; }
+
+/* ✅ NUEVO: botón de trimestre (subcarpeta) */
+.sevac-wrapper .trim-btn{
+  background:#ffffff !important;
+  border:1px solid rgba(226,232,240,.9) !important;
+  border-radius:12px !important;
+  padding:10px 14px !important;
+  font-size:14px !important;
+  font-weight:900 !important;
+  color:#0f172a !important;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.sevac-wrapper .trim-btn:not(.collapsed){
+  background: rgba(58,98,132,.06) !important;
+  border-color: rgba(58,98,132,.18) !important;
+}
+.sevac-wrapper .trim-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+.sevac-wrapper .trim-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  background: rgba(245,158,11,.12);
+  border:1px solid rgba(245,158,11,.22);
+  color:#92400e;
+  white-space:nowrap;
+}
+.sevac-wrapper .trim-pill.na{
+  background: rgba(100,116,139,.12);
+  border-color: rgba(100,116,139,.18);
+  color:#334155;
+}
 
 /* filtros */
 .sevac-wrapper .filters-container{
@@ -215,7 +255,7 @@
   margin-top:4px;
 }
 
-/* ✅ META ABAJO (aquí va el año para que no estorbe) */
+/* Meta abajo */
 .sevac-wrapper .file-meta-row{
   margin-top:auto;
   width:100%;
@@ -313,12 +353,10 @@
   <div class="container mt-4">
     <div class="section-header">
       <div class="header-left">
-        {# ✅ LOGO REMOVIDO COMPLETO #}
-
         <h1 class="header-title1">TRANSPARENCIA</h1>
         <h2 class="header-title">Carpetas y Archivos</h2>
         <p class="header-description">
-          Explora la información por estructura: obligación → artículo → documento.
+          Explora la información por estructura: obligación → artículo → trimestre → documento.
         </p>
       </div>
 
@@ -388,81 +426,449 @@
                               {% if not articulo.archivos %}
                                 <div class="empty-folder">Esta subcarpeta está vacía.</div>
                               {% else %}
-                                <div class="files-grid">
 
-                                  {% for archivo in articulo.archivos %}
-                                    <div class="file-item sevac-file-item"
-                                         data-articulo="{{ articulo.id }}"
-                                         data-ano="{{ archivo.ano }}"
-                                         data-text="{{ articulo.articulo_fraccion|lower }} {{ archivo.titulo_archivo|default_if_none:''|lower }}">
+                         
 
-                                      <div class="file-head">
-                                        <div class="file-ico">
-                                          {% if archivo.liga %}
-                                            <i class="fas fa-link"></i>
-                                          {% elif archivo.archivo %}
-                                            <i class="fas
-                                              {% if archivo.archivo.url|lower|slice:'-4:' == '.pdf' %}
-                                                fa-file-pdf
-                                              {% elif archivo.archivo.url|lower|slice:'-5:' == '.docx' or archivo.archivo.url|lower|slice:'-4:' == '.doc' %}
-                                                fa-file-word
-                                              {% elif archivo.archivo.url|lower|slice:'-5:' == '.xlsx' or archivo.archivo.url|lower|slice:'-4:' == '.xls' %}
-                                                fa-file-excel
-                                              {% elif archivo.archivo.url|lower|slice:'-5:' == '.pptx' or archivo.archivo.url|lower|slice:'-4:' == '.ppt' %}
-                                                fa-file-powerpoint
-                                              {% elif archivo.archivo.url|lower|slice:'-4:' == '.jpg' or archivo.archivo.url|lower|slice:'-4:' == '.png' or archivo.archivo.url|lower|slice:'-4:' == '.gif' %}
-                                                fa-image
-                                              {% else %}
-                                                fa-file-alt
-                                              {% endif %}
-                                            "></i>
-                                          {% else %}
-                                            <i class="fas fa-file-alt"></i>
-                                          {% endif %}
+                                <div class="accordion sevac-trim-accordion" id="trimAccordion{{ articulo.id }}">
+
+                                  {# ---- T1 ---- #}
+                                  <div class="accordion-item sevac-trim" data-trim="1">
+                                    <h2 class="accordion-header" id="headingTrim{{ articulo.id }}_1">
+                                      <button class="accordion-button collapsed trim-btn" type="button"
+                                              data-bs-toggle="collapse"
+                                              data-bs-target="#collapseTrim{{ articulo.id }}_1"
+                                              aria-expanded="false"
+                                              aria-controls="collapseTrim{{ articulo.id }}_1">
+                                        <span class="trim-left">
+                                          <i class="fas fa-folder-open" style="color:#f59e0b;"></i>
+                                          Trimestre 1
+                                          <span class="trim-pill">T1</span>
+                                        </span>
+                                        <span style="font-size:12px; color:#94a3b8; font-weight:800;">Ver</span>
+                                      </button>
+                                    </h2>
+                                    <div id="collapseTrim{{ articulo.id }}_1" class="accordion-collapse collapse"
+                                         aria-labelledby="headingTrim{{ articulo.id }}_1"
+                                         data-bs-parent="#trimAccordion{{ articulo.id }}">
+                                      <div class="accordion-body">
+                                        <div class="files-grid">
+                                          {% for archivo in articulo.archivos %}
+                                            {% if archivo.trimestre == 1 %}
+                                              <div class="file-item sevac-file-item"
+                                                   data-articulo="{{ articulo.id }}"
+                                                   data-ano="{{ archivo.ano }}"
+                                                   data-trim="{{ archivo.trimestre|default_if_none:'0' }}"
+                                                   data-text="{{ articulo.articulo_fraccion|lower }} {{ archivo.titulo_archivo|default_if_none:''|lower }}">
+                                                <div class="file-head">
+                                                  <div class="file-ico">
+                                                    {% if archivo.liga %}
+                                                      <i class="fas fa-link"></i>
+                                                    {% elif archivo.archivo %}
+                                                      <i class="fas
+                                                        {% if archivo.archivo.url|lower|slice:'-4:' == '.pdf' %}
+                                                          fa-file-pdf
+                                                        {% elif archivo.archivo.url|lower|slice:'-5:' == '.docx' or archivo.archivo.url|lower|slice:'-4:' == '.doc' %}
+                                                          fa-file-word
+                                                        {% elif archivo.archivo.url|lower|slice:'-5:' == '.xlsx' or archivo.archivo.url|lower|slice:'-4:' == '.xls' %}
+                                                          fa-file-excel
+                                                        {% elif archivo.archivo.url|lower|slice:'-5:' == '.pptx' or archivo.archivo.url|lower|slice:'-4:' == '.ppt' %}
+                                                          fa-file-powerpoint
+                                                        {% elif archivo.archivo.url|lower|slice:'-4:' == '.jpg' or archivo.archivo.url|lower|slice:'-4:' == '.png' or archivo.archivo.url|lower|slice:'-4:' == '.gif' %}
+                                                          fa-image
+                                                        {% else %}
+                                                          fa-file-alt
+                                                        {% endif %}
+                                                      "></i>
+                                                    {% else %}
+                                                      <i class="fas fa-file-alt"></i>
+                                                    {% endif %}
+                                                  </div>
+
+                                                  <div style="min-width:0;">
+                                                    <div class="file-title" title="{{ archivo.titulo_archivo|default:'Documento' }}">
+                                                      {{ archivo.titulo_archivo|default:"Documento" }}
+                                                    </div>
+                                                    <div class="file-sub">
+                                                      Fracción: <strong>{{ articulo.articulo_fraccion }}</strong>
+                                                    </div>
+                                                  </div>
+                                                </div>
+
+                                                {% if archivo.liga %}
+                                                  <a class="file-link" href="{{ archivo.liga }}" target="_blank" rel="noopener">
+                                                    <span>Abrir enlace</span><span class="go">Ver →</span>
+                                                  </a>
+                                                {% elif archivo.archivo %}
+                                                  <a class="file-link" href="{{ archivo.archivo.url }}" target="_blank" rel="noopener">
+                                                    <span>Abrir documento</span><span class="go">Ver →</span>
+                                                  </a>
+                                                {% else %}
+                                                  <div class="file-link" style="justify-content:center; opacity:.7;">Sin documento disponible</div>
+                                                {% endif %}
+
+                                                <div class="file-meta-row">
+                                                  <div class="file-meta-left">T1 • {% if archivo.liga %}Liga{% else %}Archivo{% endif %}</div>
+                                                  {% if archivo.ano %}
+                                                    <div class="file-chip"><i class="fas fa-calendar-alt"></i> {{ archivo.ano }}</div>
+                                                  {% endif %}
+                                                </div>
+                                              </div>
+                                            {% endif %}
+                                          {% endfor %}
                                         </div>
-
-                                        <div style="min-width:0;">
-                                          <div class="file-title" title="{{ archivo.titulo_archivo|default:'Documento' }}">
-                                            {{ archivo.titulo_archivo|default:"Documento" }}
-                                          </div>
-                                          <div class="file-sub">
-                                            Fracción: <strong>{{ articulo.articulo_fraccion }}</strong>
-                                          </div>
-                                        </div>
+                                        <div class="empty-folder sevac-empty-trim">Este trimestre está vacío.</div>
                                       </div>
-
-                                      {% if archivo.liga %}
-                                        <a class="file-link" href="{{ archivo.liga }}" target="_blank" rel="noopener">
-                                          <span>Abrir enlace</span>
-                                          <span class="go">Ver →</span>
-                                        </a>
-                                      {% elif archivo.archivo %}
-                                        <a class="file-link" href="{{ archivo.archivo.url }}" target="_blank" rel="noopener">
-                                          <span>Abrir documento</span>
-                                          <span class="go">Ver →</span>
-                                        </a>
-                                      {% else %}
-                                        <div class="file-link" style="justify-content:center; opacity:.7;">
-                                          Sin documento disponible
-                                        </div>
-                                      {% endif %}
-
-                                      <!-- ✅ Meta inferior: tipo + año (sin amontonarse arriba) -->
-                                      <div class="file-meta-row">
-                                        <div class="file-meta-left">
-                                          {% if archivo.liga %}Tipo: Liga{% else %}Tipo: Archivo{% endif %}
-                                        </div>
-                                        {% if archivo.ano %}
-                                          <div class="file-chip">
-                                            <i class="fas fa-calendar-alt"></i> {{ archivo.ano }}
-                                          </div>
-                                        {% endif %}
-                                      </div>
-
                                     </div>
-                                  {% endfor %}
+                                  </div>
+
+                                  {# ---- T2 ---- #}
+                                  <div class="accordion-item sevac-trim" data-trim="2">
+                                    <h2 class="accordion-header" id="headingTrim{{ articulo.id }}_2">
+                                      <button class="accordion-button collapsed trim-btn" type="button"
+                                              data-bs-toggle="collapse"
+                                              data-bs-target="#collapseTrim{{ articulo.id }}_2"
+                                              aria-expanded="false"
+                                              aria-controls="collapseTrim{{ articulo.id }}_2">
+                                        <span class="trim-left">
+                                          <i class="fas fa-folder-open" style="color:#f59e0b;"></i>
+                                          Trimestre 2
+                                          <span class="trim-pill">T2</span>
+                                        </span>
+                                        <span style="font-size:12px; color:#94a3b8; font-weight:800;">Ver</span>
+                                      </button>
+                                    </h2>
+                                    <div id="collapseTrim{{ articulo.id }}_2" class="accordion-collapse collapse"
+                                         aria-labelledby="headingTrim{{ articulo.id }}_2"
+                                         data-bs-parent="#trimAccordion{{ articulo.id }}">
+                                      <div class="accordion-body">
+                                        <div class="files-grid">
+                                          {% for archivo in articulo.archivos %}
+                                            {% if archivo.trimestre == 2 %}
+                                              <div class="file-item sevac-file-item"
+                                                   data-articulo="{{ articulo.id }}"
+                                                   data-ano="{{ archivo.ano }}"
+                                                   data-trim="{{ archivo.trimestre|default_if_none:'0' }}"
+                                                   data-text="{{ articulo.articulo_fraccion|lower }} {{ archivo.titulo_archivo|default_if_none:''|lower }}">
+                                                <div class="file-head">
+                                                  <div class="file-ico">
+                                                    {% if archivo.liga %}
+                                                      <i class="fas fa-link"></i>
+                                                    {% elif archivo.archivo %}
+                                                      <i class="fas
+                                                        {% if archivo.archivo.url|lower|slice:'-4:' == '.pdf' %}
+                                                          fa-file-pdf
+                                                        {% elif archivo.archivo.url|lower|slice:'-5:' == '.docx' or archivo.archivo.url|lower|slice:'-4:' == '.doc' %}
+                                                          fa-file-word
+                                                        {% elif archivo.archivo.url|lower|slice:'-5:' == '.xlsx' or archivo.archivo.url|lower|slice:'-4:' == '.xls' %}
+                                                          fa-file-excel
+                                                        {% elif archivo.archivo.url|lower|slice:'-5:' == '.pptx' or archivo.archivo.url|lower|slice:'-4:' == '.ppt' %}
+                                                          fa-file-powerpoint
+                                                        {% elif archivo.archivo.url|lower|slice:'-4:' == '.jpg' or archivo.archivo.url|lower|slice:'-4:' == '.png' or archivo.archivo.url|lower|slice:'-4:' == '.gif' %}
+                                                          fa-image
+                                                        {% else %}
+                                                          fa-file-alt
+                                                        {% endif %}
+                                                      "></i>
+                                                    {% else %}
+                                                      <i class="fas fa-file-alt"></i>
+                                                    {% endif %}
+                                                  </div>
+
+                                                  <div style="min-width:0;">
+                                                    <div class="file-title" title="{{ archivo.titulo_archivo|default:'Documento' }}">
+                                                      {{ archivo.titulo_archivo|default:"Documento" }}
+                                                    </div>
+                                                    <div class="file-sub">
+                                                      Fracción: <strong>{{ articulo.articulo_fraccion }}</strong>
+                                                    </div>
+                                                  </div>
+                                                </div>
+
+                                                {% if archivo.liga %}
+                                                  <a class="file-link" href="{{ archivo.liga }}" target="_blank" rel="noopener">
+                                                    <span>Abrir enlace</span><span class="go">Ver →</span>
+                                                  </a>
+                                                {% elif archivo.archivo %}
+                                                  <a class="file-link" href="{{ archivo.archivo.url }}" target="_blank" rel="noopener">
+                                                    <span>Abrir documento</span><span class="go">Ver →</span>
+                                                  </a>
+                                                {% else %}
+                                                  <div class="file-link" style="justify-content:center; opacity:.7;">Sin documento disponible</div>
+                                                {% endif %}
+
+                                                <div class="file-meta-row">
+                                                  <div class="file-meta-left">T2 • {% if archivo.liga %}Liga{% else %}Archivo{% endif %}</div>
+                                                  {% if archivo.ano %}
+                                                    <div class="file-chip"><i class="fas fa-calendar-alt"></i> {{ archivo.ano }}</div>
+                                                  {% endif %}
+                                                </div>
+                                              </div>
+                                            {% endif %}
+                                          {% endfor %}
+                                        </div>
+                                        <div class="empty-folder sevac-empty-trim">Este trimestre está vacío.</div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {# ---- T3 ---- #}
+                                  <div class="accordion-item sevac-trim" data-trim="3">
+                                    <h2 class="accordion-header" id="headingTrim{{ articulo.id }}_3">
+                                      <button class="accordion-button collapsed trim-btn" type="button"
+                                              data-bs-toggle="collapse"
+                                              data-bs-target="#collapseTrim{{ articulo.id }}_3"
+                                              aria-expanded="false"
+                                              aria-controls="collapseTrim{{ articulo.id }}_3">
+                                        <span class="trim-left">
+                                          <i class="fas fa-folder-open" style="color:#f59e0b;"></i>
+                                          Trimestre 3
+                                          <span class="trim-pill">T3</span>
+                                        </span>
+                                        <span style="font-size:12px; color:#94a3b8; font-weight:800;">Ver</span>
+                                      </button>
+                                    </h2>
+                                    <div id="collapseTrim{{ articulo.id }}_3" class="accordion-collapse collapse"
+                                         aria-labelledby="headingTrim{{ articulo.id }}_3"
+                                         data-bs-parent="#trimAccordion{{ articulo.id }}">
+                                      <div class="accordion-body">
+                                        <div class="files-grid">
+                                          {% for archivo in articulo.archivos %}
+                                            {% if archivo.trimestre == 3 %}
+                                              <div class="file-item sevac-file-item"
+                                                   data-articulo="{{ articulo.id }}"
+                                                   data-ano="{{ archivo.ano }}"
+                                                   data-trim="{{ archivo.trimestre|default_if_none:'0' }}"
+                                                   data-text="{{ articulo.articulo_fraccion|lower }} {{ archivo.titulo_archivo|default_if_none:''|lower }}">
+                                                <div class="file-head">
+                                                  <div class="file-ico">
+                                                    {% if archivo.liga %}
+                                                      <i class="fas fa-link"></i>
+                                                    {% elif archivo.archivo %}
+                                                      <i class="fas
+                                                        {% if archivo.archivo.url|lower|slice:'-4:' == '.pdf' %}
+                                                          fa-file-pdf
+                                                        {% elif archivo.archivo.url|lower|slice:'-5:' == '.docx' or archivo.archivo.url|lower|slice:'-4:' == '.doc' %}
+                                                          fa-file-word
+                                                        {% elif archivo.archivo.url|lower|slice:'-5:' == '.xlsx' or archivo.archivo.url|lower|slice:'-4:' == '.xls' %}
+                                                          fa-file-excel
+                                                        {% elif archivo.archivo.url|lower|slice:'-5:' == '.pptx' or archivo.archivo.url|lower|slice:'-4:' == '.ppt' %}
+                                                          fa-file-powerpoint
+                                                        {% elif archivo.archivo.url|lower|slice:'-4:' == '.jpg' or archivo.archivo.url|lower|slice:'-4:' == '.png' or archivo.archivo.url|lower|slice:'-4:' == '.gif' %}
+                                                          fa-image
+                                                        {% else %}
+                                                          fa-file-alt
+                                                        {% endif %}
+                                                      "></i>
+                                                    {% else %}
+                                                      <i class="fas fa-file-alt"></i>
+                                                    {% endif %}
+                                                  </div>
+
+                                                  <div style="min-width:0;">
+                                                    <div class="file-title" title="{{ archivo.titulo_archivo|default:'Documento' }}">
+                                                      {{ archivo.titulo_archivo|default:"Documento" }}
+                                                    </div>
+                                                    <div class="file-sub">
+                                                      Fracción: <strong>{{ articulo.articulo_fraccion }}</strong>
+                                                    </div>
+                                                  </div>
+                                                </div>
+
+                                                {% if archivo.liga %}
+                                                  <a class="file-link" href="{{ archivo.liga }}" target="_blank" rel="noopener">
+                                                    <span>Abrir enlace</span><span class="go">Ver →</span>
+                                                  </a>
+                                                {% elif archivo.archivo %}
+                                                  <a class="file-link" href="{{ archivo.archivo.url }}" target="_blank" rel="noopener">
+                                                    <span>Abrir documento</span><span class="go">Ver →</span>
+                                                  </a>
+                                                {% else %}
+                                                  <div class="file-link" style="justify-content:center; opacity:.7;">Sin documento disponible</div>
+                                                {% endif %}
+
+                                                <div class="file-meta-row">
+                                                  <div class="file-meta-left">T3 • {% if archivo.liga %}Liga{% else %}Archivo{% endif %}</div>
+                                                  {% if archivo.ano %}
+                                                    <div class="file-chip"><i class="fas fa-calendar-alt"></i> {{ archivo.ano }}</div>
+                                                  {% endif %}
+                                                </div>
+                                              </div>
+                                            {% endif %}
+                                          {% endfor %}
+                                        </div>
+                                        <div class="empty-folder sevac-empty-trim">Este trimestre está vacío.</div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {# ---- T4 ---- #}
+                                  <div class="accordion-item sevac-trim" data-trim="4">
+                                    <h2 class="accordion-header" id="headingTrim{{ articulo.id }}_4">
+                                      <button class="accordion-button collapsed trim-btn" type="button"
+                                              data-bs-toggle="collapse"
+                                              data-bs-target="#collapseTrim{{ articulo.id }}_4"
+                                              aria-expanded="false"
+                                              aria-controls="collapseTrim{{ articulo.id }}_4">
+                                        <span class="trim-left">
+                                          <i class="fas fa-folder-open" style="color:#f59e0b;"></i>
+                                          Trimestre 4
+                                          <span class="trim-pill">T4</span>
+                                        </span>
+                                        <span style="font-size:12px; color:#94a3b8; font-weight:800;">Ver</span>
+                                      </button>
+                                    </h2>
+                                    <div id="collapseTrim{{ articulo.id }}_4" class="accordion-collapse collapse"
+                                         aria-labelledby="headingTrim{{ articulo.id }}_4"
+                                         data-bs-parent="#trimAccordion{{ articulo.id }}">
+                                      <div class="accordion-body">
+                                        <div class="files-grid">
+                                          {% for archivo in articulo.archivos %}
+                                            {% if archivo.trimestre == 4 %}
+                                              <div class="file-item sevac-file-item"
+                                                   data-articulo="{{ articulo.id }}"
+                                                   data-ano="{{ archivo.ano }}"
+                                                   data-trim="{{ archivo.trimestre|default_if_none:'0' }}"
+                                                   data-text="{{ articulo.articulo_fraccion|lower }} {{ archivo.titulo_archivo|default_if_none:''|lower }}">
+                                                <div class="file-head">
+                                                  <div class="file-ico">
+                                                    {% if archivo.liga %}
+                                                      <i class="fas fa-link"></i>
+                                                    {% elif archivo.archivo %}
+                                                      <i class="fas
+                                                        {% if archivo.archivo.url|lower|slice:'-4:' == '.pdf' %}
+                                                          fa-file-pdf
+                                                        {% elif archivo.archivo.url|lower|slice:'-5:' == '.docx' or archivo.archivo.url|lower|slice:'-4:' == '.doc' %}
+                                                          fa-file-word
+                                                        {% elif archivo.archivo.url|lower|slice:'-5:' == '.xlsx' or archivo.archivo.url|lower|slice:'-4:' == '.xls' %}
+                                                          fa-file-excel
+                                                        {% elif archivo.archivo.url|lower|slice:'-5:' == '.pptx' or archivo.archivo.url|lower|slice:'-4:' == '.ppt' %}
+                                                          fa-file-powerpoint
+                                                        {% elif archivo.archivo.url|lower|slice:'-4:' == '.jpg' or archivo.archivo.url|lower|slice:'-4:' == '.png' or archivo.archivo.url|lower|slice:'-4:' == '.gif' %}
+                                                          fa-image
+                                                        {% else %}
+                                                          fa-file-alt
+                                                        {% endif %}
+                                                      "></i>
+                                                    {% else %}
+                                                      <i class="fas fa-file-alt"></i>
+                                                    {% endif %}
+                                                  </div>
+
+                                                  <div style="min-width:0;">
+                                                    <div class="file-title" title="{{ archivo.titulo_archivo|default:'Documento' }}">
+                                                      {{ archivo.titulo_archivo|default:"Documento" }}
+                                                    </div>
+                                                    <div class="file-sub">
+                                                      Fracción: <strong>{{ articulo.articulo_fraccion }}</strong>
+                                                    </div>
+                                                  </div>
+                                                </div>
+
+                                                {% if archivo.liga %}
+                                                  <a class="file-link" href="{{ archivo.liga }}" target="_blank" rel="noopener">
+                                                    <span>Abrir enlace</span><span class="go">Ver →</span>
+                                                  </a>
+                                                {% elif archivo.archivo %}
+                                                  <a class="file-link" href="{{ archivo.archivo.url }}" target="_blank" rel="noopener">
+                                                    <span>Abrir documento</span><span class="go">Ver →</span>
+                                                  </a>
+                                                {% else %}
+                                                  <div class="file-link" style="justify-content:center; opacity:.7;">Sin documento disponible</div>
+                                                {% endif %}
+
+                                                <div class="file-meta-row">
+                                                  <div class="file-meta-left">T4 • {% if archivo.liga %}Liga{% else %}Archivo{% endif %}</div>
+                                                  {% if archivo.ano %}
+                                                    <div class="file-chip"><i class="fas fa-calendar-alt"></i> {{ archivo.ano }}</div>
+                                                  {% endif %}
+                                                </div>
+                                              </div>
+                                            {% endif %}
+                                          {% endfor %}
+                                        </div>
+                                        <div class="empty-folder sevac-empty-trim">Este trimestre está vacío.</div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {# ---- SIN TRIMESTRE ---- #}
+                                  <div class="accordion-item sevac-trim" data-trim="0">
+                                    <h2 class="accordion-header" id="headingTrim{{ articulo.id }}_0">
+                                      <button class="accordion-button collapsed trim-btn" type="button"
+                                              data-bs-toggle="collapse"
+                                              data-bs-target="#collapseTrim{{ articulo.id }}_0"
+                                              aria-expanded="false"
+                                              aria-controls="collapseTrim{{ articulo.id }}_0">
+                                        <span class="trim-left">
+                                          <i class="fas fa-folder-open" style="color:#64748b;"></i>
+                                          Sin trimestre
+                                          <span class="trim-pill na">N/A</span>
+                                        </span>
+                                        <span style="font-size:12px; color:#94a3b8; font-weight:800;">Ver</span>
+                                      </button>
+                                    </h2>
+                                    <div id="collapseTrim{{ articulo.id }}_0" class="accordion-collapse collapse"
+                                         aria-labelledby="headingTrim{{ articulo.id }}_0"
+                                         data-bs-parent="#trimAccordion{{ articulo.id }}">
+                                      <div class="accordion-body">
+                                        <div class="files-grid">
+                                          {% for archivo in articulo.archivos %}
+                                            {% if not archivo.trimestre %}
+                                              <div class="file-item sevac-file-item"
+                                                   data-articulo="{{ articulo.id }}"
+                                                   data-ano="{{ archivo.ano }}"
+                                                   data-trim="0"
+                                                   data-text="{{ articulo.articulo_fraccion|lower }} {{ archivo.titulo_archivo|default_if_none:''|lower }}">
+                                                <div class="file-head">
+                                                  <div class="file-ico">
+                                                    {% if archivo.liga %}
+                                                      <i class="fas fa-link"></i>
+                                                    {% elif archivo.archivo %}
+                                                      <i class="fas fa-file-alt"></i>
+                                                    {% else %}
+                                                      <i class="fas fa-file-alt"></i>
+                                                    {% endif %}
+                                                  </div>
+
+                                                  <div style="min-width:0;">
+                                                    <div class="file-title" title="{{ archivo.titulo_archivo|default:'Documento' }}">
+                                                      {{ archivo.titulo_archivo|default:"Documento" }}
+                                                    </div>
+                                                    <div class="file-sub">
+                                                      Fracción: <strong>{{ articulo.articulo_fraccion }}</strong>
+                                                    </div>
+                                                  </div>
+                                                </div>
+
+                                                {% if archivo.liga %}
+                                                  <a class="file-link" href="{{ archivo.liga }}" target="_blank" rel="noopener">
+                                                    <span>Abrir enlace</span><span class="go">Ver →</span>
+                                                  </a>
+                                                {% elif archivo.archivo %}
+                                                  <a class="file-link" href="{{ archivo.archivo.url }}" target="_blank" rel="noopener">
+                                                    <span>Abrir documento</span><span class="go">Ver →</span>
+                                                  </a>
+                                                {% else %}
+                                                  <div class="file-link" style="justify-content:center; opacity:.7;">Sin documento disponible</div>
+                                                {% endif %}
+
+                                                <div class="file-meta-row">
+                                                  <div class="file-meta-left">N/A • {% if archivo.liga %}Liga{% else %}Archivo{% endif %}</div>
+                                                  {% if archivo.ano %}
+                                                    <div class="file-chip"><i class="fas fa-calendar-alt"></i> {{ archivo.ano }}</div>
+                                                  {% endif %}
+                                                </div>
+                                              </div>
+                                            {% endif %}
+                                          {% endfor %}
+                                        </div>
+                                        <div class="empty-folder sevac-empty-trim">Sin registros sin trimestre.</div>
+                                      </div>
+                                    </div>
+                                  </div>
 
                                 </div>
+
                               {% endif %}
 
                             </div>
@@ -516,60 +922,76 @@
 
 <script>
 /**
- * 1) Filtra por año y texto (fracción + título).
- * 2) Por cada artículo deja visible SOLO el archivo más reciente (max año)
- *    dentro del resultado filtrado.
- * 3) Oculta subcarpetas (artículos) y carpetas (listas) vacías.
+ * Filtra por año y texto.
+ * ✅ Si hay año seleccionado: muestra TODOS los registros que coinciden (no limita a 1).
+ * ✅ Si NO hay año seleccionado: deja solo el más reciente por artículo (para no saturar).
+ * Oculta trimestres / artículos / obligaciones vacíos.
  */
 function applyFiltersSevac(){
-  const year   = document.getElementById('yearSelect').value;
+  const year   = document.getElementById('yearSelect').value; // "" o "2024"
   const search = (document.getElementById('searchInput').value || '').toLowerCase().trim();
 
   const items = Array.from(document.querySelectorAll('.sevac-file-item'));
 
-  // Filtro base: año + búsqueda
+  // 1) Filtro base (año + búsqueda)
   items.forEach(item => {
-    const itemYear = item.dataset.ano || '';
-    const itemText = item.dataset.text || '';
-    const yearMatch = !year || itemYear === year;
+    const itemYear = (item.dataset.ano || '').trim();
+    const itemText = (item.dataset.text || '').trim();
+
+    const yearMatch = !year || itemYear === year;          // si year="" pasa todo
     const textMatch = !search || itemText.includes(search);
+
     item.style.display = (yearMatch && textMatch) ? '' : 'none';
   });
 
-  // Agrupa por artículo y deja visible el más reciente dentro de lo visible
-  const grupos = {};
-  items.forEach(item => {
-    if (item.style.display === 'none') return;
-    const id = item.dataset.articulo;
-    if (!grupos[id]) grupos[id] = [];
-    grupos[id].push(item);
-  });
-
-  Object.keys(grupos).forEach(id => {
-    let best = null;
-    let bestYear = -999999;
-
-    grupos[id].forEach(item => {
-      const y = parseInt(item.dataset.ano || '-999999', 10);
-      if (y > bestYear){
-        bestYear = y;
-        best = item;
-      }
+  // 2) ✅ Solo aplica "último por artículo" cuando NO seleccionas año
+  //    (Si seleccionas un año, se quedan TODOS los del año)
+  if (!year) {
+    const grupos = {};
+    items.forEach(item => {
+      if (item.style.display === 'none') return;
+      const id = item.dataset.articulo;
+      if (!grupos[id]) grupos[id] = [];
+      grupos[id].push(item);
     });
 
-    grupos[id].forEach(item => {
-      if (item !== best) item.style.display = 'none';
+    Object.keys(grupos).forEach(id => {
+      let best = null;
+      let bestYear = -Infinity;
+
+      grupos[id].forEach(item => {
+        const y = parseInt(item.dataset.ano || '-999999', 10);
+        if (y > bestYear){
+          bestYear = y;
+          best = item;
+        }
+      });
+
+      grupos[id].forEach(item => {
+        if (item !== best) item.style.display = 'none';
+      });
     });
+  }
+
+  // 3) Ocultar trimestres vacíos y mostrar/ocultar mensaje "vacío"
+  document.querySelectorAll('.sevac-trim').forEach(trim => {
+    const visibles = Array.from(trim.querySelectorAll('.sevac-file-item'))
+      .some(el => getComputedStyle(el).display !== 'none');
+
+    trim.style.display = visibles ? '' : 'none';
+
+    const emptyMsg = trim.querySelector('.sevac-empty-trim');
+    if (emptyMsg) emptyMsg.style.display = visibles ? 'none' : '';
   });
 
-  // Oculta subcarpetas sin items visibles
+  // 4) Ocultar artículos sin items visibles
   document.querySelectorAll('.sevac-articulo').forEach(art => {
     const visibles = Array.from(art.querySelectorAll('.sevac-file-item'))
       .some(el => getComputedStyle(el).display !== 'none');
     art.style.display = visibles ? '' : 'none';
   });
 
-  // Oculta carpetas principales sin subcarpetas visibles
+  // 5) Ocultar obligaciones sin artículos visibles
   document.querySelectorAll('.sevac-obligacion').forEach(lista => {
     const visibles = Array.from(lista.querySelectorAll('.sevac-articulo'))
       .some(el => getComputedStyle(el).display !== 'none');
@@ -579,4 +1001,5 @@ function applyFiltersSevac(){
 
 document.addEventListener('DOMContentLoaded', applyFiltersSevac);
 </script>
+
 {% endblock %}
