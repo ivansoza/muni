@@ -449,7 +449,7 @@
             {% if is_superuser or 'noticias.view_noticia' in user_permissions %}
                 <a class="app-item" href="{% url "noticias_view" %}">
                     <div class="app-card" style="background-image: url('{% static 'img/apps/news.png' %}');"></div>
-                    <div class="app-name">Prensa</div>
+                    <div class="app-name">Noticias</div>
                 </a>
             {% else %}
 
@@ -462,7 +462,7 @@
                             </svg>
                         </div>
                     </div>
-                    <div class="app-name">Prensa </div>
+                    <div class="app-name">Noticias </div>
                 </div>
             {% endif %}
 
