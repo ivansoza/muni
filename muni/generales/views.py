@@ -72,8 +72,6 @@ from eventos.forms import ArticuloForm
 from .forms import SeccionPlusForm, SeccionPlusArchivoFormSet
 from django.db import transaction
 from django.http import HttpResponseRedirect
-
-from transparencia.models import CarpetaTransparencia
 class VideoView(LoginRequiredMixin,TemplateView):
     template_name = 'generales/video.html'
 
@@ -2225,36 +2223,20 @@ class ListaObligacionesView(LoginRequiredMixin, ListView):
         return context
 
     
+# Vista para crear un nuevo registro de ListaObligaciones
 class ListaObligacionesCreateView(LoginRequiredMixin, CreateView):
     model = ListaObligaciones
     form_class = ListaObligacionesForm
     template_name = 'transparencia2/crearLista.html'
     success_url = reverse_lazy('lista_obligaciones')
-
     def dispatch(self, request, *args, **kwargs):
         if not (request.user.is_superuser or request.user.has_perm("transparencia.add_listaobligaciones")):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        # 1) Guardar la lista primero
-        response = super().form_valid(form)
-        lista = self.object
-
-        # 2) Crear carpeta PADRE (principal) para esta lista, si no existe
-        carpeta, _ = CarpetaTransparencia.objects.get_or_create(
-            padre=None,
-            nombre=lista.titulo,
-            defaults={'estatus': 'A', 'orden': 0}
-        )
-
-        # 3) Vincular (si agregaste el FK en ListaObligaciones)
-        if getattr(lista, 'carpeta_id', None) is None:
-            lista.carpeta = carpeta
-            lista.save(update_fields=['carpeta'])
-
-        messages.success(self.request, "La lista de obligaciones se ha creado correctamente (y su carpeta también).")
-        return response
+        messages.success(self.request, "La lista de obligaciones se ha creado correctamente.")
+        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -2503,11 +2485,10 @@ class GestionarArticulosArView(View, LoginRequiredMixin):
         }
 
         return render(request, 'transparencia2/gestionar_articulo.html', context)
-class CrearArticuloLigaView(LoginRequiredMixin, CreateView):
+class CrearArticuloLigaView(CreateView, LoginRequiredMixin):
     model = LigaArchivo
     form_class = ArticuloLigaArchivoForm
     template_name = 'transparencia2/crear_articuloLA.html'
-
     def dispatch(self, request, *args, **kwargs):
         if not (request.user.is_superuser or request.user.has_perm("transparencia.add_ligaarchivo")):
             raise PermissionDenied
@@ -2516,61 +2497,50 @@ class CrearArticuloLigaView(LoginRequiredMixin, CreateView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         articulo_id = self.kwargs.get('id')
-        kwargs['articuloDe_id'] = articulo_id
+        kwargs['articuloDe_id'] = articulo_id  # Estás pasando el 'id' correcto al formulario
         return kwargs
-
+    
     def form_valid(self, form):
+        # Obtener el articuloDe (ArticuloLiga) usando el id de la URL
         articulo_id = self.kwargs['id']
         articulo = get_object_or_404(ArticuloLiga, pk=articulo_id)
-
-        # 1) Forzar articuloDe (porque en el form está disabled y no viaja en POST)
+        
+        # Asignamos el artículo al campo 'articuloDe' del nuevo objeto LigaArchivo
         form.instance.articuloDe = articulo
-
-        # 2) Carpeta: si el usuario NO eligió carpeta, creamos/asignamos automáticamente:
-        #    Carpeta principal = ListaObligaciones.titulo
-        #    Subcarpeta        = ArticuloLiga.articulo_fraccion
-        if not form.instance.carpeta_id:
-            lista = articulo.lista_obligaciones
-
-            carpeta_raiz, _ = CarpetaTransparencia.objects.get_or_create(
-                padre=None,
-                nombre=lista.titulo,
-                defaults={'estatus': 'A', 'orden': 0}
-            )
-
-            carpeta_articulo, _ = CarpetaTransparencia.objects.get_or_create(
-                padre=carpeta_raiz,
-                nombre=articulo.articulo_fraccion,
-                defaults={'estatus': 'A', 'orden': articulo.orden or 0}
-            )
-
-            form.instance.carpeta = carpeta_articulo
-
+        
+        # Guardamos el objeto LigaArchivo con el artículo relacionado
         response = super().form_valid(form)
+        
         messages.success(self.request, 'Artículo creado con éxito!')
         return response
 
     def get_success_url(self):
+        # Redirigimos al usuario a la vista de gestión de artículos después de la creación
         return reverse_lazy('gestionarArchivoLa', kwargs={'id': self.kwargs['id']})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
+        
+        # Obtener el artículo utilizando el 'id' desde la URL
         articulo_id = self.kwargs['id']
         articulo = get_object_or_404(ArticuloLiga, pk=articulo_id)
         context['articulo'] = articulo
 
+        # Obtener la ListaObligaciones asociada al artículo
         lista_obligacion = articulo.lista_obligaciones
+        
+        # Pasamos la lista de obligaciones al contexto
         context['lista_obligaciones'] = lista_obligacion
-
         url_configuracion = reverse('gestionar_articulos', kwargs={'lista_id': lista_obligacion.id})
-
+        
+        # Crear el breadcrumb con los enlaces adecuados
         context["breadcrumb"] = {
             'parent': {'name': 'Gestión de artículos', 'url': url_configuracion},
             'child': {'name': 'Registro de artículos en lista', 'url': ''}
         }
-
+        
         context['sidebar'] = 'transparencia'
+        
         return context
 
 class EditarArticuloLigaArchivoView(UpdateView, LoginRequiredMixin):
