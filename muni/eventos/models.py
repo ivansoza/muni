@@ -21,7 +21,7 @@ class Articulo(models.Model):
     contenido = CKEditor5Field('Contenido', config_name='extends', blank=False, null=False)  
     imagen = models.ImageField(upload_to='habla_con_tus_hijos/imagenes/', verbose_name='Imagen principal')
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Categoría')  # Usamos ForeignKey en lugar de ManyToMany
-    etiquetas = models.CharField(max_length=225, verbose_name='Etiquetas del articulo', blank=True, null=True)
+    etiquetas = models.CharField(max_length=225, verbose_name='Etiquetas del articulo', blank=True, null=True, default='#Zacatelco fuerte y seguro')
     autor = models.ForeignKey(Autor, on_delete=models.CASCADE, verbose_name='Autor del articulo', blank=True, null=True)
     destacado = models.BooleanField(default=False)
     tiempo_lectura = models.PositiveIntegerField(default=1, verbose_name='Tiempo estimado de lectura')  # Tiempo en minutos

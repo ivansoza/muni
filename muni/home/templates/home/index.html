@@ -304,7 +304,7 @@
                     <!-- Noticias -->
                     {% if municipio.secciones_hab and municipio.secciones_hab.noticias %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'homeNoticias' %}">Noticias</a>
+                        <a class="nav-link" href="{% url 'homeNoticias' %}">Prensa</a>
                     </li>
                     {% endif %}
                 
@@ -468,7 +468,22 @@
     {% endif %}
 
 
-
+{% if municipio.cortina %}
+                        {% if municipio.cortina.informacion_municipio == "info1" %}
+                            {% include "home/components/informacion/alcalde.html" %}
+                        {% elif municipio.cortina.informacion_municipio == "info2" %}
+                            {% include "home/components/informacion/alcalde2.html" %}
+                        {% elif municipio.cortina.informacion_municipio == "info3" %}
+                            {% include "home/components/informacion/alcalde3.html" %}
+                        {% elif municipio.cortina.informacion_municipio == "info4" %}
+                            {% include "home/components/informacion/alcalde4.html" %}
+                        {% elif municipio.cortina.informacion_municipio == "sininfo" %}
+                        {% else %}
+                            {% include "home/components/informacion/alcalde.html" %}
+                        {% endif %}
+                    {% else %}
+                        {% include "home/components/informacion/alcalde.html" %}
+                    {% endif %}
 
 
     {% include "home/components/modals/mapa.html" %}
@@ -511,7 +526,7 @@
 
 
                         {% if seccion.nombre == 'servicios' %}
-                            {% if municipio.cortina %}
+                            {% comment %} {% if municipio.cortina %}
                                 {% if municipio.cortina.servicios == "servicios1" %}
                                     {% include "home/components/servicios/servicios1.html" %}
                                 {% elif municipio.cortina.servicios == "servicios2" %}
@@ -526,7 +541,7 @@
                                 {% endif %}
                             {% else %}
                                 {% include "home/components/servicios/servicios1.html" %}
-                            {% endif %}
+                            {% endif %} {% endcomment %}
 
                             {% if municipio.secciones_hab and municipio.secciones_hab.encuestas %}
                                 {% include "home/components/encuestas.html" %}
@@ -619,7 +634,7 @@
                 {% endif %}
 
                 {# Orden predeterminado si no hay secciones definidas #}
-                {% if municipio.cortina %}
+                {% comment %} {% if municipio.cortina %}
                     {% if municipio.cortina.servicios == "servicios1" %}
                         {% include "home/components/servicios/servicios1.html" %}
                     {% elif municipio.cortina.servicios == "servicios2" %}
@@ -634,7 +649,7 @@
                     {% endif %}
                 {% else %}
                     {% include "home/components/servicios/servicios1.html" %}
-                {% endif %}
+                {% endif %} {% endcomment %}
 
                 {% if municipio.secciones_hab and municipio.secciones_hab.encuestas %}
                     {% include "home/components/encuestas.html" %}
@@ -671,22 +686,7 @@
                 {% include "home/components/nuestras_redes.html" %}
                 {% include "home/components/nuestros_contactos.html" %}
 
-                    {% if municipio.cortina %}
-                        {% if municipio.cortina.informacion_municipio == "info1" %}
-                            {% include "home/components/informacion/alcalde.html" %}
-                        {% elif municipio.cortina.informacion_municipio == "info2" %}
-                            {% include "home/components/informacion/alcalde2.html" %}
-                        {% elif municipio.cortina.informacion_municipio == "info3" %}
-                            {% include "home/components/informacion/alcalde3.html" %}
-                        {% elif municipio.cortina.informacion_municipio == "info4" %}
-                            {% include "home/components/informacion/alcalde4.html" %}
-                        {% elif municipio.cortina.informacion_municipio == "sininfo" %}
-                        {% else %}
-                            {% include "home/components/informacion/alcalde.html" %}
-                        {% endif %}
-                    {% else %}
-                        {% include "home/components/informacion/alcalde.html" %}
-                    {% endif %}
+                    
             
             
             {% endif %}
