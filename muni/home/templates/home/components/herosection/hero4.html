@@ -1,23 +1,21 @@
 {% load static %}
 
 <style>
-.hero-section {
-    background: linear-gradient(
-        105deg,
-        rgba(var(--color-primario-rgb), 0.92) 45%,
-        rgba(var(--color-secundario-rgb), 0.88) 100%
-    ),
-    url({% if municipio.banner %}'{{ municipio.banner.url }}'{% else %}'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'{% endif %});
-    
-    background-size: contain; /* 👈 cambio clave */
-    background-position: center;
-    background-repeat: no-repeat; /* 👈 importante */
-    
-    color: white;
-    padding: 6rem 0 8rem;
-    border-bottom: 3px solid rgba(255,255,255,0.1);
-    margin-bottom: 2rem;
-}
+    .hero-section {
+        position: relative;
+        background: linear-gradient(
+            105deg,
+            rgba(var(--color-primario-rgb), 0.92) 45%,
+            rgba(var(--color-secundario-rgb), 0.88) 100%
+        ),
+        url({% if municipio.banner %}'{{ municipio.banner.url }}'{% else %}'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'{% endif %});
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 6rem 0 8rem;
+        border-bottom: 3px solid rgba(255,255,255,0.1);
+        margin-bottom: 2rem;
+    }
 
     
 
