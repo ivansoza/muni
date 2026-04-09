@@ -282,6 +282,15 @@ class MetaMunicipio(models.Model):
         return '/static/assets/images/logo/logo-new.png'
     
 class SeccionPlus(models.Model):
+    NAV_OPCIONES = [
+        ('mas', 'Más (por defecto)'),
+        ('gobierno', 'Gobierno'),
+        ('servicios', 'Servicios'),
+        ('transparencia', 'Transparencia'),
+        ('noticias', 'Prensa'),
+        ('sevac', 'SEVAC'),
+        ('reportes', 'Reportes'),
+    ]
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     categoria_convocatoria = models.ForeignKey(
         Categoria,
@@ -324,6 +333,12 @@ class SeccionPlus(models.Model):
         blank=True,
         null=True,
         help_text="Archivo opcional relacionado con la sección."
+    )
+    nav_seccion = models.CharField(
+        max_length=50,
+        choices=NAV_OPCIONES,
+        default='mas',
+        help_text="Sección del menú de navegación donde aparecerá este enlace."
     )
     def __str__(self):
         return self.nombre

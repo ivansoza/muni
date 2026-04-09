@@ -196,7 +196,7 @@ class SeccionesForm(forms.ModelForm):
 class SeccionPlusForm(forms.ModelForm):
     class Meta:
         model = SeccionPlus
-        fields = ['categoria_convocatoria', 'nombre', 'banner', 'status', 'detalles', 'es_general', 'archivo']
+        fields = ['categoria_convocatoria', 'nombre', 'banner', 'status', 'detalles', 'es_general', 'archivo','nav_seccion']
         widgets = {
             'categoria_convocatoria': forms.Select(attrs={'class': 'form-control'}),
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
