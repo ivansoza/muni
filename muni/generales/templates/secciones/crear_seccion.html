@@ -41,6 +41,14 @@
                     {{ form.es_general }}
                     <label class="form-check-label" for="id_es_general">¿Es general?</label>
                 </div>
+                <div class="form-group mb-3">
+                    <label for="id_nav_seccion">Posición en el menú de navegación</label>
+                    {{ form.nav_seccion }}
+                    <small class="form-text text-muted">
+                        Elige en qué sección del menú aparecerá este enlace. 
+                        Si seleccionas "Más", aparecerá en el menú desplegable al final.
+                    </small>
+                </div>
 
                 <div class="form-group mb-4">
                     <label for="id_detalles">Detalles</label>

@@ -1,5 +1,5 @@
 {% load static %}
-
+{% load nav_tags %}
 {% load render_dynamic %}
 
 <!DOCTYPE html>
@@ -254,20 +254,25 @@
     </style>
 
     
-            <!-- Navbar -->
+    <!-- Navbar -->
+    {% with secciones_gobierno=municipio.secciones_plus.all|filter_nav:'gobierno' %}
+    {% with secciones_servicios=municipio.secciones_plus.all|filter_nav:'servicios' %}
+    {% with secciones_noticias=municipio.secciones_plus.all|filter_nav:'noticias' %}
+    {% with secciones_transparencia=municipio.secciones_plus.all|filter_nav:'transparencia' %}
+    {% with secciones_sevac=municipio.secciones_plus.all|filter_nav:'sevac' %}
+    {% with secciones_reportes=municipio.secciones_plus.all|filter_nav:'reportes' %}
+    {% with secciones_mas=municipio.secciones_plus.all|filter_nav:'mas' %}
     <nav class="navbar navbar-expand-lg navbar-transparent fixed-top">
         <div class="container">
             <a class="navbar-brand" href="{% url "home" %}">
 
                 {% if  municipio.logotipo %}
                     <img src="{{municipio.logotipo.url}}" alt="Logo Municipal"  class="d-none d-md-inline-block">
-
                 {% else %}
                     <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Logo Municipal"
                         class="d-none d-md-inline-block">
                 {% endif %}
             
-                <!-- Aquí está la parte que queremos que responda a diferentes tamaños de pantalla -->
                 <span class="brand-text">
                     {% if municipio.nombre %}
                         {{ municipio.nombre }}
@@ -282,73 +287,193 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+
                     <!-- Inicio siempre se muestra -->
                     <li class="nav-item {% if sidebar == 'home' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'home' %}">Inicio</a>
                     </li>
                 
-                    <!-- Gobierno se muestra solo si 'gabinete' está habilitado -->
+                    <!-- GOBIERNO -->
                     {% if municipio.secciones_hab and municipio.secciones_hab.gabinete %}
-                    <li class="nav-item {% if sidebar == 'gobierno' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'homeGobierno' %}">Gobierno</a>
-                    </li>
-                    {% endif %}
-                
-                    <!-- Servicios -->
-                    {% if municipio.secciones_hab and municipio.secciones_hab.servicios %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'homeServicios' %}">Servicios</a>
-                    </li>
-                    {% endif %}
-                
-                    <!-- Noticias -->
-                    {% if municipio.secciones_hab and municipio.secciones_hab.noticias %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'homeNoticias' %}">Prensa</a>
-                    </li>
-                    {% endif %}
-                
-
-                    {% if municipio.secciones_hab and municipio.secciones_hab.transparencia %}
-                        {% if municipio.secciones_hab and municipio.secciones_hab.aviso_de_privacidad %}
-                            <!-- Si "Aviso de Privacidad" está activado, desplegar menú -->
-                            <li class="nav-item dropdown {% if sidebar == 'transparencia' %}active{% endif %}">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Transparencia <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
+                        {% if secciones_gobierno %}
+                            <!-- Con secciones_plus asignadas a 'gobierno': desplegable -->
+                            <li class="nav-item dropdown {% if sidebar == 'gobierno' %}active{% endif %}">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    Gobierno
+                                    <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <!-- Primer opción: Transparencia (URL habitual) -->
                                     <li>
-                                        <a class="dropdown-item" href="{% url 'lista_transparencia' %}">Transparencia</a>
+                                        <a class="dropdown-item" href="{% url 'homeGobierno' %}">Gobierno</a>
                                     </li>
-                                    <!-- Segunda opción: Aviso de Privacidad (vista "HomePrivacidad") -->
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'HomePrivacidad' %}">Avisos de Privacidad</a>
-                                    </li>
+                                    {% for seccion in secciones_gobierno %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'seccionplus_detail' seccion.pk seccion.slug %}">
+                                                {{ seccion.nombre }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
                                 </ul>
                             </li>
                         {% else %}
-                            <!-- Si "Aviso de Privacidad" está desactivado, enlace directo -->
+                            <!-- Sin secciones_plus: enlace directo -->
+                            <li class="nav-item {% if sidebar == 'gobierno' %}active{% endif %}">
+                                <a class="nav-link" href="{% url 'homeGobierno' %}">Gobierno</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                
+                    <!-- SERVICIOS -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.servicios %}
+                        {% if secciones_servicios %}
+                            <li class="nav-item dropdown {% if sidebar == 'servicios' %}active{% endif %}">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    Servicios
+                                    <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'homeServicios' %}">Servicios</a>
+                                    </li>
+                                    {% for seccion in secciones_servicios %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'seccionplus_detail' seccion.pk seccion.slug %}">
+                                                {{ seccion.nombre }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="nav-item {% if sidebar == 'servicios' %}active{% endif %}">
+                                <a class="nav-link" href="{% url 'homeServicios' %}">Servicios</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                
+                    <!-- NOTICIAS / PRENSA -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.noticias %}
+                        {% if secciones_noticias %}
+                            <li class="nav-item dropdown {% if sidebar == 'noticias' %}active{% endif %}">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    Prensa
+                                    <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'homeNoticias' %}">Prensa</a>
+                                    </li>
+                                    {% for seccion in secciones_noticias %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'seccionplus_detail' seccion.pk seccion.slug %}">
+                                                {{ seccion.nombre }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="nav-item {% if sidebar == 'noticias' %}active{% endif %}">
+                                <a class="nav-link" href="{% url 'homeNoticias' %}">Prensa</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+
+                    <!-- TRANSPARENCIA -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.transparencia %}
+                        {% if municipio.secciones_hab.aviso_de_privacidad or secciones_transparencia %}
+                            <!-- Desplegable: hay aviso de privacidad o secciones_plus asignadas -->
+                            <li class="nav-item dropdown {% if sidebar == 'transparencia' %}active{% endif %}">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    Transparencia
+                                    <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'lista_transparencia' %}">Transparencia</a>
+                                    </li>
+                                    {% if municipio.secciones_hab.aviso_de_privacidad %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'HomePrivacidad' %}">Avisos de Privacidad</a>
+                                        </li>
+                                    {% endif %}
+                                    {% for seccion in secciones_transparencia %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'seccionplus_detail' seccion.pk seccion.slug %}">
+                                                {{ seccion.nombre }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% else %}
+                            <!-- Enlace directo sin dropdown -->
                             <li class="nav-item {% if sidebar == 'transparencia' %}active{% endif %}">
                                 <a class="nav-link" href="{% url 'lista_transparencia' %}">Transparencia</a>
                             </li>
                         {% endif %}
                     {% endif %}
 
-                    
-
                     <!-- SEVAC -->
                     {% if municipio.secciones_hab and municipio.secciones_hab.sevac %}
-                    <li class="nav-item {% if sidebar == 'sevac' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'homeSevac' %}">SEVAC</a>
-                    </li>
+                        {% if secciones_sevac %}
+                            <li class="nav-item dropdown {% if sidebar == 'sevac' %}active{% endif %}">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    SEVAC
+                                    <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'homeSevac' %}">SEVAC</a>
+                                    </li>
+                                    {% for seccion in secciones_sevac %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'seccionplus_detail' seccion.pk seccion.slug %}">
+                                                {{ seccion.nombre }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="nav-item {% if sidebar == 'sevac' %}active{% endif %}">
+                                <a class="nav-link" href="{% url 'homeSevac' %}">SEVAC</a>
+                            </li>
+                        {% endif %}
                     {% endif %}
-                    {% if municipio.secciones_hab and municipio.secciones_hab.reportes %}
 
-                    <!-- Reportes (se muestra siempre, ejemplo) -->
-                    <li class="nav-item {% if sidebar == 'reportes' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'homeReportes' %}">Reportes</a>
-                    </li>
+                    <!-- REPORTES -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.reportes %}
+                        {% if secciones_reportes %}
+                            <li class="nav-item dropdown {% if sidebar == 'reportes' %}active{% endif %}">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    Reportes
+                                    <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'homeReportes' %}">Reportes</a>
+                                    </li>
+                                    {% for seccion in secciones_reportes %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'seccionplus_detail' seccion.pk seccion.slug %}">
+                                                {{ seccion.nombre }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="nav-item {% if sidebar == 'reportes' %}active{% endif %}">
+                                <a class="nav-link" href="{% url 'homeReportes' %}">Reportes</a>
+                            </li>
+                        {% endif %}
                     {% endif %}
 
                     <!-- Dropdown "Más" -->
@@ -364,24 +489,17 @@
                             <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
                         </a>
                         <ul class="dropdown-menu">
-                            <!-- Convocatorias -->
 
-
-                            {% for seccion in municipio.secciones_plus.all %}
-                                {% if seccion.status %}
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'seccionplus_detail' seccion.pk seccion.slug %}">
-                                            {{ seccion.nombre }}
-                                        </a>
-                                    </li>
-                                {% endif %}
-                            {% empty %}
-                       
+                            <!-- Secciones Plus con nav_seccion='mas' (por defecto) -->
+                            {% for seccion in secciones_mas %}
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'seccionplus_detail' seccion.pk seccion.slug %}">
+                                        {{ seccion.nombre }}
+                                    </a>
+                                </li>
                             {% endfor %}
 
-
-
-
+                            <!-- Convocatorias -->
                             {% if municipio.secciones_hab and municipio.secciones_hab.convocatorias %}
                             <li>
                                 <a class="dropdown-item" href="{% url 'HomeConvocatoriasView' %}">Convocatorias</a>
@@ -389,21 +507,19 @@
                             {% endif %}
                 
                             <!-- Habla con tus hijos -->
-                          {% if municipio.secciones_hab and municipio.secciones_hab.habla_con_tus_hijos %}
+                            {% if municipio.secciones_hab and municipio.secciones_hab.habla_con_tus_hijos %}
                             <li>
                                 <a class="dropdown-item" href="{% url 'homeHabla' %}?filtro=habla">Habla con tus hijos</a>
                             </li>
-                        {% endif %}
+                            {% endif %}
 
-                        {% if municipio.secciones_hab and municipio.secciones_hab.ven_vive_y_vuelve %}
+                            {% if municipio.secciones_hab and municipio.secciones_hab.ven_vive_y_vuelve %}
                             <li>
                                 <a class="dropdown-item" href="{% url 'homeHabla' %}?filtro=ven_vive">Ven vive y Vuelve a {{ municipio.nombre_municipio }}</a>
                             </li>
-                        {% endif %}
+                            {% endif %}
                   
-         
                             {% if municipio.secciones_hab and municipio.secciones_hab.contacts %}
-
                             <li>
                                 <a class="dropdown-item" href="{% url 'homeContacts' %}">Contacto</a>
                             </li>
@@ -416,6 +532,13 @@
             </div>
         </div>
     </nav>
+    {% endwith %}
+    {% endwith %}
+    {% endwith %}
+    {% endwith %}
+    {% endwith %}
+    {% endwith %}
+    {% endwith %}
     
 
 
@@ -441,10 +564,6 @@
         {% endfor %}
     </div>
     
-
-
-
-
 
 
     {% if municipio.cortina %}
@@ -706,15 +825,10 @@
 {% include "home/components/video.html" %}
 
 
-
-
-
-
     <!-- Footer -->
-
     {% include "layout/footerPrincipal.html" %}
+
     <!-- Bootstrap JS -->
-     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const navbar = document.querySelector('.navbar');
@@ -722,7 +836,6 @@
         const navbarCollapse = document.querySelector('.navbar-collapse');
     
         function toggleNavbarClass() {
-            // Ajustar clase según el scroll o el estado del menú desplegable
             if (window.scrollY > 70 || navbarCollapse.classList.contains('show')) {
                 navbar.classList.remove('navbar-transparent');
                 navbar.classList.add('navbar-dark');
@@ -732,10 +845,8 @@
             }
         }
     
-        // Listener para el scroll
         window.addEventListener('scroll', toggleNavbarClass);
     
-        // Listener para el botón toggle (aplicar clase antes del despliegue del menú)
         navbarToggler.addEventListener('click', () => {
             if (!navbarCollapse.classList.contains('show')) {
                 navbar.classList.remove('navbar-transparent');
@@ -745,18 +856,15 @@
             }
         });
     
-        // Listener para el cambio en el estado del colapso del navbar
         navbarCollapse.addEventListener('hidden.bs.collapse', toggleNavbarClass);
         navbarCollapse.addEventListener('shown.bs.collapse', toggleNavbarClass);
-        
-
     </script>
    <script>
     document.addEventListener("DOMContentLoaded", function () {
         const openModalBtn = document.getElementById("open-map-modal");
         
         function openModal() {
-            let modal = document.createElement("div"); // Crea el modal dinámicamente
+            let modal = document.createElement("div");
             modal.id = "map-modal";
             modal.classList.add("modal");
             modal.innerHTML = `
@@ -770,13 +878,11 @@
                 </div>
             `;
             
-            document.body.appendChild(modal); // Agrega el modal al `body`
+            document.body.appendChild(modal);
             setTimeout(() => modal.classList.add("show"), 10);
     
-            // Agregar eventos después de insertar en el DOM
             modal.querySelector(".close-modal").addEventListener("click", () => closeModalFunc(modal));
     
-            // Cerrar al hacer clic fuera del modal
             modal.addEventListener("click", (e) => {
                 if (e.target === modal) closeModalFunc(modal);
             });
@@ -785,7 +891,7 @@
         function closeModalFunc(modal) {
             modal.classList.remove("show");
             setTimeout(() => {
-                modal.remove(); // Elimina el modal del DOM
+                modal.remove();
             }, 300);
         }
     
@@ -794,17 +900,15 @@
     </script>
     
 
-
     <script>
         function scrollSocials(direction) {
             const container = document.getElementById('socialPostsContainer');
             const containerWidth = container.offsetWidth;
-            const scrollAmount = containerWidth; // desplazamiento igual al ancho visible (1 tarjeta en móvil)
+            const scrollAmount = containerWidth;
         
             const maxScrollLeft = container.scrollWidth - container.clientWidth;
             const newScrollLeft = container.scrollLeft + (direction * scrollAmount);
         
-            // Evitar que se pase del máximo o del mínimo
             if (newScrollLeft < 0) {
                 container.scrollTo({ left: 0, behavior: 'smooth' });
             } else if (newScrollLeft > maxScrollLeft) {
@@ -816,7 +920,6 @@
                 });
             }
         }
-        
     </script>
     
     <script>
@@ -826,7 +929,7 @@
     const nextBtn = document.getElementById("next-btn");
 
     let scrollAmount = 0;
-    const scrollStep = 370; // Tamaño de cada tarjeta + margen
+    const scrollStep = 370;
 
     prevBtn.addEventListener("click", function () {
         slider.scrollBy({ left: -scrollStep, behavior: "smooth" });
@@ -836,7 +939,6 @@
         slider.scrollBy({ left: scrollStep, behavior: "smooth" });
     });
 });
-
     </script>
 
 
@@ -845,37 +947,30 @@
             const encuestaContainer = document.getElementById('encuesta-container');
             const municipioId = encuestaContainer.getAttribute('data-municipio-id');
         
-            // 1. Obtener todas las encuestas activas del municipio
             fetch(`/transparencia/api/encuesta/activas/${municipioId}/`)
                 .then(response => {
                     if (!response.ok) {
-                        // Si la respuesta no es 2xx, arrojamos error.
                         throw new Error('No hay encuestas activas disponibles');
                     }
                     return response.json();
                 })
                 .then(encuestas => {
-                    // encuestas es un array: [ {id, titulo, descripcion, preguntas: [...]}, {...} ]
                     if (!encuestas.length) {
-                        // Si está vacío, no mostramos nada (ni siquiera el texto "No hay encuestas")
                         encuestaContainer.innerHTML = '';
                         return;
                     }
         
-                    // 2. Construimos una <section> por cada encuesta
                     let html = '';
                     encuestas.forEach(encuesta => {
                         html += crearEncuestaHTML(encuesta);
                     });
                     encuestaContainer.innerHTML = html;
         
-                    // 3. Por cada encuesta, registramos los listeners
                     encuestas.forEach(encuesta => {
                         const formId = `encuesta-form-${encuesta.id}`;
                         const form = document.getElementById(formId);
                         
                         if (form) {
-                            // Al cambiar un radio, habilitar el botón de envío
                             form.addEventListener('change', function() {
                                 const submitButton = form.querySelector('.btn-submit');
                                 if (submitButton) {
@@ -883,7 +978,6 @@
                                 }
                             });
         
-                            // Al hacer submit, enviamos las respuestas
                             form.addEventListener('submit', function(event) {
                                 event.preventDefault();
                                 enviarRespuestas(encuesta.id, formId);
@@ -892,15 +986,9 @@
                     });
                 })
                 .catch(error => {
-                    // Si no hay encuestas o hay otro error,
-                    // no mostramos nada.
                     encuestaContainer.innerHTML = '';
                 });
         
-            /**
-             * Crea el HTML de UNA encuesta, con tus clases y estructura originales.
-             * Cada encuesta tendrá su propio <section> + <form>.
-             */
              function crearEncuestaHTML(encuestaData) {
                 let sectionHtml = `
                     <section class="encuesta" id="encuesta-tarjeta-${encuestaData.id}">
@@ -909,14 +997,12 @@
                         <form id="encuesta-form-${encuestaData.id}">
                 `;
                 
-                // Generar las preguntas
                 encuestaData.preguntas.forEach(pregunta => {
                     sectionHtml += `
                         <div class="pregunta">
                             <p class="encuesta-pregunta">${pregunta.texto}</p>
                             <div class="opciones-container">
                     `;
-                    // Generar las opciones
                     pregunta.opciones.forEach(opcion => {
                         sectionHtml += `
                                 <div class="opcion">
@@ -937,7 +1023,6 @@
                     sectionHtml += `</div></div>`;
                 });
         
-                // Botón final de envío
                 sectionHtml += `
                             <button type="submit" class="btn-submit" disabled>Enviar Respuesta</button>
                         </form>
@@ -946,9 +1031,6 @@
                 return sectionHtml;
             }
         
-            /**
-             * Envía un solo formulario (toda una encuesta) en un POST.
-             */
             function enviarRespuestas(encuestaId, formId) {
                 const formElement = document.getElementById(formId);
                 if (!formElement) return;
@@ -956,7 +1038,6 @@
                 const formData = new FormData(formElement);
                 let respuestas = [];
         
-                // Cada "pregunta_XX" => "opcion_id"
                 for (let [fieldName, opcionId] of formData.entries()) {
                     const preguntaId = fieldName.split('_')[1];
                     respuestas.push({
@@ -984,7 +1065,6 @@
                     return response.json();
                 })
                 .then(data => {
-                    // Reemplaza la tarjeta de la encuesta con el mensaje de agradecimiento
                     const encuestaTarjeta = document.getElementById(`encuesta-tarjeta-${encuestaId}`);
                     if (encuestaTarjeta) {
                         encuestaTarjeta.innerHTML = `
