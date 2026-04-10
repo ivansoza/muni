@@ -1,4 +1,5 @@
 {% load static %}
+{% load nav_tags %}
 
 
 
@@ -9,141 +10,288 @@
 </style>
 
 
-
+    <!-- Navbar -->
+    {% with secciones_gobierno=municipio.secciones_plus.all|filter_nav:'gobierno' %}
+    {% with secciones_servicios=municipio.secciones_plus.all|filter_nav:'servicios' %}
+    {% with secciones_noticias=municipio.secciones_plus.all|filter_nav:'noticias' %}
+    {% with secciones_transparencia=municipio.secciones_plus.all|filter_nav:'transparencia' %}
+    {% with secciones_sevac=municipio.secciones_plus.all|filter_nav:'sevac' %}
+    {% with secciones_reportes=municipio.secciones_plus.all|filter_nav:'reportes' %}
+    {% with secciones_mas=municipio.secciones_plus.all|filter_nav:'mas' %}
 <nav class="navbar navbar-expand-lg text-white navbar-no-transparent fixed-top">
-    <div class="container">
-        <a class="navbar-brand" href="{% url 'home' %}">
-            {% if municipio.logotipo %}
-                <img src="{{ municipio.logotipo.url }}" alt="Logo Municipal" class="d-none d-md-inline-block">
-            {% else %}
-                <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Logo Municipal" class="d-none d-md-inline-block">
-            {% endif %}
-            <span class="brand-text">
-                {% if municipio.nombre %}
-                    {{ municipio.nombre }}
+        <div class="container">
+            <a class="navbar-brand" href="{% url "home" %}">
+
+                {% if  municipio.logotipo %}
+                    <img src="{{municipio.logotipo.url}}" alt="Logo Municipal"  class="d-none d-md-inline-block">
                 {% else %}
-                    Introducir el Nombre de tu Municipio
-                {% endif %}
-            </span>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <!-- "Inicio" siempre disponible -->
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'home' %}">Inicio</a>
-                </li>
-            
-                <!-- "Gobierno" depende de 'gabinete' -->
-                {% if municipio.secciones_hab and municipio.secciones_hab.gabinete %}
-                <li class="nav-item {% if sidebar == 'gobierno' %}active{% endif %}">
-                    <a class="nav-link" href="{% url 'homeGobierno' %}">Gobierno</a>
-                </li>
+                    <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Logo Municipal"
+                        class="d-none d-md-inline-block">
                 {% endif %}
             
-                <!-- "Servicios" depende de 'servicios' -->
-                {% if municipio.secciones_hab and municipio.secciones_hab.servicios %}
-                <li class="nav-item {% if sidebar == 'servicios' %}active{% endif %}">
-                    <a class="nav-link" href="{% url 'homeServicios' %}">Servicios</a>
-                </li>
-                {% endif %}
-            
-                <!-- "Noticias" depende de 'noticias' -->
-                {% if municipio.secciones_hab and municipio.secciones_hab.noticias %}
-                <li class="nav-item {% if sidebar == 'noticias' %}active{% endif %}">
-                    <a class="nav-link" href="{% url 'homeNoticias' %}">Noticias</a>
-                </li>
-                {% endif %}
-            
-                {% if municipio.secciones_hab and municipio.secciones_hab.transparencia %}
-                    {% if municipio.secciones_hab and municipio.secciones_hab.aviso_de_privacidad %}
-                        <!-- Si "Aviso de Privacidad" está activado, desplegar menú -->
-                        <li class="nav-item dropdown {% if sidebar == 'transparencia' %}active{% endif %}">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Transparencia <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <!-- Primer opción: Transparencia (URL habitual) -->
-                                <li>
-                                    <a class="dropdown-item" href="{% url 'lista_transparencia' %}">Transparencia</a>
-                                </li>
-                                <!-- Segunda opción: Aviso de Privacidad (vista "HomePrivacidad") -->
-                                <li>
-                                    <a class="dropdown-item" href="{% url 'HomePrivacidad' %}">Avisos de Privacidad</a>
-                                </li>
-                            </ul>
-                        </li>
+                <span class="brand-text">
+                    {% if municipio.nombre %}
+                        {{ municipio.nombre }}
                     {% else %}
-                        <!-- Si "Aviso de Privacidad" está desactivado, enlace directo -->
-                        <li class="nav-item {% if sidebar == 'transparencia' %}active{% endif %}">
-                            <a class="nav-link" href="{% url 'lista_transparencia' %}">Transparencia</a>
-                        </li>
+                        Introducir el Nombre de tu Municipio
                     {% endif %}
-                {% endif %}
+                </span>
+            </a>
             
-                <!-- "SEVAC" depende de 'sevac' -->
-                {% if municipio.secciones_hab and municipio.secciones_hab.sevac %}
-                <li class="nav-item {% if sidebar == 'sevac' %}active{% endif %}">
-                    <a class="nav-link" href="{% url 'homeSevac' %}">SEVAC</a>
-                </li>
-                {% endif %}
-            
-                <!-- "Reportes" depende de 'reportes' -->
-                {% if municipio.secciones_hab and municipio.secciones_hab.reportes %}
-                <li class="nav-item {% if sidebar == 'reportes' %}active{% endif %}">
-                    <a class="nav-link" href="{% url 'homeReportes' %}">Reportes</a>
-                </li>
-                {% endif %}
-            
-                <!-- Menú desplegable "Más" -->
-                <li class="nav-item dropdown {% if sidebar == 'mas' %}active{% endif %}">
-                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Más <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                        {% for seccion in municipio.secciones_plus.all %}
-                            {% if seccion.status %}
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+
+                    <!-- Inicio siempre se muestra -->
+                    <li class="nav-item {% if sidebar == 'home' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'home' %}">Inicio</a>
+                    </li>
+                
+                    <!-- GOBIERNO -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.gabinete %}
+                        {% if secciones_gobierno %}
+                            <!-- Con secciones_plus asignadas a 'gobierno': desplegable -->
+                            <li class="nav-item dropdown {% if sidebar == 'gobierno' %}active{% endif %}">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    Gobierno
+                                    <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'homeGobierno' %}">Gobierno</a>
+                                    </li>
+                                    {% for seccion in secciones_gobierno %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'seccionplus_detail' seccion.pk seccion.slug %}">
+                                                {{ seccion.nombre }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% else %}
+                            <!-- Sin secciones_plus: enlace directo -->
+                            <li class="nav-item {% if sidebar == 'gobierno' %}active{% endif %}">
+                                <a class="nav-link" href="{% url 'homeGobierno' %}">Gobierno</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                
+                    <!-- SERVICIOS -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.servicios %}
+                        {% if secciones_servicios %}
+                            <li class="nav-item dropdown {% if sidebar == 'servicios' %}active{% endif %}">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    Servicios
+                                    <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'homeServicios' %}">Servicios</a>
+                                    </li>
+                                    {% for seccion in secciones_servicios %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'seccionplus_detail' seccion.pk seccion.slug %}">
+                                                {{ seccion.nombre }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="nav-item {% if sidebar == 'servicios' %}active{% endif %}">
+                                <a class="nav-link" href="{% url 'homeServicios' %}">Servicios</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                
+                    <!-- NOTICIAS / PRENSA -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.noticias %}
+                        {% if secciones_noticias %}
+                            <li class="nav-item dropdown {% if sidebar == 'noticias' %}active{% endif %}">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    Prensa
+                                    <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'homeNoticias' %}">Prensa</a>
+                                    </li>
+                                    {% for seccion in secciones_noticias %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'seccionplus_detail' seccion.pk seccion.slug %}">
+                                                {{ seccion.nombre }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="nav-item {% if sidebar == 'noticias' %}active{% endif %}">
+                                <a class="nav-link" href="{% url 'homeNoticias' %}">Prensa</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+
+                    <!-- TRANSPARENCIA -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.transparencia %}
+                        {% if municipio.secciones_hab.aviso_de_privacidad or secciones_transparencia %}
+                            <!-- Desplegable: hay aviso de privacidad o secciones_plus asignadas -->
+                            <li class="nav-item dropdown {% if sidebar == 'transparencia' %}active{% endif %}">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    Transparencia
+                                    <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'lista_transparencia' %}">Transparencia</a>
+                                    </li>
+                                    {% if municipio.secciones_hab.aviso_de_privacidad %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'HomePrivacidad' %}">Avisos de Privacidad</a>
+                                        </li>
+                                    {% endif %}
+                                    {% for seccion in secciones_transparencia %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'seccionplus_detail' seccion.pk seccion.slug %}">
+                                                {{ seccion.nombre }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% else %}
+                            <!-- Enlace directo sin dropdown -->
+                            <li class="nav-item {% if sidebar == 'transparencia' %}active{% endif %}">
+                                <a class="nav-link" href="{% url 'lista_transparencia' %}">Transparencia</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+
+                    <!-- SEVAC -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.sevac %}
+                        {% if secciones_sevac %}
+                            <li class="nav-item dropdown {% if sidebar == 'sevac' %}active{% endif %}">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    SEVAC
+                                    <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'homeSevac' %}">SEVAC</a>
+                                    </li>
+                                    {% for seccion in secciones_sevac %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'seccionplus_detail' seccion.pk seccion.slug %}">
+                                                {{ seccion.nombre }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="nav-item {% if sidebar == 'sevac' %}active{% endif %}">
+                                <a class="nav-link" href="{% url 'homeSevac' %}">SEVAC</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+
+                    <!-- REPORTES -->
+                    {% if municipio.secciones_hab and municipio.secciones_hab.reportes %}
+                        {% if secciones_reportes %}
+                            <li class="nav-item dropdown {% if sidebar == 'reportes' %}active{% endif %}">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    Reportes
+                                    <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'homeReportes' %}">Reportes</a>
+                                    </li>
+                                    {% for seccion in secciones_reportes %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'seccionplus_detail' seccion.pk seccion.slug %}">
+                                                {{ seccion.nombre }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="nav-item {% if sidebar == 'reportes' %}active{% endif %}">
+                                <a class="nav-link" href="{% url 'homeReportes' %}">Reportes</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+
+                    <!-- Dropdown "Más" -->
+                    <li class="nav-item dropdown {% if sidebar == 'mas' %}active{% endif %}">
+                        <a
+                            class="nav-link dropdown-toggle d-flex align-items-center"
+                            href="#"
+                            role="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+                            Más
+                            <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+
+                            <!-- Secciones Plus con nav_seccion='mas' (por defecto) -->
+                            {% for seccion in secciones_mas %}
                                 <li>
                                     <a class="dropdown-item" href="{% url 'seccionplus_detail' seccion.pk seccion.slug %}">
                                         {{ seccion.nombre }}
                                     </a>
                                 </li>
-                            {% endif %}
-                        {% empty %}
-                        {% endfor %}
+                            {% endfor %}
 
-                        <!-- "Convocatorias" depende de 'convocatorias' -->
-                        {% if municipio.secciones_hab and municipio.secciones_hab.convocatorias %}
-                        <li>
-                            <a class="dropdown-item" href="{% url 'HomeConvocatoriasView' %}">Convocatorias</a>
-                        </li>
-                        {% endif %}
-            
-                        <!-- "Habla con tus hijos" depende de 'habla_con_tus_hijos' -->
-                      {% if municipio.secciones_hab and municipio.secciones_hab.habla_con_tus_hijos %}
+                            <!-- Convocatorias -->
+                            {% if municipio.secciones_hab and municipio.secciones_hab.convocatorias %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'HomeConvocatoriasView' %}">Convocatorias</a>
+                            </li>
+                            {% endif %}
+                
+                            <!-- Habla con tus hijos -->
+                            {% if municipio.secciones_hab and municipio.secciones_hab.habla_con_tus_hijos %}
                             <li>
                                 <a class="dropdown-item" href="{% url 'homeHabla' %}?filtro=habla">Habla con tus hijos</a>
                             </li>
-                        {% endif %}
+                            {% endif %}
 
-                        {% if municipio.secciones_hab and municipio.secciones_hab.ven_vive_y_vuelve %}
+                            {% if municipio.secciones_hab and municipio.secciones_hab.ven_vive_y_vuelve %}
                             <li>
                                 <a class="dropdown-item" href="{% url 'homeHabla' %}?filtro=ven_vive">Ven vive y Vuelve a {{ municipio.nombre_municipio }}</a>
                             </li>
-                        {% endif %}
-            
-            
-                        <!-- "Contacto" depende de 'contacts' -->
-                        {% if municipio.secciones_hab and municipio.secciones_hab.contacts %}
-                        <li>
-                            <a class="dropdown-item" href="{% url 'homeContacts' %}">Contacto</a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </li>
-            </ul>
+                            {% endif %}
+                  
+                            {% if municipio.secciones_hab and municipio.secciones_hab.contacts %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'homeContacts' %}">Contacto</a>
+                            </li>
+                            {% endif %}
+
+                        </ul>
+                    </li>
+                </ul>
+                
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
+    {% endwith %}
+    {% endwith %}
+    {% endwith %}
+    {% endwith %}
+    {% endwith %}
+    {% endwith %}
+    {% endwith %}
