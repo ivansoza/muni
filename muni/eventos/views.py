@@ -30,6 +30,10 @@ class HomeHablaView(TemplateView):
             context['articulos'] = Articulo.objects.filter(ven_vive=True).order_by('-fecha_publicacion')
             # Seleccionar el último artículo de la categoría "Ven vive y vuelve a tu municipio"
             context['articulo_destacado'] = Articulo.objects.filter(destacado=True,ven_vive=True).order_by('-fecha_publicacion').first()
+        elif filtro == 'historia':
+            context['articulos'] = Articulo.objects.filter(historia=True).order_by('-fecha_publicacion')
+            # Seleccionar el último artículo de la categoría "Ven vive y vuelve a tu municipio"
+            context['articulo_destacado'] = Articulo.objects.filter(destacado=True,historia=True).order_by('-fecha_publicacion').first()
         else:
             context['articulos'] = Articulo.objects.all().order_by('-fecha_publicacion')
             # Si no hay filtro, se selecciona el artículo destacado más reciente
@@ -61,6 +65,9 @@ def articulo_detalle(request, id):
     elif articulo.ven_vive:
         articulo_anterior = Articulo.objects.filter(ven_vive=True, id__lt=articulo.id).order_by('-id').first()
         articulo_siguiente = Articulo.objects.filter(ven_vive=True, id__gt=articulo.id).order_by('id').first()
+    elif articulo.historia:
+        articulo_anterior = Articulo.objects.filter(historia=True, id__lt=articulo.id).order_by('-id').first()
+        articulo_siguiente = Articulo.objects.filter(historia=True, id__gt=articulo.id).order_by('id').first()
     else:
         # Si no tiene categoría, mostrar el anterior y siguiente sin filtrar
         articulo_anterior = Articulo.objects.filter(id__lt=articulo.id).order_by('-id').first()
@@ -70,6 +77,8 @@ def articulo_detalle(request, id):
     if articulo.habla:
         articulos_relacionados = Articulo.objects.filter(habla=True).exclude(id=articulo.id)
     elif articulo.ven_vive:
+        articulos_relacionados = Articulo.objects.filter(ven_vive=True).exclude(id=articulo.id)
+    elif articulo.historia:
         articulos_relacionados = Articulo.objects.filter(ven_vive=True).exclude(id=articulo.id)
     else:
         articulos_relacionados = Articulo.objects.exclude(id=articulo.id)

@@ -688,6 +688,8 @@ button {
           Habla con tus Hijos
         {% elif filtro == 'ven_vive' %}
           Ven, Vive y Vuelve a {{ municipio.nombre_municipio }}
+        {% elif filtro == 'historia' %}
+          Historia 
         {% else %}
           ¡Bienvenido!
         {% endif %}
@@ -697,6 +699,8 @@ button {
           Un espacio para compartir experiencias, consejos y recursos para mejorar la comunicación con tus hijos y la convivencia familiar.
         {% elif filtro == 'ven_vive' %}
           Un espacio para conocer más sobre la oportunidad de visitar a {{ municipio.nombre_municipio }} y lo que puede ofrecer.
+        {% elif filtro == 'historia' %}
+          Un espacio para conocer sobre las raíces de nuestro municipio.
         {% else %}
           ¡Explora nuestras publicaciones!
         {% endif %}

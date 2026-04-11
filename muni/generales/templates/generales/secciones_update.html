@@ -176,7 +176,17 @@
           <label class="toggle-label" for="{{ form.ven_vive_y_vuelve.id_for_label }}"></label>
         </div>
       </div>
-
+        {# ------------------ HISTORIA ------------------ #}
+      <div class="form-card">
+        <div class="card-header">
+          <i class="fas fa-comments icon"></i>
+          <label for="{{ form.ven_vive_y_vuelve.id_for_label }}">Historia</label>
+        </div>
+        <div class="toggle-wrapper">
+          {{ form.historia_municipio }}
+          <label class="toggle-label" for="{{ form.historia_municipio.id_for_label }}"></label>
+        </div>
+      </div>
       {# ------------------ AVISO DE PRIVACIDAD ------------------ #}
       <div class="form-card">
         <div class="card-header">
