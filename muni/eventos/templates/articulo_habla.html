@@ -933,7 +933,7 @@ button {
 <body>
     <!-- Navegación de regreso -->
 <div class="container back-link-container">
-  <a href="{% url 'homeHabla' %}?filtro={% if articulo.habla %}habla{% elif articulo.ven_vive %}ven_vive{% else %}none{% endif %}" class="back-link">
+  <a href="{% url 'homeHabla' %}?filtro={% if articulo.habla %}habla{% elif articulo.ven_vive %}ven_vive{% else %}historia{% endif %}" class="back-link">
     <i data-feather="arrow-left"></i>
     Volver al inicio
   </a>

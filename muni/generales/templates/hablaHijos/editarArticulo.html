@@ -278,6 +278,20 @@
                         Marcar este articulo para el blog Ven, Vive y Vuelve.
                     </small>
                 </div>
+                <div class="col-md-6 form-group form-check">
+                    <!-- La etiqueta personalizada en lugar de la predeterminada -->
+                    <label for="{{ form.historia.id_for_label }}" class="form-check-label">
+                        {{ form.historia.label }}
+                    </label>
+                    
+                    <!-- Renderizamos el campo del formulario sin etiqueta -->
+                    {{ form.historia }}
+                    
+                    <!-- Texto explicativo debajo del checkbox -->
+                    <small class="form-text text-muted">
+                        Marcar este articulo para el blog Historia.
+                    </small>
+                </div>
 
                     <div class="col-md-6 form-group form-check">
                         <!-- La etiqueta personalizada en lugar de la predeterminada -->

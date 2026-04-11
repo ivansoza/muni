@@ -9,7 +9,7 @@ class ArticuloForm(forms.ModelForm):
 
     class Meta:
         model = Articulo
-        fields = ['titulo', 'abstract', 'contenido', 'imagen', 'categoria', 'etiquetas', 'autor', 'destacado', 'tiempo_lectura','habla','ven_vive', 'video_url']
+        fields = ['titulo', 'abstract', 'contenido', 'imagen', 'categoria', 'etiquetas', 'autor', 'destacado', 'tiempo_lectura','habla','ven_vive','historia', 'video_url']
 
         widgets = {
             'titulo': forms.TextInput(attrs={
@@ -47,6 +47,9 @@ class ArticuloForm(forms.ModelForm):
                 'class': 'form-check-input'
             }),
               'ven_vive': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+                'historia': forms.CheckboxInput(attrs={
                 'class': 'form-check-input'
             }),
             'video_url': forms.TextInput(attrs={

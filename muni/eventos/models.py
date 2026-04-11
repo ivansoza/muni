@@ -29,6 +29,7 @@ class Articulo(models.Model):
     likes = models.PositiveIntegerField(default=0)  # Contador de likes
     habla = models.BooleanField(default=False, verbose_name= "Habla con tus hijos")
     ven_vive = models.BooleanField(default=False, verbose_name= "Ven vive y vuelve a tu municipio")
+    historia = models.BooleanField(default=False, verbose_name= "Historia")
     video_url = models.URLField(
         verbose_name='Enlace de video',
         max_length=500,
@@ -63,4 +64,3 @@ class Comentario(models.Model):
 
     def __str__(self):
         return f'Comentario de {self.nombre or "Anónimo"} en {self.articulo.titulo}'
-

@@ -274,6 +274,11 @@
                                 <a class="dropdown-item" href="{% url 'homeHabla' %}?filtro=ven_vive">Ven vive y Vuelve a {{ municipio.nombre_municipio }}</a>
                             </li>
                             {% endif %}
+                            {% if municipio.secciones_hab and municipio.secciones_hab.historia_municipio %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'homeHabla' %}?filtro=historia">Historia</a>
+                            </li>
+                            {% endif %}
                   
                             {% if municipio.secciones_hab and municipio.secciones_hab.contacts %}
                             <li>
