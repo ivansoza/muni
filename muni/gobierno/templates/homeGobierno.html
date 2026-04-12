@@ -7,21 +7,21 @@
      ======================== */
   .perfil-gobierno {
     max-width: 1600px;
-    margin: 1rem auto;
-    padding: 2rem;
+    margin: 0 auto;
+    padding: 0.5rem 2rem;
   }
 
   .gobernadora-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 4rem;
-    margin: 4rem 0;
+    gap: 1rem;
+    margin: 0.5rem 0;
     position: relative;
   }
 
   .perfil-principal {
     position: relative;
-    padding: 2.5rem;
+    padding: 1rem 2rem;
     background: rgba(255, 255, 255, 0.95);
     border-radius: 20px;
     backdrop-filter: blur(10px);
@@ -35,9 +35,9 @@
      ======================== */
   .foto-gobernadora {
     position: relative;
-    margin: 0 auto 3rem;
-    width: 320px;
-    height: 320px;
+    margin: 0 auto 0.8rem;
+    width: 200px;
+    height: 200px;
   }
   .foto-gobernadora::after {
     content: '';
@@ -68,20 +68,7 @@
   .marco-dinamico:hover {
     transform: rotateZ(2deg) scale(1.05);
   }
-  .marco-dinamico {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    overflow: hidden;
-    transform-style: preserve-3d;
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  }
 
-  .marco-dinamico:hover {
-    transform: rotateZ(2deg) scale(1.05);
-  }
-  /* Cambio de filtro en hover */
   .marco-dinamico:hover img {
     filter: grayscale(0%);
   }
@@ -104,31 +91,32 @@
     text-align: center;
   }
   .info-gobernadora h1 {
-    font-size: 2.5rem;
+    font-size: 2rem;
     background: linear-gradient(to right, var(--color-primario), var(--color-secundario));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 1rem;
+    margin-bottom: 0.15rem;
     line-height: 1.1;
   }
   .info-gobernadora p {
     color: #555;
-    margin-bottom: 0.5rem;
-    font-size: 1.1rem;
-    line-height: 1.4;
+    margin-bottom: 0.15rem;
+    font-size: 1.05rem;
+    line-height: 1.3;
   }
 
   /* Período de gobierno */
   .periodo-gobierno {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    margin: 2rem 0;
+    gap: 1rem;
+    margin: 0.5rem 0;
     font-weight: 600;
     color: var(--color-primario);
+    font-size: 0.95rem;
   }
   .linea-tiempo {
-    width: 80px;
+    width: 60px;
     height: 2px;
     background: var(--color-iconos);
     position: relative;
@@ -136,11 +124,11 @@
   .linea-tiempo::after {
     content: '';
     position: absolute;
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     background: var(--color-iconos);
     border-radius: 50%;
-    top: -4px;
+    top: -3px;
     left: 50%;
     transform: translateX(-50%);
   }
@@ -152,14 +140,14 @@
     gap: 0.5rem;
     background: var(--color-gradiente);
     color: white;
-    padding: 1rem 2.5rem;
+    padding: 0.8rem 2rem;
     text-decoration: none;
     border-radius: 30px;
     font-weight: 600;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 2px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 5px 15px rgba(41, 94, 132, 0.2);
-    margin-top: 1rem;
+    margin-top: 0.3rem;
   }
   .boton-semblanza:hover {
     background: var(--color-gradiente);
@@ -173,7 +161,7 @@
      ======================== */
   .biografia {
     position: relative;
-    padding: 3rem;
+    padding: 1.5rem;
     background: rgba(255, 255, 255, 0.95);
     border-radius: 20px;
     backdrop-filter: blur(10px);
@@ -191,10 +179,10 @@
     font-family: serif;
   }
   .biografia h2 {
-    font-size: 2rem;
+    font-size: 1.8rem;
     position: relative;
-    padding-left: 2rem;
-    margin-bottom: 2rem;
+    padding-left: 1.5rem;
+    margin-bottom: 0.8rem;
   }
   .biografia h2::before {
     content: '';
@@ -202,20 +190,20 @@
     left: 0;
     top: 50%;
     transform: translateY(-50%);
-    width: 8px;
+    width: 6px;
     height: 80%;
     background: linear-gradient(to bottom, var(--color-primario), var(--color-secundario));
     border-radius: 4px;
   }
   .texto-biografia {
     column-count: 2;
-    column-gap: 3rem;
-    line-height: 1.8;
+    column-gap: 2.5rem;
+    line-height: 1.7;
   }
   .biografia p {
     color: #444;
-    line-height: 1.8;
-    font-size: 1.05rem;
+    line-height: 1.7;
+    font-size: 1rem;
     text-align: justify;
   }
 
@@ -236,17 +224,17 @@
      SECCIÓN: GABINETE
      ======================== */
   .gabinete {
-    margin-top: 5rem;
-    padding-top: 3rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
   }
   .gabinete h2 {
     color: var(--color-primario);
     text-align: center;
-    margin-bottom: 3rem;
-    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
     position: relative;
-    padding-bottom: 1rem;
+    padding-bottom: 0.5rem;
   }
   .gabinete h2::after {
     content: '';
@@ -254,16 +242,16 @@
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 100px;
+    width: 80px;
     height: 3px;
     background: var(--color-iconos);
   }
   .miembros-gabinete {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 3rem;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
     justify-content: center;
-    padding: 0 2rem;
+    padding: 0 0.5rem;
   }
 
   .miembro {
@@ -275,29 +263,28 @@
   }
   .miembro h3 {
     color: var(--color-primario);
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    margin-bottom: 0.1rem;
     font-weight: 600;
   }
   .miembro p {
     color: #666;
-    font-size: 0.95rem;
-    line-height: 1.4;
+    font-size: 0.85rem;
+    line-height: 1.3;
   }
-
 
   .nuevo-p {
     color: #666 !important;
-    font-size: 0.75rem !important;
-    line-height: 1.4 !important;
+    font-size: 0.7rem !important;
+    line-height: 1.3 !important;
   }
-  
+
   /* Foto de cada miembro */
   .foto-miembro {
-    width: 140px;
-    height: 140px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
-    margin: 0 auto 1.5rem;
+    margin: 0 auto 0.5rem;
     border: 3px solid var(--blanco);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     overflow: hidden;
@@ -315,17 +302,17 @@
     position: absolute;
     inset: -3px;
     border-radius: 50%;
-    border: 6px solid var(--color-iconos);
+    border: 5px solid var(--color-iconos);
     opacity: 0.3;
-    z-index: 2; /* Increase this to 2 to be above the image */
-    pointer-events: none; /* This allows clicks to pass through to the image */
+    z-index: 2;
+    pointer-events: none;
   }
   .foto-miembro img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     position: relative;
-    z-index: 1; /* Keep this at 1 */
+    z-index: 1;
     transition: transform 0.3s ease;
   }
   .foto-miembro:hover img {
@@ -339,7 +326,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     color: white;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -348,8 +335,6 @@
   .foto-miembro:hover .overlay {
     opacity: 1;
   }
-
-
 
   .foto-miembro::before {
     content: '';
@@ -372,14 +357,18 @@
      MEDIA QUERIES
      ======================== */
   @media (max-width: 768px) {
+    .perfil-gobierno {
+      padding: 0.5rem 1rem;
+    }
+
     .gobernadora-container {
       flex-direction: column;
-      gap: 2rem;
+      gap: 1rem;
     }
 
     .perfil-principal {
       order: 2;
-      padding: 1.5rem;
+      padding: 1rem;
     }
 
     .biografia {
@@ -387,29 +376,32 @@
     }
 
     .foto-gobernadora {
-      width: 220px;
-      height: 220px;
+      width: 160px;
+      height: 160px;
+      margin: 0 auto 0.5rem;
+    }
+
+    .info-gobernadora h1 {
+      font-size: 1.6rem;
     }
 
     .miembros-gabinete {
       grid-template-columns: repeat(2, 1fr);
-      gap: 2rem;
+      gap: 1rem;
+    }
+
+    .foto-miembro {
+      width: 85px;
+      height: 85px;
     }
   }
 
-
-  /* ========================
-   MEDIA QUERY TELÉFONOS
-   ======================== */
-@media (max-width: 576px) {      /* 576 px ≈ Bootstrap “sm”. Ajusta si lo necesitas */
-  .miembros-principales {
-    grid-template-columns: 1fr; /* Una sola columna */
-    gap: 1.5rem;                /* Opcional: un poco menos de espacio vertical */
+  @media (max-width: 576px) {
+    .miembros-principales {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
   }
-}
-
-
-
 </style>
 
 <style>
@@ -424,15 +416,11 @@
   }
 </style>
 
-
-
 <div class="container">
     <h2 class="news-title">Gobierno 
-        <span>| Directorio
-            </span>
+        <span>| Directorio</span>
     </h2>
 </div>
-
 
 <section class="perfil-gobierno">
   {% if municipio %}
@@ -459,7 +447,7 @@
             </div>
 
             <div class="info-gobernadora">
-              <a class="link-clean" href="{% url 'perfil_persona' 'gabinete' principal.id %}" class="text-decoration-none">
+              <a class="link-clean" href="{% url 'perfil_persona' 'gabinete' principal.id %}">
                 <h1 data-aos="fade-up">{{ principal.nombre }}</h1>
                 <p class="cargo">{{ principal.cargo }}</p>
               </a>
@@ -472,7 +460,6 @@
 
             {% if miembros|length > 1 %}
               <div class="gabinete">
-                {# <h2>Equipo de Gobierno</h2> #}
                 <div class="miembros-gabinete miembros-principales">
                   {% for miembro in miembros|slice:"1:" %}
                     <div class="miembro">
@@ -496,7 +483,7 @@
                           <div class="overlay"></div>
                         </div>
                       </a>
-                      <h3><a class="link-clean" class="text-decoration-none" href="{% url 'perfil_persona' 'gabinete' miembro.id %}">{{ miembro.nombre }}</a></h3>
+                      <h3><a class="link-clean" href="{% url 'perfil_persona' 'gabinete' miembro.id %}">{{ miembro.nombre }}</a></h3>
                       <p>{{ miembro.cargo }}</p>
                     </div>
                   {% endfor %}
@@ -531,7 +518,7 @@
                   <div class="overlay"></div>
                 </div>
               </a>
-              <h3><a class="link-clean" class="text-decoration-none" href="{% url 'perfil_persona' 'regidor' miembro.id %}">{{ miembro.nombre }}</a></h3>
+              <h3><a class="link-clean" href="{% url 'perfil_persona' 'regidor' miembro.id %}">{{ miembro.nombre }}</a></h3>
               <p>{{ miembro.cargo }}</p>
               {% if miembro.area %}
                 <p class="nuevo-p">{{ miembro.area }}</p>
@@ -562,7 +549,7 @@
                   <div class="overlay"></div>
                 </div>
               </a>
-              <h3><a class="link-clean" class="text-decoration-none" href="{% url 'perfil_persona' 'presidente' miembro.id %}">{{ miembro.nombre }}</a></h3>
+              <h3><a class="link-clean" href="{% url 'perfil_persona' 'presidente' miembro.id %}">{{ miembro.nombre }}</a></h3>
               <p>{{ miembro.cargo }}</p>
             </div>
           {% endfor %}
@@ -590,7 +577,7 @@
                   <div class="overlay"></div>
                 </div>
               </a>
-              <h3><a class="link-clean" class="text-decoration-none" href="{% url 'perfil_persona' 'director' miembro.id %}">{{ miembro.nombre }}</a></h3>
+              <h3><a class="link-clean" href="{% url 'perfil_persona' 'director' miembro.id %}">{{ miembro.nombre }}</a></h3>
               <p>{{ miembro.cargo }}</p>
             </div>
           {% endfor %}
@@ -618,7 +605,7 @@
                   <div class="overlay"></div>
                 </div>
               </a>
-              <h3><a class="link-clean" class="text-decoration-none" href="{% url 'perfil_persona' 'coordinador_dif' miembro.id %}">{{ miembro.nombre }}</a></h3>
+              <h3><a class="link-clean" href="{% url 'perfil_persona' 'coordinador_dif' miembro.id %}">{{ miembro.nombre }}</a></h3>
               <p>{{ miembro.cargo }}</p>
             </div>
           {% endfor %}
