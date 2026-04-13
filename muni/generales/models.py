@@ -103,6 +103,7 @@ class Secciones(models.Model):
     encuestas = models.BooleanField(default=False)
     servicios_en_linea = models.BooleanField(default=False)
     videos = models.BooleanField(default=False)
+    normatividad = models.BooleanField(default=False)  # Nuevo módulo
 
     def __str__(self):
         return f"Secciones de {self.municipio}"

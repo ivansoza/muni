@@ -466,7 +466,7 @@
                       <a class="link-clean" href="{% url 'perfil_persona' 'gabinete' miembro.id %}">
                         <div class="foto-miembro">
                           {% if miembro.imagen %}
-    <img src="{{ miembro.imagen.url }}" alt="{{ miembro.nombre }}">
+                              <img src="{{ miembro.imagen.url }}" alt="{{ miembro.nombre }}">
 
                           {% else %}
                             {% if municipio.logotipo_claro %}
