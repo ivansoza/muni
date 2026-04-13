@@ -352,6 +352,12 @@
                             </li>
                         {% endif %}
                     {% endif %}
+                      {% if municipio.secciones_hab and municipio.secciones_hab.historia_municipio %}
+                            <!-- Enlace directo sin dropdown -->
+                            <li class="nav-item {% if sidebar == 'historia' %}active{% endif %}">
+                                <a class="nav-link" href="{% url 'homeHabla' %}?filtro=historia">Historia</a>
+                            </li>
+                            {% endif %}
                 
                     <!-- NOTICIAS / PRENSA -->
                     {% if municipio.secciones_hab and municipio.secciones_hab.noticias %}
@@ -515,13 +521,7 @@
 
                             {% if municipio.secciones_hab and municipio.secciones_hab.ven_vive_y_vuelve %}
                             <li>
-                                <a class="dropdown-item" href="{% url 'homeHabla' %}?filtro=ven_vive">Ven vive y Vuelve a {{ municipio.nombre_municipio }}</a>
-                            </li>
-                            {% endif %}
-
-                             {% if municipio.secciones_hab and municipio.secciones_hab.historia_municipio %}
-                            <li>
-                                <a class="dropdown-item" href="{% url 'homeHabla' %}?filtro=historia">Historia</a>
+                                <a class="dropdown-item" href="{% url 'homeHabla' %}?filtro=ven_vive">Ven, Vive y Vuelve a {{ municipio.nombre_municipio }}</a>
                             </li>
                             {% endif %}
                   
