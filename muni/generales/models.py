@@ -431,3 +431,64 @@ class VideoMunicipio(models.Model):
     def __str__(self):
         return self.nombre
     
+
+class AppIcon(models.Model):
+    APP_CHOICES = [
+        ('noticias',        'Noticias'),
+        ('social',          'Redes Sociales'),
+        ('servicios',       'Servicios'),
+        ('custom',          'Personalizar'),
+        ('trans',           'Transparencia'),
+        ('privacidad',      'Avisos de Privacidad'),
+        ('convocatorias',   'Convocatorias'),
+        ('SEVAC',           'SEVAC'),
+        ('gabinete',        'Gabinete'),
+        ('generales',       'Generales'),
+        ('encuesta',        'Encuestas'),
+        ('logo_video',      'Videos'),
+        ('reportes',        'Reportes'),
+        ('habla',           'Habla con tus hijos'),
+        ('normatividad',    'Normatividad'),
+    ]
+
+    app = models.CharField(max_length=50, choices=APP_CHOICES, unique=True, verbose_name='Aplicación')
+    imagen = models.ImageField(upload_to='apps/', blank=True, null=True, verbose_name='Ícono')
+
+    def __str__(self):
+        return self.get_app_display()
+
+    class Meta:
+        verbose_name = 'Ícono de Aplicación'
+        verbose_name_plural = 'Íconos de Aplicaciones'
+
+
+
+
+
+
+
+class NormatividadSeccion(models.Model):
+    seccion = models.CharField(max_length=200)
+    descripcion = models.CharField(max_length=200, blank=True, null=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Normatividad - {self.seccion} "
+
+    class Meta:
+        verbose_name = "Sección de Normatividad"
+        verbose_name_plural = "Secciones de Normatividad"
+
+
+class ArchivoNormatividad(models.Model):
+    seccion = models.ForeignKey(NormatividadSeccion, related_name='archivos', on_delete=models.CASCADE)
+    archivo = models.FileField(upload_to='archivos_normatividad/', blank=False, null=False)
+    descripcion = models.CharField(max_length=255, blank=True, null=True)
+    fecha_subida = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Archivo: {self.descripcion if self.descripcion else 'Sin descripción'}"
+
+    class Meta:
+        verbose_name = "Archivo de Normatividad"
+        verbose_name_plural = "Archivos de Normatividad"

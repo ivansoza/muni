@@ -1,6 +1,7 @@
 # admin.py
 from django.contrib import admin
-from .models import ArchivoRelacionadoRecomendacion, ContadorVisitas, MetaMunicipio, Recomendaciones, SeccionPlus, Secciones, SocialNetwork, personalizacionPlantilla, VideoMunicipio, SeccionPlusArchivo
+from .models import AppIcon, ArchivoRelacionadoRecomendacion, ContadorVisitas, MetaMunicipio, Recomendaciones, SeccionPlus, Secciones, SocialNetwork, personalizacionPlantilla, VideoMunicipio, SeccionPlusArchivo
+from django.utils.html import format_html
 
 @admin.register(SocialNetwork)
 class SocialNetworkAdmin(admin.ModelAdmin):
@@ -62,3 +63,20 @@ class ArchivoRelacionadoRecomendacionAdmin(admin.ModelAdmin):
 
 admin.site.register(VideoMunicipio)
 admin.site.register(SeccionPlusArchivo)
+
+
+
+@admin.register(AppIcon)
+class AppIconAdmin(admin.ModelAdmin):
+    list_display = ('get_app_display_name', 'imagen_preview', 'imagen')
+    list_editable = ('imagen',)
+
+    def get_app_display_name(self, obj):
+        return obj.get_app_display()
+    get_app_display_name.short_description = 'Aplicación'
+
+    def imagen_preview(self, obj):
+        if obj.imagen:
+            return format_html('<img src="{}" style="width:50px; height:50px; border-radius:10px; object-fit:cover;">', obj.imagen.url)
+        return '—'
+    imagen_preview.short_description = 'Vista previa'
