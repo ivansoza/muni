@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from .views import AvisoDePrivacidadCreateView, AvisoDePrivacidadUpdateView, CrearCategoriaView, CrearSeccionPlusView, CustomLoginView, DashboardView, EditarRequisitoView, DetailMunicipioView, EditarSeccionPlusView, EliminarRequisitoView, EliminarSeccionPlusView, EnQueConsisteView, EncuestaDetailView, EncuestasView, GeneralesDashboardView, GestionarServicioView, GroupCreateView, GroupUpdateView, GruposView, NewsView, PersonalizacionView, PrivacidadView, ReportesView, RequisitosImagenView, RequisitosView, SeccionPlusDetailView, SeccionesNuevasView, SeccionesUpdateView, SeccionesView, ServicioCreateView, ServicioUpdateView,SocialMediaView,ServicesView, UsuarioCreateView, UsuarioEditView, UsuarioEditView, UsuarioPasswordChangeView, UsuariosView, VideoCreateView, VideoUpdateView, VideoView, VideosView, actualizar_video, crear_dependencia_ajax, create_social_network, custom_upload_function, agregar_categoria, delete_group, delete_social_network, editar_convocatoria, elemento_api, eliminar_noticia, editar_noticia, informacion_ciudad_api, list_social_networks, toggle_favorite, toggle_user_status, video_delete
+from .views import AvisoDePrivacidadCreateView, AvisoDePrivacidadUpdateView, CrearCategoriaView, CrearSeccionPlusView, CustomLoginView, DashboardView, EditarRequisitoView, DetailMunicipioView, EditarSeccionPlusView, EliminarRequisitoView, EliminarSeccionPlusView, EnQueConsisteView, EncuestaDetailView, EncuestasView, GeneralesDashboardView, GestionarServicioView, GroupCreateView, GroupUpdateView, GruposView, HomeNormatividad, NewsView, NormatividadSeccionCreateView, NormatividadSeccionUpdateView, NormatividadView, PersonalizacionView, PrivacidadView, ReportesView, RequisitosImagenView, RequisitosView, SeccionPlusDetailView, SeccionesNuevasView, SeccionesUpdateView, SeccionesView, ServicioCreateView, ServicioUpdateView,SocialMediaView,ServicesView, UsuarioCreateView, UsuarioEditView, UsuarioEditView, UsuarioPasswordChangeView, UsuariosView, VideoCreateView, VideoUpdateView, VideoView, VideosView, actualizar_video, crear_dependencia_ajax, create_social_network, custom_upload_function, agregar_categoria, delete_group, delete_social_network, editar_convocatoria, elemento_api, eliminar_noticia, editar_noticia, informacion_ciudad_api, list_social_networks, toggle_favorite, toggle_user_status, video_delete
 from django.contrib.auth.views import LogoutView
 from .views import TransparenciaView, crear_seccion, EjercicioFiscalListView, EjercicioFiscalCreateView, DocumentoTransparenciaListView, registrar_documento, SeccionTransparenciaUpdateView, eliminar_seccion, EjercicioFiscalUpdateView, eliminar_ejercicio_fiscal, DocumentoTransparenciaUpdateView, eliminar_documento_transparencia
 from . import views
@@ -183,7 +183,19 @@ urlpatterns = [
     path('articulo_editar/<int:pk>/', ArticuloUpdateView.as_view(), name='articulo_editar'),
 
     path('articulo_eliminar/<int:pk>/', eliminar_articulo, name='eliminar_articulo'),
+    path('generales/normatividad/', NormatividadView.as_view(), name='NormatividadView'),
 
+    path(
+        'generales/normatividad/nuevo/',
+        NormatividadSeccionCreateView.as_view(),
+        name='crear_normatividad_seccion'
+    ),
+    path(
+        'normatividad/<int:pk>/editar/',
+        NormatividadSeccionUpdateView.as_view(),
+        name='editar_normatividad_seccion'
+    ),
+    path('normatividad/<int:pk>/eliminar/', views.eliminar_normatividad_seccion, name='eliminar_normatividad_seccion'),
 
-
+    path('normatividad/', HomeNormatividad.as_view(), name='homeNormatividad'),
 ]

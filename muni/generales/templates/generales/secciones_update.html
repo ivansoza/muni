@@ -283,6 +283,17 @@
         </div>
       </div>
 
+      {# ------------------ NORMATIVIDAD ------------------ #}
+      <div class="form-card">
+        <div class="card-header">
+          <i class="fas fa-balance-scale icon"></i>
+          <label for="{{ form.normatividad.id_for_label }}">Normatividad</label>
+        </div>
+        <div class="toggle-wrapper">
+          {{ form.normatividad }}
+          <label class="toggle-label" for="{{ form.normatividad.id_for_label }}"></label>
+        </div>
+      </div>
     </div>
 
     <div class="form-actions">

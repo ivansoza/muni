@@ -505,6 +505,13 @@
                                 </li>
                             {% endfor %}
 
+
+                                {% if municipio.secciones_hab and municipio.secciones_hab.normatividad %}
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'homeNormatividad' %}">Normatividad</a>
+                                </li>
+                                {% endif %}
+
                             <!-- Convocatorias -->
                             {% if municipio.secciones_hab and municipio.secciones_hab.convocatorias %}
                             <li>
