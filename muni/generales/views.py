@@ -25,13 +25,13 @@ from django.views.generic import FormView
 from django.http import JsonResponse, HttpResponseNotAllowed
 
 from informacion_municipal.models import ElementoLista, InformacionCiudad, Municipio, Video
-from generales.models import ContadorVisitas, SeccionPlus, Secciones, SocialNetwork, VideoMunicipio
+from generales.models import AppIcon, ArchivoNormatividad, ContadorVisitas, NormatividadSeccion, SeccionPlus, Secciones, SocialNetwork, VideoMunicipio
 from reportes.models import ReporteStatus
 from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, AvisoDePrivacidadForm
 from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
 from servicios.forms import ComoLoRealizoForm, CuantoCuestaForm, EnQueConsisteForm, QueSeRequiereForm, RequisitosImagenForm, ServicioForm
 from servicios.models import ComoLoRealizo, ConfiguracionServicio, CuantoCuesta, Dependencia, EnQueConsiste, QueSeRequiere, RequisitosImagen, Servicio
-from .forms import CustomAuthenticationForm, ElementoListaForm, GroupForm, InformacionCiudadForm, SeccionPlusForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm, VideoMunicipioForm
+from .forms import ArchivoNormatividadForm, ArchivoNormatividadFormSet, CustomAuthenticationForm, ElementoListaForm, GroupForm, InformacionCiudadForm, NormatividadSeccionForm, SeccionPlusForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm, VideoMunicipioForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from noticias.models import Noticia, ImagenGaleria, Categoria
@@ -290,6 +290,104 @@ class PrivacidadView(LoginRequiredMixin, TemplateView):
         return context
     
 
+
+class NormatividadView(LoginRequiredMixin, TemplateView):
+    template_name = 'generales/normatividad.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumb"] = {
+            'parent': {'name': 'Generales', 'url': '/admin/generales/'},
+            'child': {'name': 'Normatividad', 'url': ''}
+        }
+        context['sidebar'] = 'Generales'
+        context['regreso_url'] = reverse('generalesDashboard')
+        context['secciones'] = NormatividadSeccion.objects.all()
+        return context
+    
+
+
+
+class NormatividadSeccionCreateView(LoginRequiredMixin, CreateView):
+    model = NormatividadSeccion
+    form_class = NormatividadSeccionForm
+    template_name = 'generales/normatividadAdmin.html'
+    success_url = reverse_lazy('NormatividadView')
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        if self.request.method == 'POST':
+            ctx['formset'] = ArchivoNormatividadFormSet(
+                self.request.POST, self.request.FILES)
+        else:
+            ctx['formset'] = ArchivoNormatividadFormSet()
+        ctx["breadcrumb"] = {
+            'parent': {'name': 'Normatividad', 'url': reverse('NormatividadView')},
+            'child':  {'name': 'Crear Sección', 'url': ''},
+        }
+        ctx['sidebar'] = 'Generales'
+        ctx['regreso_url'] = reverse('NormatividadView')
+        return ctx
+
+    def form_valid(self, form):
+        ctx = self.get_context_data()
+        formset = ctx['formset']
+        if formset.is_valid():
+            self.object = form.save()
+            formset.instance = self.object
+            formset.save()
+            messages.success(self.request, 'Sección creada correctamente.')
+            return redirect(self.get_success_url())
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+class NormatividadSeccionUpdateView(LoginRequiredMixin, UpdateView):
+    model = NormatividadSeccion
+    form_class = NormatividadSeccionForm
+    template_name = 'generales/normatividadAdminEdit.html'
+    success_url = reverse_lazy('NormatividadView')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        extra_value = 0 if self.object.archivos.exists() else 1
+
+        ArchivoNormatividadFormSetDynamic = inlineformset_factory(
+            NormatividadSeccion,
+            ArchivoNormatividad,
+            form=ArchivoNormatividadForm,
+            extra=extra_value,
+            can_delete=True
+        )
+
+        if self.request.method == 'POST':
+            formset = ArchivoNormatividadFormSetDynamic(
+                self.request.POST, self.request.FILES, instance=self.object)
+        else:
+            formset = ArchivoNormatividadFormSetDynamic(instance=self.object)
+
+        context['formset'] = formset
+        context["breadcrumb"] = {
+            'parent': {'name': 'Normatividad', 'url': reverse('NormatividadView')},
+            'child':  {'name': 'Editar Sección', 'url': ''},
+        }
+        context['sidebar'] = 'Generales'
+        context['regreso_url'] = reverse('NormatividadView')
+        return context
+
+    def form_valid(self, form):
+        self.object = form.save()
+        context = self.get_context_data()
+        formset = context['formset']
+        if formset.is_valid():
+            formset.instance = self.object
+            formset.save()
+            messages.success(self.request, 'Sección actualizada correctamente.')
+            return redirect(self.get_success_url())
+        return self.render_to_response(self.get_context_data(form=form))
+    
+
+
+    
 class AvisoDePrivacidadCreateView(LoginRequiredMixin, CreateView):
     model = AvisoDePrivacidad
     form_class = AvisoDePrivacidadForm
@@ -817,6 +915,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         return [self.gabinete_template_name] if self._is_gabinete_user(self.request.user) else [self.template_name]
 
     # ---- GET (y también base para POST fallido) ----
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["breadcrumb"] = {
@@ -836,7 +935,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context["gabinete_member"] = miembro
         context["gabinete_member_model"] = modelo
 
-        # Puede editar si es el asociado (o staff/superuser)
         can_edit = bool(
             miembro and (
                 miembro.usuario_id == self.request.user.id or
@@ -846,15 +944,19 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         )
         context["can_edit_gabinete_content"] = can_edit
 
-        # Form de CKEditor (solo si puede editar)
         if can_edit:
             Form = contenido_form_for(type(miembro))
             context["contenido_form"] = Form(instance=miembro)
         else:
             context["contenido_form"] = None
 
-        return context
+        # Íconos dinámicos de aplicaciones
+        context['app_icons'] = {
+            icon.app: icon
+            for icon in AppIcon.objects.all()
+        }
 
+        return context
     # ---- POST: guardar CKEditor ----
     def post(self, request, *args, **kwargs):
         # Reutilizamos la lógica de miembro asociado
@@ -3138,6 +3240,14 @@ class SeccionPlusDetailView(TemplateView):
             context['categorias'] = CategoriaConvocatoria.objects.none()
 
         return context
+
+def eliminar_normatividad_seccion(request, pk):
+    seccion = get_object_or_404(NormatividadSeccion, pk=pk)
+    if request.method == 'POST':
+        seccion.delete()
+        messages.success(request, "La sección de normatividad se ha eliminado correctamente.")
+    return redirect(reverse_lazy('NormatividadView'))
+
 def eliminar_aviso_privacidad(request, pk):
     aviso = get_object_or_404(AvisoDePrivacidad, pk=pk)
     if request.method == 'POST':
@@ -3773,3 +3883,13 @@ def video_delete(request, pk):
     video.delete()
     messages.success(request, "Video eliminado con éxito.")
     return redirect('videos')
+
+
+class HomeNormatividad(TemplateView):
+    template_name = 'homeNormatividad.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sidebar'] = 'normatividad'
+        context['secciones'] = NormatividadSeccion.objects.all().order_by('fecha_creacion').prefetch_related('archivos')
+        return context
