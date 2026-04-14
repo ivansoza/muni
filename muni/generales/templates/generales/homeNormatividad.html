@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .avisos-list {
+        display: block;
+        gap: 20px;
+    }
+
+    .aviso-card {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        background-color: #fff;
+        transition: transform 0.3s ease;
+        margin-bottom: 20px;
+    }
+
+    .aviso-card:hover { transform: translateY(-5px); }
+
+    .aviso-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 7px;
+        background-color: var(--color-primario);
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .aviso-header:hover { background-color: var(--color-secundario); }
+
+    .aviso-header h3 {
+        margin-left: 25px;
+        margin-top: 5px;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .toggle-btn {
+        background-color: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #fff;
+        font-size: 20px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .toggle-btn:hover {
+        background-color: rgba(255, 255, 255, 0.25);
+        transform: rotate(90deg);
+        border-color: rgba(255, 255, 255, 0.6);
+    }
+
+    .aviso-body {
+        padding: 20px;
+        display: none;
+        background-color: #f9f9f9;
+        border-top: 1px solid #ddd;
+    }
+
+    .municipio-card {
+        padding: 15px;
+        background-color: #f1f1f1;
+        border-radius: 10px;
+        border-left: 5px solid var(--color-primario);
+        margin-bottom: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .municipio-card h4 { font-size: 18px; margin: 0; }
+    .municipio-card p  { margin: 10px 0; }
+
+    .archivos-list {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .archivo-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 18px;
+        background: linear-gradient(to right, #ffffff, #f4f4f4);
+        border-left: 5px solid var(--color-primario);
+        border-radius: 10px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .archivo-item:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+
+    .archivo-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #333;
+        font-size: 15px;
+    }
+
+    .icon { font-size: 22px; color: #555; }
+
+    .archivo-info a {
+        color: #1d3557;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .archivo-info a:hover { text-decoration: underline; }
+
+    .download-btn {
+        color: var(--color-primario);
+        border: none;
+        padding: 8px 14px;
+        font-size: 14px;
+        font-weight: bold;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        text-decoration: none;
+    }
+    .download-btn:hover { background-color: var(--color-secundario); color: white; }
+
+    .buscador-input {
+        width: 500px;
+        padding: 10px 15px;
+        font-size: 15px;
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .buscador-input:focus {
+        outline: none;
+        border-color: var(--color-primario);
+        box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    }
+    .buscador-input::placeholder { padding-left: 20px; color: #aaa; }
+</style>
+
+<div class="container">
+    <div class="header">
+        <h2 class="news-title">Normatividad <span>| Documentos Normativos</span></h2>
+        <p>Consulta las secciones normativas del municipio y accede a los documentos relacionados con cada categoría.</p>
+    </div>
+
+    <div class="search-container" style="margin-bottom: 20px; display: flex; justify-content: flex-end;">
+        <input type="text" id="buscadorSecciones" class="form-control buscador-input" placeholder="🔍 Buscar sección...">
+    </div>
+
+    <div class="avisos-list">
+        {% for seccion in secciones %}
+            <div class="aviso-card">
+                <div class="aviso-header" onclick="toggleVisibility({{ seccion.id }})">
+                    <h3>
+                        <i class="fa-solid fa-scale-balanced"></i>
+                        &nbsp;{{ seccion.seccion }}
+                    </h3>
+                    <button class="toggle-btn">+</button>
+                </div>
+
+                <div class="aviso-body" id="body-{{ seccion.id }}">
+
+                    {% if seccion.descripcion %}
+                    <div class="municipio-card">
+                        <p>{{ seccion.descripcion }}</p>
+                    </div>
+                    {% endif %}
+
+                    <div class="archivos-list">
+                        {% for archivo in seccion.archivos.all %}
+                            <div class="archivo-item">
+                                <div class="archivo-info">
+                                    {% with archivo.archivo.name|lower as filename %}
+                                        {% if ".pdf" in filename %}
+                                            <i class="icon fas fa-file-pdf" style="color:#e74c3c;"></i>
+                                        {% elif ".doc" in filename or ".docx" in filename %}
+                                            <i class="icon fas fa-file-word" style="color:#3498db;"></i>
+                                        {% elif ".xls" in filename or ".xlsx" in filename %}
+                                            <i class="icon fas fa-file-excel" style="color:#2ecc71;"></i>
+                                        {% elif ".ppt" in filename or ".pptx" in filename %}
+                                            <i class="icon fas fa-file-powerpoint" style="color:#e67e22;"></i>
+                                        {% elif ".zip" in filename or ".rar" in filename %}
+                                            <i class="icon fas fa-file-archive" style="color:#f1c40f;"></i>
+                                        {% else %}
+                                            <i class="icon fas fa-file" style="color:#7f8c8d;"></i>
+                                        {% endif %}
+                                    {% endwith %}
+                                    <a href="{{ archivo.archivo.url }}" target="_blank">
+                                        {{ archivo.descripcion|default:archivo.archivo.name|cut:"media/" }}
+                                    </a>
+                                </div>
+                                <a href="{{ archivo.archivo.url }}" class="download-btn" download>
+                                    <i class="fa-solid fa-download"></i> Descargar
+                                </a>
+                            </div>
+                        {% empty %}
+                            <p style="color:#94a3b8; font-size:.875rem; padding:.5rem 0;">
+                                <i class="fas fa-info-circle me-1"></i>Sin archivos registrados en esta sección.
+                            </p>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+        {% empty %}
+            <div style="text-align:center; padding:3rem; background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.08);">
+                <i class="fas fa-scale-balanced" style="font-size:2.5rem; color:#cbd5e1; margin-bottom:1rem; display:block;"></i>
+                <p style="color:#64748b; margin:0;">No hay secciones de normatividad registradas.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function toggleVisibility(id) {
+        const body   = document.getElementById('body-' + id);
+        const button = body.previousElementSibling.querySelector('.toggle-btn');
+        if (body.style.display === 'none' || body.style.display === '') {
+            body.style.display = 'block';
+            button.textContent = '-';
+        } else {
+            body.style.display = 'none';
+            button.textContent = '+';
+        }
+    }
+
+    document.getElementById('buscadorSecciones').addEventListener('input', function () {
+        const filtro   = this.value.toLowerCase();
+        const tarjetas = document.querySelectorAll('.aviso-card');
+        tarjetas.forEach(function (tarjeta) {
+            const nombre = tarjeta.querySelector('h3').textContent.toLowerCase();
+            tarjeta.style.display = nombre.includes(filtro) ? 'block' : 'none';
+        });
+    });
+</script>
+
+{% endblock %}
