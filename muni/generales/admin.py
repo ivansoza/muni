@@ -1,10 +1,33 @@
 # admin.py
 from django.contrib import admin
-from .models import AppIcon, ArchivoRelacionadoRecomendacion, ContadorVisitas, MetaMunicipio, Recomendaciones, SeccionPlus, Secciones, SocialNetwork, personalizacionPlantilla, VideoMunicipio, SeccionPlusArchivo, NormatividadSeccion, ArchivoNormatividad
+from .models import AppIcon, ArchivoRelacionadoRecomendacion, ArchivoSesionCabildo, ContadorVisitas, MetaMunicipio, Recomendaciones, SeccionPlus, SesionCabildo, Secciones, SocialNetwork, personalizacionPlantilla, VideoMunicipio, SeccionPlusArchivo, NormatividadSeccion, ArchivoNormatividad
 from django.utils.html import format_html
 
 admin.site.register(NormatividadSeccion)
 admin.site.register(ArchivoNormatividad)
+
+
+class ArchivoSesionCabildoInline(admin.TabularInline):
+    model = ArchivoSesionCabildo
+    extra = 1
+    readonly_fields = ('fecha_subida',)
+    fields = ('archivo', 'descripcion', 'fecha_subida')
+
+
+@admin.register(SesionCabildo)
+class SesionCabildoAdmin(admin.ModelAdmin):
+    list_display = ('sesion', 'descripcion', 'fecha_creacion')
+    search_fields = ('sesion', 'descripcion')
+    readonly_fields = ('fecha_creacion',)
+    date_hierarchy = 'fecha_creacion'
+    inlines = (ArchivoSesionCabildoInline,)
+
+
+@admin.register(ArchivoSesionCabildo)
+class ArchivoSesionCabildoAdmin(admin.ModelAdmin):
+    list_display = ('sesion', 'descripcion', 'fecha_subida')
+    search_fields = ('descripcion',)
+    readonly_fields = ('fecha_subida',)
 @admin.register(SocialNetwork)
 class SocialNetworkAdmin(admin.ModelAdmin):
     list_display = (

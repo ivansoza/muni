@@ -492,3 +492,30 @@ class ArchivoNormatividad(models.Model):
     class Meta:
         verbose_name = "Archivo de Normatividad"
         verbose_name_plural = "Archivos de Normatividad"
+
+
+class SesionCabildo(models.Model):
+    sesion = models.CharField(max_length=200)
+    descripcion = models.CharField(max_length=200, blank=True, null=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Sesión Cabildo - {self.sesion}"
+
+    class Meta:
+        verbose_name = "Sesión de Cabildo"
+        verbose_name_plural = "Sesiones de Cabildo"
+
+
+class ArchivoSesionCabildo(models.Model):
+    sesion = models.ForeignKey(SesionCabildo, related_name='archivos', on_delete=models.CASCADE)
+    archivo = models.FileField(upload_to='archivos_sesion_cabildo/', blank=False, null=False)
+    descripcion = models.CharField(max_length=255, blank=True, null=True)
+    fecha_subida = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Archivo: {self.descripcion if self.descripcion else 'Sin descripción'}"
+
+    class Meta:
+        verbose_name = "Archivo de Sesión de Cabildo"
+        verbose_name_plural = "Archivos de Sesiones de Cabildo"
