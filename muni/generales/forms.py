@@ -253,7 +253,7 @@ class VideoMunicipioForm(forms.ModelForm):
 
 from django import forms
 from django.forms import inlineformset_factory
-from .models import NormatividadSeccion, ArchivoNormatividad
+from .models import ArchivoSesionCabildo, NormatividadSeccion, ArchivoNormatividad, SesionCabildo
 
 class NormatividadSeccionForm(forms.ModelForm):
     class Meta:
@@ -281,6 +281,39 @@ ArchivoNormatividadFormSet = inlineformset_factory(
     NormatividadSeccion,
     ArchivoNormatividad,
     form=ArchivoNormatividadForm,
+    extra=1,
+    can_delete=False
+)
+
+
+class SesionCabildoForm(forms.ModelForm):
+    class Meta:
+        model  = SesionCabildo
+        fields = ['sesion', 'descripcion']
+        widgets = {
+            'sesion'     : forms.TextInput(attrs={
+                'placeholder': 'Nombre de la sesión (ej. Sesión Ordinaria No. 1)'}),
+            'descripcion': forms.TextInput(attrs={
+                'placeholder': 'Descripción breve de la sesión'}),
+        }
+
+
+class ArchivoSesionCabildoForm(forms.ModelForm):
+    class Meta:
+        model  = ArchivoSesionCabildo
+        fields = ['archivo', 'descripcion']
+        widgets = {
+            'archivo'    : forms.ClearableFileInput(attrs={
+                'placeholder': 'Selecciona un archivo PDF, DOCX, etc.'}),
+            'descripcion': forms.TextInput(attrs={
+                'placeholder': 'Descripción del archivo (opcional)'}),
+        }
+
+
+ArchivoSesionCabildoFormSet = inlineformset_factory(
+    SesionCabildo,
+    ArchivoSesionCabildo,
+    form=ArchivoSesionCabildoForm,
     extra=1,
     can_delete=False
 )

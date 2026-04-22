@@ -450,6 +450,7 @@ class AppIcon(models.Model):
         ('reportes',        'Reportes'),
         ('habla',           'Habla con tus hijos'),
         ('normatividad',    'Normatividad'),
+        ('sesion_cabildo',  'Sesiones de Cabildo'),
     ]
 
     app = models.CharField(max_length=50, choices=APP_CHOICES, unique=True, verbose_name='Aplicación')

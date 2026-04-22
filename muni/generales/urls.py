@@ -7,6 +7,7 @@ from . import views
 from .views import CrearCarpetaView, SubirArchivoView, ListarCarpetasView, EditarCarpetaView, GestionarCarpetaView, EliminarCarpetaView, EditarArchivoView, eliminar_archivo
 from .views import ListaObligacionesView, ListaObligacionesCreateView, ListaObligacionesUpdateView, ListaObligacionesDeleteView, GestionarArticulosView, CrearArticuloView, EditarArticuloView, EliminarArticuloView, actualizar_orden_articulos, convocatoriaHome, filtrar_convocatorias, GestionarArticulosArView, CrearArticuloLigaView, EditarArticuloLigaArchivoView, ArticuloUpdateView
 from .views import crear_noticia, HablaHome, ArticuloCreateView, eliminar_articulo
+from .views import SesionesCabildoAdminView, SesionCabildoCreateView, SesionCabildoUpdateView
 
 urlpatterns = [
     path("", CustomLoginView.as_view(),name='login'),
@@ -197,4 +198,9 @@ urlpatterns = [
     ),
     path('normatividad/<int:pk>/eliminar/', views.eliminar_normatividad_seccion, name='eliminar_normatividad_seccion'),
 
+    # ─── Sesiones de Cabildo ───────────────────────────────────────────────
+    path('generales/sesiones-cabildo/', SesionesCabildoAdminView.as_view(), name='SesionesCabildoAdminView'),
+    path('generales/sesiones-cabildo/crear/', SesionCabildoCreateView.as_view(), name='crear_sesion_cabildo'),
+    path('generales/sesiones-cabildo/<int:pk>/editar/', SesionCabildoUpdateView.as_view(), name='editar_sesion_cabildo'),
+    path('generales/sesiones-cabildo/<int:pk>/eliminar/', views.eliminar_sesion_cabildo, name='eliminar_sesion_cabildo'),
 ]

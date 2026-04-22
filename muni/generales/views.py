@@ -31,7 +31,7 @@ from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, 
 from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
 from servicios.forms import ComoLoRealizoForm, CuantoCuestaForm, EnQueConsisteForm, QueSeRequiereForm, RequisitosImagenForm, ServicioForm
 from servicios.models import ComoLoRealizo, ConfiguracionServicio, CuantoCuesta, Dependencia, EnQueConsiste, QueSeRequiere, RequisitosImagen, Servicio
-from .forms import ArchivoNormatividadForm, ArchivoNormatividadFormSet, CustomAuthenticationForm, ElementoListaForm, GroupForm, InformacionCiudadForm, NormatividadSeccionForm, SeccionPlusForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm, VideoMunicipioForm
+from .forms import ArchivoNormatividadForm, ArchivoNormatividadFormSet, ArchivoSesionCabildoForm, ArchivoSesionCabildoFormSet, CustomAuthenticationForm, ElementoListaForm, GroupForm, InformacionCiudadForm, NormatividadSeccionForm, SeccionPlusForm, SeccionesForm, SesionCabildoForm, UserCreationWithGroupForm, UserEditForm, VideoMunicipioForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from noticias.models import Noticia, ImagenGaleria, Categoria
@@ -3247,6 +3247,108 @@ def eliminar_normatividad_seccion(request, pk):
         seccion.delete()
         messages.success(request, "La sección de normatividad se ha eliminado correctamente.")
     return redirect(reverse_lazy('NormatividadView'))
+
+
+# ─── Sesiones de Cabildo ───────────────────────────────────────────────────
+
+class SesionesCabildoAdminView(LoginRequiredMixin, TemplateView):
+    template_name = 'generales/sesionCabildo.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumb"] = {
+            'parent': {'name': 'Generales', 'url': '/admin/generales/'},
+            'child':  {'name': 'Sesiones de Cabildo', 'url': ''}
+        }
+        context['sidebar'] = 'Generales'
+        context['regreso_url'] = reverse('generalesDashboard')
+        context['sesiones'] = SesionCabildo.objects.all()
+        return context
+
+
+class SesionCabildoCreateView(LoginRequiredMixin, CreateView):
+    model = SesionCabildo
+    form_class = SesionCabildoForm
+    template_name = 'generales/sesionCabildoAdmin.html'
+    success_url = reverse_lazy('SesionesCabildoAdminView')
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        if self.request.method == 'POST':
+            ctx['formset'] = ArchivoSesionCabildoFormSet(self.request.POST, self.request.FILES)
+        else:
+            ctx['formset'] = ArchivoSesionCabildoFormSet()
+        ctx["breadcrumb"] = {
+            'parent': {'name': 'Sesiones de Cabildo', 'url': reverse('SesionesCabildoAdminView')},
+            'child':  {'name': 'Nueva sesión', 'url': ''},
+        }
+        ctx['sidebar'] = 'Generales'
+        ctx['regreso_url'] = reverse('SesionesCabildoAdminView')
+        return ctx
+
+    def form_valid(self, form):
+        ctx = self.get_context_data()
+        formset = ctx['formset']
+        if formset.is_valid():
+            self.object = form.save()
+            formset.instance = self.object
+            formset.save()
+            messages.success(self.request, 'Sesión creada correctamente.')
+            return redirect(self.get_success_url())
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+class SesionCabildoUpdateView(LoginRequiredMixin, UpdateView):
+    model = SesionCabildo
+    form_class = SesionCabildoForm
+    template_name = 'generales/sesionCabildoAdminEdit.html'
+    success_url = reverse_lazy('SesionesCabildoAdminView')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        extra_value = 0 if self.object.archivos.exists() else 1
+
+        ArchivoSesionCabildoFormSetDynamic = inlineformset_factory(
+            SesionCabildo,
+            ArchivoSesionCabildo,
+            form=ArchivoSesionCabildoForm,
+            extra=extra_value,
+            can_delete=True
+        )
+
+        if self.request.method == 'POST':
+            formset = ArchivoSesionCabildoFormSetDynamic(
+                self.request.POST, self.request.FILES, instance=self.object)
+        else:
+            formset = ArchivoSesionCabildoFormSetDynamic(instance=self.object)
+
+        context['formset'] = formset
+        context["breadcrumb"] = {
+            'parent': {'name': 'Sesiones de Cabildo', 'url': reverse('SesionesCabildoAdminView')},
+            'child':  {'name': 'Editar sesión', 'url': ''},
+        }
+        context['sidebar'] = 'Generales'
+        context['regreso_url'] = reverse('SesionesCabildoAdminView')
+        return context
+
+    def form_valid(self, form):
+        self.object = form.save()
+        context = self.get_context_data()
+        formset = context['formset']
+        if formset.is_valid():
+            formset.instance = self.object
+            formset.save()
+            messages.success(self.request, 'Sesión actualizada correctamente.')
+            return redirect(self.get_success_url())
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+def eliminar_sesion_cabildo(request, pk):
+    sesion = get_object_or_404(SesionCabildo, pk=pk)
+    if request.method == 'POST':
+        sesion.delete()
+        messages.success(request, "La sesión de cabildo se ha eliminado correctamente.")
+    return redirect(reverse_lazy('SesionesCabildoAdminView'))
 
 def eliminar_aviso_privacidad(request, pk):
     aviso = get_object_or_404(AvisoDePrivacidad, pk=pk)
