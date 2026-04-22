@@ -267,6 +267,12 @@
                             </li>
                             {% endif %}
 
+                            {% if municipio.secciones_hab and municipio.secciones_hab.sesion_cabildo %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'homeSesionesCabildo' %}">Sesiones de Cabildo</a>
+                            </li>
+                            {% endif %}
+
                             <!-- Convocatorias -->
                             {% if municipio.secciones_hab and municipio.secciones_hab.convocatorias %}
                             <li>

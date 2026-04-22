@@ -197,5 +197,4 @@ urlpatterns = [
     ),
     path('normatividad/<int:pk>/eliminar/', views.eliminar_normatividad_seccion, name='eliminar_normatividad_seccion'),
 
-    path('normatividad/', HomeNormatividad.as_view(), name='homeNormatividad'),
 ]

@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from home.views import mi_custom_error_400, mi_custom_error_403, mi_custom_error_404, mi_custom_error_500
+from generales.views import HomeSesionesCabildo, HomeNormatividad
 urlpatterns = [
     path('administrador/', admin.site.urls),
     path('', include('home.urls')), 
@@ -25,7 +26,9 @@ urlpatterns = [
     path('usuario/', include('usuario.urls')), 
     path('reportes/', include('reportes.urls')), 
 
-    path('ckeditor5/', include('django_ckeditor_5.urls')), 
+    path('ckeditor5/', include('django_ckeditor_5.urls')),
+    path('normatividad/', HomeNormatividad.as_view(), name='homeNormatividad'),
+    path('sesiones-cabildo/', HomeSesionesCabildo.as_view(), name='homeSesionesCabildo'),
 
 
 ]

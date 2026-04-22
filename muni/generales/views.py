@@ -25,7 +25,7 @@ from django.views.generic import FormView
 from django.http import JsonResponse, HttpResponseNotAllowed
 
 from informacion_municipal.models import ElementoLista, InformacionCiudad, Municipio, Video
-from generales.models import AppIcon, ArchivoNormatividad, ContadorVisitas, NormatividadSeccion, SeccionPlus, Secciones, SocialNetwork, VideoMunicipio
+from generales.models import AppIcon, ArchivoNormatividad, ArchivoSesionCabildo, ContadorVisitas, NormatividadSeccion, SeccionPlus, SesionCabildo, Secciones, SocialNetwork, VideoMunicipio
 from reportes.models import ReporteStatus
 from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, AvisoDePrivacidadForm
 from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
@@ -3892,4 +3892,14 @@ class HomeNormatividad(TemplateView):
         context = super().get_context_data(**kwargs)
         context['sidebar'] = 'normatividad'
         context['secciones'] = NormatividadSeccion.objects.all().order_by('fecha_creacion').prefetch_related('archivos')
+        return context
+
+
+class HomeSesionesCabildo(TemplateView):
+    template_name = 'homeSesionesCabildo.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sidebar'] = 'sesion_cabildo'
+        context['sesiones'] = SesionCabildo.objects.all().order_by('fecha_creacion').prefetch_related('archivos')
         return context
