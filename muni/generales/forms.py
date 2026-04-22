@@ -190,7 +190,8 @@ class SeccionesForm(forms.ModelForm):
             'habla_con_tus_hijos','ven_vive_y_vuelve', 'historia_municipio',
             'aviso_de_privacidad', 'gabinete', 'sevac', 'contacts',
             'reportes', 'encuestas', 'servicios_en_linea', 'videos',
-            'normatividad',  # ← agregado
+            'normatividad',
+            'sesion_cabildo',
         ]
 
 class SeccionPlusForm(forms.ModelForm):

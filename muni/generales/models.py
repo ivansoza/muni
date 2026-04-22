@@ -104,6 +104,7 @@ class Secciones(models.Model):
     servicios_en_linea = models.BooleanField(default=False)
     videos = models.BooleanField(default=False)
     normatividad = models.BooleanField(default=False)  # Nuevo módulo
+    sesion_cabildo = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Secciones de {self.municipio}"
