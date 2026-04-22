@@ -1,8 +1,10 @@
 # admin.py
 from django.contrib import admin
-from .models import AppIcon, ArchivoRelacionadoRecomendacion, ContadorVisitas, MetaMunicipio, Recomendaciones, SeccionPlus, Secciones, SocialNetwork, personalizacionPlantilla, VideoMunicipio, SeccionPlusArchivo
+from .models import AppIcon, ArchivoRelacionadoRecomendacion, ContadorVisitas, MetaMunicipio, Recomendaciones, SeccionPlus, Secciones, SocialNetwork, personalizacionPlantilla, VideoMunicipio, SeccionPlusArchivo, NormatividadSeccion, ArchivoNormatividad
 from django.utils.html import format_html
 
+admin.site.register(NormatividadSeccion)
+admin.site.register(ArchivoNormatividad)
 @admin.register(SocialNetwork)
 class SocialNetworkAdmin(admin.ModelAdmin):
     list_display = (
