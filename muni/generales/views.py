@@ -72,7 +72,7 @@ from eventos.forms import ArticuloForm
 from .forms import SeccionPlusForm, SeccionPlusArchivoFormSet
 from django.db import transaction
 from django.http import HttpResponseRedirect
-
+from eventos.forms import VideoFormSet
 from transparencia.models import CarpetaTransparencia
 class VideoView(LoginRequiredMixin,TemplateView):
     template_name = 'generales/video.html'
@@ -3568,18 +3568,20 @@ class HablaHome(TemplateView, LoginRequiredMixin):
 class ArticuloCreateView(CreateView):
     model = Articulo
     form_class = ArticuloForm
-    template_name = 'hablaHijos/registrarArticulo.html'  # Puedes cambiar la ruta al template si es necesario
-    success_url = reverse_lazy('habla_home')  # Redirige a la lista de artículos después de guardar el artículo
-
-    def form_valid(self, form):
-        # Aquí puedes añadir lógica adicional antes de guardar el artículo (por ejemplo, agregar el autor actual al artículo)
-        articulo = form.save(commit=False)
-        articulo.save()
-        return super().form_valid(form)
+    template_name = 'hablaHijos/registrarArticulo.html'
+    success_url = reverse_lazy('habla_home')
 
     def get_context_data(self, **kwargs):
-        # Añadimos contexto adicional al renderizado de la plantilla, si es necesario
         context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['video_formset'] = VideoFormSet(
+                self.request.POST,
+                self.request.FILES,  # ← necesario para archivos
+                prefix='videos'
+            )
+        else:
+            context['video_formset'] = VideoFormSet(prefix='videos')
+
         url_configuracion = reverse('habla_home')
         context["breadcrumb"] = {
             'parent': {'name': 'Habla con tus hijos', 'url': url_configuracion},
@@ -3588,23 +3590,46 @@ class ArticuloCreateView(CreateView):
         context['regreso_url'] = reverse('habla_home')
         context['sidebar'] = 'habla'
         return context
-    
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        video_formset = context['video_formset']
+
+        if video_formset.is_valid():
+            articulo = form.save()
+            video_formset.instance = articulo
+            video_formset.save()
+            return redirect(self.success_url)
+        return self.render_to_response(self.get_context_data(form=form))
+
+
 class ArticuloUpdateView(UpdateView):
     model = Articulo
     form_class = ArticuloForm
-    template_name = 'hablaHijos/editarArticulo.html'  # crea esta plantilla
-    success_url = reverse_lazy('habla_home')  # URL para redirigir tras éxito
+    template_name = 'hablaHijos/editarArticulo.html'
+    success_url = reverse_lazy('habla_home')
 
-    # Opcional: controlar permisos si es necesario
     def dispatch(self, request, *args, **kwargs):
         if not (request.user.is_superuser or request.user.has_perm("eventos.change_articulo")):
             from django.core.exceptions import PermissionDenied
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
-    
+
     def get_context_data(self, **kwargs):
-        # Añadimos contexto adicional al renderizado de la plantilla, si es necesario
         context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['video_formset'] = VideoFormSet(
+                self.request.POST,
+                self.request.FILES,  # ← necesario para archivos
+                instance=self.object,
+                prefix='videos'
+            )
+        else:
+            context['video_formset'] = VideoFormSet(
+                instance=self.object,
+                prefix='videos'
+            )
+
         url_configuracion = reverse('habla_home')
         context["breadcrumb"] = {
             'parent': {'name': 'Habla con tus hijos', 'url': url_configuracion},
@@ -3613,6 +3638,17 @@ class ArticuloUpdateView(UpdateView):
         context['regreso_url'] = reverse('habla_home')
         context['sidebar'] = 'habla'
         return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        video_formset = context['video_formset']
+
+        if video_formset.is_valid():
+            articulo = form.save()
+            video_formset.instance = articulo
+            video_formset.save()
+            return redirect(self.success_url)
+        return self.render_to_response(self.get_context_data(form=form))
     
 @login_required
 @permission_required('eventos.delete_articulo', raise_exception=True)

@@ -190,6 +190,204 @@
 
 
 </style>
+<style>
+  .videos-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 1.5rem 0;
+    background: #fff;
+  }
+
+  .videos-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
+  }
+
+  .videos-card-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .videos-card-header-left .icon-box {
+    width: 36px;
+    height: 36px;
+    background: var(--color-primario, #3E688C);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 16px;
+  }
+
+  .videos-card-header-left h5 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+  }
+
+  .videos-card-header-left span {
+    font-size: 0.75rem;
+    color: #6b7280;
+  }
+
+  .btn-add-video {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: var(--color-primario, #3E688C);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .btn-add-video:hover { opacity: 0.88; }
+
+  .videos-card-body {
+    padding: 1.25rem;
+  }
+
+  /* Fila de cada video */
+  .video-form-row {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+    margin-bottom: 1rem;
+    transition: box-shadow 0.2s;
+    position: relative;
+  }
+
+  .video-form-row:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+
+  .video-row-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.85rem;
+  }
+
+  .video-row-number {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-primario, #3E688C);
+    background: #e8f0f7;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  .video-row-number i { font-size: 12px; }
+
+  .delete-video-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.78rem;
+    color: #ef4444;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #fecaca;
+    background: #fff5f5;
+    transition: background 0.15s;
+  }
+
+  .delete-video-label:hover { background: #fee2e2; }
+
+  .delete-video-label input[type="checkbox"] {
+    accent-color: #ef4444;
+    width: 13px;
+    height: 13px;
+    margin: 0;
+  }
+
+  /* Labels de campos */
+  .video-field-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 5px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .video-field-label i { margin-right: 4px; color: #6b7280; font-size: 11px; }
+
+  /* Campos del tipo toggle */
+  .tipo-video-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 32px !important;
+  }
+
+  /* Campo URL / Archivo: transición suave */
+  .campo-url, .campo-archivo {
+    transition: opacity 0.2s;
+  }
+
+  .campo-archivo { display: none; }
+
+  /* Hint de info */
+  .videos-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    margin-top: 0.75rem;
+  }
+
+  .videos-hint i { color: #3b82f6; margin-top: 2px; font-size: 13px; }
+  .videos-hint small { color: #1e40af; font-size: 0.8rem; line-height: 1.5; }
+
+  /* Preview de archivo existente */
+  .file-current {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    padding: 5px 10px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    color: #166534;
+  }
+
+  .file-current i { font-size: 11px; }
+
+  /* Errores */
+  .video-error {
+    font-size: 0.78rem;
+    color: #dc2626;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+</style>
 
 <div class="container-fluid">
     <div class="card mt-4">
@@ -311,7 +509,123 @@
                     
                 </div>
 
-                
+                <div class="videos-card">
+  <div class="videos-card-header">
+    <div class="videos-card-header-left">
+      <div class="icon-box">
+        <i class="fas fa-film"></i>
+      </div>
+      <div>
+        <h5>Videos relacionados</h5>
+        <span>Agrega uno o más videos al artículo</span>
+      </div>
+    </div>
+    <button type="button" class="btn-add-video" id="btn-agregar-video">
+      <i class="fas fa-plus"></i> Agregar video
+    </button>
+  </div>
+
+  <div class="videos-card-body">
+    {{ video_formset.management_form }}
+
+    <div id="videos-container">
+      {% for video_form in video_formset %}
+      <div class="video-form-row">
+        {{ video_form.id }}
+
+        <!-- Encabezado de la fila -->
+        <div class="video-row-header">
+          <span class="video-row-number">
+            <i class="fas fa-video"></i> Video {{ forloop.counter }}
+          </span>
+          {% if video_form.instance.pk %}
+          <label class="delete-video-label">
+            {{ video_form.DELETE }}
+            <i class="fas fa-trash-alt"></i> Eliminar
+          </label>
+          {% endif %}
+        </div>
+
+        <div class="row g-3 align-items-end">
+          <!-- Título -->
+          <div class="col-md-4">
+            <label class="video-field-label">
+              <i class="fas fa-heading"></i> Título
+            </label>
+            {{ video_form.titulo }}
+          </div>
+
+          <!-- Tipo -->
+          <div class="col-md-2">
+            <label class="video-field-label">
+              <i class="fas fa-photo-video"></i> Tipo
+            </label>
+            {{ video_form.tipo }}
+          </div>
+
+          <!-- Orden -->
+          <div class="col-md-1">
+            <label class="video-field-label">
+              <i class="fas fa-sort"></i> Orden
+            </label>
+            {{ video_form.orden }}
+          </div>
+
+          <!-- URL -->
+          <div class="col-md-5 campo-url">
+            <label class="video-field-label">
+              <i class="fas fa-link"></i> URL del video
+            </label>
+            {{ video_form.url }}
+            {% if video_form.url.errors %}
+            <div class="video-error">
+              <i class="fas fa-exclamation-circle"></i>
+              {{ video_form.url.errors|striptags }}
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Archivo -->
+          <div class="col-md-5 campo-archivo">
+            <label class="video-field-label">
+              <i class="fas fa-file-video"></i> Archivo de video
+            </label>
+            {{ video_form.archivo }}
+            {% if video_form.instance.archivo %}
+            <div class="file-current">
+              <i class="fas fa-check-circle"></i>
+              {{ video_form.instance.archivo.name|truncatechars:45 }}
+            </div>
+            {% endif %}
+            {% if video_form.archivo.errors %}
+            <div class="video-error">
+              <i class="fas fa-exclamation-circle"></i>
+              {{ video_form.archivo.errors|striptags }}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if video_form.non_field_errors %}
+        <div class="alert alert-danger mt-2 py-1 mb-0">
+          <i class="fas fa-exclamation-triangle"></i>
+          {{ video_form.non_field_errors }}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="videos-hint">
+      <i class="fas fa-info-circle"></i>
+      <small>
+        Puedes agregar tantos videos como necesites.
+        Soporta <strong>YouTube</strong>, <strong>Vimeo</strong> y archivos <strong>mp4 · webm · ogg</strong>.
+        El campo <em>Orden</em> define el orden de aparición en el artículo.
+      </small>
+    </div>
+  </div>
+</div>
 
                 <button type="submit" class="btn btn-primary">Actualizar artículo</button>
             </form>
@@ -529,6 +843,79 @@ window.onclick = function(event) {
         }
     }
 </script>
+<script>
+function aplicarVisibilidadTipo(row, tipo) {
+  row.querySelector('.campo-url').style.display   = tipo === 'archivo' ? 'none'  : 'block';
+  row.querySelector('.campo-archivo').style.display = tipo === 'archivo' ? 'block' : 'none';
+}
 
+document.querySelectorAll('.video-form-row').forEach(function(row) {
+  const select = row.querySelector('.tipo-video-select');
+  if (select) {
+    aplicarVisibilidadTipo(row, select.value);
+    select.addEventListener('change', function() {
+      aplicarVisibilidadTipo(row, this.value);
+    });
+  }
+});
+
+document.getElementById('btn-agregar-video').addEventListener('click', function() {
+  const container  = document.getElementById('videos-container');
+  const totalInput = document.getElementById('id_videos-TOTAL_FORMS');
+  const idx        = parseInt(totalInput.value);
+  const count      = idx + 1;
+
+  const row = document.createElement('div');
+  row.className = 'video-form-row';
+  row.innerHTML = `
+    <input type="hidden" name="videos-${idx}-id" id="id_videos-${idx}-id">
+    <div class="video-row-header">
+      <span class="video-row-number">
+        <i class="fas fa-video"></i> Video ${count}
+      </span>
+    </div>
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="video-field-label"><i class="fas fa-heading"></i> Título</label>
+        <input type="text" name="videos-${idx}-titulo" id="id_videos-${idx}-titulo"
+               placeholder="Título del video (opcional)" class="form-control">
+      </div>
+      <div class="col-md-2">
+        <label class="video-field-label"><i class="fas fa-photo-video"></i> Tipo</label>
+        <select name="videos-${idx}-tipo" id="id_videos-${idx}-tipo"
+                class="form-control tipo-video-select">
+          <option value="url">URL externa</option>
+          <option value="archivo">Archivo de video</option>
+        </select>
+      </div>
+      <div class="col-md-1">
+        <label class="video-field-label"><i class="fas fa-sort"></i> Orden</label>
+        <input type="number" name="videos-${idx}-orden" id="id_videos-${idx}-orden"
+               class="form-control" min="0" value="${idx}">
+      </div>
+      <div class="col-md-5 campo-url">
+        <label class="video-field-label"><i class="fas fa-link"></i> URL del video</label>
+        <input type="url" name="videos-${idx}-url" id="id_videos-${idx}-url"
+               placeholder="https://www.youtube.com/watch?v=..." class="form-control">
+      </div>
+      <div class="col-md-5 campo-archivo" style="display:none">
+        <label class="video-field-label"><i class="fas fa-file-video"></i> Archivo de video</label>
+        <input type="file" name="videos-${idx}-archivo" id="id_videos-${idx}-archivo"
+               accept="video/mp4,video/webm,video/ogg" class="form-control">
+      </div>
+    </div>`;
+
+  container.appendChild(row);
+
+  const select = row.querySelector('.tipo-video-select');
+  select.addEventListener('change', function() {
+    aplicarVisibilidadTipo(row, this.value);
+  });
+
+  totalInput.value = count;
+
+  row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+</script>
 
 {% endblock %}

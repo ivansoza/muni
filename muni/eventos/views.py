@@ -58,7 +58,29 @@ def articulo_detalle(request, id):
     comentarios = articulo.comentarios.all()
     etiquetas = articulo.etiquetas.split(',')
 
-    # Filtrar artículo anterior y siguiente basados en la categoría (habla o ven_vive)
+    # ── Videos relacionados al artículo ──────────────────────────────────────
+    videos = articulo.videos.all()  # related_name='videos' del modelo VideoArticulo
+
+    # Separar y convertir URLs de embed
+    videos_procesados = []
+    for video in videos:
+        if video.tipo == 'url':
+            embed_url = convertir_a_embed(video.url)
+            videos_procesados.append({
+                'tipo': 'url',
+                'titulo': video.titulo,
+                'embed_url': embed_url,
+                'orden': video.orden,
+            })
+        else:
+            videos_procesados.append({
+                'tipo': 'archivo',
+                'titulo': video.titulo,
+                'archivo_url': video.archivo.url if video.archivo else None,
+                'orden': video.orden,
+            })
+
+    # Artículo anterior y siguiente
     if articulo.habla:
         articulo_anterior = Articulo.objects.filter(habla=True, id__lt=articulo.id).order_by('-id').first()
         articulo_siguiente = Articulo.objects.filter(habla=True, id__gt=articulo.id).order_by('id').first()
@@ -69,25 +91,23 @@ def articulo_detalle(request, id):
         articulo_anterior = Articulo.objects.filter(historia=True, id__lt=articulo.id).order_by('-id').first()
         articulo_siguiente = Articulo.objects.filter(historia=True, id__gt=articulo.id).order_by('id').first()
     else:
-        # Si no tiene categoría, mostrar el anterior y siguiente sin filtrar
         articulo_anterior = Articulo.objects.filter(id__lt=articulo.id).order_by('-id').first()
         articulo_siguiente = Articulo.objects.filter(id__gt=articulo.id).order_by('id').first()
 
-    # Artículos relacionados (4 aleatorios) basados en la categoría
+    # Artículos relacionados
     if articulo.habla:
         articulos_relacionados = Articulo.objects.filter(habla=True).exclude(id=articulo.id)
     elif articulo.ven_vive:
         articulos_relacionados = Articulo.objects.filter(ven_vive=True).exclude(id=articulo.id)
     elif articulo.historia:
-        articulos_relacionados = Articulo.objects.filter(ven_vive=True).exclude(id=articulo.id)
+        articulos_relacionados = Articulo.objects.filter(historia=True).exclude(id=articulo.id)
     else:
         articulos_relacionados = Articulo.objects.exclude(id=articulo.id)
 
-    # Si hay más de 4 artículos relacionados, seleccionamos 4 aleatorios
     if len(articulos_relacionados) > 4:
         articulos_relacionados = random.sample(list(articulos_relacionados), 4)
 
-    # Convertir el link de video a embed si existe
+    # video_url del artículo (el campo legacy que ya tenías)
     video_embed_url = convertir_a_embed(articulo.video_url)
 
     return render(request, 'articulo_habla.html', {
@@ -98,6 +118,7 @@ def articulo_detalle(request, id):
         'articulo_siguiente': articulo_siguiente,
         'articulos_relacionados': articulos_relacionados,
         'video_embed_url': video_embed_url,
+        'videos': videos_procesados,   # ← lista de videos procesados
     })
 
 
