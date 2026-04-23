@@ -3,51 +3,56 @@
 {% block content %}
 
 <style>
-    .avisos-list {
-        display: block;
-        gap: 20px;
-    }
+    /* ── Listado de sesiones ── */
+    .avisos-list { display: flex; flex-direction: column; gap: 16px; margin-bottom: 40px;}
 
     .aviso-card {
         width: 100%;
-        max-width: 100%;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         overflow: hidden;
-        background-color: #fff;
-        transition: transform 0.3s ease;
-        margin-bottom: 20px;
+        background: #fff;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
+    .aviso-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
 
-    .aviso-card:hover { transform: translateY(-5px); }
-
+    /* ── Cabecera acordeón ── */
     .aviso-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 7px;
+        gap: 10px;
+        padding: 12px 16px;
         background-color: var(--color-primario);
         color: #fff;
         cursor: pointer;
-        transition: background-color 0.3s;
+        transition: background-color 0.25s;
+        user-select: none;
     }
-
     .aviso-header:hover { background-color: var(--color-secundario); }
 
     .aviso-header h3 {
-        margin-left: 25px;
-        margin-top: 5px;
-        font-size: 18px;
+        margin: 0;
+        font-size: 17px;
         font-weight: 600;
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     .toggle-btn {
-        background-color: rgba(255, 255, 255, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        flex-shrink: 0;
+        background-color: rgba(255,255,255,0.15);
+        border: 1px solid rgba(255,255,255,0.3);
         color: #fff;
         font-size: 20px;
-        width: 36px;
-        height: 36px;
+        width: 34px;
+        height: 34px;
         border-radius: 50%;
         cursor: pointer;
         transition: all 0.3s ease;
@@ -55,105 +60,212 @@
         align-items: center;
         justify-content: center;
         font-weight: bold;
+        line-height: 1;
     }
+    .toggle-btn:hover { background-color: rgba(255,255,255,0.28); border-color: rgba(255,255,255,0.6); }
 
-    .toggle-btn:hover {
-        background-color: rgba(255, 255, 255, 0.25);
-        transform: rotate(90deg);
-        border-color: rgba(255, 255, 255, 0.6);
-    }
-
+    /* ── Cuerpo acordeón ── */
     .aviso-body {
-        padding: 20px;
+        padding: 16px;
         display: none;
         background-color: #f9f9f9;
         border-top: 1px solid #ddd;
     }
 
     .municipio-card {
-        padding: 15px;
+        padding: 12px 16px;
         background-color: #f1f1f1;
-        border-radius: 10px;
-        border-left: 5px solid var(--color-primario);
-        margin-bottom: 15px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        border-left: 4px solid var(--color-primario);
+        margin-bottom: 14px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        font-size: 14px;
+        color: #444;
     }
+    .municipio-card p { margin: 0; }
 
-    .municipio-card h4 { font-size: 18px; margin: 0; }
-    .municipio-card p  { margin: 10px 0; }
-
-    .archivos-list {
-        margin-top: 10px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
+    /* ── Fila de archivo ── */
+    .archivos-list { display: flex; flex-direction: column; gap: 10px; }
 
     .archivo-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 12px 18px;
-        background: linear-gradient(to right, #ffffff, #f4f4f4);
-        border-left: 5px solid var(--color-primario);
-        border-radius: 10px;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        gap: 12px;
+        padding: 11px 16px;
+        background: linear-gradient(to right, #fff, #f5f5f5);
+        border-left: 4px solid var(--color-primario);
+        border-radius: 8px;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+        transition: box-shadow 0.2s;
+        min-width: 0;
     }
-
-    .archivo-item:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+    .archivo-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
     .archivo-info {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
+        min-width: 0;          /* permite que el hijo se encoja */
+        flex: 1;
         color: #333;
-        font-size: 15px;
-    }
-
-    .icon { font-size: 22px; color: #555; }
-
-    .archivo-info a {
-        color: #1d3557;
-        text-decoration: none;
-        font-weight: 500;
-    }
-    .archivo-info a:hover { text-decoration: underline; }
-
-    .download-btn {
-        color: var(--color-primario);
-        border: none;
-        padding: 8px 14px;
         font-size: 14px;
-        font-weight: bold;
+    }
+
+    .icon { font-size: 20px; flex-shrink: 0; color: #555; }
+
+    .archivo-nombre {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+        font-weight: 500;
+        color: #1d3557;
+    }
+
+    /* ── Botón Ver ── */
+    .view-btn {
+        flex-shrink: 0;
+        background-color: var(--color-primario);
+        color: #fff;
+        border: none;
+        padding: 7px 14px;
+        font-size: 13px;
+        font-weight: 600;
         border-radius: 6px;
         cursor: pointer;
-        transition: background-color 0.3s;
-        text-decoration: none;
+        transition: background-color 0.25s, transform 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        white-space: nowrap;
     }
-    .download-btn:hover { background-color: var(--color-secundario); color: white; }
+    .view-btn:hover { background-color: var(--color-secundario); transform: translateY(-1px); }
 
+    /* ── Buscador ── */
+    .search-container { margin-bottom: 18px; display: flex; justify-content: flex-end; }
     .buscador-input {
-        width: 500px;
-        padding: 10px 15px;
-        font-size: 15px;
+        width: 420px;
+        max-width: 100%;
+        padding: 9px 14px;
+        font-size: 14px;
         border: 2px solid #ccc;
         border-radius: 8px;
-        transition: all 0.3s ease-in-out;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        transition: border-color 0.25s, box-shadow 0.25s;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
     .buscador-input:focus {
         outline: none;
         border-color: var(--color-primario);
-        box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        box-shadow: 0 0 0 3px rgba(47,105,143,0.15);
     }
-    .buscador-input::placeholder { padding-left: 20px; color: #aaa; }
+    .buscador-input::placeholder { color: #aaa; }
+
+    /* ── Modal visor ── */
+    .visor-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.72);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+    .visor-overlay.active { display: flex; }
+
+    .visor-modal {
+        background: #fff;
+        border-radius: 10px;
+        width: 100%;
+        max-width: 900px;
+        height: 90vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    .visor-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        background: var(--color-primario);
+        color: #fff;
+        flex-shrink: 0;
+        min-width: 0;
+    }
+    .visor-header h5 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+        flex: 1;
+    }
+    .visor-close {
+        flex-shrink: 0;
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: #fff;
+        font-size: 18px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+    }
+    .visor-close:hover { background: rgba(255,255,255,0.35); }
+    .visor-body { flex: 1; overflow: hidden; }
+    .visor-body iframe { width: 100%; height: 100%; border: none; display: block; }
+
+    /* ── Responsive ── */
+    @media (max-width: 576px) {
+        .aviso-header { padding: 10px 12px; }
+        .aviso-header h3 { font-size: 14px; gap: 7px; }
+        .toggle-btn { width: 30px; height: 30px; font-size: 17px; }
+
+        .aviso-body { padding: 12px; }
+
+        /* En móvil la fila de archivo se apila: nombre arriba, botón abajo */
+        .archivo-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 10px 12px;
+        }
+        .archivo-info { width: 100%; }
+        .archivo-nombre { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100vw - 80px); }
+        .view-btn { width: 100%; justify-content: center; }
+
+        /* Buscador ocupa todo el ancho */
+        .search-container { justify-content: stretch; }
+        .buscador-input { width: 100%; }
+
+        /* Modal casi pantalla completa */
+        .visor-overlay { padding: 0; align-items: flex-end; }
+        .visor-modal { width: 100%; max-width: 100%; height: 92vh; border-radius: 12px 12px 0 0; }
+    }
+
+    @media (min-width: 577px) and (max-width: 768px) {
+        .aviso-header h3 { font-size: 15px; }
+        .archivo-nombre { max-width: 300px; }
+        .buscador-input { width: 100%; }
+        .search-container { justify-content: stretch; }
+    }
 </style>
 
 <div class="container">
     <div class="header">
-        <h2 class="news-title">Sesiones de Cabildo <span>| Documentos de Sesiones</span></h2>
-        <p>Consulta las sesiones de cabildo del municipio y accede a los documentos relacionados con cada sesión.</p>
+        <h2 class="news-title">Acuerdo de Sesiones de Cabildo <span>| Documentos de Sesiones</span></h2>
+        <p>Consulta los acuerdos de sesiones de cabildo del municipio y accede a los documentos relacionados con cada sesión.</p>
     </div>
 
     <div class="search-container" style="margin-bottom: 20px; display: flex; justify-content: flex-end;">
@@ -198,13 +310,11 @@
                                             <i class="icon fas fa-file" style="color:#7f8c8d;"></i>
                                         {% endif %}
                                     {% endwith %}
-                                    <a href="{{ archivo.archivo.url }}" target="_blank">
-                                        {{ archivo.descripcion|default:archivo.archivo.name }}
-                                    </a>
+                                    <span class="archivo-nombre" title="{{ archivo.descripcion|default:archivo.archivo.name }}">{{ archivo.descripcion|default:archivo.archivo.name }}</span>
                                 </div>
-                                <a href="{{ archivo.archivo.url }}" class="download-btn" download>
-                                    <i class="fa-solid fa-download"></i> Descargar
-                                </a>
+                                <button class="view-btn" onclick="abrirVisor('{{ archivo.archivo.url }}', '{{ archivo.descripcion|default:archivo.archivo.name }}')">
+                                    <i class="fa-solid fa-eye"></i> Ver
+                                </button>
                             </div>
                         {% empty %}
                             <p style="color:#94a3b8; font-size:.875rem; padding:.5rem 0;">
@@ -224,18 +334,66 @@
     </div>
 </div>
 
+<!-- Modal visor de documentos -->
+<div class="visor-overlay" id="visorOverlay" onclick="cerrarVisor(event)">
+    <div class="visor-modal">
+        <div class="visor-header">
+            <h5 id="visorTitulo"></h5>
+            <button class="visor-close" onclick="cerrarVisor(null, true)">&#x2715;</button>
+        </div>
+        <div class="visor-body">
+            <iframe id="visorFrame" src="about:blank" title="Documento"></iframe>
+        </div>
+    </div>
+</div>
+
 <script>
     function toggleVisibility(id) {
-        const body   = document.getElementById('body-' + id);
-        const button = body.previousElementSibling.querySelector('.toggle-btn');
-        if (body.style.display === 'none' || body.style.display === '') {
-            body.style.display = 'block';
-            button.textContent = '-';
-        } else {
-            body.style.display = 'none';
-            button.textContent = '+';
+        const body = document.getElementById('body-' + id);
+        if (!body) return;
+        const button = body.previousElementSibling ? body.previousElementSibling.querySelector('.toggle-btn') : null;
+        const isHidden = body.style.display === 'none' || body.style.display === '';
+        body.style.display = isHidden ? 'block' : 'none';
+        if (button) button.textContent = isHidden ? '-' : '+';
+    }
+
+    let blobActual = null;
+
+    function abrirVisor(url, titulo) {
+        const overlay = document.getElementById('visorOverlay');
+        const frame   = document.getElementById('visorFrame');
+        const titulo_el = document.getElementById('visorTitulo');
+
+        titulo_el.textContent = titulo;
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        frame.src = 'about:blank';
+
+        fetch(url)
+            .then(function(r) { return r.blob(); })
+            .then(function(blob) {
+                if (blobActual) URL.revokeObjectURL(blobActual);
+                blobActual = URL.createObjectURL(blob);
+                frame.src = blobActual;
+            })
+            .catch(function() {
+                window.open(url, '_blank');
+                cerrarVisor(null, true);
+            });
+    }
+
+    function cerrarVisor(event, forzar) {
+        if (forzar || (event && event.target === document.getElementById('visorOverlay'))) {
+            document.getElementById('visorOverlay').classList.remove('active');
+            document.getElementById('visorFrame').src = 'about:blank';
+            document.body.style.overflow = '';
+            if (blobActual) { URL.revokeObjectURL(blobActual); blobActual = null; }
         }
     }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') cerrarVisor(null, true);
+    });
 
     document.getElementById('buscadorSesiones').addEventListener('input', function () {
         const filtro   = this.value.toLowerCase();
