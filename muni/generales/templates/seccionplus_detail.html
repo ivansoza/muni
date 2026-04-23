@@ -405,7 +405,7 @@
       <div class="card mb-3" style="display:none">
         <div class="card-header d-flex justify-content-between align-items-center">
           <div>
-            <strong>{{ a.descripcion|default:"Archivo adjunto" }}</strong>
+            <strong>{{ a.descripcion }}</strong>
             {% if a.archivo %}
               <div class="text-muted small">{{ a.archivo.name }}</div>
             {% endif %}
@@ -1063,7 +1063,7 @@
       {% endif %}
       {% for a in seccion.archivos.all %}
         {% if a.archivo %}
-          { url: "{{ a.archivo.url|escapejs }}", titulo: "{{ a.descripcion|default:'Archivo adjunto'|escapejs }}" }{% if not forloop.last %},{% endif %}
+          { url: "{{ a.archivo.url|escapejs }}", titulo: "{{ a.descripcion|default:' '|escapejs }}" }{% if not forloop.last %},{% endif %}
         {% endif %}
       {% endfor %}
     ];
@@ -1127,7 +1127,7 @@
       noPdfs.forEach(item => {
         html += `
           <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span>${item.titulo || 'Archivo'}</span>
+            <span>${item.titulo }</span>
             <a href="${item.url}" target="_blank" class="btn btn-outline-secondary btn-sm">Abrir / Descargar</a>
           </li>`;
       });
@@ -1149,7 +1149,7 @@
       section.className = 'pdf-section';
 section.innerHTML = `
   <div class="pdf-header">
-    <div class="title">${item.titulo || 'Documento'}</div>
+    <div class="title">${item.titulo}</div>
     <div class="actions">
       <a href="${item.url}" target="_blank" class="btn btn-sm btn-outline-secondary">Abrir / Descargar</a>
     </div>
