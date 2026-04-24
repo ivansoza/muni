@@ -1,6 +1,7 @@
 from django import forms
-from .models import Articulo, Categoria, Autor
+from .models import Articulo, Categoria, Autor, VideoArticulo
 from django_ckeditor_5.widgets import CKEditor5Widget
+from django.forms import inlineformset_factory
 
 class ArticuloForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -97,3 +98,52 @@ class AutorForm(forms.ModelForm):
                 'class': 'form-control-file'
             }),
         }
+
+class VideoArticuloForm(forms.ModelForm):
+    class Meta:
+        model = VideoArticulo
+        fields = ['titulo', 'tipo', 'url', 'archivo', 'orden']
+        widgets = {
+            'titulo': forms.TextInput(attrs={
+                'placeholder': 'Título del video (opcional)',
+                'class': 'form-control'
+            }),
+            'tipo': forms.Select(attrs={
+                'class': 'form-control tipo-video-select'  # clase para el JS
+            }),
+            'url': forms.URLInput(attrs={
+                'placeholder': 'https://www.youtube.com/watch?v=...',
+                'class': 'form-control'
+            }),
+            'archivo': forms.ClearableFileInput(attrs={
+                'class': 'form-control',
+                'accept': 'video/mp4,video/webm,video/ogg'
+            }),
+            'orden': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 0,
+                'value': 0
+            }),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        tipo = cleaned_data.get('tipo')
+        url = cleaned_data.get('url')
+        archivo = cleaned_data.get('archivo')
+
+        if tipo == 'url' and not url:
+            self.add_error('url', 'Este campo es obligatorio para videos de URL externa.')
+        if tipo == 'archivo' and not archivo:
+            self.add_error('archivo', 'Debes subir un archivo de video.')
+        return cleaned_data
+
+
+VideoFormSet = inlineformset_factory(
+    Articulo,
+    VideoArticulo,
+    form=VideoArticuloForm,
+    fields=['titulo', 'tipo', 'url', 'archivo', 'orden'],
+    extra=1,
+    can_delete=True,
+)

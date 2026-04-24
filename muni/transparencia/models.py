@@ -1,6 +1,36 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 from informacion_municipal.models import Municipio
+import os
+
+def ruta_liga_archivo(instance, filename):
+    ext = filename.split('.')[-1].lower()
+
+    safe_name = (instance.titulo_archivo or instance.articuloDe.articulo_fraccion).strip()
+    safe_name = safe_name.replace(' ', '_').replace('/', '-').replace('\\', '-')
+
+    # nombre final
+    filename = f"{safe_name}_{instance.ano or 'sin_ano'}.{ext}"
+
+    # base
+    base = "transparencia/ltaip"
+
+    # 1) carpeta jerárquica (padre/subcarpeta/subsub...)
+    if instance.carpeta:
+        base = os.path.join(base, instance.carpeta.ruta_fs())  # debe devolver ruta relativa
+
+    # 2) trimestre como subcarpeta
+    if instance.trimestre in (1, 2, 3, 4):
+        base = os.path.join(base, f"T{instance.trimestre}")
+    else:
+        base = os.path.join(base, "sin_trimestre")
+
+    # 3) año como subcarpeta (si quieres)
+    if instance.ano:
+        base = os.path.join(base, str(instance.ano))
+
+    return os.path.join(base, filename)
 
 class Encuesta(models.Model):
     municipio = models.ForeignKey(
@@ -128,10 +158,17 @@ class DocumentoTransparencia(models.Model):
 # Lista de Obligaciones
 class ListaObligaciones(models.Model):
     titulo = models.CharField(max_length=255, verbose_name='Titulo de la lista')
-    articulo = models.CharField(max_length=255, verbose_name='titulo de articulo')
+    articulo = models.CharField(null=True, blank=True,max_length=255, verbose_name='titulo de articulo')
+
+    carpeta = models.ForeignKey(
+        'CarpetaTransparencia',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='listas_obligaciones'
+    )
 
     def __str__(self):
-        return f"{self.titulo} - {self.articulo}"
+        return f"{self.titulo}"
 
 # Artículos de cada lista de obligaciones
 class ArticuloLiga(models.Model):
@@ -143,15 +180,100 @@ class ArticuloLiga(models.Model):
 
     def __str__(self):
         return f"ART. - {self.articulo_fraccion}"
+class CarpetaTransparencia(models.Model):
+    nombre = models.CharField(max_length=255)
+    padre = models.ForeignKey(
+        'self',
+        null=True, blank=True,
+        related_name='subcarpetas',
+        on_delete=models.CASCADE
+    )
+    estatus = models.CharField(max_length=1, choices=(('A','Activa'),('I','Inactiva')), default='A')
+    orden = models.PositiveIntegerField(default=0)
 
-
-class LigaArchivo(models.Model):
-    articuloDe = models.ForeignKey(ArticuloLiga, on_delete=models.CASCADE, verbose_name='Articulo')
-    ano = models.PositiveIntegerField(null=True, blank=True, verbose_name='Año')  # Año fiscal directamente como atributo
-    liga = models.URLField(blank=True, null=True, verbose_name='link')  # Enlace al artículo completo
-    archivo = models.FileField(upload_to='transparencia/documentos/', verbose_name='Archivo', null=True, blank=True)
-    def __str__(self):
-        return f"ART. - {self.articuloDe} - {self.ano}"
+    # (opcional) si quieres separar por “sección/categoría”
+    seccion = models.ForeignKey(
+        'SeccionTransparencia',
+        null=True, blank=True,
+        on_delete=models.CASCADE,
+        related_name='carpetas'
+    )
 
     class Meta:
-        ordering = ['-ano'] 
+        ordering = ['orden', 'nombre']
+        constraints = [
+            # Evita duplicados de nombre en el mismo nivel:
+            models.UniqueConstraint(
+                fields=['seccion', 'padre', 'nombre'],
+                name='uniq_carpeta_por_padre'
+            )
+        ]
+
+    def __str__(self):
+        return self.ruta_legible()
+
+    def clean(self):
+        # Evita ciclos: A -> B -> A
+        p = self.padre
+        while p:
+            if p == self:
+                raise ValidationError("No puedes asignar como padre una subcarpeta descendiente (ciclo).")
+            p = p.padre
+
+    def ruta_legible(self):
+        # “Carpeta / Sub / Subsub”
+        partes = []
+        nodo = self
+        while nodo:
+            partes.append(nodo.nombre)
+            nodo = nodo.padre
+        return " / ".join(reversed(partes))
+
+    def ruta_fs(self):
+        # “carpeta/sub/subsub” para filesystem
+        partes = []
+        nodo = self
+        while nodo:
+            partes.append(nodo.nombre.strip().replace(' ', '_'))
+            nodo = nodo.padre
+        return "/".join(reversed(partes))
+
+class LigaArchivo(models.Model):
+    TRIMESTRES = (
+        (1, "Trimestre 1"),
+        (2, "Trimestre 2"),
+        (3, "Trimestre 3"),
+        (4, "Trimestre 4"),
+    )
+
+    articuloDe = models.ForeignKey(ArticuloLiga, on_delete=models.CASCADE, verbose_name='Articulo')
+
+    carpeta = models.ForeignKey(
+        CarpetaTransparencia,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='archivos'
+    )
+
+    trimestre = models.PositiveSmallIntegerField(
+        choices=TRIMESTRES,
+        null=True, blank=True,
+        verbose_name="Trimestre"
+    )
+
+    titulo_archivo = models.CharField(max_length=255, blank=True, null=True, verbose_name='Título del archivo')
+    ano = models.PositiveIntegerField(null=True, blank=True, verbose_name='Año')
+    liga = models.URLField(blank=True, null=True, verbose_name='link')
+
+    archivo = models.FileField(
+        upload_to=ruta_liga_archivo,
+        verbose_name='Archivo',
+        null=True, blank=True
+    )
+
+    class Meta:
+        ordering = ['-ano']
+
+
+    def __str__(self):
+        return f"ART. - {self.articuloDe} - {self.ano}"

@@ -25,13 +25,13 @@ from django.views.generic import FormView
 from django.http import JsonResponse, HttpResponseNotAllowed
 
 from informacion_municipal.models import ElementoLista, InformacionCiudad, Municipio, Video
-from generales.models import AppIcon, ArchivoNormatividad, ContadorVisitas, NormatividadSeccion, SeccionPlus, Secciones, SocialNetwork, VideoMunicipio
+from generales.models import ContadorVisitas, SeccionPlus, Secciones, SocialNetwork, VideoMunicipio
 from reportes.models import ReporteStatus
 from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, AvisoDePrivacidadForm
 from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
 from servicios.forms import ComoLoRealizoForm, CuantoCuestaForm, EnQueConsisteForm, QueSeRequiereForm, RequisitosImagenForm, ServicioForm
 from servicios.models import ComoLoRealizo, ConfiguracionServicio, CuantoCuesta, Dependencia, EnQueConsiste, QueSeRequiere, RequisitosImagen, Servicio
-from .forms import ArchivoNormatividadForm, ArchivoNormatividadFormSet, CustomAuthenticationForm, ElementoListaForm, GroupForm, InformacionCiudadForm, NormatividadSeccionForm, SeccionPlusForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm, VideoMunicipioForm
+from .forms import CustomAuthenticationForm, ElementoListaForm, GroupForm, InformacionCiudadForm, SeccionPlusForm, SeccionesForm, UserCreationWithGroupForm, UserEditForm, VideoMunicipioForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from noticias.models import Noticia, ImagenGaleria, Categoria
@@ -72,6 +72,8 @@ from eventos.forms import ArticuloForm
 from .forms import SeccionPlusForm, SeccionPlusArchivoFormSet
 from django.db import transaction
 from django.http import HttpResponseRedirect
+from eventos.forms import VideoFormSet
+from transparencia.models import CarpetaTransparencia
 class VideoView(LoginRequiredMixin,TemplateView):
     template_name = 'generales/video.html'
 
@@ -290,104 +292,6 @@ class PrivacidadView(LoginRequiredMixin, TemplateView):
         return context
     
 
-
-class NormatividadView(LoginRequiredMixin, TemplateView):
-    template_name = 'generales/normatividad.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["breadcrumb"] = {
-            'parent': {'name': 'Generales', 'url': '/admin/generales/'},
-            'child': {'name': 'Normatividad', 'url': ''}
-        }
-        context['sidebar'] = 'Generales'
-        context['regreso_url'] = reverse('generalesDashboard')
-        context['secciones'] = NormatividadSeccion.objects.all()
-        return context
-    
-
-
-
-class NormatividadSeccionCreateView(LoginRequiredMixin, CreateView):
-    model = NormatividadSeccion
-    form_class = NormatividadSeccionForm
-    template_name = 'generales/normatividadAdmin.html'
-    success_url = reverse_lazy('NormatividadView')
-
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        if self.request.method == 'POST':
-            ctx['formset'] = ArchivoNormatividadFormSet(
-                self.request.POST, self.request.FILES)
-        else:
-            ctx['formset'] = ArchivoNormatividadFormSet()
-        ctx["breadcrumb"] = {
-            'parent': {'name': 'Normatividad', 'url': reverse('NormatividadView')},
-            'child':  {'name': 'Crear Sección', 'url': ''},
-        }
-        ctx['sidebar'] = 'Generales'
-        ctx['regreso_url'] = reverse('NormatividadView')
-        return ctx
-
-    def form_valid(self, form):
-        ctx = self.get_context_data()
-        formset = ctx['formset']
-        if formset.is_valid():
-            self.object = form.save()
-            formset.instance = self.object
-            formset.save()
-            messages.success(self.request, 'Sección creada correctamente.')
-            return redirect(self.get_success_url())
-        return self.render_to_response(self.get_context_data(form=form))
-
-
-class NormatividadSeccionUpdateView(LoginRequiredMixin, UpdateView):
-    model = NormatividadSeccion
-    form_class = NormatividadSeccionForm
-    template_name = 'generales/normatividadAdminEdit.html'
-    success_url = reverse_lazy('NormatividadView')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        extra_value = 0 if self.object.archivos.exists() else 1
-
-        ArchivoNormatividadFormSetDynamic = inlineformset_factory(
-            NormatividadSeccion,
-            ArchivoNormatividad,
-            form=ArchivoNormatividadForm,
-            extra=extra_value,
-            can_delete=True
-        )
-
-        if self.request.method == 'POST':
-            formset = ArchivoNormatividadFormSetDynamic(
-                self.request.POST, self.request.FILES, instance=self.object)
-        else:
-            formset = ArchivoNormatividadFormSetDynamic(instance=self.object)
-
-        context['formset'] = formset
-        context["breadcrumb"] = {
-            'parent': {'name': 'Normatividad', 'url': reverse('NormatividadView')},
-            'child':  {'name': 'Editar Sección', 'url': ''},
-        }
-        context['sidebar'] = 'Generales'
-        context['regreso_url'] = reverse('NormatividadView')
-        return context
-
-    def form_valid(self, form):
-        self.object = form.save()
-        context = self.get_context_data()
-        formset = context['formset']
-        if formset.is_valid():
-            formset.instance = self.object
-            formset.save()
-            messages.success(self.request, 'Sección actualizada correctamente.')
-            return redirect(self.get_success_url())
-        return self.render_to_response(self.get_context_data(form=form))
-    
-
-
-    
 class AvisoDePrivacidadCreateView(LoginRequiredMixin, CreateView):
     model = AvisoDePrivacidad
     form_class = AvisoDePrivacidadForm
@@ -915,7 +819,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         return [self.gabinete_template_name] if self._is_gabinete_user(self.request.user) else [self.template_name]
 
     # ---- GET (y también base para POST fallido) ----
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["breadcrumb"] = {
@@ -935,6 +838,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context["gabinete_member"] = miembro
         context["gabinete_member_model"] = modelo
 
+        # Puede editar si es el asociado (o staff/superuser)
         can_edit = bool(
             miembro and (
                 miembro.usuario_id == self.request.user.id or
@@ -944,19 +848,15 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         )
         context["can_edit_gabinete_content"] = can_edit
 
+        # Form de CKEditor (solo si puede editar)
         if can_edit:
             Form = contenido_form_for(type(miembro))
             context["contenido_form"] = Form(instance=miembro)
         else:
             context["contenido_form"] = None
 
-        # Íconos dinámicos de aplicaciones
-        context['app_icons'] = {
-            icon.app: icon
-            for icon in AppIcon.objects.all()
-        }
-
         return context
+
     # ---- POST: guardar CKEditor ----
     def post(self, request, *args, **kwargs):
         # Reutilizamos la lógica de miembro asociado
@@ -2325,20 +2225,36 @@ class ListaObligacionesView(LoginRequiredMixin, ListView):
         return context
 
     
-# Vista para crear un nuevo registro de ListaObligaciones
 class ListaObligacionesCreateView(LoginRequiredMixin, CreateView):
     model = ListaObligaciones
     form_class = ListaObligacionesForm
     template_name = 'transparencia2/crearLista.html'
     success_url = reverse_lazy('lista_obligaciones')
+
     def dispatch(self, request, *args, **kwargs):
         if not (request.user.is_superuser or request.user.has_perm("transparencia.add_listaobligaciones")):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        messages.success(self.request, "La lista de obligaciones se ha creado correctamente.")
-        return super().form_valid(form)
+        # 1) Guardar la lista primero
+        response = super().form_valid(form)
+        lista = self.object
+
+        # 2) Crear carpeta PADRE (principal) para esta lista, si no existe
+        carpeta, _ = CarpetaTransparencia.objects.get_or_create(
+            padre=None,
+            nombre=lista.titulo,
+            defaults={'estatus': 'A', 'orden': 0}
+        )
+
+        # 3) Vincular (si agregaste el FK en ListaObligaciones)
+        if getattr(lista, 'carpeta_id', None) is None:
+            lista.carpeta = carpeta
+            lista.save(update_fields=['carpeta'])
+
+        messages.success(self.request, "La lista de obligaciones se ha creado correctamente (y su carpeta también).")
+        return response
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -2587,10 +2503,11 @@ class GestionarArticulosArView(View, LoginRequiredMixin):
         }
 
         return render(request, 'transparencia2/gestionar_articulo.html', context)
-class CrearArticuloLigaView(CreateView, LoginRequiredMixin):
+class CrearArticuloLigaView(LoginRequiredMixin, CreateView):
     model = LigaArchivo
     form_class = ArticuloLigaArchivoForm
     template_name = 'transparencia2/crear_articuloLA.html'
+
     def dispatch(self, request, *args, **kwargs):
         if not (request.user.is_superuser or request.user.has_perm("transparencia.add_ligaarchivo")):
             raise PermissionDenied
@@ -2599,50 +2516,61 @@ class CrearArticuloLigaView(CreateView, LoginRequiredMixin):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         articulo_id = self.kwargs.get('id')
-        kwargs['articuloDe_id'] = articulo_id  # Estás pasando el 'id' correcto al formulario
+        kwargs['articuloDe_id'] = articulo_id
         return kwargs
-    
+
     def form_valid(self, form):
-        # Obtener el articuloDe (ArticuloLiga) usando el id de la URL
         articulo_id = self.kwargs['id']
         articulo = get_object_or_404(ArticuloLiga, pk=articulo_id)
-        
-        # Asignamos el artículo al campo 'articuloDe' del nuevo objeto LigaArchivo
+
+        # 1) Forzar articuloDe (porque en el form está disabled y no viaja en POST)
         form.instance.articuloDe = articulo
-        
-        # Guardamos el objeto LigaArchivo con el artículo relacionado
+
+        # 2) Carpeta: si el usuario NO eligió carpeta, creamos/asignamos automáticamente:
+        #    Carpeta principal = ListaObligaciones.titulo
+        #    Subcarpeta        = ArticuloLiga.articulo_fraccion
+        if not form.instance.carpeta_id:
+            lista = articulo.lista_obligaciones
+
+            carpeta_raiz, _ = CarpetaTransparencia.objects.get_or_create(
+                padre=None,
+                nombre=lista.titulo,
+                defaults={'estatus': 'A', 'orden': 0}
+            )
+
+            carpeta_articulo, _ = CarpetaTransparencia.objects.get_or_create(
+                padre=carpeta_raiz,
+                nombre=articulo.articulo_fraccion,
+                defaults={'estatus': 'A', 'orden': articulo.orden or 0}
+            )
+
+            form.instance.carpeta = carpeta_articulo
+
         response = super().form_valid(form)
-        
         messages.success(self.request, 'Artículo creado con éxito!')
         return response
 
     def get_success_url(self):
-        # Redirigimos al usuario a la vista de gestión de artículos después de la creación
         return reverse_lazy('gestionarArchivoLa', kwargs={'id': self.kwargs['id']})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        # Obtener el artículo utilizando el 'id' desde la URL
+
         articulo_id = self.kwargs['id']
         articulo = get_object_or_404(ArticuloLiga, pk=articulo_id)
         context['articulo'] = articulo
 
-        # Obtener la ListaObligaciones asociada al artículo
         lista_obligacion = articulo.lista_obligaciones
-        
-        # Pasamos la lista de obligaciones al contexto
         context['lista_obligaciones'] = lista_obligacion
+
         url_configuracion = reverse('gestionar_articulos', kwargs={'lista_id': lista_obligacion.id})
-        
-        # Crear el breadcrumb con los enlaces adecuados
+
         context["breadcrumb"] = {
             'parent': {'name': 'Gestión de artículos', 'url': url_configuracion},
             'child': {'name': 'Registro de artículos en lista', 'url': ''}
         }
-        
+
         context['sidebar'] = 'transparencia'
-        
         return context
 
 class EditarArticuloLigaArchivoView(UpdateView, LoginRequiredMixin):
@@ -3240,14 +3168,6 @@ class SeccionPlusDetailView(TemplateView):
             context['categorias'] = CategoriaConvocatoria.objects.none()
 
         return context
-
-def eliminar_normatividad_seccion(request, pk):
-    seccion = get_object_or_404(NormatividadSeccion, pk=pk)
-    if request.method == 'POST':
-        seccion.delete()
-        messages.success(request, "La sección de normatividad se ha eliminado correctamente.")
-    return redirect(reverse_lazy('NormatividadView'))
-
 def eliminar_aviso_privacidad(request, pk):
     aviso = get_object_or_404(AvisoDePrivacidad, pk=pk)
     if request.method == 'POST':
@@ -3648,18 +3568,20 @@ class HablaHome(TemplateView, LoginRequiredMixin):
 class ArticuloCreateView(CreateView):
     model = Articulo
     form_class = ArticuloForm
-    template_name = 'hablaHijos/registrarArticulo.html'  # Puedes cambiar la ruta al template si es necesario
-    success_url = reverse_lazy('habla_home')  # Redirige a la lista de artículos después de guardar el artículo
-
-    def form_valid(self, form):
-        # Aquí puedes añadir lógica adicional antes de guardar el artículo (por ejemplo, agregar el autor actual al artículo)
-        articulo = form.save(commit=False)
-        articulo.save()
-        return super().form_valid(form)
+    template_name = 'hablaHijos/registrarArticulo.html'
+    success_url = reverse_lazy('habla_home')
 
     def get_context_data(self, **kwargs):
-        # Añadimos contexto adicional al renderizado de la plantilla, si es necesario
         context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['video_formset'] = VideoFormSet(
+                self.request.POST,
+                self.request.FILES,  # ← necesario para archivos
+                prefix='videos'
+            )
+        else:
+            context['video_formset'] = VideoFormSet(prefix='videos')
+
         url_configuracion = reverse('habla_home')
         context["breadcrumb"] = {
             'parent': {'name': 'Habla con tus hijos', 'url': url_configuracion},
@@ -3668,23 +3590,46 @@ class ArticuloCreateView(CreateView):
         context['regreso_url'] = reverse('habla_home')
         context['sidebar'] = 'habla'
         return context
-    
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        video_formset = context['video_formset']
+
+        if video_formset.is_valid():
+            articulo = form.save()
+            video_formset.instance = articulo
+            video_formset.save()
+            return redirect(self.success_url)
+        return self.render_to_response(self.get_context_data(form=form))
+
+
 class ArticuloUpdateView(UpdateView):
     model = Articulo
     form_class = ArticuloForm
-    template_name = 'hablaHijos/editarArticulo.html'  # crea esta plantilla
-    success_url = reverse_lazy('habla_home')  # URL para redirigir tras éxito
+    template_name = 'hablaHijos/editarArticulo.html'
+    success_url = reverse_lazy('habla_home')
 
-    # Opcional: controlar permisos si es necesario
     def dispatch(self, request, *args, **kwargs):
         if not (request.user.is_superuser or request.user.has_perm("eventos.change_articulo")):
             from django.core.exceptions import PermissionDenied
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
-    
+
     def get_context_data(self, **kwargs):
-        # Añadimos contexto adicional al renderizado de la plantilla, si es necesario
         context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['video_formset'] = VideoFormSet(
+                self.request.POST,
+                self.request.FILES,  # ← necesario para archivos
+                instance=self.object,
+                prefix='videos'
+            )
+        else:
+            context['video_formset'] = VideoFormSet(
+                instance=self.object,
+                prefix='videos'
+            )
+
         url_configuracion = reverse('habla_home')
         context["breadcrumb"] = {
             'parent': {'name': 'Habla con tus hijos', 'url': url_configuracion},
@@ -3693,6 +3638,17 @@ class ArticuloUpdateView(UpdateView):
         context['regreso_url'] = reverse('habla_home')
         context['sidebar'] = 'habla'
         return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        video_formset = context['video_formset']
+
+        if video_formset.is_valid():
+            articulo = form.save()
+            video_formset.instance = articulo
+            video_formset.save()
+            return redirect(self.success_url)
+        return self.render_to_response(self.get_context_data(form=form))
     
 @login_required
 @permission_required('eventos.delete_articulo', raise_exception=True)
@@ -3883,13 +3839,3 @@ def video_delete(request, pk):
     video.delete()
     messages.success(request, "Video eliminado con éxito.")
     return redirect('videos')
-
-
-class HomeNormatividad(TemplateView):
-    template_name = 'homeNormatividad.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['sidebar'] = 'normatividad'
-        context['secciones'] = NormatividadSeccion.objects.all().order_by('fecha_creacion').prefetch_related('archivos')
-        return context
