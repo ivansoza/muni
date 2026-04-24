@@ -118,11 +118,12 @@
         line-height: 1.75;
         color: var(--sevac-muted);
         font-weight: 300;
-        max-width: 600px;
+        max-width: 830px;
+        text-align: justify;
     }
 
     .sevac-hero-logo {
-        width: 260px;
+        width: 360px;
         height: auto;
         object-fit: contain;
         flex-shrink: 0;
@@ -474,9 +475,9 @@
         <div class="sevac-hero-inner">
             <div class="sevac-hero-text">
                 <div class="sevac-hero-badge"><span></span> Sistema de Gestión Documental</div>
-                <h1 class="sevac-hero-title" style='color:#4C91D0; font-size: 60px;'>Sistema de Evaluaciones de la<br>Armonización Contable</h1>
+                <h1 class="sevac-hero-title" style="font-size: 60px;">Sistema de Evaluaciones de <br>la Amortización Contable</h1>
                 <h2 class="sevac-hero-subtitle">SEVAC</h2>
-                <p class="sevac-hero-desc" style='color:red; font-size: 15px;'>SEVAC es el sistema de gestión de carpetas y archivos que contiene información pública relacionada con las obras y proyectos del gobierno. A través de este sistema, podrás acceder a documentos, reportes, informes y otros archivos relevantes sobre la transparencia y gestión de los recursos públicos.</p>
+                <p class="sevac-hero-desc"><strong> Es el sistema de gestión de carpetas y archivos que contiene información pública relacionada con las obras y proyectos del gobierno. A través de este sistema, podrás acceder a documentos, reportes, informes y otros archivos relevantes sobre la transparencia y gestión de los recursos públicos.</strong></p>
             </div>
             {% if municipio.logotipo_claro %}
                 <img src="{{ municipio.logotipo_claro.url }}" alt="Logo" class="sevac-hero-logo">
