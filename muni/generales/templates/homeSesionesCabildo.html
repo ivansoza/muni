@@ -342,12 +342,22 @@
             <button class="visor-close" onclick="cerrarVisor(null, true)">&#x2715;</button>
         </div>
         <div class="visor-body">
-            <iframe id="visorFrame" src="about:blank" title="Documento"></iframe>
+            <iframe id="visorFrame" src="about:blank" title="Documento" style="display:none;"></iframe>
+            <div id="visorCanvas"
+                 style="display:none; overflow-y:auto; height:100%; background:#525659; padding:12px; box-sizing:border-box; text-align:center;"
+                 oncontextmenu="return false;"></div>
         </div>
     </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    let blobActual = null;
+    let pdfDocActual = null;
+
     function toggleVisibility(id) {
         const body = document.getElementById('body-' + id);
         if (!body) return;
@@ -357,37 +367,88 @@
         if (button) button.textContent = isHidden ? '-' : '+';
     }
 
-    let blobActual = null;
+    async function renderizarPagina(pdfDoc, numPagina, contenedor) {
+        const pagina = await pdfDoc.getPage(numPagina);
+        const anchoCont = contenedor.clientWidth - 24;
+        const vpBase = pagina.getViewport({ scale: 1 });
+        const escala = Math.max(1, anchoCont / vpBase.width);
+        const viewport = pagina.getViewport({ scale: escala });
 
-    function abrirVisor(url, titulo) {
-        const overlay = document.getElementById('visorOverlay');
-        const frame   = document.getElementById('visorFrame');
-        const titulo_el = document.getElementById('visorTitulo');
+        const canvas = document.createElement('canvas');
+        canvas.width  = viewport.width;
+        canvas.height = viewport.height;
+        canvas.style.display      = 'block';
+        canvas.style.margin       = '0 auto 10px';
+        canvas.style.maxWidth     = '100%';
+        canvas.style.borderRadius = '4px';
+        canvas.style.boxShadow    = '0 2px 8px rgba(0,0,0,0.4)';
+        canvas.oncontextmenu = function() { return false; };
+        contenedor.appendChild(canvas);
 
-        titulo_el.textContent = titulo;
+        await pagina.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+    }
+
+    async function abrirVisor(url, titulo) {
+        const overlay   = document.getElementById('visorOverlay');
+        const frame     = document.getElementById('visorFrame');
+        const canvasCont = document.getElementById('visorCanvas');
+        const tituloEl  = document.getElementById('visorTitulo');
+
+        tituloEl.textContent = titulo;
         overlay.classList.add('active');
         document.body.style.overflow = 'hidden';
-        frame.src = 'about:blank';
 
-        fetch(url)
-            .then(function(r) { return r.blob(); })
-            .then(function(blob) {
-                if (blobActual) URL.revokeObjectURL(blobActual);
-                blobActual = URL.createObjectURL(blob);
-                frame.src = blobActual;
-            })
-            .catch(function() {
-                window.open(url, '_blank');
-                cerrarVisor(null, true);
-            });
+        const esPDF = url.toLowerCase().split('?')[0].endsWith('.pdf');
+
+        if (esPDF) {
+            frame.style.display      = 'none';
+            canvasCont.style.display = 'block';
+            canvasCont.innerHTML     = '<p style="color:#ccc;padding:30px;">Cargando documento...</p>';
+
+            try {
+                const resp        = await fetch(url);
+                const arrayBuffer = await resp.arrayBuffer();
+
+                if (pdfDocActual) { pdfDocActual.destroy(); pdfDocActual = null; }
+                pdfDocActual = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+                canvasCont.innerHTML = '';
+                for (let i = 1; i <= pdfDocActual.numPages; i++) {
+                    await renderizarPagina(pdfDocActual, i, canvasCont);
+                }
+            } catch (e) {
+                canvasCont.innerHTML = '<p style="color:#f88;padding:30px;">No se pudo cargar el documento.</p>';
+            }
+        } else {
+            canvasCont.style.display = 'none';
+            frame.style.display      = 'block';
+            frame.src = 'about:blank';
+
+            fetch(url)
+                .then(function(r) { return r.blob(); })
+                .then(function(blob) {
+                    if (blobActual) URL.revokeObjectURL(blobActual);
+                    blobActual = URL.createObjectURL(blob);
+                    frame.src  = blobActual;
+                })
+                .catch(function() {
+                    frame.style.display = 'none';
+                    canvasCont.style.display = 'block';
+                    canvasCont.innerHTML = '<p style="color:#f88;padding:30px;">No se pudo cargar el archivo.</p>';
+                });
+        }
     }
 
     function cerrarVisor(event, forzar) {
         if (forzar || (event && event.target === document.getElementById('visorOverlay'))) {
             document.getElementById('visorOverlay').classList.remove('active');
             document.getElementById('visorFrame').src = 'about:blank';
+            document.getElementById('visorFrame').style.display = 'none';
+            document.getElementById('visorCanvas').innerHTML    = '';
+            document.getElementById('visorCanvas').style.display = 'none';
             document.body.style.overflow = '';
-            if (blobActual) { URL.revokeObjectURL(blobActual); blobActual = null; }
+            if (blobActual)   { URL.revokeObjectURL(blobActual); blobActual = null; }
+            if (pdfDocActual) { pdfDocActual.destroy(); pdfDocActual = null; }
         }
     }
 
