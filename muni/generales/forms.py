@@ -187,11 +187,12 @@ class SeccionesForm(forms.ModelForm):
         model  = Secciones
         fields = [
             'noticias', 'convocatorias', 'transparencia', 'servicios',
-            'habla_con_tus_hijos','ven_vive_y_vuelve', 'historia_municipio','aviso_de_privacidad', 'gabinete',
-            'sevac', 'contacts', 'reportes', 'encuestas',
-            'servicios_en_linea', 'videos',                      # ← agregado
+            'habla_con_tus_hijos','ven_vive_y_vuelve', 'historia_municipio',
+            'aviso_de_privacidad', 'gabinete', 'sevac', 'contacts',
+            'reportes', 'encuestas', 'servicios_en_linea', 'videos',
+            'normatividad',
+            'sesion_cabildo',
         ]
-
 
 class SeccionPlusForm(forms.ModelForm):
     class Meta:
@@ -246,3 +247,73 @@ class VideoMunicipioForm(forms.ModelForm):
             'frame': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://www.youtube.com/embed/…'}),
             'orden': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+
+
+
+
+from django import forms
+from django.forms import inlineformset_factory
+from .models import ArchivoSesionCabildo, NormatividadSeccion, ArchivoNormatividad, SesionCabildo
+
+class NormatividadSeccionForm(forms.ModelForm):
+    class Meta:
+        model  = NormatividadSeccion
+        fields = ['seccion', 'descripcion']
+        widgets = {
+            'seccion'    : forms.TextInput(attrs={
+                'placeholder': 'Nombre de la sección (ej. Reglamentos Municipales)'}),
+            'descripcion': forms.TextInput(attrs={
+                'placeholder': 'Descripción breve de la sección'}),
+        }
+
+class ArchivoNormatividadForm(forms.ModelForm):
+    class Meta:
+        model  = ArchivoNormatividad
+        fields = ['archivo', 'descripcion']
+        widgets = {
+            'archivo'    : forms.ClearableFileInput(attrs={
+                'placeholder': 'Selecciona un archivo PDF, DOCX, etc.'}),
+            'descripcion': forms.TextInput(attrs={
+                'placeholder': 'Descripción del archivo (opcional)'}),
+        }
+
+ArchivoNormatividadFormSet = inlineformset_factory(
+    NormatividadSeccion,
+    ArchivoNormatividad,
+    form=ArchivoNormatividadForm,
+    extra=1,
+    can_delete=False
+)
+
+
+class SesionCabildoForm(forms.ModelForm):
+    class Meta:
+        model  = SesionCabildo
+        fields = ['sesion', 'descripcion']
+        widgets = {
+            'sesion'     : forms.TextInput(attrs={
+                'placeholder': 'Nombre de la sesión (ej. Sesión Ordinaria No. 1)'}),
+            'descripcion': forms.TextInput(attrs={
+                'placeholder': 'Descripción breve de la sesión'}),
+        }
+
+
+class ArchivoSesionCabildoForm(forms.ModelForm):
+    class Meta:
+        model  = ArchivoSesionCabildo
+        fields = ['archivo', 'descripcion']
+        widgets = {
+            'archivo'    : forms.ClearableFileInput(attrs={
+                'placeholder': 'Selecciona un archivo PDF, DOCX, etc.'}),
+            'descripcion': forms.TextInput(attrs={
+                'placeholder': 'Descripción del archivo (opcional)'}),
+        }
+
+
+ArchivoSesionCabildoFormSet = inlineformset_factory(
+    SesionCabildo,
+    ArchivoSesionCabildo,
+    form=ArchivoSesionCabildoForm,
+    extra=1,
+    can_delete=False
+)

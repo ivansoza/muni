@@ -1,7 +1,7 @@
 from django import forms
 
 from reportes.models import ReporteAlcantarillado, ReporteAlumbradoPublico, ReporteBache, ReporteServicioAgua
-from .models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga, LigaArchivo, CarpetaTransparencia
+from .models import SeccionTransparencia, EjercicioFiscal, DocumentoTransparencia, ListaObligaciones, ArticuloLiga, LigaArchivo
 
 class SeccionTransparenciaForm(forms.ModelForm):
     class Meta:
@@ -60,14 +60,19 @@ class DocumentoTransparenciaForm(forms.ModelForm):
 class ListaObligacionesForm(forms.ModelForm):
     class Meta:
         model = ListaObligaciones
-        fields = ['titulo']
+        fields = ['titulo', 'articulo']
         labels = {
-            'titulo': 'Título de la carpeta',
+            'titulo': 'Título de la lista',
+            'articulo': 'Título de artículo',
         }
         widgets = {
             'titulo': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Ej. Obligaciones de transparencia'
+            }),
+            'articulo': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ej. Artículo 70 de la Ley General'
             }),
         }
 
@@ -95,102 +100,40 @@ class ArticuloLigaForm(forms.ModelForm):
             self.fields['lista_obligaciones'].initial = lista_obligacion_id
 
 class ArticuloLigaArchivoForm(forms.ModelForm):
-    carpeta = forms.ModelChoiceField(
-        queryset=CarpetaTransparencia.objects.none(),
-        required=False,
-        label="Carpeta (opcional)",
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-
     class Meta:
         model = LigaArchivo
-        # ✅ Agregamos trimestre
-        fields = ['articuloDe', 'carpeta', 'trimestre', 'titulo_archivo', 'ano', 'liga', 'archivo']
+        fields = ['articuloDe', 'ano', 'liga', 'archivo']
         widgets = {
             'articuloDe': forms.Select(attrs={'class': 'form-control'}),
-            'trimestre': forms.Select(attrs={'class': 'form-control'}),  # ✅ nuevo
-            'titulo_archivo': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Título del archivo (opcional)'
-            }),
-            'ano': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Año fiscal',
-                'min': 1900,
-                'max': 2100
-            }),
-            'liga': forms.URLInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Ingrese el enlace completo del artículo'
-            }),
-            'archivo': forms.ClearableFileInput(attrs={
-                'class': 'custom-file-input',
-                'id': 'customFile'
-            }),
+            'ano': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Año fiscal', 'min': 1900, 'max': 2100}),
+            'liga': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el enlace completo del artículo'}),
+            'archivo': forms.ClearableFileInput(attrs={'class': 'custom-file-input', 'id': 'customFile'}),
         }
-
+    
     def __init__(self, *args, **kwargs):
-        articulo_id = kwargs.pop('articuloDe_id', None)
+        articulo_id = kwargs.pop('articuloDe_id', None)  # Asegúrate de que esto coincida con la clave pasada en kwargs
         super().__init__(*args, **kwargs)
-
-        # 1) Si viene articulo_id, encierra articuloDe al artículo fijo
+        
         if articulo_id:
             self.fields['articuloDe'].queryset = ArticuloLiga.objects.filter(id=articulo_id)
             self.fields['articuloDe'].initial = articulo_id
-            self.fields['articuloDe'].disabled = True
-
-        # 2) Año obligatorio
+        
+        # Hacemos que el campo "ano" sea obligatorio en el formulario
         self.fields['ano'].required = True
-
-        # ✅ 2.1) Trimestre: (decide si lo quieres obligatorio siempre o solo con archivo)
-        # Opción A (recomendada): obligatorio solo si se sube archivo (validamos en clean)
-        self.fields['trimestre'].required = False
-
-        # 3) Cargar carpetas y mostrarlas con indentación (principal/sub/subsub)
-        qs = CarpetaTransparencia.objects.select_related('padre').order_by('orden', 'nombre')
-        self.fields['carpeta'].queryset = qs
-        self.fields['carpeta'].label_from_instance = self._label_carpeta
-
-    def _label_carpeta(self, carpeta):
-        depth = 0
-        p = carpeta.padre
-        while p:
-            depth += 1
-            p = p.padre
-        prefix = "— " * depth
-        return f"{prefix}{carpeta.nombre}"
 
     def clean(self):
         cleaned_data = super().clean()
         liga = cleaned_data.get('liga')
         archivo = cleaned_data.get('archivo')
         ano = cleaned_data.get('ano')
-        trimestre = cleaned_data.get('trimestre')
 
-        # 1) Debe existir al menos liga o archivo
+        # Verificamos que se ingrese al menos un enlace o un archivo
         if not liga and not archivo:
             raise forms.ValidationError("Debe ingresar al menos un enlace o un archivo.")
 
-        # 2) Año obligatorio
+        # Verificamos que se ingrese el año fiscal
         if not ano:
-            self.add_error('ano', "El año fiscal es obligatorio.")
-
-        # ✅ 3) Trimestre: valida 1-4 y/o obligatorio si hay archivo
-        # Recomendación: si hay archivo, exige trimestre (para carpeta física)
-        if archivo:
-            if not trimestre:
-                self.add_error('trimestre', "El trimestre es obligatorio cuando subes un archivo.")
-            else:
-                try:
-                    t = int(trimestre)
-                except (TypeError, ValueError):
-                    self.add_error('trimestre', "Trimestre inválido.")
-                else:
-                    if t not in (1, 2, 3, 4):
-                        self.add_error('trimestre', "El trimestre debe ser 1, 2, 3 o 4.")
-
-        # Si quieres exigir trimestre también para ligas, cambia a:
-        # if not trimestre: self.add_error('trimestre', "...")
+            raise forms.ValidationError("El año fiscal es obligatorio.")
 
         return cleaned_data
 

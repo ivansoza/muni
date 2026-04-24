@@ -38,10 +38,47 @@
         background: var(--sevac-surface);
         border-bottom: 1px solid var(--sevac-border);
         padding: 56px 48px 48px;
+    @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+    :root {
+        --sevac-primary: var(--color-primario, #c0392b);
+        --sevac-surface: #ffffff;
+        --sevac-bg: #f8f7f5;
+        --sevac-border: #e8e4df;
+        --sevac-text: #1a1a1a;
+        --sevac-muted: #7a7068;
+        --sevac-accent: #f0ebe4;
+        --radius-sm: 8px;
+        --radius-md: 14px;
+        --radius-lg: 20px;
+    }
+
+    /* ── RESET SCOPE ── */
+    .sevac-wrapper *:not(i) {
+        font-family: 'Inter', sans-serif;
+        box-sizing: border-box;
+    }
+
+    .sevac-wrapper {
+        background: var(--sevac-bg);
+        min-height: 100vh;
+        padding-bottom: 0;
+    }
+
+    /* ══════════════════════════════
+       HERO HEADER
+    ══════════════════════════════ */
+    .sevac-hero {
+        background: var(--sevac-surface);
+        border-bottom: 1px solid var(--sevac-border);
+        padding: 56px 48px 48px;
         position: relative;
+        overflow: hidden;
         overflow: hidden;
     }
 
+    .sevac-hero::before {
+        content: 'SEVAC';
     .sevac-hero::before {
         content: 'SEVAC';
         position: absolute;
@@ -64,8 +101,63 @@
         align-items: flex-start;
         justify-content: space-between;
         gap: 40px;
+        right: -20px;
+        top: -30px;
+        font-family: 'Syne', sans-serif;
+        font-size: 180px;
+        font-weight: 800;
+        color: var(--sevac-primary);
+        opacity: 0.04;
+        line-height: 1;
+        pointer-events: none;
+        user-select: none;
     }
 
+    .sevac-hero-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 40px;
+    }
+
+    .sevac-hero-text {
+        flex: 1;
+    }
+
+    .sevac-hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--sevac-accent);
+        border: 1px solid var(--sevac-border);
+        border-radius: 100px;
+        padding: 5px 14px 5px 8px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--sevac-muted);
+        margin-bottom: 20px;
+    }
+
+    .sevac-hero-badge span {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--sevac-primary);
+    }
+
+    .sevac-hero-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 36px;
+        font-weight: 700;
+        color: var(--sevac-text);
+        line-height: 1.15;
+        margin: 0 0 8px;
+        letter-spacing: -0.5px;
     .sevac-hero-text {
         flex: 1;
     }
@@ -166,9 +258,73 @@
     .sevac-sidebar-title {
         font-family: 'Syne', sans-serif;
         font-size: 11px;
+        object-fit: contain;
+        flex-shrink: 0;
+        opacity: 0.92;
+    }
+
+    /* ══════════════════════════════
+       MAIN LAYOUT
+    ══════════════════════════════ */
+    .sevac-body {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 40px 24px;
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        gap: 28px;
+        align-items: start;
+    }
+
+    @media (max-width: 900px) {
+        .sevac-body { grid-template-columns: 1fr; }
+        .sevac-hero { padding: 36px 24px 32px; }
+        .sevac-hero::before { font-size: 100px; }
+        .sevac-hero-title { font-size: 26px; }
+        .sevac-hero-logo { width: 100px; }
+    }
+
+    /* ══════════════════════════════
+       SIDEBAR
+    ══════════════════════════════ */
+    .sevac-sidebar {
+        background: var(--sevac-surface);
+        border: 1px solid var(--sevac-border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        position: sticky;
+        top: 24px;
+    }
+
+    .sevac-sidebar-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 11px;
         font-weight: 700;
         letter-spacing: 0.12em;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
+        color: var(--sevac-muted);
+        padding: 18px 20px 12px;
+        border-bottom: 1px solid var(--sevac-border);
+    }
+
+    .sevac-sidebar ul {
+        list-style: none;
+        margin: 0;
+        padding: 8px;
+    }
+
+    .sevac-sidebar ul li a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: var(--radius-sm);
+        text-decoration: none;
+        font-size: 13.5px;
+        font-weight: 500;
+        color: var(--sevac-muted);
+        transition: background 0.18s, color 0.18s;
         color: var(--sevac-muted);
         padding: 18px 20px 12px;
         border-bottom: 1px solid var(--sevac-border);
@@ -240,12 +396,112 @@
     .sevac-card-title {
         font-family: 'Syne', sans-serif;
         font-size: 14px;
+    .sevac-sidebar ul li a::before {
+        content: '';
+        display: inline-block;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--sevac-border);
+        flex-shrink: 0;
+        transition: background 0.18s;
+    }
+
+    .sevac-sidebar ul li a:hover {
+        background: var(--sevac-accent);
+        color: var(--sevac-text);
+    }
+
+    .sevac-sidebar ul li.active a {
+        background: var(--sevac-primary);
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .sevac-sidebar ul li.active a::before {
+        background: rgba(255,255,255,0.6);
+    }
+
+    /* ══════════════════════════════
+       ACCORDION CARD
+    ══════════════════════════════ */
+    .sevac-card {
+        background: var(--sevac-surface);
+        border: 1px solid var(--sevac-border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+    }
+
+    .sevac-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px 16px;
+        border-bottom: 1px solid var(--sevac-border);
+    }
+
+    .sevac-card-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 14px;
         font-weight: 700;
+        letter-spacing: 0.1em;
         letter-spacing: 0.1em;
         text-transform: uppercase;
         color: var(--sevac-muted);
+        color: var(--sevac-muted);
     }
 
+    /* ── Accordion overrides ── */
+    .sevac-card .accordion-item {
+        border: none;
+        border-bottom: 1px solid var(--sevac-border);
+    }
+
+    .sevac-card .accordion-item:last-child { border-bottom: none; }
+
+    .sevac-card .accordion-button {
+        font-family: 'Inter', sans-serif;
+        font-size: 14.5px;
+        font-weight: 600;
+        color: var(--sevac-text);
+        background: transparent;
+        padding: 18px 24px;
+        border: none;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        transition: background 0.18s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sevac-card .accordion-button:hover { background: var(--sevac-accent); }
+
+    .sevac-card .accordion-button:not(.collapsed) {
+        background: var(--sevac-accent);
+        color: var(--sevac-text);
+        box-shadow: none !important;
+    }
+
+    .sevac-card .accordion-button::after {
+        content: '';
+        display: inline-flex;
+        width: 18px;
+        height: 18px;
+        border: 1.5px solid var(--sevac-border);
+        border-radius: 50%;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%237a7068' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 10px;
+        margin-left: auto;
+        flex-shrink: 0;
+        transition: transform 0.25s;
+    }
+
+    .sevac-card .accordion-button:not(.collapsed)::after {
+        transform: rotate(-180deg);
+        border-color: var(--sevac-primary);
     /* ── Accordion overrides ── */
     .sevac-card .accordion-item {
         border: none;
@@ -302,8 +558,51 @@
     .sevac-card .accordion-body {
         padding: 20px 24px 24px;
         background: var(--sevac-bg);
+    .sevac-card .accordion-body {
+        padding: 20px 24px 24px;
+        background: var(--sevac-bg);
     }
 
+    /* ── Subcarpetas ── */
+    .sevac-card .accordion-item .accordion-item {
+        border: 1px solid var(--sevac-border) !important;
+        border-radius: var(--radius-sm) !important;
+        margin-bottom: 8px;
+        overflow: hidden;
+        background: var(--sevac-surface);
+    }
+
+    .sevac-card .accordion-item .accordion-item .accordion-button {
+        font-size: 13.5px;
+        font-weight: 500;
+        padding: 13px 18px;
+    }
+
+    .sevac-card .accordion-item .accordion-item .accordion-body {
+        background: #faf9f8;
+        padding: 16px 20px;
+    }
+
+    /* Profundidades adicionales */
+    .sevac-card .accordion-item .accordion-item .accordion-item {
+        border: 1px solid #eee !important;
+        background: #fff;
+        border-radius: var(--radius-sm) !important;
+        margin-bottom: 6px;
+    }
+
+    /* ── Iconos de carpeta ── */
+    .sevac-card .fa-folder,
+    .sevac-card .fa-folder-open { font-size: 14px; }
+
+    /* ══════════════════════════════
+       FILES GRID
+    ══════════════════════════════ */
+    .files-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 12px;
+        margin-top: 8px;
     /* ── Subcarpetas ── */
     .sevac-card .accordion-item .accordion-item {
         border: 1px solid var(--sevac-border) !important;
@@ -359,9 +658,20 @@
         transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
         gap: 10px;
         text-decoration: none;
+        padding: 18px 12px 14px;
+        background: var(--sevac-surface);
+        border: 1px solid var(--sevac-border);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+        gap: 10px;
+        text-decoration: none;
     }
 
     .file-item:hover {
+        transform: translateY(-3px);
+        border-color: #c5b9ad;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.07);
         transform: translateY(-3px);
         border-color: #c5b9ad;
         box-shadow: 0 8px 24px rgba(0,0,0,0.07);
@@ -371,13 +681,34 @@
         font-size: 32px;
         display: block;
         line-height: 1;
+        font-size: 32px;
+        display: block;
+        line-height: 1;
     }
 
     .file-item a {
         font-size: 12px;
         font-weight: 500;
         color: var(--sevac-text);
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--sevac-text);
         text-decoration: none;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+
+    /* file type colors */
+    .fa-file-pdf       { color: #e53e3e; }
+    .fa-file-word      { color: #2b6cb0; }
+    .fa-file-excel     { color: #276749; }
+    .fa-file-powerpoint{ color: #c05621; }
+    .fa-file-alt       { color: #718096; }
+    .fa-image          { color: #553c9a; }
+    .fa-folder         { color: #d69e2e; }
+    .fa-folder-open    { color: #d69e2e; }
+
+    /* ── Carpeta vacía ── */
         line-height: 1.4;
         word-break: break-word;
     }
@@ -401,7 +732,78 @@
         padding: 40px 20px;
         color: var(--sevac-muted);
         font-size: 13px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding: 40px 20px;
+        color: var(--sevac-muted);
+        font-size: 13px;
         font-style: italic;
+        background: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 8px,
+            var(--sevac-border) 8px,
+            var(--sevac-border) 9px
+        );
+        border-radius: var(--radius-md);
+        border: 1px solid var(--sevac-border);
+    }
+
+    .empty-folder::before {
+        content: '📂';
+        font-size: 28px;
+        font-style: normal;
+    }
+
+    /* ══════════════════════════════
+       TRANSPARENCY FOOTER SECTION (original)
+    ══════════════════════════════ */
+    .transparency-section {
+        background-color: #f5f5f5;
+        width: 100%;
+        padding: 40px 0;
+    }
+    .transparency-access {
+        padding: 20px;
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .transparency-access .access-item {
+        text-align: center;
+        width: 350px;
+        margin: 10px;
+    }
+    .transparency-access .access-item img {
+        width: 300px;
+        height: 200px;
+        object-fit: contain;
+        background-color: #f5f5f5;
+        border-radius: 10px;
+        transition: transform 0.3s ease;
+        cursor: pointer;
+    }
+    .transparency-access .access-item img:hover { transform: scale(1.05); }
+    .transparency-access .access-item p {
+        margin-top: 10px;
+        color: var(--color-primario);
+        font-size: 14px;
+        font-weight: 600;
+    }
+    .dual-text {
+        text-align: center;
+        font-size: 22px;
+        margin-bottom: 20px;
+        color: #6b7280;
+    }
+    .bold-text { font-weight: 700; color: var(--color-primario); }
+    .light-text { font-weight: 400; color: #6b7280; }
+
+
         background: repeating-linear-gradient(
             45deg,
             transparent,

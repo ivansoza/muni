@@ -3,13 +3,7 @@
 {% block sin_breadcumb %}
 {% endblock sin_breadcumb %}
 
-
-
 {% block content %}
-
-
-
-
 
 <style>
     .search-container {
@@ -106,68 +100,38 @@
         background-color: #f3f4f6;
     }
 
-    /* Estilos para enfoque con teclado (accesibilidad) */
     .search-input:focus-visible {
         box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
     }
 
-    /* Animación al escribir */
     .search-input:not(:placeholder-shown) + .search-button {
         background-color: #6366f1;
         color: white;
     }
 
     @media (max-width: 768px) {
-        .search-wrapper {
-            width: 90%;
-        }
-        
-        .search-input {
-            padding: 12px 45px 12px 18px;
-            font-size: 0.95rem;
-        }
+        .search-wrapper { width: 90%; }
+        .search-input { padding: 12px 45px 12px 18px; font-size: 0.95rem; }
     }
 
-    /* Tema oscuro (opcional) */
     @media (prefers-color-scheme: dark) {
-        .search-input {
-            background-color: #1f2937;
-            color: #e5e7eb;
-            border-color: #374151;
-        }
-        
-        .search-input::placeholder {
-            color: #6b7280;
-        }
-        
-        .search-wrapper:hover, .search-wrapper:focus-within {
-            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.2);
-        }
-        
-        .search-results {
-            background: #1f2937;
-        }
-        
-        .result-item:hover {
-            background-color: #374151;
-        }
+        .search-input { background-color: #1f2937; color: #e5e7eb; border-color: #374151; }
+        .search-input::placeholder { color: #6b7280; }
+        .search-wrapper:hover, .search-wrapper:focus-within { box-shadow: 0 6px 16px rgba(99, 102, 241, 0.2); }
+        .search-results { background: #1f2937; }
+        .result-item:hover { background-color: #374151; }
     }
 </style>
 
 <style>
-    .contenedor {
-        max-width: 1700px;
-        padding-top: 50px;
-    }
+    .contenedor { max-width: 1700px; padding-top: 50px; }
 
-  
-    /* Grid de aplicaciones mejorado */
     .apps-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         gap: 2.9rem;
         justify-items: center;
-        padding: 0 -30px; /* Asegura que las aplicaciones no se peguen al borde */
+        padding: 0 -30px;
     }
 
     .app-item {
@@ -180,11 +144,10 @@
         transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
-    /* Establecer tamaño fijo para las tarjetas */
     .app-card {
-        width: 200px;  /* Tamaño fijo para las tarjetas */
-        height: 200px; /* Tamaño fijo */
-        aspect-ratio: 1; /* Mantener proporción cuadrada */
+        width: 200px;
+        height: 200px;
+        aspect-ratio: 1;
         border-radius: 60px;
         background-size: cover;
         background-position: center;
@@ -197,15 +160,8 @@
         transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
-    .app-item:hover .app-card {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
-    }
-
-    .app-item:hover .app-name {
-        transform: scale(1.03);
-        color: #000;
-    }
+    .app-item:hover .app-card { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12); }
+    .app-item:hover .app-name { transform: scale(1.03); color: #000; }
 
     .app-name {
         font-size: 0.9rem;
@@ -220,192 +176,103 @@
         transition: all 0.2s ease;
     }
 
-    /* Responsive para pantallas grandes */
-    @media (max-width: 1500px) {
-        .app-card {
-            width: 180px; /* Ajustar el tamaño para pantallas grandes */
-            height: 180px;
-        }
-    }
+    @media (max-width: 1500px) { .app-card { width: 180px; height: 180px; } }
 
-    /* Responsive para móviles */
     @media (max-width: 768px) {
-        .apps-grid {
-            gap: 3rem;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-        }
-
-        .app-card {
-            width: 150px;
-            height: 150px;
-        }
-        
-        .app-name {
-            font-size: 0.65rem;
-        }
+        .apps-grid { gap: 3rem; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+        .app-card { width: 150px; height: 150px; }
+        .app-name { font-size: 0.65rem; }
     }
 </style>
 
 <style>
-
-.dashboard {
-    display: grid !important;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
-    gap: 3rem !important;
-    width: 100% !important;
-    max-width: 1200px !important;
-    margin-bottom: 60px;
-}
-
-.cardash {
-    background: white !important;
-    border-radius: 1rem !important;
-    padding: 1.5rem !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px -20px rgba(0, 0, 0, 0.1) !important;
-    border: 1px solid rgba(241, 245, 249, 0.8) !important;
-    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
-    position: relative !important;
-    overflow: hidden !important;
-}
-
-.cardash:hover {
-    transform: translateY(-4px) !important;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 25px 50px -12px rgba(0, 0, 0, 0.1) !important;
-}
-
-.cardash::before {
-    content: '' !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    height: 4px !important;
-    background: linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #ec4899 100%) !important;
-}
-
-.cardash-header {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    margin-bottom: 1.5rem !important;
-}
-
-.cardash-title {
-    font-size: 1rem !important;
-    font-weight: 600 !important;
-    color: #64748b !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.05em !important;
-}
-
-.cardash-icon {
-    width: 48px !important;
-    height: 48px !important;
-    border-radius: 0.75rem !important;
-    background: #f1f5f9 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    transition: all 0.3s ease !important;
-    font-size: 1.5rem !important;
-}
-
-.cardash-content {
-    font-size: 1.85rem !important;
-    font-weight: 700 !important;
-    color: #0f172a !important;
-    font-family: inherit !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-}
-
-.time-content {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 0.25rem !important;
-}
-
-.time-subtext {
-    font-size: 0.875rem !important;
-    font-weight: 400 !important;
-    color: #64748b !important;
-    font-family: inherit !important;
-}
-
-#visit-count {
-    color: #10b981 !important;
-}
-
-@media (max-width: 640px) {
-    body {
-        padding: 1rem !important;
+    .dashboard {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+        gap: 3rem !important;
+        width: 100% !important;
+        max-width: 1200px !important;
+        margin-bottom: 60px;
     }
-    
+
     .cardash {
-        padding: 1.25rem !important;
+        background: white !important;
+        border-radius: 1rem !important;
+        padding: 1.5rem !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px -20px rgba(0, 0, 0, 0.1) !important;
+        border: 1px solid rgba(241, 245, 249, 0.8) !important;
+        transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+        position: relative !important;
+        overflow: hidden !important;
     }
-    
-    .cardash-content {
-        font-size: 1.875rem !important;
+
+    .cardash:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 25px 50px -12px rgba(0, 0, 0, 0.1) !important;
     }
-}
 
-@keyframes fadeIn {
-    from { opacity: 0 !important; transform: translateY(10px) !important; }
-    to { opacity: 1 !important; transform: translateY(0) !important; }
-}
+    .cardash::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important; left: 0 !important; right: 0 !important;
+        height: 4px !important;
+        background: linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #ec4899 100%) !important;
+    }
 
-.cardash {
-    animation: fadeIn 0.6s ease forwards !important;
-}
+    .cardash-header { display: flex !important; justify-content: space-between !important; align-items: center !important; margin-bottom: 1.5rem !important; }
+    .cardash-title { font-size: 1rem !important; font-weight: 600 !important; color: #64748b !important; text-transform: uppercase !important; letter-spacing: 0.05em !important; }
+    .cardash-icon { width: 48px !important; height: 48px !important; border-radius: 0.75rem !important; background: #f1f5f9 !important; display: flex !important; align-items: center !important; justify-content: center !important; transition: all 0.3s ease !important; font-size: 1.5rem !important; }
+    .cardash-content { font-size: 1.85rem !important; font-weight: 700 !important; color: #0f172a !important; font-family: inherit !important; display: flex !important; align-items: center !important; gap: 0.5rem !important; }
+    .time-content { flex-direction: column !important; align-items: flex-start !important; gap: 0.25rem !important; }
+    .time-subtext { font-size: 0.875rem !important; font-weight: 400 !important; color: #64748b !important; font-family: inherit !important; }
+    #visit-count { color: #10b981 !important; }
 
-.emoji-transition {
-    transition: opacity 0.3s ease, transform 0.3s ease !important;
-}
+    @media (max-width: 640px) {
+        body { padding: 1rem !important; }
+        .cardash { padding: 1.25rem !important; }
+        .cardash-content { font-size: 1.875rem !important; }
+    }
 
-.app-disabled {
-    pointer-events: none; /* Impide que sea clicable */
-    position: relative;
-    cursor: not-allowed;
-}
+    @keyframes fadeIn {
+        from { opacity: 0 !important; transform: translateY(10px) !important; }
+        to { opacity: 1 !important; transform: translateY(0) !important; }
+    }
 
-.app-disabled .app-card {
-    opacity: 0.7;
-    filter: grayscale(50%);
-}
+    .cardash { animation: fadeIn 0.6s ease forwards !important; }
+    .emoji-transition { transition: opacity 0.3s ease, transform 0.3s ease !important; }
 
-.disabled-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 60px; /* Igual que el border-radius de app-card */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
+    .app-disabled { pointer-events: none; position: relative; cursor: not-allowed; }
+    .app-disabled .app-card { opacity: 0.7; filter: grayscale(50%); }
 
-.status-badge {
-    display: inline-block;
-    background-color: #f87171;
-    color: white;
-    font-size: 0.65rem;
-    padding: 2px 6px;
-    border-radius: 10px;
-    margin-left: 4px;
-    font-weight: 500;
-}
+    .disabled-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
 
+    .status-badge {
+        display: inline-block;
+        background-color: #f87171;
+        color: white;
+        font-size: 0.65rem;
+        padding: 2px 6px;
+        border-radius: 10px;
+        margin-left: 4px;
+        font-weight: 500;
+    }
 </style>
+
+{# ── Macro para el ícono: dinámico si existe, si no cae al static ── #}
+{% with icons=app_icons %}
+
 <div class="container-fluid mt-4 contenedor">
-    <!-- Campo de búsqueda -->
 
     <div class="dashboard">
-        <!-- Tarjeta 1: Fecha y Hora -->
         <div class="cardash">
             <div class="cardash-header">
                 <span class="cardash-title">Hora Actual</span>
@@ -419,7 +286,6 @@
             </div>
         </div>
 
-        <!-- Tarjeta 2: Contador de visitas -->
         <div class="cardash">
             <div class="cardash-header">
                 <span class="cardash-title">Visitas Totales</span>
@@ -427,319 +293,273 @@
                     <span class="emoji-transition">👤</span>
                 </div>
             </div>
-            <div class="cardash-content" id="visit-count">{{contador_visitas}}</div>
+            <div class="cardash-content" id="visit-count">{{ contador_visitas }}</div>
         </div>
     </div>
 
-        <div class="search-container">
-            <div class="search-wrapper">
-                <input type="text" id="search-input" placeholder="Buscar aplicaciones..." class="search-input">
-                <button class="search-button" id="search-button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                </button>
-                <div class="search-results" id="search-results"></div>
+    <div class="search-container">
+        <div class="search-wrapper">
+            <input type="text" id="search-input" placeholder="Buscar aplicaciones..." class="search-input">
+            <button class="search-button" id="search-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </button>
+            <div class="search-results" id="search-results"></div>
+        </div>
+    </div>
+
+    <div class="apps-grid mt-4">
+
+        {# ── SVG del candado reutilizable ── #}
+        {% with lock='<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>' %}
+
+        {# ==================== NOTICIAS ==================== #}
+        {% if is_superuser or 'noticias.view_noticia' in user_permissions %}
+            <a class="app-item" href="{% url 'noticias_view' %}">
+                <div class="app-card" style="background-image: url('{% if icons.noticias and icons.noticias.imagen %}{{ icons.noticias.imagen.url }}{% else %}{% static 'img/apps/news.png' %}{% endif %}');"></div>
+                <div class="app-name">Noticias</div>
+            </a>
+        {% else %}
+            <div class="app-item app-disabled">
+                <div class="app-card" style="background-image: url('{% if icons.noticias and icons.noticias.imagen %}{{ icons.noticias.imagen.url }}{% else %}{% static 'img/apps/news.png' %}{% endif %}');">
+                    <div class="disabled-overlay">{{ lock }}</div>
+                </div>
+                <div class="app-name">Noticias</div>
             </div>
-        </div>
-        
+        {% endif %}
 
-        <div class="apps-grid mt-4">
-            {% if is_superuser or 'noticias.view_noticia' in user_permissions %}
-                <a class="app-item" href="{% url "noticias_view" %}">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/news.png' %}');"></div>
-                    <div class="app-name">Prensa</div>
-                </a>
-            {% else %}
-
-                <div class="app-item app-disabled">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/news.png' %}');">
-                        <div class="disabled-overlay">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="app-name">Prensa </div>
+        {# ==================== REDES SOCIALES ==================== #}
+        {% if is_superuser or 'generales.view_socialnetwork' in user_permissions %}
+            <a class="app-item" href="{% url 'social_view' %}">
+                <div class="app-card" style="background-image: url('{% if icons.social and icons.social.imagen %}{{ icons.social.imagen.url }}{% else %}{% static 'img/apps/social.png' %}{% endif %}');"></div>
+                <div class="app-name">Redes Sociales</div>
+            </a>
+        {% else %}
+            <div class="app-item app-disabled">
+                <div class="app-card" style="background-image: url('{% if icons.social and icons.social.imagen %}{{ icons.social.imagen.url }}{% else %}{% static 'img/apps/social.png' %}{% endif %}');">
+                    <div class="disabled-overlay">{{ lock }}</div>
                 </div>
-            {% endif %}
+                <div class="app-name">Redes Sociales</div>
+            </div>
+        {% endif %}
 
-
-
-            
-            <!-- Redes Sociales -->
-            {% if is_superuser or 'generales.view_socialnetwork' in user_permissions %}
-                <a class="app-item" href="{% url "social_view" %}">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/social.png' %}');"></div>
-                    <div class="app-name">Redes Sociales</div>
-                </a>
-            {% else %}
-                <div class="app-item app-disabled">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/social.png' %}');">
-                        <div class="disabled-overlay">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="app-name">Redes Sociales</div>
+        {# ==================== SERVICIOS ==================== #}
+        {% if is_superuser or 'servicios.view_servicio' in user_permissions %}
+            <a class="app-item" href="{% url 'servicios_view' %}">
+                <div class="app-card" style="background-image: url('{% if icons.servicios and icons.servicios.imagen %}{{ icons.servicios.imagen.url }}{% else %}{% static 'img/apps/servicios.png' %}{% endif %}');"></div>
+                <div class="app-name">Servicios</div>
+            </a>
+        {% else %}
+            <div class="app-item app-disabled">
+                <div class="app-card" style="background-image: url('{% if icons.servicios and icons.servicios.imagen %}{{ icons.servicios.imagen.url }}{% else %}{% static 'img/apps/servicios.png' %}{% endif %}');">
+                    <div class="disabled-overlay">{{ lock }}</div>
                 </div>
-            {% endif %}
-        
+                <div class="app-name">Servicios</div>
+            </div>
+        {% endif %}
 
-            <!-- Servicios -->
-            {% if is_superuser or 'servicios.view_servicio' in user_permissions %}
-                <a class="app-item" href="{% url "servicios_view" %}">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/servicios.png' %}');"></div>
-                    <div class="app-name">Servicios</div>
-                </a>
-            {% else %}
-                <div class="app-item app-disabled">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/servicios.png' %}');">
-                        <div class="disabled-overlay">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="app-name">Servicios</div>
+        {# ==================== PERSONALIZAR ==================== #}
+        {% if is_superuser or 'generales.view_personalizacionplantilla' in user_permissions %}
+            <a class="app-item" href="{% url 'personalizacion_view' %}">
+                <div class="app-card" style="background-image: url('{% if icons.custom and icons.custom.imagen %}{{ icons.custom.imagen.url }}{% else %}{% static 'img/apps/custom.png' %}{% endif %}');"></div>
+                <div class="app-name">Personalizar</div>
+            </a>
+        {% else %}
+            <div class="app-item app-disabled">
+                <div class="app-card" style="background-image: url('{% if icons.custom and icons.custom.imagen %}{{ icons.custom.imagen.url }}{% else %}{% static 'img/apps/custom.png' %}{% endif %}');">
+                    <div class="disabled-overlay">{{ lock }}</div>
                 </div>
-            {% endif %}
-            
-            
-            <!-- Personalizar -->
-            {% if is_superuser or 'generales.view_personalizacionplantilla' in user_permissions %}
-                <a class="app-item" href="{% url "personalizacion_view" %}">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/custom.png' %}');"></div>
-                    <div class="app-name">Personalizar</div>
-                </a>
-            {% else %}
-                <div class="app-item app-disabled">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/custom.png' %}');">
-                        <div class="disabled-overlay">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="app-name">Personalizar</div>
+                <div class="app-name">Personalizar</div>
+            </div>
+        {% endif %}
+
+        {# ==================== TRANSPARENCIA ==================== #}
+        {% if is_superuser or 'transparencia.view_secciontransparencia' in user_permissions %}
+            <a class="app-item" href="{% url 'lista_obligaciones' %}">
+                <div class="app-card" style="background-image: url('{% if icons.trans and icons.trans.imagen %}{{ icons.trans.imagen.url }}{% else %}{% static 'img/apps/trans.png' %}{% endif %}');"></div>
+                <div class="app-name">Transparencia</div>
+            </a>
+        {% else %}
+            <div class="app-item app-disabled">
+                <div class="app-card" style="background-image: url('{% if icons.trans and icons.trans.imagen %}{{ icons.trans.imagen.url }}{% else %}{% static 'img/apps/trans.png' %}{% endif %}');">
+                    <div class="disabled-overlay">{{ lock }}</div>
                 </div>
-            {% endif %}
-            
-            
-            <!-- Transparencia -->
-            {% if is_superuser or 'transparencia.view_secciontransparencia' in user_permissions %}
-                <a class="app-item" href="{% url "lista_obligaciones" %}">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/trans.png' %}');"></div>
-                    <div class="app-name">Transparencia</div>
-                </a>
-            {% else %}
-                <div class="app-item app-disabled">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/trans.png' %}');">
-                        <div class="disabled-overlay">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="app-name">Transparencia</div>
+                <div class="app-name">Transparencia</div>
+            </div>
+        {% endif %}
+
+        {# ==================== AVISOS DE PRIVACIDAD ==================== #}
+        {% if is_superuser or 'transparencia.view_secciontransparencia' in user_permissions %}
+            <a class="app-item" href="{% url 'PrivacidadView' %}">
+                <div class="app-card" style="background-image: url('{% if icons.privacidad and icons.privacidad.imagen %}{{ icons.privacidad.imagen.url }}{% else %}{% static 'img/apps/privacidad.png' %}{% endif %}');"></div>
+                <div class="app-name">Avisos de Privacidad</div>
+            </a>
+        {% else %}
+            <div class="app-item app-disabled">
+                <div class="app-card" style="background-image: url('{% if icons.privacidad and icons.privacidad.imagen %}{{ icons.privacidad.imagen.url }}{% else %}{% static 'img/apps/privacidad.png' %}{% endif %}');">
+                    <div class="disabled-overlay">{{ lock }}</div>
                 </div>
-            {% endif %}
-        
+                <div class="app-name">Avisos de Privacidad</div>
+            </div>
+        {% endif %}
 
-            {% if is_superuser or 'transparencia.view_secciontransparencia' in user_permissions %}
-                <a class="app-item" href="{% url "PrivacidadView" %}">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/privacidad.png' %}');"></div>
-                    <div class="app-name">Avisos de Privacidad</div>
-                </a>
-            {% else %}
-                <div class="app-item app-disabled">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/privacidad.png' %}');">
-                        <div class="disabled-overlay">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="app-name">Avisos de Privacidad</div>
+        {# ==================== CONVOCATORIAS ==================== #}
+        {% if is_superuser or 'convocatorias.view_convocatoria' in user_permissions %}
+            <a class="app-item" href="{% url 'convocatorias' %}">
+                <div class="app-card" style="background-image: url('{% if icons.convocatorias and icons.convocatorias.imagen %}{{ icons.convocatorias.imagen.url }}{% else %}{% static 'img/apps/convocatoria.png' %}{% endif %}');"></div>
+                <div class="app-name">Convocatorias</div>
+            </a>
+        {% else %}
+            <div class="app-item app-disabled">
+                <div class="app-card" style="background-image: url('{% if icons.convocatorias and icons.convocatorias.imagen %}{{ icons.convocatorias.imagen.url }}{% else %}{% static 'img/apps/convocatoria.png' %}{% endif %}');">
+                    <div class="disabled-overlay">{{ lock }}</div>
                 </div>
-            {% endif %}
-    
+                <div class="app-name">Convocatorias</div>
+            </div>
+        {% endif %}
 
-            
-            <!-- Convocatorias -->
-            {% if is_superuser or 'convocatorias.view_convocatoria' in user_permissions %}
-                <a class="app-item" href="{% url "convocatorias" %}">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/convocatoria.png' %}');"></div>
-                    <div class="app-name">Convocatorias</div>
-                </a>
-            {% else %}
-                <div class="app-item app-disabled">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/convocatoria.png' %}');">
-                        <div class="disabled-overlay">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="app-name">Convocatorias</div>
+        {# ==================== SEVAC ==================== #}
+        {% if is_superuser or 'sevac.view_carpeta' in user_permissions %}
+            <a class="app-item" href="{% url 'listar_carpetas' %}">
+                <div class="app-card" style="background-image: url('{% if icons.SEVAC and icons.SEVAC.imagen %}{{ icons.SEVAC.imagen.url }}{% else %}{% static 'img/apps/SEVAC.png' %}{% endif %}');"></div>
+                <div class="app-name">SEVAC</div>
+            </a>
+        {% else %}
+            <div class="app-item app-disabled">
+                <div class="app-card" style="background-image: url('{% if icons.SEVAC and icons.SEVAC.imagen %}{{ icons.SEVAC.imagen.url }}{% else %}{% static 'img/apps/SEVAC.png' %}{% endif %}');">
+                    <div class="disabled-overlay">{{ lock }}</div>
                 </div>
-            {% endif %}
-        
-            
-            {% if is_superuser or 'sevac.view_carpeta' in user_permissions %}
-                <a class="app-item" href="{% url "listar_carpetas" %}">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/SEVAC.png' %}');"></div>
-                    <div class="app-name">SEVAC</div>
-                </a>
-            {% else %}
-                <div class="app-item app-disabled">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/SEVAC.png' %}');">
-                        <div class="disabled-overlay">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="app-name">SEVAC</div>
+                <div class="app-name">SEVAC</div>
+            </div>
+        {% endif %}
+
+        {# ==================== GABINETE ==================== #}
+        {% if is_superuser or 'gobierno.view_miembrogabinete' in user_permissions %}
+            <a class="app-item" href="{% url 'ListarGabineteView' %}">
+                <div class="app-card" style="background-image: url('{% if icons.gabinete and icons.gabinete.imagen %}{{ icons.gabinete.imagen.url }}{% else %}{% static 'img/apps/gabinete.png' %}{% endif %}');"></div>
+                <div class="app-name">Gabinete</div>
+            </a>
+        {% else %}
+            <div class="app-item app-disabled">
+                <div class="app-card" style="background-image: url('{% if icons.gabinete and icons.gabinete.imagen %}{{ icons.gabinete.imagen.url }}{% else %}{% static 'img/apps/gabinete.png' %}{% endif %}');">
+                    <div class="disabled-overlay">{{ lock }}</div>
                 </div>
-            {% endif %}
-            
-            
-            <!-- Gabinete -->
-            {% if is_superuser or 'gobierno.view_miembrogabinete' in user_permissions %}
-                <a class="app-item" href="{% url "ListarGabineteView" %}">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/gabinete.png' %}');"></div>
-                    <div class="app-name">Gabinete</div>
-                </a>
-            {% else %}
-                <div class="app-item app-disabled">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/gabinete.png' %}');">
-                        <div class="disabled-overlay">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="app-name">Gabinete</div>
+                <div class="app-name">Gabinete</div>
+            </div>
+        {% endif %}
+
+        {# ==================== GENERALES ==================== #}
+        {% if is_superuser or 'generales.view_generales' in user_permissions %}
+            <a class="app-item" href="{% url 'generalesDashboard' %}">
+                <div class="app-card" style="background-image: url('{% if icons.generales and icons.generales.imagen %}{{ icons.generales.imagen.url }}{% else %}{% static 'img/apps/generales.png' %}{% endif %}');"></div>
+                <div class="app-name">Generales</div>
+            </a>
+        {% else %}
+            <div class="app-item app-disabled">
+                <div class="app-card" style="background-image: url('{% if icons.generales and icons.generales.imagen %}{{ icons.generales.imagen.url }}{% else %}{% static 'img/apps/generales.png' %}{% endif %}');">
+                    <div class="disabled-overlay">{{ lock }}</div>
                 </div>
-            {% endif %}
-        
-            {% if is_superuser or 'generales.view_generales' in user_permissions %}
-                <a class="app-item" href="{% url "generalesDashboard" %}">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/generales.png' %}');"></div>
-                    <div class="app-name">Generales</div>
-                </a>
-            {% else %}
-                <div class="app-item app-disabled">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/generales.png' %}');">
-                        <div class="disabled-overlay">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="app-name">Generales</div>
+                <div class="app-name">Generales</div>
+            </div>
+        {% endif %}
+
+        {# ==================== ENCUESTAS ==================== #}
+        {% if is_superuser or 'transparencia.view_encuesta' in user_permissions %}
+            <a class="app-item" href="{% url 'EncuestasView' %}">
+                <div class="app-card" style="background-image: url('{% if icons.encuesta and icons.encuesta.imagen %}{{ icons.encuesta.imagen.url }}{% else %}{% static 'img/apps/encuesta.png' %}{% endif %}');"></div>
+                <div class="app-name">Encuestas</div>
+            </a>
+        {% else %}
+            <div class="app-item app-disabled">
+                <div class="app-card" style="background-image: url('{% if icons.encuesta and icons.encuesta.imagen %}{{ icons.encuesta.imagen.url }}{% else %}{% static 'img/apps/encuesta.png' %}{% endif %}');">
+                    <div class="disabled-overlay">{{ lock }}</div>
                 </div>
-            {% endif %}
-            
+                <div class="app-name">Encuestas</div>
+            </div>
+        {% endif %}
 
-
-            {% if is_superuser or 'transparencia.view_encuesta' in user_permissions %}
-                <a class="app-item" href="{% url "EncuestasView" %}">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/encuesta.png' %}');"></div>
-                    <div class="app-name">Encuestas</div>
-                </a>
-            {% else %}
-                <div class="app-item app-disabled">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/encuesta.png' %}');">
-                        <div class="disabled-overlay">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="app-name">Encuestas</div>
+        {# ==================== VIDEOS ==================== #}
+        {% if is_superuser or 'generales.view_videomunicipio' in user_permissions %}
+            <a class="app-item" href="{% url 'videos' %}">
+                <div class="app-card" style="background-image: url('{% if icons.logo_video and icons.logo_video.imagen %}{{ icons.logo_video.imagen.url }}{% else %}{% static 'img/apps/logo_video.png' %}{% endif %}');"></div>
+                <div class="app-name">Videos</div>
+            </a>
+        {% else %}
+            <div class="app-item app-disabled">
+                <div class="app-card" style="background-image: url('{% if icons.logo_video and icons.logo_video.imagen %}{{ icons.logo_video.imagen.url }}{% else %}{% static 'img/apps/logo_video.png' %}{% endif %}');">
+                    <div class="disabled-overlay">{{ lock }}</div>
                 </div>
-            {% endif %}
+                <div class="app-name">Videos</div>
+            </div>
+        {% endif %}
 
-
-
-            {% if is_superuser or 'generales.view_videomunicipio' in user_permissions %}
-                <a class="app-item" href="{% url "videos" %}">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/logo_video.png' %}');"></div>
-                    <div class="app-name">Videos</div>
-                </a>
-            {% else %}
-                <div class="app-item app-disabled">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/logo_video.png' %}');">
-                        <div class="disabled-overlay">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="app-name">Videos</div>
+        {# ==================== REPORTES ==================== #}
+        {% if is_superuser or 'reportes.view_reportealcantarillado' in user_permissions or 'reportes.view_reportealumbradopublico' in user_permissions or 'reportes.view_reportebache' in user_permissions or 'reportes.view_reporteservicioagua' in user_permissions %}
+            <a class="app-item" href="{% url 'ReportesView' %}">
+                <div class="app-card" style="background-image: url('{% if icons.reportes and icons.reportes.imagen %}{{ icons.reportes.imagen.url }}{% else %}{% static 'img/apps/reportes.png' %}{% endif %}');"></div>
+                <div class="app-name">Reportes</div>
+            </a>
+        {% else %}
+            <div class="app-item app-disabled">
+                <div class="app-card" style="background-image: url('{% if icons.reportes and icons.reportes.imagen %}{{ icons.reportes.imagen.url }}{% else %}{% static 'img/apps/reportes.png' %}{% endif %}');">
+                    <div class="disabled-overlay">{{ lock }}</div>
                 </div>
-            {% endif %}
+                <div class="app-name">Reportes</div>
+            </div>
+        {% endif %}
 
-
-            {% if is_superuser or 'reportes.view_reportealcantarillado' in user_permissions or 'reportes.view_reportealumbradopublico' in user_permissions or 'reportes.view_reportebache' in user_permissions or 'reportes.view_reporteservicioagua' in user_permissions %}
-                <a class="app-item" href="{% url "ReportesView" %}">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/reportes.png' %}');"></div>
-                    <div class="app-name">Reportes</div>
-                </a>
-            {% else %}
-                <div class="app-item app-disabled">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/reportes.png' %}');">
-                        <div class="disabled-overlay">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="app-name">Reportes</div>
+        {# ==================== HABLA CON TUS HIJOS ==================== #}
+        {% if is_superuser or 'eventos.view_articulo' in user_permissions %}
+            <a class="app-item" href="{% url 'habla_home' %}">
+                <div class="app-card" style="background-image: url('{% if icons.habla and icons.habla.imagen %}{{ icons.habla.imagen.url }}{% else %}{% static 'img/apps/habla.png' %}{% endif %}');"></div>
+                <div class="app-name">Habla con tus hijos</div>
+            </a>
+        {% else %}
+            <div class="app-item app-disabled">
+                <div class="app-card" style="background-image: url('{% if icons.habla and icons.habla.imagen %}{{ icons.habla.imagen.url }}{% else %}{% static 'img/apps/habla.png' %}{% endif %}');">
+                    <div class="disabled-overlay">{{ lock }}</div>
                 </div>
-            {% endif %} 
+                <div class="app-name">Habla con tus hijos</div>
+            </div>
+        {% endif %}
 
-            
-            {% if is_superuser or 'eventos.view_articulo' in user_permissions %}
-                <a class="app-item" href="{% url "habla_home" %}">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/habla.png' %}');"></div>
-                    <div class="app-name">Habla con tus hijos</div>
-                </a>
-            {% else %}
-                <div class="app-item app-disabled">
-                    <div class="app-card" style="background-image: url('{% static 'img/apps/habla.png' %}');">
-                        <div class="disabled-overlay">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="app-name">Habla con tus hijos</div>
+        {# ==================== NORMATIVIDAD ==================== #}
+        {% if is_superuser %}
+            <a class="app-item" href="{% url 'NormatividadView' %}">
+                <div class="app-card" style="background-image: url('{% if icons.normatividad and icons.normatividad.imagen %}{{ icons.normatividad.imagen.url }}{% else %}{% static 'img/apps/normatividad.png' %}{% endif %}');"></div>
+                <div class="app-name">Normatividad</div>
+            </a>
+        {% else %}
+            <div class="app-item app-disabled">
+                <div class="app-card" style="background-image: url('{% if icons.normatividad and icons.normatividad.imagen %}{{ icons.normatividad.imagen.url }}{% else %}{% static 'img/apps/normatividad.png' %}{% endif %}');">
+                    <div class="disabled-overlay">{{ lock }}</div>
                 </div>
-            {% endif %} 
+                <div class="app-name">Normatividad</div>
+            </div>
+        {% endif %}
 
-        </div>
-</div>
+        {# ==================== SESIONES DE CABILDO ==================== #}
+        {% if is_superuser %}
+            <a class="app-item" href="{% url 'SesionesCabildoAdminView' %}">
+                <div class="app-card" style="background-image: url('{% if icons.sesion_cabildo and icons.sesion_cabildo.imagen %}{{ icons.sesion_cabildo.imagen.url }}{% else %}{% static 'img/apps/sesion_cabildo.png' %}{% endif %}');"></div>
+                <div class="app-name">Sesiones de Cabildo</div>
+            </a>
+        {% else %}
+            <div class="app-item app-disabled">
+                <div class="app-card" style="background-image: url('{% if icons.sesion_cabildo and icons.sesion_cabildo.imagen %}{{ icons.sesion_cabildo.imagen.url }}{% else %}{% static 'img/apps/normatividad.png' %}{% endif %}');">
+                    <div class="disabled-overlay">{{ lock }}</div>
+                </div>
+                <div class="app-name">Sesiones de Cabildo</div>
+            </div>
+        {% endif %}
 
+        {% endwith %}{# lock #}
+    </div>{# apps-grid #}
+</div>{# contenedor #}
 
+{% endwith %}{# icons #}
 
 {% endblock content %}
 
@@ -747,29 +567,15 @@
 <script>
     function updateDateTime() {
         const now = new Date();
-        const optionsTime = {
-            hour: 'numeric',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: true
-        };
-        
-        const optionsDate = {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        };
+        document.getElementById('current-time').textContent = now.toLocaleTimeString('es-ES', {
+            hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true
+        });
+        document.getElementById('current-date').textContent = now.toLocaleDateString('es-ES', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
 
-        document.getElementById('current-time').textContent = now.toLocaleTimeString('es-ES', optionsTime);
-        document.getElementById('current-date').textContent = now.toLocaleDateString('es-ES', optionsDate);
-
-        // Actualizar emoji con transición
         const timeIcon = document.getElementById('time-icon');
-        const hours = now.getHours();
-        const isDay = hours >= 6 && hours < 18;
-        const newEmoji = isDay ? '🌤️' : '🌙';
-        
+        const newEmoji = (now.getHours() >= 6 && now.getHours() < 18) ? '🌤️' : '🌙';
         if (timeIcon.textContent !== newEmoji) {
             timeIcon.style.opacity = '0';
             timeIcon.style.transform = 'scale(0.8)';
@@ -781,31 +587,23 @@
         }
     }
 
-
-
     document.addEventListener('DOMContentLoaded', () => {
         updateDateTime();
         setInterval(updateDateTime, 1000);
-        
-        
-        // Filtrado de aplicaciones
+
         const searchInput = document.getElementById('search-input');
-        const appItems = document.querySelectorAll('.app-item');
+        const appItems   = document.querySelectorAll('.app-item');
 
         searchInput.addEventListener('input', () => {
-            const searchTerm = searchInput.value.toLowerCase();
+            const term = searchInput.value.toLowerCase();
             appItems.forEach(item => {
-                const appName = item.querySelector('.app-name').textContent.toLowerCase();
-                if (appName.includes(searchTerm)) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
+                const name = item.querySelector('.app-name').textContent.toLowerCase();
+                item.style.display = name.includes(term) ? 'block' : 'none';
             });
         });
 
-        document.querySelectorAll('.card').forEach((card, index) => {
-            card.style.animationDelay = `${index * 0.1}s`;
+        document.querySelectorAll('.card').forEach((card, i) => {
+            card.style.animationDelay = `${i * 0.1}s`;
         });
     });
 </script>

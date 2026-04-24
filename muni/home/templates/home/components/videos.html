@@ -6,7 +6,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/10.3.1/swiper-bundle.min.js" defer></script>
 
 <style>
-  /* ────────────  VARIABLES DE COLOR  ──────────── */
   :root {
     {% if municipio.colores.exists %}
       --c-primary: {{ municipio.colores.first.color_primario_dark }};
@@ -21,8 +20,7 @@
       --c-secondary-rgb: 41,94,132;
       --c-accent: #6d6d6d;
     {% endif %}
-    
-    /* Nuevas variables para mejorar la consistencia */
+
     --c-background: #f8f9fa;
     --c-white: #ffffff;
     --c-gray-100: #f1f3f5;
@@ -45,7 +43,7 @@
     position: relative;
     margin: 60px auto;
     max-width: 1400px;
-    padding: 60px 40px;
+    padding: 60px 60px; /* padding lateral mayor para dar espacio a las flechas */
     background: var(--c-background);
     border-radius: var(--radius-lg);
     overflow: hidden;
@@ -117,33 +115,37 @@
     border-radius: 2px;
   }
 
-  /* ────────────  SWIPER GALLERY  ──────────── */
+  /* ────────────  SWIPER WRAPPER  ──────────── */
+  /* Contenedor relativo que SÍ permite ver las flechas */
+  .swiper-outer {
+    position: relative;
+    z-index: 2;
+  }
+
   .swiper-container {
     position: relative;
     width: 100%;
-    overflow: hidden;
+    overflow: hidden;      /* solo el track tiene overflow:hidden */
     padding-bottom: 50px;
-    z-index: 2;
   }
 
   .swiper-wrapper {
     display: flex;
-    align-items: center;
+    align-items: stretch;
   }
 
   .swiper-slide {
     height: auto;
-    transition: var(--transition-standard);
     display: flex;
     justify-content: center;
   }
 
+  /* ────────────  VIDEO CARD  ──────────── */
   .video-card {
     background: var(--c-white);
     border-radius: var(--radius-md);
     overflow: hidden;
     box-shadow: var(--shadow-sm);
-    height: 100%;
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
@@ -151,17 +153,11 @@
     border: 1px solid var(--c-gray-200);
   }
 
-  .swiper-slide-active .video-card {
-    box-shadow: var(--shadow-md);
-    transform: scale(1.05);
-  }
-
   .video-card:hover {
-    transform: translateY(-8px);
+    transform: translateY(-6px);
     box-shadow: var(--shadow-lg);
   }
 
-  /* Marco 16:9 responsivo mejorado */
   .video-thumbnail {
     position: relative;
     aspect-ratio: 16/9;
@@ -187,7 +183,6 @@
     width: 100%;
     height: 100%;
     border: 0;
-    transition: var(--transition-standard);
   }
 
   .video-info {
@@ -209,14 +204,7 @@
     margin-bottom: 12px;
   }
 
-
-  .video-thumbnail:hover .video-play-button {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.1);
-    background: rgba(var(--c-secondary-rgb), 0.9);
-  }
-
-  /* ────────────  NAVEGACIÓN  ──────────── */
+  /* ────────────  PAGINACIÓN  ──────────── */
   .swiper-pagination {
     position: absolute;
     bottom: 0;
@@ -238,6 +226,8 @@
     transform: scale(1.2);
   }
 
+  /* ────────────  FLECHAS  ──────────── */
+  /* Las flechas viven en .swiper-outer, FUERA del overflow:hidden */
   .swiper-button-next,
   .swiper-button-prev {
     color: var(--c-white);
@@ -247,23 +237,22 @@
     border-radius: 50%;
     box-shadow: 0 4px 12px rgba(var(--c-primary-rgb), 0.3);
     transition: var(--transition-standard);
-    top: 45%;
+    top: calc(50% - 25px); /* centradas verticalmente, sin contar el padding-bottom */
     margin-top: 0;
-    transform: translateY(-50%);
   }
 
   .swiper-button-next {
-    right: 10px;
+    right: -54px;  /* fuera del swiper-container, dentro de swiper-outer */
   }
 
   .swiper-button-prev {
-    left: 10px;
+    left: -54px;
   }
 
   .swiper-button-next:hover,
   .swiper-button-prev:hover {
     background: var(--c-secondary);
-    transform: translateY(-50%) scale(1.05);
+    transform: scale(1.05);
   }
 
   .swiper-button-next:after,
@@ -272,7 +261,14 @@
     font-weight: bold;
   }
 
-  /* ────────────  MENSAJES VACÍOS / ERROR  ──────────── */
+  /* Flechas deshabilitadas */
+  .swiper-button-disabled {
+    opacity: 0.35 !important;
+    cursor: not-allowed !important;
+    pointer-events: auto !important; /* que se vean pero no reaccionen */
+  }
+
+  /* ────────────  MENSAJES  ──────────── */
   .message-box {
     text-align: center;
     margin: 2rem auto;
@@ -302,23 +298,19 @@
     display: block;
   }
 
-  /* ────────────  OVERLAY PARA VIDEOS  ──────────── */
+  /* ────────────  OVERLAY  ──────────── */
   .video-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.85);
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
     display: none;
     justify-content: center;
     align-items: center;
     z-index: 9999;
   }
 
-  .video-overlay.active {
-    display: flex;
-  }
+  .video-overlay.active { display: flex; }
 
   .video-overlay-content {
     position: relative;
@@ -329,19 +321,15 @@
 
   .video-overlay iframe {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     border: 0;
   }
 
   .video-overlay-close {
     position: absolute;
-    top: -40px;
-    right: -40px;
-    width: 36px;
-    height: 36px;
+    top: -40px; right: -40px;
+    width: 36px; height: 36px;
     background: var(--c-white);
     border-radius: 50%;
     display: flex;
@@ -350,74 +338,40 @@
     cursor: pointer;
     font-size: 18px;
     color: var(--c-primary);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
   }
 
   /* ────────────  RESPONSIVE  ──────────── */
   @media (max-width: 991px) {
-    .videos-gallery {
-      padding: 50px 30px;
-      margin: 40px auto;
-    }
-    
-    .videos-title {
-      font-size: 1.85rem;
-    }
-
-    .video-overlay-content {
-      width: 90%;
-    }
-
-    .video-overlay-close {
-      top: -30px;
-      right: -10px;
-    }
+    .videos-gallery { padding: 50px 50px; margin: 40px auto; }
+    .videos-title   { font-size: 1.85rem; }
+    .video-overlay-content { width: 90%; }
+    .video-overlay-close   { top: -30px; right: -10px; }
   }
 
   @media (max-width: 767px) {
-    .videos-gallery {
-      padding: 40px 20px;
-      margin: 30px auto;
-    }
-    
-    .videos-title {
-      font-size: 1.6rem;
-    }
-    
-    .videos-subtitle {
-      font-size: 0.8rem;
-      padding: 5px 15px;
-    }
-    
+    .videos-gallery  { padding: 40px 50px; margin: 30px auto; }
+    .videos-title    { font-size: 1.6rem; }
+    .videos-subtitle { font-size: 0.8rem; padding: 5px 15px; }
     .swiper-button-next,
-    .swiper-button-prev {
-      width: 36px;
-      height: 36px;
-    }
-    
+    .swiper-button-prev { width: 36px; height: 36px; }
     .swiper-button-next:after,
-    .swiper-button-prev:after {
-      font-size: 15px;
-    }
-
-    .video-overlay-content {
-      width: 95%;
-    }
+    .swiper-button-prev:after { font-size: 15px; }
+    .swiper-button-next { right: -46px; }
+    .swiper-button-prev { left:  -46px; }
+    .video-overlay-content { width: 95%; }
   }
 
   @media (max-width: 480px) {
-    .videos-gallery {
-      padding: 30px 15px;
-    }
-    
-    .videos-title {
-      font-size: 1.4rem;
-    }
-
+    .videos-gallery { padding: 30px 15px; }
+    .videos-title   { font-size: 1.4rem; }
     .swiper-button-next,
-    .swiper-button-prev {
-      display: none;
-    }
+    .swiper-button-prev { display: none; }
+  }
+
+  @keyframes spin {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 </style>
 
@@ -439,178 +393,141 @@
       <p>Aún no se han publicado videos. Próximamente tendremos contenido disponible.</p>
     </div>
   {% else %}
-    <!-- Cargador visual mientras se inicializa el carrusel -->
-    <div id="carousel-loader" style="text-align: center; padding: 20px;">
-      <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid rgba(var(--c-primary-rgb), 0.1); border-left-color: var(--c-primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    <div id="carousel-loader" style="text-align:center; padding:20px;">
+      <div style="display:inline-block; width:40px; height:40px; border:4px solid rgba(var(--c-primary-rgb),0.1); border-left-color:var(--c-primary); border-radius:50%; animation:spin 1s linear infinite;"></div>
     </div>
-    
-    <div class="swiper-container" style="visibility: hidden;">
-      <div class="swiper-wrapper">
-        {% for video in videos %}
-          <div class="swiper-slide" {% if forloop.first %}data-initial-slide="true"{% endif %}>
-            <div class="video-card">
-              <div class="video-thumbnail">
-                <iframe
-                  src="{{ video.frame }}"
-                  title="{{ video.nombre|escape }}"
-                  loading="lazy"
-                  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-                <div class="video-play-button" data-video-id="{{ video.id }}" data-video-src="{{ video.frame }}"></div>
-              </div>
-              <div class="video-info">
-                <h3 class="video-title">{{ video.nombre }}</h3>
-                {% if video.fecha_publicacion %}
-                  <span class="video-date">Publicado: {{ video.fecha_publicacion|date:"d/m/Y" }}</span>
-                {% endif %}
+
+    <!-- swiper-outer contiene tanto el track como las flechas -->
+    <div class="swiper-outer">
+      <div class="swiper-container" style="visibility:hidden;">
+        <div class="swiper-wrapper">
+          {% for video in videos %}
+            <div class="swiper-slide">
+              <div class="video-card">
+                <div class="video-thumbnail">
+                  <iframe
+                    src="{{ video.frame }}"
+                    title="{{ video.nombre|escape }}"
+                    loading="lazy"
+                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+                </div>
+                <div class="video-info">
+                  <h3 class="video-title">{{ video.nombre }}</h3>
+                  {% if video.fecha_publicacion %}
+                    <span class="video-date">Publicado: {{ video.fecha_publicacion|date:"d/m/Y" }}</span>
+                  {% endif %}
+                </div>
               </div>
             </div>
-          </div>
-        {% endfor %}
+          {% endfor %}
+        </div>
+        <div class="swiper-pagination"></div>
       </div>
-      
-      <!-- Navegación -->
-      <div class="swiper-button-next"></div>
+
+      <!-- Flechas FUERA del overflow:hidden pero dentro de swiper-outer -->
       <div class="swiper-button-prev"></div>
-      <div class="swiper-pagination"></div>
+      <div class="swiper-button-next"></div>
     </div>
   {% endif %}
 </div>
 
-<!-- Overlay para reproducción de videos -->
 <div class="video-overlay">
   <div class="video-overlay-content">
-    <iframe src="" title="Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe src="" title="Video" frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen></iframe>
     <div class="video-overlay-close">✕</div>
   </div>
 </div>
-
-<style>
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-</style>
 {% endwith %}
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // Inicializar Swiper de manera optimizada
+
+    const swiperContainer = document.querySelector('.swiper-container');
+    const carouselLoader  = document.getElementById('carousel-loader');
+
+    if (!swiperContainer) return;
+
+    function showCarousel() {
+      if (carouselLoader) carouselLoader.style.display = 'none';
+      swiperContainer.style.visibility = 'visible';
+    }
+
     const videoSwiper = new Swiper('.swiper-container', {
       slidesPerView: 1,
       spaceBetween: 30,
-      centeredSlides: true,
-      loop: false, // Desactivamos el loop inicialmente
-      initialSlide: 0, // Aseguramos que comience en el primer slide
-      loopFillGroupWithBlank: true,
+      centeredSlides: false,
+      loop: false,       // ← sin loop para evitar bugs con pocos slides
+      rewind: true,      // ← al llegar al final vuelve al inicio suavemente
+      initialSlide: 0,
       autoplay: {
         delay: 5000,
         disableOnInteraction: false,
-        pauseOnMouseEnter: true
+        pauseOnMouseEnter: true,
       },
       speed: 800,
       grabCursor: true,
-      keyboard: {
-        enabled: true,
-      },
+      keyboard: { enabled: true },
       pagination: {
         el: '.swiper-pagination',
         clickable: true,
-        dynamicBullets: false // Desactivamos bullets dinámicos para más estabilidad
       },
       navigation: {
         nextEl: '.swiper-button-next',
         prevEl: '.swiper-button-prev',
       },
       breakpoints: {
-        640: {
-          slidesPerView: 1.5,
-          spaceBetween: 20,
-        },
-        768: {
-          slidesPerView: 2,
-          spaceBetween: 30,
-        },
-        1024: {
-          slidesPerView: 2.5,
-          spaceBetween: 40,
-        },
-        1200: {
-          slidesPerView: 3,
-          spaceBetween: 50,
-        }
+        640:  { slidesPerView: 1.5, spaceBetween: 20 },
+        768:  { slidesPerView: 2,   spaceBetween: 30 },
+        1024: { slidesPerView: 2.5, spaceBetween: 40 },
+        1200: { slidesPerView: 3,   spaceBetween: 50 },
       },
       on: {
-        init: function() {
-          // Asegurarse de que el slide activo esté centrado
-          this.slideTo(0, 0); // Forzar al primer slide sin animación
-          
-          // Actualizar y mostrar carrusel con un retraso para asegurar la carga correcta
+        init: function () {
           setTimeout(() => {
             this.update();
             showCarousel();
-          }, 300);
+          }, 200);
         },
-        afterInit: function() {
-          // Activamos el loop después de la inicialización para evitar problemas de posición inicial
-          setTimeout(() => {
-            this.params.loop = true;
-            this.update();
-          }, 800);
-        }
-      }
+      },
     });
 
-    // Mostrar carrusel una vez que esté listo
-    const swiperContainer = document.querySelector('.swiper-container');
-    const carouselLoader = document.getElementById('carousel-loader');
-    
-    // Función para mostrar el carrusel correctamente inicializado
-    function showCarousel() {
-      if (carouselLoader) {
-        carouselLoader.style.display = 'none';
-      }
-      if (swiperContainer) {
-        swiperContainer.style.visibility = 'visible';
-      }
-    }
-    
-    // Función para preparar la URL del video para reproducción automática
+    /* ── Overlay ── */
+    const videoOverlay       = document.querySelector('.video-overlay');
+    const videoOverlayIframe = videoOverlay.querySelector('iframe');
+    const videoOverlayClose  = videoOverlay.querySelector('.video-overlay-close');
+
     function prepareVideoUrl(url) {
-      // Detectar si es YouTube o Vimeo y ajustar para autoplay
-      if (url.includes('youtube.com') || url.includes('youtu.be')) {
-        // Eliminar cualquier parámetro de autoplay existente
-        url = url.replace(/(&|\?)autoplay=\d/g, '');
-        
-        // Agregar parámetro autoplay=1
-        if (url.includes('?')) {
-          url = url + '&autoplay=1&mute=0';
-        } else {
-          url = url + '?autoplay=1&mute=0';
-        }
-      } 
-      else if (url.includes('vimeo.com')) {
-        // Eliminar cualquier parámetro de autoplay existente
-        url = url.replace(/(&|\?)autoplay=\d/g, '');
-        
-        // Agregar parámetro autoplay=1
-        if (url.includes('?')) {
-          url = url + '&autoplay=1';
-        } else {
-          url = url + '?autoplay=1';
-        }
-      }
-      
+      url = url.replace(/([&?])autoplay=\d/g, '');
+      const sep = url.includes('?') ? '&' : '?';
+      if (url.includes('youtube.com') || url.includes('youtu.be')) return url + sep + 'autoplay=1';
+      if (url.includes('vimeo.com')) return url + sep + 'autoplay=1';
       return url;
     }
 
-    // Sistema de overlay mejorado para reproducción de videos
-    const videoOverlay = document.querySelector('.video-overlay');
-    const videoOverlayIframe = videoOverlay.querySelector('iframe');
-    const videoOverlayClose = videoOverlay.querySelector('.video-overlay-close');
-    
-    // Configurar los botones de reproducción
+    document.querySelectorAll('.video-play-button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const src = btn.dataset.videoSrc;
+        if (src) {
+          videoOverlayIframe.src = prepareVideoUrl(src);
+          videoOverlay.classList.add('active');
+        }
+      });
+    });
 
+    videoOverlayClose.addEventListener('click', () => {
+      videoOverlay.classList.remove('active');
+      videoOverlayIframe.src = '';
+    });
+
+    videoOverlay.addEventListener('click', e => {
+      if (e.target === videoOverlay) {
+        videoOverlay.classList.remove('active');
+        videoOverlayIframe.src = '';
+      }
+    });
 
   });
 </script>

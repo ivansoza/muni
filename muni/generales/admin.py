@@ -1,7 +1,33 @@
 # admin.py
 from django.contrib import admin
-from .models import ArchivoRelacionadoRecomendacion, ContadorVisitas, MetaMunicipio, Recomendaciones, SeccionPlus, Secciones, SocialNetwork, personalizacionPlantilla, VideoMunicipio, SeccionPlusArchivo
+from .models import AppIcon, ArchivoRelacionadoRecomendacion, ArchivoSesionCabildo, ContadorVisitas, MetaMunicipio, Recomendaciones, SeccionPlus, SesionCabildo, Secciones, SocialNetwork, personalizacionPlantilla, VideoMunicipio, SeccionPlusArchivo, NormatividadSeccion, ArchivoNormatividad
+from django.utils.html import format_html
 
+admin.site.register(NormatividadSeccion)
+admin.site.register(ArchivoNormatividad)
+
+
+class ArchivoSesionCabildoInline(admin.TabularInline):
+    model = ArchivoSesionCabildo
+    extra = 1
+    readonly_fields = ('fecha_subida',)
+    fields = ('archivo', 'descripcion', 'fecha_subida')
+
+
+@admin.register(SesionCabildo)
+class SesionCabildoAdmin(admin.ModelAdmin):
+    list_display = ('sesion', 'descripcion', 'fecha_creacion')
+    search_fields = ('sesion', 'descripcion')
+    readonly_fields = ('fecha_creacion',)
+    date_hierarchy = 'fecha_creacion'
+    inlines = (ArchivoSesionCabildoInline,)
+
+
+@admin.register(ArchivoSesionCabildo)
+class ArchivoSesionCabildoAdmin(admin.ModelAdmin):
+    list_display = ('sesion', 'descripcion', 'fecha_subida')
+    search_fields = ('descripcion',)
+    readonly_fields = ('fecha_subida',)
 @admin.register(SocialNetwork)
 class SocialNetworkAdmin(admin.ModelAdmin):
     list_display = (
@@ -62,3 +88,20 @@ class ArchivoRelacionadoRecomendacionAdmin(admin.ModelAdmin):
 
 admin.site.register(VideoMunicipio)
 admin.site.register(SeccionPlusArchivo)
+
+
+
+@admin.register(AppIcon)
+class AppIconAdmin(admin.ModelAdmin):
+    list_display = ('get_app_display_name', 'imagen_preview', 'imagen')
+    list_editable = ('imagen',)
+
+    def get_app_display_name(self, obj):
+        return obj.get_app_display()
+    get_app_display_name.short_description = 'Aplicación'
+
+    def imagen_preview(self, obj):
+        if obj.imagen:
+            return format_html('<img src="{}" style="width:50px; height:50px; border-radius:10px; object-fit:cover;">', obj.imagen.url)
+        return '—'
+    imagen_preview.short_description = 'Vista previa'
