@@ -1,5 +1,6 @@
 from django.db import models
 import uuid
+from django.core.validators import FileExtensionValidator
 
 class Categoria(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
@@ -52,6 +53,12 @@ class CanalPresentacion(models.Model):
         return self.get_nombre_display()
     
 class ConfiguracionServicio(models.Model):
+    VERSION_PLANTILLA_CHOICES = (
+        (1, 'Plantilla v1'),
+        (2, 'Plantilla v2'),
+        (3, 'Plantilla v3'),
+    )
+
     # Secciones
     mostrar_seccion_consiste = models.BooleanField(default=True)
     mostrar_seccion_requisitos = models.BooleanField(default=True)
@@ -78,6 +85,11 @@ class ConfiguracionServicio(models.Model):
 
     # Campo especifico para usar la plantilla v1 o v2
     usar_plantilla_v2 = models.BooleanField(default=True, help_text='')
+    plantilla_home_version = models.PositiveSmallIntegerField(
+        choices=VERSION_PLANTILLA_CHOICES,
+        default=2,
+        help_text='Selecciona la versión de plantilla para la página principal de servicios.',
+    )
 
     class Meta:
         verbose_name = "Configuración de servicio"
@@ -131,11 +143,58 @@ class QueSeRequiere(models.Model):
     presentar_copia = models.PositiveIntegerField(default=0)  # Número de copias requeridas
     archivo_descarga = models.FileField(upload_to="requisitos/", null=True, blank=True)  # Archivo descargable opcional
 
+    _IMG_EXT = {'jpg', 'jpeg', 'png', 'webp'}
+
+    @property
+    def archivo_es_imagen(self):
+        if not self.archivo_descarga:
+            return False
+        return self.archivo_descarga.name.rsplit('.', 1)[-1].lower() in self._IMG_EXT
+
+    @property
+    def archivo_es_pdf(self):
+        if not self.archivo_descarga:
+            return False
+        return self.archivo_descarga.name.rsplit('.', 1)[-1].lower() == 'pdf'
+
     def __str__(self):
         return f"{self.nombre} - {self.servicio.titulo}"
     
     class Meta:
         verbose_name_plural = "2. ¿Que se requiere?"
+
+
+class RequisitoAdjunto(models.Model):
+    requisito = models.ForeignKey(
+        QueSeRequiere,
+        on_delete=models.CASCADE,
+        related_name='adjuntos'
+    )
+    archivo = models.FileField(
+        upload_to='requisitos/',
+        validators=[FileExtensionValidator(allowed_extensions=['pdf', 'jpg', 'jpeg', 'png', 'webp'])]
+    )
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    _IMG_EXT = {'jpg', 'jpeg', 'png', 'webp'}
+
+    @property
+    def es_imagen(self):
+        if not self.archivo:
+            return False
+        return self.archivo.name.rsplit('.', 1)[-1].lower() in self._IMG_EXT
+
+    @property
+    def es_pdf(self):
+        if not self.archivo:
+            return False
+        return self.archivo.name.rsplit('.', 1)[-1].lower() == 'pdf'
+
+    def __str__(self):
+        return f"Adjunto de {self.requisito.nombre}"
+
+    class Meta:
+        verbose_name_plural = "2. ¿Que se requiere? Adjuntos"
 
 class RequisitosImagen(models.Model):
     servicio = models.OneToOneField(Servicio, on_delete=models.CASCADE)

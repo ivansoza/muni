@@ -2,23 +2,41 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, DetailView
 from django.core.paginator import Paginator
 from django.core.exceptions import ObjectDoesNotExist
-from servicios.models import ComoLoRealizo, ConfiguracionServicio, CuantoCuesta, EnQueConsiste, QueSeRequiere, RequisitosImagen, Servicio
+from django.db.models import Prefetch
+from django.http import FileResponse, Http404, JsonResponse
+from django.shortcuts import get_object_or_404
+from django.views.decorators.clickjacking import xframe_options_exempt
+from servicios.models import ComoLoRealizo, ConfiguracionServicio, CuantoCuesta, Dependencia, EnQueConsiste, QueSeRequiere, RequisitoAdjunto, RequisitosImagen, Servicio
 from django.template.loader import render_to_string
-from django.http import JsonResponse
 
 class HomeServiciosView(TemplateView):
     template_name = ''
 
+    def _get_template_name_from_config(self, config):
+        version = getattr(config, 'plantilla_home_version', None)
+        if version == 3:
+            return 'homeServiciosV3.html'
+        if version == 2:
+            return 'homeServiciosV2.html'
+        if version == 1:
+            return 'homeServicios.html'
+
+        # Compatibilidad con configuración anterior basada en booleano.
+        return 'homeServiciosV2.html' if (config and config.usar_plantilla_v2) else 'homeServicios.html'
+
     def dispatch(self, request, *args, **kwargs):
         config = ConfiguracionServicio.objects.first()
-        self.template_name = 'homeServiciosV2.html' if (config and config.usar_plantilla_v2) else 'homeServicios.html'
+        self.template_name = self._get_template_name_from_config(config)
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['sidebar'] = 'servicios'  # Define qué opción está activa
 
-        servicios = Servicio.objects.all()
+        servicios = Servicio.objects.select_related('organismo').prefetch_related(
+            Prefetch('requisitos', queryset=QueSeRequiere.objects.prefetch_related('adjuntos')),
+            Prefetch('instrucciones', queryset=ComoLoRealizo.objects.select_related('canal_presentacion').order_by('paso')),
+        )
 
         # Filtrar por búsqueda
         query = self.request.GET.get('q', '')
@@ -39,6 +57,12 @@ class HomeServiciosView(TemplateView):
         if organismo:
             servicios = servicios.filter(organismo__id=organismo)
 
+        organismo_nombre = None
+        if organismo:
+            organismo_obj = Dependencia.objects.filter(id=organismo).only('nombre').first()
+            if organismo_obj:
+                organismo_nombre = organismo_obj.nombre
+
         # Configurar paginación
         paginator = Paginator(servicios, int(per_page))
         page = self.request.GET.get('page', 1)
@@ -51,11 +75,71 @@ class HomeServiciosView(TemplateView):
             'clasificacion': clasificacion,
             'sector': sector,
             'organismo': organismo,
+            'organismo_nombre': organismo_nombre,
             'per_page': per_page,
             'organismos': Servicio.objects.values('organismo__id', 'organismo__nombre').distinct(),
         })
         
         return context
+
+
+class TramitesPorAreaView(TemplateView):
+    template_name = 'tramitesPorAreaV3.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sidebar'] = 'servicios'
+
+        organismo_id = self.kwargs.get('organismo_id')
+        query = self.request.GET.get('q', '')
+
+        organismo = Dependencia.objects.filter(id=organismo_id).only('id', 'nombre').first()
+
+        tramites = Servicio.objects.filter(organismo_id=organismo_id).prefetch_related(
+            Prefetch('requisitos', queryset=QueSeRequiere.objects.prefetch_related('adjuntos')),
+            Prefetch('instrucciones', queryset=ComoLoRealizo.objects.select_related('canal_presentacion').order_by('paso')),
+        )
+
+        if query:
+            tramites = tramites.filter(titulo__icontains=query)
+
+        context.update({
+            'organismo': organismo,
+            'query': query,
+            'tramites': tramites,
+        })
+        return context
+
+
+def _build_inline_pdf_response(file_field, filename):
+    if not file_field:
+        raise Http404('Archivo no encontrado')
+
+    response = FileResponse(file_field.open('rb'), content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="{filename}"'
+    return response
+
+
+@xframe_options_exempt
+def requisito_pdf_inline_view(request, requisito_id):
+    requisito = get_object_or_404(QueSeRequiere, pk=requisito_id)
+
+    if not requisito.archivo_es_pdf:
+        raise Http404('El archivo no es un PDF')
+
+    filename = requisito.archivo_descarga.name.rsplit('/', 1)[-1]
+    return _build_inline_pdf_response(requisito.archivo_descarga, filename)
+
+
+@xframe_options_exempt
+def requisito_adjunto_pdf_inline_view(request, adjunto_id):
+    adjunto = get_object_or_404(RequisitoAdjunto, pk=adjunto_id)
+
+    if not adjunto.es_pdf:
+        raise Http404('El archivo no es un PDF')
+
+    filename = adjunto.archivo.name.rsplit('/', 1)[-1]
+    return _build_inline_pdf_response(adjunto.archivo, filename)
 
 class ServicioDetailView(DetailView):
     model = Servicio

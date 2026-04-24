@@ -29,8 +29,8 @@ from generales.models import AppIcon, ArchivoNormatividad, ArchivoSesionCabildo,
 from reportes.models import ReporteStatus
 from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, AvisoDePrivacidadForm
 from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
-from servicios.forms import ComoLoRealizoForm, CuantoCuestaForm, EnQueConsisteForm, QueSeRequiereForm, RequisitosImagenForm, ServicioForm
-from servicios.models import ComoLoRealizo, ConfiguracionServicio, CuantoCuesta, Dependencia, EnQueConsiste, QueSeRequiere, RequisitosImagen, Servicio
+from servicios.forms import ComoLoRealizoForm, CuantoCuestaForm, EnQueConsisteForm, QueSeRequiereForm, RequisitoAdjuntoForm, RequisitosImagenForm, ServicioForm
+from servicios.models import ComoLoRealizo, ConfiguracionServicio, CuantoCuesta, Dependencia, EnQueConsiste, QueSeRequiere, RequisitoAdjunto, RequisitosImagen, Servicio
 from .forms import ArchivoNormatividadForm, ArchivoNormatividadFormSet, ArchivoSesionCabildoForm, ArchivoSesionCabildoFormSet, ArchivoSesionCabildoForm, ArchivoSesionCabildoFormSet, CustomAuthenticationForm, ElementoListaForm, GroupForm, InformacionCiudadForm, NormatividadSeccionForm, SeccionPlusForm, SeccionesForm, SesionCabildoForm, SesionCabildoForm, UserCreationWithGroupForm, UserEditForm, VideoMunicipioForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
@@ -1477,73 +1477,105 @@ class EnQueConsisteView(View):
         return render(request, 'servicios/consiste_form.html', context)
     
 class RequisitosView(View):
-    def get(self, request, servicio_id):
-        servicio = get_object_or_404(Servicio, id=servicio_id)
-        requisitos = QueSeRequiere.objects.filter(servicio=servicio)
-        form = QueSeRequiereForm()
+    def _get_config(self):
+        return ConfiguracionServicio.objects.first()
 
+    def _is_v3(self, config):
+        return config and config.plantilla_home_version == 3
+
+    def _get_context(self, servicio, form, extra=None):
+        config = self._get_config()
+        requisitos = QueSeRequiere.objects.filter(servicio=servicio).prefetch_related('adjuntos')
         breadcrumb = {
             'parent': {'name': 'Gestión De Servicio', 'url': reverse('gestionar_servicio', kwargs={'pk': servicio.id})},
             'child': {'name': 'Sección: ¿Qué se requiere?', 'url': ''},
         }
-
-        context = {
+        ctx = {
             'form': form,
             'servicio': servicio,
             'requisitos': requisitos,
             'breadcrumb': breadcrumb,
             'sidebar': 'servicios',
+            'config': config,
+            'adjunto_form': RequisitoAdjuntoForm(),
         }
-        return render(request, 'servicios/requisitos_form.html', context)
+        if extra:
+            ctx.update(extra)
+        return ctx
+
+    def get(self, request, servicio_id):
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        config = self._get_config()
+        form = QueSeRequiereForm(hide_archivo=self._is_v3(config))
+        return render(request, 'servicios/requisitos_form.html', self._get_context(servicio, form))
 
     def post(self, request, servicio_id):
         servicio = get_object_or_404(Servicio, id=servicio_id)
-        form = QueSeRequiereForm(request.POST, request.FILES)
+        config = self._get_config()
+        hide = self._is_v3(config)
+        form = QueSeRequiereForm(request.POST, request.FILES, hide_archivo=hide)
         if form.is_valid():
             requisito = form.save(commit=False)
             requisito.servicio = servicio
             requisito.save()
             return redirect('gestionar_requisitos', servicio_id=servicio.id)
-        requisitos = QueSeRequiere.objects.filter(servicio=servicio)
-        return render(request, 'servicios/requisitos_form.html', {
-            'servicio': servicio,
-            'requisitos': requisitos,
-            'form': form
-        })
+        return render(request, 'servicios/requisitos_form.html', self._get_context(servicio, form))
     
 class EditarRequisitoView(View):
+    def _build_context(self, servicio, form, requisito):
+        config = ConfiguracionServicio.objects.first()
+        return {
+            'servicio': servicio,
+            'form': form,
+            'requisitos': QueSeRequiere.objects.filter(servicio=servicio).prefetch_related('adjuntos'),
+            'modo_edicion': True,
+            'requisito_id': requisito.id,
+            'config': config,
+            'adjunto_form': RequisitoAdjuntoForm(),
+        }
+
+    def _is_v3(self):
+        config = ConfiguracionServicio.objects.first()
+        return config and config.plantilla_home_version == 3
+
     def get(self, request, servicio_id, requisito_id):
         servicio = get_object_or_404(Servicio, id=servicio_id)
         requisito = get_object_or_404(QueSeRequiere, id=requisito_id, servicio=servicio)
-        form = QueSeRequiereForm(instance=requisito)
-        return render(request, 'servicios/requisitos_form.html', {
-            'servicio': servicio,
-            'form': form,
-            'requisitos': QueSeRequiere.objects.filter(servicio=servicio),
-            'modo_edicion': True,
-            'requisito_id': requisito.id
-        })
+        form = QueSeRequiereForm(instance=requisito, hide_archivo=self._is_v3())
+        return render(request, 'servicios/requisitos_form.html', self._build_context(servicio, form, requisito))
 
     def post(self, request, servicio_id, requisito_id):
         servicio = get_object_or_404(Servicio, id=servicio_id)
         requisito = get_object_or_404(QueSeRequiere, id=requisito_id, servicio=servicio)
-        form = QueSeRequiereForm(request.POST, request.FILES, instance=requisito)
+        form = QueSeRequiereForm(request.POST, request.FILES, instance=requisito, hide_archivo=self._is_v3())
         if form.is_valid():
             form.save()
             return redirect('gestionar_requisitos', servicio_id=servicio.id)
-        return render(request, 'servicios/requisitos_form.html', {
-            'servicio': servicio,
-            'form': form,
-            'requisitos': QueSeRequiere.objects.filter(servicio=servicio),
-            'modo_edicion': True,
-            'requisito_id': requisito.id
-        })
+        return render(request, 'servicios/requisitos_form.html', self._build_context(servicio, form, requisito))
     
 class EliminarRequisitoView(View):
     def post(self, request, servicio_id, requisito_id):
         servicio = get_object_or_404(Servicio, id=servicio_id)
         requisito = get_object_or_404(QueSeRequiere, id=requisito_id, servicio=servicio)
         requisito.delete()
+        return redirect('gestionar_requisitos', servicio_id=servicio.id)
+
+class AgregarAdjuntoView(View):
+    def post(self, request, servicio_id, requisito_id):
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        requisito = get_object_or_404(QueSeRequiere, id=requisito_id, servicio=servicio)
+        form = RequisitoAdjuntoForm(request.POST, request.FILES)
+        if form.is_valid():
+            adjunto = form.save(commit=False)
+            adjunto.requisito = requisito
+            adjunto.save()
+        return redirect('gestionar_requisitos', servicio_id=servicio.id)
+
+class EliminarAdjuntoView(View):
+    def post(self, request, servicio_id, adjunto_id):
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        adjunto = get_object_or_404(RequisitoAdjunto, id=adjunto_id, requisito__servicio=servicio)
+        adjunto.delete()
         return redirect('gestionar_requisitos', servicio_id=servicio.id)
     
 class RequisitosImagenView(View):

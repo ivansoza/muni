@@ -1,0 +1,438 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/servicios/estilos_ac.css' %}">
+    <style>
+        .tramites-v3-wrap {
+            min-height: calc(100vh - 220px);
+            padding: 1.8rem 1rem 2.6rem;
+            background:
+                radial-gradient(circle at 12% 8%, rgba(20, 95, 115, 0.1) 0%, rgba(20, 95, 115, 0) 40%),
+                radial-gradient(circle at 88% 92%, rgba(168, 95, 8, 0.12) 0%, rgba(168, 95, 8, 0) 40%),
+                linear-gradient(180deg, #f7fbfc 0%, #edf4f6 100%);
+        }
+
+        .tramites-v3-topbar {
+            max-width: 1200px;
+            margin: 0 auto 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tramites-v3-back {
+            text-decoration: none;
+            color: #0f6070;
+            font-weight: 700;
+        }
+
+        .tramites-v3-back:hover {
+            text-decoration: underline;
+        }
+
+        .tramites-v3-title {
+            margin: 0;
+            color: #123c4b;
+            font-size: clamp(1.2rem, 1rem + 1vw, 1.8rem);
+            font-weight: 800;
+        }
+
+        .tramites-v3-search {
+            max-width: 1200px;
+            margin: 0 auto 1rem;
+        }
+
+        .tramites-v3-search .input-group {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #cfe0e6;
+        }
+
+        .tramites-v3-list {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tramite-v3-card {
+            background: #ffffff;
+            border: 1px solid #d9e4e8;
+            border-radius: 14px;
+            padding: 1rem;
+            margin-bottom: 0.9rem;
+            box-shadow: 0 8px 18px rgba(19, 52, 62, 0.08);
+        }
+
+        .tramite-v3-card h3 {
+            margin-bottom: 0.45rem;
+            color: #184958;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .tramite-v3-descripcion {
+            color: #334f59;
+            margin-bottom: 0.8rem;
+        }
+
+        .tramite-v3-subtitle {
+            margin: 0.8rem 0 0.45rem;
+            font-size: 0.95rem;
+            color: #1a5161;
+            font-weight: 700;
+        }
+
+        .tramite-v3-points {
+            margin: 0;
+            padding-left: 1.2rem;
+            color: #2c4953;
+        }
+
+        .tramite-v3-points li {
+            margin-bottom: 0.4rem;
+        }
+
+        .tramite-v3-file {
+            display: inline-block;
+            margin-top: 0.25rem;
+            color: #0f6070;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .tramite-v3-file:hover {
+            text-decoration: underline;
+        }
+
+        .tramites-v3-empty {
+            border: 1px dashed #bdd0d8;
+            border-radius: 12px;
+            padding: 1rem;
+            color: #5f7179;
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Acordeón de trámite */
+        .tramite-v3-card summary {
+            list-style: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.6rem;
+            padding: 0.1rem 0 0.1rem;
+        }
+
+        .tramite-v3-card summary::-webkit-details-marker { display: none; }
+
+        .tramite-v3-card summary h3 {
+            margin: 0;
+            flex: 1;
+        }
+
+        .tramite-v3-toggle-icon {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #e5f0f3;
+            color: #0f6070;
+            display: grid;
+            place-items: center;
+            font-size: 1rem;
+            transition: transform 0.25s ease;
+        }
+
+        details[open] .tramite-v3-toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .tramite-v3-body {
+            padding-top: 0.8rem;
+            border-top: 1px solid #e4ecef;
+            margin-top: 0.6rem;
+        }
+
+        /* Visor inline de archivos */
+        .req-archivo {
+            margin-top: 0.5rem;
+        }
+
+        .req-archivo-img {
+            max-width: 100%;
+            max-height: 360px;
+            border-radius: 8px;
+            border: 1px solid #cde0e6;
+            display: block;
+        }
+
+        .req-archivo-pdf summary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: #0f6070;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .req-archivo-pdf summary::-webkit-details-marker { display: none; }
+
+        .req-archivo-pdf object {
+            margin-top: 0.5rem;
+            width: 100%;
+            height: 480px;
+            border-radius: 8px;
+            border: 1px solid #cde0e6;
+            display: block;
+        }
+
+        .req-archivo-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .req-archivo-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .req-archivo-btn:hover { opacity: 0.82; }
+
+        .req-archivo-btn--download {
+            background: #0f6070;
+            color: #ffffff;
+        }
+
+        .req-archivo-btn--print {
+            background: #e5f0f3;
+            color: #0f6070;
+        }
+    </style>
+{% endblock extra_css %}
+
+{% block content %}
+<section class="tramites-v3-wrap" aria-label="Trámites por área">
+    <div class="tramites-v3-topbar">
+        <a class="tramites-v3-back" href="{% url 'homeServicios' %}">Regresar a áreas</a>
+        <h1 class="tramites-v3-title">
+            {% if organismo %}
+                Trámites de {{ organismo.nombre }}
+            {% else %}
+                Trámites del área
+            {% endif %}
+        </h1>
+    </div>
+
+    <div class="tramites-v3-search">
+        <form method="GET" action="">
+            <div class="input-group">
+                <input type="text" class="form-control" name="q" placeholder="Buscar trámite en esta área" value="{{ query }}">
+                <button class="btn search-btn" type="submit">Buscar</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="tramites-v3-list">
+        {% for servicio in tramites %}
+            <article class="tramite-v3-card">
+                <details {% if forloop.first and forloop.last %}open{% endif %}>
+                    <summary>
+                        <h3>{{ servicio.titulo }}</h3>
+                        <span class="tramite-v3-toggle-icon" aria-hidden="true">
+                            <i class="fas fa-chevron-down"></i>
+                        </span>
+                    </summary>
+
+                    <div class="tramite-v3-body">
+                        <p class="tramite-v3-descripcion">{{ servicio.descripcion }}</p>
+
+                        <h4 class="tramite-v3-subtitle">Requisitos</h4>
+                        <ul class="tramite-v3-points">
+                            {% for req in servicio.requisitos.all %}
+                                <li>
+                                    <strong>{{ req.nombre }}</strong>
+                                    {% if req.especificaciones %}
+                                        <br>{{ req.especificaciones }}
+                                    {% endif %}
+
+                                    {% if req.adjuntos.all %}
+                                        {% for adjunto in req.adjuntos.all %}
+                                            <div class="req-archivo">
+                                                {% if adjunto.es_imagen %}
+                                                    <img
+                                                        class="req-archivo-img"
+                                                        src="{{ adjunto.archivo.url }}"
+                                                        alt="Archivo de {{ req.nombre }}"
+                                                        loading="lazy"
+                                                    >
+                                                    <div class="req-archivo-actions">
+                                                        <a href="{{ adjunto.archivo.url }}" download class="req-archivo-btn req-archivo-btn--download">
+                                                            <i class="fas fa-download"></i> Descargar
+                                                        </a>
+                                                        <button type="button" class="req-archivo-btn req-archivo-btn--print" onclick="imprimirArchivo('{{ adjunto.archivo.url }}', 'imagen')">
+                                                            <i class="fas fa-print"></i> Imprimir
+                                                        </button>
+                                                    </div>
+                                                {% elif adjunto.es_pdf %}
+                                                    <details class="req-archivo-pdf">
+                                                        <summary><i class="fas fa-file-pdf"></i> Ver PDF del requisito</summary>
+                                                        <object
+                                                            data-src="{% url 'requisito_adjunto_pdf_inline' adjunto.id %}"
+                                                            type="application/pdf"
+                                                            aria-label="PDF de {{ req.nombre }}"
+                                                        >
+                                                            <p>No se pudo mostrar el PDF en línea.</p>
+                                                        </object>
+                                                    </details>
+                                                    <div class="req-archivo-actions">
+                                                        <a href="{{ adjunto.archivo.url }}" download class="req-archivo-btn req-archivo-btn--download">
+                                                            <i class="fas fa-download"></i> Descargar
+                                                        </a>
+                                                        <button type="button" class="req-archivo-btn req-archivo-btn--print" onclick="imprimirArchivo('{{ adjunto.archivo.url }}', 'pdf')">
+                                                            <i class="fas fa-print"></i> Imprimir
+                                                        </button>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    {% elif req.archivo_descarga %}
+                                        <div class="req-archivo">
+                                            {% if req.archivo_es_imagen %}
+                                                <img
+                                                    class="req-archivo-img"
+                                                    src="{{ req.archivo_descarga.url }}"
+                                                    alt="Archivo de {{ req.nombre }}"
+                                                    loading="lazy"
+                                                >
+                                                <div class="req-archivo-actions">
+                                                    <a href="{{ req.archivo_descarga.url }}" download class="req-archivo-btn req-archivo-btn--download">
+                                                        <i class="fas fa-download"></i> Descargar
+                                                    </a>
+                                                    <button type="button" class="req-archivo-btn req-archivo-btn--print" onclick="imprimirArchivo('{{ req.archivo_descarga.url }}', 'imagen')">
+                                                        <i class="fas fa-print"></i> Imprimir
+                                                    </button>
+                                                </div>
+                                            {% elif req.archivo_es_pdf %}
+                                                <details class="req-archivo-pdf">
+                                                    <summary><i class="fas fa-file-pdf"></i> Ver PDF del requisito</summary>
+                                                    <object
+                                                        data-src="{% url 'requisito_pdf_inline' req.id %}"
+                                                        type="application/pdf"
+                                                        aria-label="PDF de {{ req.nombre }}"
+                                                    >
+                                                        <p>No se pudo mostrar el PDF en línea.</p>
+                                                    </object>
+                                                </details>
+                                                <div class="req-archivo-actions">
+                                                    <a href="{{ req.archivo_descarga.url }}" download class="req-archivo-btn req-archivo-btn--download">
+                                                        <i class="fas fa-download"></i> Descargar
+                                                    </a>
+                                                    <button type="button" class="req-archivo-btn req-archivo-btn--print" onclick="imprimirArchivo('{{ req.archivo_descarga.url }}', 'pdf')">
+                                                        <i class="fas fa-print"></i> Imprimir
+                                                    </button>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </li>
+                            {% empty %}
+                                <li>Sin requisitos registrados.</li>
+                            {% endfor %}
+                        </ul>
+
+                        <h4 class="tramite-v3-subtitle">Cómo realizar el trámite</h4>
+                        <ol class="tramite-v3-points">
+                            {% for paso in servicio.instrucciones.all %}
+                                <li>
+                                    {% if paso.canal_presentacion %}
+                                        <strong>{{ paso.canal_presentacion }}</strong>:
+                                    {% endif %}
+                                    {{ paso.descripcion }}
+                                </li>
+                            {% empty %}
+                                <li>Sin pasos registrados.</li>
+                            {% endfor %}
+                        </ol>
+                    </div>
+                </details>
+            </article>
+        {% empty %}
+            <div class="tramites-v3-empty">No hay trámites disponibles para esta área.</div>
+        {% endfor %}
+    </div>
+
+    <script>
+        // Imprimir archivo en nueva ventana
+        function imprimirArchivo(url, tipo) {
+            var win = window.open(url, '_blank');
+            if (win) {
+                win.addEventListener('load', function () {
+                    win.focus();
+                    win.print();
+                });
+            }
+        }
+
+        // Carga diferida de PDFs: asigna data al object solo cuando se abre el details
+        document.querySelectorAll('.req-archivo-pdf').forEach(function (det) {
+            det.addEventListener('toggle', function () {
+                if (det.open) {
+                    var pdfObject = det.querySelector('object[data-src]');
+                    if (pdfObject) {
+                        pdfObject.data = pdfObject.dataset.src;
+                        delete pdfObject.dataset.src;
+                    }
+                }
+            });
+        });
+
+        // Si hay más de un trámite, solo permite un acordeón abierto a la vez.
+        var tramiteDetails = document.querySelectorAll('.tramites-v3-list .tramite-v3-card > details');
+        if (tramiteDetails.length > 1) {
+            function cerrarOtros(actual) {
+                tramiteDetails.forEach(function (other) {
+                    if (other !== actual) {
+                        other.open = false;
+                    }
+                });
+            }
+
+            tramiteDetails.forEach(function (det) {
+                var summary = det.querySelector('summary');
+                if (summary) {
+                    summary.addEventListener('click', function () {
+                        // Cuando se abre, el click ocurre antes del cambio de estado;
+                        // evaluamos en el siguiente ciclo para conocer el estado final.
+                        setTimeout(function () {
+                            if (det.open) {
+                                cerrarOtros(det);
+                            }
+                        }, 0);
+                    });
+                }
+
+                det.addEventListener('toggle', function () {
+                    if (det.open) {
+                        cerrarOtros(det);
+                    }
+                });
+            });
+        }
+    </script>
+</section>
+{% endblock content %}
