@@ -64,3 +64,59 @@ class Comentario(models.Model):
 
     def __str__(self):
         return f'Comentario de {self.nombre or "Anónimo"} en {self.articulo.titulo}'
+
+class VideoArticulo(models.Model):
+    TIPO_VIDEO = [
+        ('url', 'URL externa (YouTube, Vimeo, etc.)'),
+        ('archivo', 'Archivo de video'),
+    ]
+
+    articulo = models.ForeignKey(
+        Articulo,
+        on_delete=models.CASCADE,
+        related_name='videos',
+        verbose_name='Artículo'
+    )
+    titulo = models.CharField(
+        max_length=255,
+        verbose_name='Título del video',
+        blank=True,
+        null=True
+    )
+    tipo = models.CharField(
+        max_length=10,
+        choices=TIPO_VIDEO,
+        default='url',
+        verbose_name='Tipo de video'
+    )
+    url = models.URLField(
+        verbose_name='URL del video',
+        max_length=500,
+        blank=True,
+        null=True,
+        help_text='URL de YouTube, Vimeo u otra plataforma.'
+    )
+    archivo = models.FileField(
+        upload_to='articulos/videos/',
+        verbose_name='Archivo de video',
+        blank=True,
+        null=True,
+        help_text='Formatos soportados: mp4, webm, ogg.'
+    )
+    orden = models.PositiveIntegerField(default=0, verbose_name='Orden')
+    fecha_agregado = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['orden', 'fecha_agregado']
+        verbose_name = 'Video del artículo'
+        verbose_name_plural = 'Videos del artículo'
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.tipo == 'url' and not self.url:
+            raise ValidationError('Debes proporcionar una URL si el tipo es URL externa.')
+        if self.tipo == 'archivo' and not self.archivo:
+            raise ValidationError('Debes subir un archivo si el tipo es Archivo de video.')
+
+    def __str__(self):
+        return f'{self.titulo or "Video"} - {self.articulo.titulo}'

@@ -514,14 +514,14 @@
         {% if is_superuser or 'eventos.view_articulo' in user_permissions %}
             <a class="app-item" href="{% url 'habla_home' %}">
                 <div class="app-card" style="background-image: url('{% if icons.habla and icons.habla.imagen %}{{ icons.habla.imagen.url }}{% else %}{% static 'img/apps/habla.png' %}{% endif %}');"></div>
-                <div class="app-name">Habla con tus hijos</div>
+                <div class="app-name">Blogs</div>
             </a>
         {% else %}
             <div class="app-item app-disabled">
                 <div class="app-card" style="background-image: url('{% if icons.habla and icons.habla.imagen %}{{ icons.habla.imagen.url }}{% else %}{% static 'img/apps/habla.png' %}{% endif %}');">
                     <div class="disabled-overlay">{{ lock }}</div>
                 </div>
-                <div class="app-name">Habla con tus hijos</div>
+                <div class="app-name">Blogs</div>
             </div>
         {% endif %}
 
