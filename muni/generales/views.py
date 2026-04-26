@@ -25,13 +25,13 @@ from django.views.generic import FormView
 from django.http import JsonResponse, HttpResponseNotAllowed
 
 from informacion_municipal.models import ElementoLista, InformacionCiudad, Municipio, Video
-from generales.models import AppIcon, ArchivoNormatividad, ArchivoSesionCabildo, ContadorVisitas, NormatividadSeccion, SeccionPlus, SesionCabildo, Secciones, SocialNetwork, VideoMunicipio
+from generales.models import AppIcon, ArchivoNormatividad, ArchivoSesionCabildo, ArchivoSesionCabildo, ContadorVisitas, NormatividadSeccion, SeccionPlus, SesionCabildo, SesionCabildo, Secciones, SocialNetwork, VideoMunicipio
 from reportes.models import ReporteStatus
 from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, AvisoDePrivacidadForm
 from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
-from servicios.forms import ComoLoRealizoForm, CuantoCuestaForm, EnQueConsisteForm, QueSeRequiereForm, RequisitosImagenForm, ServicioForm
-from servicios.models import ComoLoRealizo, ConfiguracionServicio, CuantoCuesta, Dependencia, EnQueConsiste, QueSeRequiere, RequisitosImagen, Servicio
-from .forms import ArchivoNormatividadForm, ArchivoNormatividadFormSet, ArchivoSesionCabildoForm, ArchivoSesionCabildoFormSet, CustomAuthenticationForm, ElementoListaForm, GroupForm, InformacionCiudadForm, NormatividadSeccionForm, SeccionPlusForm, SeccionesForm, SesionCabildoForm, UserCreationWithGroupForm, UserEditForm, VideoMunicipioForm
+from servicios.forms import ComoLoRealizoForm, CuantoCuestaForm, EnQueConsisteForm, QueSeRequiereForm, RequisitoAdjuntoForm, RequisitosImagenForm, ServicioForm
+from servicios.models import ComoLoRealizo, ConfiguracionServicio, CuantoCuesta, Dependencia, EnQueConsiste, QueSeRequiere, RequisitoAdjunto, RequisitosImagen, Servicio
+from .forms import ArchivoNormatividadForm, ArchivoNormatividadFormSet, ArchivoSesionCabildoForm, ArchivoSesionCabildoFormSet, ArchivoSesionCabildoForm, ArchivoSesionCabildoFormSet, CustomAuthenticationForm, ElementoListaForm, GroupForm, InformacionCiudadForm, NormatividadSeccionForm, SeccionPlusForm, SeccionesForm, SesionCabildoForm, SesionCabildoForm, UserCreationWithGroupForm, UserEditForm, VideoMunicipioForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from noticias.models import Noticia, ImagenGaleria, Categoria
@@ -1477,73 +1477,105 @@ class EnQueConsisteView(View):
         return render(request, 'servicios/consiste_form.html', context)
     
 class RequisitosView(View):
-    def get(self, request, servicio_id):
-        servicio = get_object_or_404(Servicio, id=servicio_id)
-        requisitos = QueSeRequiere.objects.filter(servicio=servicio)
-        form = QueSeRequiereForm()
+    def _get_config(self):
+        return ConfiguracionServicio.objects.first()
 
+    def _is_v3(self, config):
+        return config and config.plantilla_home_version == 3
+
+    def _get_context(self, servicio, form, extra=None):
+        config = self._get_config()
+        requisitos = QueSeRequiere.objects.filter(servicio=servicio).prefetch_related('adjuntos')
         breadcrumb = {
             'parent': {'name': 'Gestión De Servicio', 'url': reverse('gestionar_servicio', kwargs={'pk': servicio.id})},
             'child': {'name': 'Sección: ¿Qué se requiere?', 'url': ''},
         }
-
-        context = {
+        ctx = {
             'form': form,
             'servicio': servicio,
             'requisitos': requisitos,
             'breadcrumb': breadcrumb,
             'sidebar': 'servicios',
+            'config': config,
+            'adjunto_form': RequisitoAdjuntoForm(),
         }
-        return render(request, 'servicios/requisitos_form.html', context)
+        if extra:
+            ctx.update(extra)
+        return ctx
+
+    def get(self, request, servicio_id):
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        config = self._get_config()
+        form = QueSeRequiereForm(hide_archivo=self._is_v3(config))
+        return render(request, 'servicios/requisitos_form.html', self._get_context(servicio, form))
 
     def post(self, request, servicio_id):
         servicio = get_object_or_404(Servicio, id=servicio_id)
-        form = QueSeRequiereForm(request.POST, request.FILES)
+        config = self._get_config()
+        hide = self._is_v3(config)
+        form = QueSeRequiereForm(request.POST, request.FILES, hide_archivo=hide)
         if form.is_valid():
             requisito = form.save(commit=False)
             requisito.servicio = servicio
             requisito.save()
             return redirect('gestionar_requisitos', servicio_id=servicio.id)
-        requisitos = QueSeRequiere.objects.filter(servicio=servicio)
-        return render(request, 'servicios/requisitos_form.html', {
-            'servicio': servicio,
-            'requisitos': requisitos,
-            'form': form
-        })
+        return render(request, 'servicios/requisitos_form.html', self._get_context(servicio, form))
     
 class EditarRequisitoView(View):
+    def _build_context(self, servicio, form, requisito):
+        config = ConfiguracionServicio.objects.first()
+        return {
+            'servicio': servicio,
+            'form': form,
+            'requisitos': QueSeRequiere.objects.filter(servicio=servicio).prefetch_related('adjuntos'),
+            'modo_edicion': True,
+            'requisito_id': requisito.id,
+            'config': config,
+            'adjunto_form': RequisitoAdjuntoForm(),
+        }
+
+    def _is_v3(self):
+        config = ConfiguracionServicio.objects.first()
+        return config and config.plantilla_home_version == 3
+
     def get(self, request, servicio_id, requisito_id):
         servicio = get_object_or_404(Servicio, id=servicio_id)
         requisito = get_object_or_404(QueSeRequiere, id=requisito_id, servicio=servicio)
-        form = QueSeRequiereForm(instance=requisito)
-        return render(request, 'servicios/requisitos_form.html', {
-            'servicio': servicio,
-            'form': form,
-            'requisitos': QueSeRequiere.objects.filter(servicio=servicio),
-            'modo_edicion': True,
-            'requisito_id': requisito.id
-        })
+        form = QueSeRequiereForm(instance=requisito, hide_archivo=self._is_v3())
+        return render(request, 'servicios/requisitos_form.html', self._build_context(servicio, form, requisito))
 
     def post(self, request, servicio_id, requisito_id):
         servicio = get_object_or_404(Servicio, id=servicio_id)
         requisito = get_object_or_404(QueSeRequiere, id=requisito_id, servicio=servicio)
-        form = QueSeRequiereForm(request.POST, request.FILES, instance=requisito)
+        form = QueSeRequiereForm(request.POST, request.FILES, instance=requisito, hide_archivo=self._is_v3())
         if form.is_valid():
             form.save()
             return redirect('gestionar_requisitos', servicio_id=servicio.id)
-        return render(request, 'servicios/requisitos_form.html', {
-            'servicio': servicio,
-            'form': form,
-            'requisitos': QueSeRequiere.objects.filter(servicio=servicio),
-            'modo_edicion': True,
-            'requisito_id': requisito.id
-        })
+        return render(request, 'servicios/requisitos_form.html', self._build_context(servicio, form, requisito))
     
 class EliminarRequisitoView(View):
     def post(self, request, servicio_id, requisito_id):
         servicio = get_object_or_404(Servicio, id=servicio_id)
         requisito = get_object_or_404(QueSeRequiere, id=requisito_id, servicio=servicio)
         requisito.delete()
+        return redirect('gestionar_requisitos', servicio_id=servicio.id)
+
+class AgregarAdjuntoView(View):
+    def post(self, request, servicio_id, requisito_id):
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        requisito = get_object_or_404(QueSeRequiere, id=requisito_id, servicio=servicio)
+        form = RequisitoAdjuntoForm(request.POST, request.FILES)
+        if form.is_valid():
+            adjunto = form.save(commit=False)
+            adjunto.requisito = requisito
+            adjunto.save()
+        return redirect('gestionar_requisitos', servicio_id=servicio.id)
+
+class EliminarAdjuntoView(View):
+    def post(self, request, servicio_id, adjunto_id):
+        servicio = get_object_or_404(Servicio, id=servicio_id)
+        adjunto = get_object_or_404(RequisitoAdjunto, id=adjunto_id, requisito__servicio=servicio)
+        adjunto.delete()
         return redirect('gestionar_requisitos', servicio_id=servicio.id)
     
 class RequisitosImagenView(View):
@@ -3352,6 +3384,108 @@ def eliminar_sesion_cabildo(request, pk):
         messages.success(request, "La sesión de cabildo se ha eliminado correctamente.")
     return redirect(reverse_lazy('SesionesCabildoAdminView'))
 
+
+# ─── Sesiones de Cabildo ───────────────────────────────────────────────────
+
+class SesionesCabildoAdminView(LoginRequiredMixin, TemplateView):
+    template_name = 'generales/sesionCabildo.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumb"] = {
+            'parent': {'name': 'Generales', 'url': '/admin/generales/'},
+            'child':  {'name': 'Sesiones de Cabildo', 'url': ''}
+        }
+        context['sidebar'] = 'Generales'
+        context['regreso_url'] = reverse('generalesDashboard')
+        context['sesiones'] = SesionCabildo.objects.all()
+        return context
+
+
+class SesionCabildoCreateView(LoginRequiredMixin, CreateView):
+    model = SesionCabildo
+    form_class = SesionCabildoForm
+    template_name = 'generales/sesionCabildoAdmin.html'
+    success_url = reverse_lazy('SesionesCabildoAdminView')
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        if self.request.method == 'POST':
+            ctx['formset'] = ArchivoSesionCabildoFormSet(self.request.POST, self.request.FILES)
+        else:
+            ctx['formset'] = ArchivoSesionCabildoFormSet()
+        ctx["breadcrumb"] = {
+            'parent': {'name': 'Sesiones de Cabildo', 'url': reverse('SesionesCabildoAdminView')},
+            'child':  {'name': 'Nueva sesión', 'url': ''},
+        }
+        ctx['sidebar'] = 'Generales'
+        ctx['regreso_url'] = reverse('SesionesCabildoAdminView')
+        return ctx
+
+    def form_valid(self, form):
+        ctx = self.get_context_data()
+        formset = ctx['formset']
+        if formset.is_valid():
+            self.object = form.save()
+            formset.instance = self.object
+            formset.save()
+            messages.success(self.request, 'Sesión creada correctamente.')
+            return redirect(self.get_success_url())
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+class SesionCabildoUpdateView(LoginRequiredMixin, UpdateView):
+    model = SesionCabildo
+    form_class = SesionCabildoForm
+    template_name = 'generales/sesionCabildoAdminEdit.html'
+    success_url = reverse_lazy('SesionesCabildoAdminView')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        extra_value = 0 if self.object.archivos.exists() else 1
+
+        ArchivoSesionCabildoFormSetDynamic = inlineformset_factory(
+            SesionCabildo,
+            ArchivoSesionCabildo,
+            form=ArchivoSesionCabildoForm,
+            extra=extra_value,
+            can_delete=True
+        )
+
+        if self.request.method == 'POST':
+            formset = ArchivoSesionCabildoFormSetDynamic(
+                self.request.POST, self.request.FILES, instance=self.object)
+        else:
+            formset = ArchivoSesionCabildoFormSetDynamic(instance=self.object)
+
+        context['formset'] = formset
+        context["breadcrumb"] = {
+            'parent': {'name': 'Sesiones de Cabildo', 'url': reverse('SesionesCabildoAdminView')},
+            'child':  {'name': 'Editar sesión', 'url': ''},
+        }
+        context['sidebar'] = 'Generales'
+        context['regreso_url'] = reverse('SesionesCabildoAdminView')
+        return context
+
+    def form_valid(self, form):
+        self.object = form.save()
+        context = self.get_context_data()
+        formset = context['formset']
+        if formset.is_valid():
+            formset.instance = self.object
+            formset.save()
+            messages.success(self.request, 'Sesión actualizada correctamente.')
+            return redirect(self.get_success_url())
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+def eliminar_sesion_cabildo(request, pk):
+    sesion = get_object_or_404(SesionCabildo, pk=pk)
+    if request.method == 'POST':
+        sesion.delete()
+        messages.success(request, "La sesión de cabildo se ha eliminado correctamente.")
+    return redirect(reverse_lazy('SesionesCabildoAdminView'))
+
 def eliminar_aviso_privacidad(request, pk):
     aviso = get_object_or_404(AvisoDePrivacidad, pk=pk)
     if request.method == 'POST':
@@ -4032,6 +4166,16 @@ class HomeNormatividad(TemplateView):
         context = super().get_context_data(**kwargs)
         context['sidebar'] = 'normatividad'
         context['secciones'] = NormatividadSeccion.objects.all().order_by('fecha_creacion').prefetch_related('archivos')
+        return context
+
+
+class HomeSesionesCabildo(TemplateView):
+    template_name = 'homeSesionesCabildo.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sidebar'] = 'sesion_cabildo'
+        context['sesiones'] = SesionCabildo.objects.all().order_by('fecha_creacion').prefetch_related('archivos')
         return context
 
 

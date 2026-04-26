@@ -3,15 +3,29 @@
 
 {% block css %} 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+    .adjuntos-list { list-style: none; padding: 0; margin: 0; }
+    .adjunto-item { display: flex; align-items: center; gap: 6px; padding: 3px 0; font-size: .85rem; }
+    .adjunto-item a { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px; }
+    .adjunto-upload { margin-top: 6px; }
+    .version-badge { font-size: .7rem; font-weight: 600; padding: 2px 7px; border-radius: 20px; }
+</style>
 {% endblock %}
 
 {% block content %}
 <div class="container-fluid">
     <div class="card shadow-lg">
-        <div class="card-header">
-            <h2 class="mb-0">
-                📄 ¿Qué se requiere? - {{ servicio.titulo }}
-            </h2>
+        <div class="card-header d-flex align-items-center gap-2">
+            <h2 class="mb-0">📄 ¿Qué se requiere? - {{ servicio.titulo }}</h2>
+            {% if config %}
+                {% if config.plantilla_home_version == 1 %}
+                    <span class="badge bg-secondary version-badge">Plantilla V1</span>
+                {% elif config.plantilla_home_version == 2 %}
+                    <span class="badge bg-primary version-badge">Plantilla V2</span>
+                {% elif config.plantilla_home_version == 3 %}
+                    <span class="badge bg-success version-badge">Plantilla V3</span>
+                {% endif %}
+            {% endif %}
         </div>
 
         <div class="card-body">
@@ -25,14 +39,14 @@
                     </button>
                     <a href="{% url 'gestionar_servicio' servicio.id %}" class="btn btn-secondary btn-lg">Volver</a>
                 </div>
-
             </form>
             
             <hr>
 
             <h4>Requisitos existentes</h4>
 
-            <table class="table table-striped">
+            <div class="table-responsive">
+            <table class="table table-striped align-middle">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -40,7 +54,12 @@
                         <th>Tipo</th>
                         <th>Original</th>
                         <th>Copia</th>
-                        <th>Archivo</th>
+                        {% if config.plantilla_home_version != 3 %}
+                        <th>Archivo principal</th>
+                        {% endif %}
+                        {% if config.plantilla_home_version == 3 %}
+                        <th>Archivos adjuntos <span class="badge bg-success version-badge">V3</span></th>
+                        {% endif %}
                         <th>Opciones</th>
                     </tr>
                 </thead>
@@ -52,13 +71,60 @@
                         <td>{{ r.tipo_documento }}</td>
                         <td>{{ r.presentar_original|yesno:"Sí,No" }}</td>
                         <td>{{ r.presentar_copia|yesno:"Sí,No" }}</td>
+                        {% if config.plantilla_home_version != 3 %}
                         <td>
                             {% if r.archivo_descarga %}
-                                <a href="{{ r.archivo_descarga.url }}" target="_blank">Descargar</a>
+                                <a href="{{ r.archivo_descarga.url }}" target="_blank" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fa-solid fa-download"></i> Descargar
+                                </a>
                             {% else %}
-                                N/A
+                                <span class="text-muted">—</span>
                             {% endif %}
                         </td>
+                        {% endif %}
+
+                        {% if config.plantilla_home_version == 3 %}
+                        <td>
+                            <details>
+                                <summary class="btn btn-outline-success btn-sm" style="cursor:pointer;">
+                                    <i class="fa-solid fa-paperclip"></i>
+                                    {{ r.adjuntos.count }} adjunto{% if r.adjuntos.count != 1 %}s{% endif %}
+                                </summary>
+                                <div class="mt-2 ps-1">
+                                    {% if r.adjuntos.all %}
+                                    <ul class="adjuntos-list mb-2">
+                                        {% for adj in r.adjuntos.all %}
+                                        <li class="adjunto-item">
+                                            <i class="fa-solid {% if adj.es_pdf %}fa-file-pdf text-danger{% else %}fa-file-image text-primary{% endif %}"></i>
+                                            <a href="{{ adj.archivo.url }}" target="_blank" title="{{ adj.archivo.name }}">
+                                                {{ adj.archivo.name|cut:"requisitos/" }}
+                                            </a>
+                                            <form method="post" action="{% url 'eliminar_adjunto' servicio.id adj.id %}" style="display:inline;" onsubmit="return confirm('¿Eliminar este adjunto?')">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-danger btn-sm p-1 lh-1" title="Eliminar adjunto">
+                                                    <i class="fa-solid fa-xmark"></i>
+                                                </button>
+                                            </form>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% else %}
+                                    <p class="text-muted small mb-2">Sin archivos adjuntos.</p>
+                                    {% endif %}
+
+                                    <form method="post" action="{% url 'agregar_adjunto' servicio.id r.id %}" enctype="multipart/form-data" class="adjunto-upload d-flex gap-1 align-items-center">
+                                        {% csrf_token %}
+                                        <input type="file" name="archivo" class="form-control form-control-sm"
+                                               accept=".pdf,.jpg,.jpeg,.png,.webp" required>
+                                        <button type="submit" class="btn btn-success btn-sm text-nowrap">
+                                            <i class="fa-solid fa-plus"></i> Subir
+                                        </button>
+                                    </form>
+                                </div>
+                            </details>
+                        </td>
+                        {% endif %}
+
                         <td>
                             <a href="{% url 'editar_requisito' servicio.id r.id %}" class="btn btn-warning btn-sm rounded-circle p-2">
                                 <i class="fa-solid fa-file-pen"></i>
@@ -72,10 +138,15 @@
                         </td>
                     </tr>
                     {% empty %}
-                    <tr><td colspan="6" class="text-center">No hay requisitos registrados.</td></tr>
+                    <tr>
+                        <td colspan="{% if config.plantilla_home_version == 3 %}8{% else %}7{% endif %}" class="text-center text-muted">
+                            No hay requisitos registrados.
+                        </td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            </div>
 
         </div>
     </div>

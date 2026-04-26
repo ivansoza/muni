@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/servicios/estilos_ac.css' %}">
+    <style>
+        .areas-v3-section {
+            min-height: calc(100vh - 220px);
+            padding: 2rem 1rem 3rem;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(12, 88, 120, 0.12) 0%, rgba(12, 88, 120, 0) 42%),
+                radial-gradient(circle at 90% 85%, rgba(191, 137, 0, 0.15) 0%, rgba(191, 137, 0, 0) 40%),
+                linear-gradient(180deg, #f6fafb 0%, #eef4f6 100%);
+        }
+
+        .areas-v3-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .areas-v3-title {
+            font-size: clamp(1.4rem, 1.1rem + 1.2vw, 2rem);
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: #12495f;
+            margin-bottom: 0.4rem;
+        }
+
+        .areas-v3-subtitle {
+            color: #4f6670;
+            margin-bottom: 0;
+        }
+
+        .areas-v3-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 992px) {
+            .areas-v3-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        .area-v3-card {
+            border: 1px solid #d6e3e8;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(2px);
+            min-height: 170px;
+            padding: 1.1rem 0.9rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 12px 24px rgba(21, 58, 70, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .area-v3-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 28px rgba(21, 58, 70, 0.14);
+        }
+
+        .area-v3-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .area-v3-icon-1 { background: linear-gradient(135deg, #0f7c90, #145f73); }
+        .area-v3-icon-2 { background: linear-gradient(135deg, #d17b0f, #a85f08); }
+        .area-v3-icon-3 { background: linear-gradient(135deg, #326c41, #245233); }
+        .area-v3-icon-4 { background: linear-gradient(135deg, #4e5f9d, #39467a); }
+        .area-v3-icon-5 { background: linear-gradient(135deg, #8e4c7f, #67305a); }
+        .area-v3-icon-6 { background: linear-gradient(135deg, #aa3f3f, #7d2c2c); }
+
+        .area-v3-name {
+            color: #173844;
+            font-weight: 600;
+            font-size: 0.98rem;
+            line-height: 1.35;
+            margin: 0;
+        }
+
+        .areas-v3-empty {
+            max-width: 780px;
+            margin: 0 auto;
+            text-align: center;
+            color: #607480;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px dashed #bdd0d8;
+            border-radius: 14px;
+            padding: 1.2rem;
+        }
+
+        .area-v3-card.is-selected {
+            border-color: #0f7c90;
+            box-shadow: 0 0 0 3px rgba(15, 124, 144, 0.15), 0 16px 28px rgba(21, 58, 70, 0.14);
+        }
+
+        @media (max-width: 768px) {
+            .areas-v3-section {
+                min-height: auto;
+                padding: 1.4rem 0.85rem 2rem;
+            }
+
+            .areas-v3-grid {
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
+            }
+
+            .area-v3-card {
+                min-height: 145px;
+                border-radius: 14px;
+            }
+        }
+    </style>
+{% endblock extra_css %}
+
+{% block content %}
+<div class="search-container">
+    <form method="GET" action="{% url 'homeServicios' %}" class="search-form">
+        <div class="input-group custom-search-bar">
+            <input type="text" class="form-control search-input" name="q" placeholder="¿Qué servicio o trámite buscas?" value="{{ query }}">
+            <button type="submit" class="btn search-btn">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+            <a href="{% url 'homeServicios' %}" class="btn reset-btn">
+                <i class="fas fa-sync-alt"></i> Restablecer
+            </a>
+        </div>
+    </form>
+</div>
+<div class="filter-container mt-3 mb-4">
+    <form method="GET" action="{% url 'homeServicios' %}" class="form-inline">
+        <label for="organismo" class="me-2">Filtrar por área:</label>
+        <select name="organismo" id="organismo" class="form-select w-auto d-inline-block me-2">
+            <option value="">Todos</option>
+            {% for org in organismos %}
+                <option value="{{ org.organismo__id }}" {% if org.organismo__id|stringformat:"s" == organismo %}selected{% endif %}>
+                    {{ org.organismo__nombre }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <input type="hidden" name="q" value="{{ query }}">
+        <button type="submit" class="btn search-btn">Aplicar filtro</button>
+    </form>
+</div>
+
+<section class="areas-v3-section" aria-label="Listado de áreas">
+    
+
+    <div class="areas-v3-grid">
+        {% for org in organismos %}
+            {% if org.organismo__id and org.organismo__nombre %}
+                <a
+                    href="{% url 'tramites_por_area' org.organismo__id %}"
+                    class="area-v3-card {% if org.organismo__id|stringformat:'s' == organismo %}is-selected{% endif %}"
+                    aria-label="Ver trámites de {{ org.organismo__nombre }}"
+                >
+                    <div class="area-v3-icon area-v3-icon-{% cycle '1' '2' '3' '4' '5' '6' %}">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <p class="area-v3-name">{{ org.organismo__nombre }}</p>
+                </a>
+            {% endif %}
+        {% empty %}
+            <div class="areas-v3-empty">
+                No hay áreas disponibles por ahora.
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock content %}
