@@ -657,24 +657,6 @@
                 <label for="nombre_completo">Nombre Completo</label>
                 <input type="text" class="form-control" id="nombre_completo" placeholder="Introduce el nombre completo del autor">
             </div>
-            <div class="form-group">
-                <label for="perfil">Perfil</label>
-                <input type="text" class="form-control" id="perfil" placeholder="Introduce el perfil del autor">
-            </div>
-            <div class="form-group">
-                <label for="trayectoria">Trayectoria</label>
-                <textarea class="form-control" id="trayectoria" rows="4" placeholder="Introduce la trayectoria del autor"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="fotografia">Fotografía</label>
-                <div class="custom-file-upload" onclick="document.getElementById('fotografia').click();">
-                    Seleccionar Fotografía
-                </div>
-                <input type="file" class="form-control-file ocultarImgen" id="fotografia" onchange="previewImage(event)">
-                <div id="imagePreviewContainer">
-                    <img id="imagePreview" class="image-preview" src="" alt="Vista previa de la imagen">
-                </div>
-            </div>
             
             <button type="submit" class="btn btn-primary btn-submit-category">Agregar Autor</button>
         </form>
@@ -775,17 +757,13 @@ window.onclick = function(event) {
         event.preventDefault();
         
         var nombre_completo = document.getElementById("nombre_completo").value;
-        var perfil = document.getElementById("perfil").value;
-        var trayectoria = document.getElementById("trayectoria").value;
-        var fotografia = document.getElementById("fotografia").files[0];
 
-        if (nombre_completo && perfil && trayectoria) {
+        if (nombre_completo) {
+            var modal = document.getElementById("autorModal");
+
             // Hacer la petición AJAX para crear el autor
             var formData = new FormData();
             formData.append('nombre_completo', nombre_completo);
-            formData.append('perfil', perfil);
-            formData.append('trayectoria', trayectoria);
-            formData.append('fotografia', fotografia);
             formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
 
             $.ajax({

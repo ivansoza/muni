@@ -9,15 +9,15 @@ class Categoria(models.Model):
     
 class Autor(models.Model):
     nombre_completo = models.CharField(max_length=300, verbose_name='Nombre completo')
-    perfil = models.CharField(max_length=225, verbose_name='Perfil del autor')
-    trayectoria = models.TextField()
-    fotografia = models.ImageField(upload_to='fotografias/', verbose_name='Fotografía del autor')
+    perfil = models.CharField(max_length=225, verbose_name='Perfil del autor', blank=True, null=True)
+    trayectoria = models.TextField(blank=True, null=True)
+    fotografia = models.ImageField(upload_to='fotografias/', verbose_name='Fotografía del autor', blank=True, null=True)
     def __str__(self):
-        return f"{self.nombre_completo} - {self.perfil}"
+        return f"{self.nombre_completo}"
 
 class Articulo(models.Model):
     titulo = models.CharField(max_length=255, verbose_name='Titulo del articulo')
-    abstract = models.TextField()
+    abstract = CKEditor5Field(blank=True, null=True)
     contenido = CKEditor5Field('Contenido', config_name='extends', blank=False, null=False)  
     imagen = models.ImageField(upload_to='habla_con_tus_hijos/imagenes/', verbose_name='Imagen principal')
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Categoría')  # Usamos ForeignKey en lugar de ManyToMany

@@ -17,11 +17,6 @@ class ArticuloForm(forms.ModelForm):
                 'placeholder': 'Introduce el título del artículo',
                 'class': 'form-control'
             }),
-            'abstract': forms.Textarea(attrs={
-                'placeholder': 'Escribe un resumen del artículo',
-                'class': 'form-control',
-                'rows': 4
-            }),
             'imagen': forms.ClearableFileInput(attrs={
                 'class': 'form-control-file'
             }),
@@ -61,6 +56,9 @@ class ArticuloForm(forms.ModelForm):
         contenido = CKEditor5Widget(
             attrs={"class": "django_ckeditor_5", "id": "id_contenido"}, config_name="extends"
         )
+        abstract = CKEditor5Widget(
+            attrs={"class": "django_ckeditor_5", "id": "id_abstract"}, config_name="extends"
+        )
 
     def clean_titulo(self):
         titulo = self.cleaned_data.get('titulo')
@@ -78,25 +76,13 @@ class ArticuloForm(forms.ModelForm):
 class AutorForm(forms.ModelForm):
     class Meta:
         model = Autor
-        fields = ['nombre_completo', 'perfil', 'trayectoria', 'fotografia']
+        fields = ['nombre_completo']
 
         widgets = {
             'nombre_completo': forms.TextInput(attrs={
                 'placeholder': 'Introduce el nombre completo del autor',
                 'class': 'form-control'
-            }),
-            'perfil': forms.TextInput(attrs={
-                'placeholder': 'Introduce el perfil del autor',
-                'class': 'form-control'
-            }),
-            'trayectoria': forms.Textarea(attrs={
-                'placeholder': 'Introduce la trayectoria del autor',
-                'class': 'form-control',
-                'rows': 4
-            }),
-            'fotografia': forms.ClearableFileInput(attrs={
-                'class': 'form-control-file'
-            }),
+            })
         }
 
 class VideoArticuloForm(forms.ModelForm):

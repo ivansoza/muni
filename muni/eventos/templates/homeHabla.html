@@ -108,6 +108,7 @@ button {
 /* Hero Section */
 .hero-section {
   margin-top: -56px;
+  margin-bottom: 0px;
   background: linear-gradient(to bottom, var(--color-primary-bg), var(--color-white));
 }
 
@@ -705,12 +706,7 @@ button {
           ¡Explora nuestras publicaciones!
         {% endif %}
       </p>
-      <div class="hero-buttons">
-        <a href="#" class="button button-primary">
-          <i data-feather="plus"></i>
-          Crea una sugerencia
-        </a>
-      </div>
+
     </div>
   </div>
 </section>
@@ -783,38 +779,44 @@ button {
         </div>
       </div>
     </div>
-
     <div class="posts-grid">
-      {% for articulo in articulos %}
-        <article class="post-card {% if forloop.counter > 6 %}hidden{% endif %}" data-categories="{{ articulo.categoria.nombre|lower }}">
-          <div class="post-card-image">
-            <img src="{{ articulo.imagen.url }}" alt="{{ articulo.titulo }}">
-            <div class="post-type-badge">
-              <i data-feather="file-text"></i>
-              <span>Artículo</span>
+  {% for articulo in articulos %}
+    <a href="{% url 'articuloHabla' articulo.id %}" class="post-card-link">
+      <article class="post-card {% if forloop.counter > 6 %}hidden{% endif %}" data-categories="{{ articulo.categoria.nombre|lower }}">
+        
+        <div class="post-card-image">
+          <img src="{{ articulo.imagen.url }}" alt="{{ articulo.titulo }}">
+          <div class="post-type-badge">
+            <i data-feather="file-text"></i>
+            <span>Artículo</span>
+          </div>
+        </div>
+
+        <div class="post-card-content">
+          <h3 class="post-card-title">
+            {{ articulo.titulo }}
+          </h3>
+
+          <p class="post-card-excerpt">
+            {{ articulo.abstract|safe  }}
+          </p>
+
+          <div class="post-card-meta">
+            <div class="post-meta-item">
+              <i data-feather="calendar"></i>
+              <span>{{ articulo.fecha_publicacion|date:"j \\d\\e F, Y" }}</span>
+            </div>
+            <div class="post-meta-item">
+              <i data-feather="message-square"></i>
+              <span>{{ articulo.comentarios.count }} comentarios</span>
             </div>
           </div>
-          <div class="post-card-content">
-            <h3 class="post-card-title">
-              <a href="{% url 'articuloHabla' articulo.id %}">{{ articulo.titulo }}</a>
-            </h3>
-            <p class="post-card-excerpt">
-              {{ articulo.abstract }}
-            </p>
-            <div class="post-card-meta">
-              <div class="post-meta-item">
-                <i data-feather="calendar"></i>
-                <span>{{ articulo.fecha_publicacion|date:"j \\d\\e F, Y" }}</span>
-              </div>
-              <div class="post-meta-item">
-                <i data-feather="message-square"></i>
-                <span>{{ articulo.comentarios.count }} comentarios</span>
-              </div>
-            </div>
-          </div>
-        </article>
-      {% endfor %}
-    </div>
+        </div>
+
+      </article>
+    </a>
+  {% endfor %}
+</div>
 
     <div class="load-more-container2">
       <button id="loadMoreButton" class="button button-outline load-more-button">Cargar Más</button>

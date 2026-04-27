@@ -4007,17 +4007,10 @@ def agregar_categoria_habla(request):
 def agregar_autor(request):
     if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         nombre_completo = request.POST.get('nombre_completo', '').strip()
-        perfil = request.POST.get('perfil', '').strip()
-        trayectoria = request.POST.get('trayectoria', '').strip()
-        fotografia = request.FILES.get('fotografia', None)
-
-        if nombre_completo and perfil and trayectoria:
+        if nombre_completo:
             # Crear un nuevo autor
             autor = Autor.objects.create(
                 nombre_completo=nombre_completo,
-                perfil=perfil,
-                trayectoria=trayectoria,
-                fotografia=fotografia
             )
             return JsonResponse({
                 'success': True,
