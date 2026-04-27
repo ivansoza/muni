@@ -93,12 +93,14 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 12px 18px;
+        gap: 12px;
+        padding: 11px 16px;
         background: linear-gradient(to right, #ffffff, #f4f4f4);
         border-left: 5px solid var(--color-primario);
         border-radius: 10px;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        min-width: 0;
     }
 
     .archivo-item:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
@@ -109,32 +111,42 @@
         gap: 12px;
         color: #333;
         font-size: 15px;
+        min-width: 0;
+        flex: 1;
     }
 
-    .icon { font-size: 22px; color: #555; }
+    .icon { font-size: 22px; color: #555; flex-shrink: 0; }
 
-    .archivo-info a {
-        color: #1d3557;
-        text-decoration: none;
+    .archivo-nombre {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
         font-weight: 500;
+        color: #1d3557;
     }
-    .archivo-info a:hover { text-decoration: underline; }
 
-    .download-btn {
-        color: var(--color-primario);
+    .view-btn {
+        flex-shrink: 0;
+        background-color: var(--color-primario);
+        color: #fff;
         border: none;
-        padding: 8px 14px;
-        font-size: 14px;
-        font-weight: bold;
+        padding: 7px 14px;
+        font-size: 13px;
+        font-weight: 600;
         border-radius: 6px;
         cursor: pointer;
-        transition: background-color 0.3s;
-        text-decoration: none;
+        transition: background-color 0.25s, transform 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        white-space: nowrap;
     }
-    .download-btn:hover { background-color: var(--color-secundario); color: white; }
+    .view-btn:hover { background-color: var(--color-secundario); transform: translateY(-1px); }
 
     .buscador-input {
         width: 500px;
+        max-width: 100%;
         padding: 10px 15px;
         font-size: 15px;
         border: 2px solid #ccc;
@@ -147,7 +159,80 @@
         border-color: var(--color-primario);
         box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
     }
-    .buscador-input::placeholder { padding-left: 20px; color: #aaa; }
+    .buscador-input::placeholder { color: #aaa; }
+
+    /* ── Modal visor ── */
+    .visor-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.72);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+    .visor-overlay.active { display: flex; }
+
+    .visor-modal {
+        background: #fff;
+        border-radius: 10px;
+        width: 100%;
+        max-width: 900px;
+        height: 90vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    .visor-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        background: var(--color-primario);
+        color: #fff;
+        flex-shrink: 0;
+        min-width: 0;
+    }
+    .visor-header h5 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+        flex: 1;
+    }
+    .visor-close {
+        flex-shrink: 0;
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: #fff;
+        font-size: 18px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+    }
+    .visor-close:hover { background: rgba(255,255,255,0.35); }
+    .visor-body { flex: 1; overflow: hidden; }
+    .visor-body iframe { width: 100%; height: 100%; border: none; display: block; }
+
+    @media (max-width: 576px) {
+        .archivo-item { flex-direction: column; align-items: flex-start; gap: 8px; }
+        .archivo-info { width: 100%; }
+        .view-btn { width: 100%; justify-content: center; }
+        .visor-overlay { padding: 0; align-items: flex-end; }
+        .visor-modal { width: 100%; max-width: 100%; height: 92vh; border-radius: 12px 12px 0 0; }
+    }
 </style>
 
 <div class="container">
@@ -198,13 +283,13 @@
                                             <i class="icon fas fa-file" style="color:#7f8c8d;"></i>
                                         {% endif %}
                                     {% endwith %}
-                                    <a href="{{ archivo.archivo.url }}" target="_blank">
+                                    <span class="archivo-nombre" title="{{ archivo.descripcion|default:archivo.archivo.name }}">
                                         {{ archivo.descripcion|default:archivo.archivo.name|cut:"media/" }}
-                                    </a>
+                                    </span>
                                 </div>
-                                <a href="{{ archivo.archivo.url }}" class="download-btn" download>
-                                    <i class="fa-solid fa-download"></i> Descargar
-                                </a>
+                                <button class="view-btn" onclick="abrirVisor('{{ archivo.archivo.url }}', '{{ archivo.descripcion|default:archivo.archivo.name }}')">
+                                    <i class="fa-solid fa-eye"></i> Ver
+                                </button>
                             </div>
                         {% empty %}
                             <p style="color:#94a3b8; font-size:.875rem; padding:.5rem 0;">
@@ -224,7 +309,30 @@
     </div>
 </div>
 
+<!-- Modal visor de documentos -->
+<div class="visor-overlay" id="visorOverlay" onclick="cerrarVisor(event)">
+    <div class="visor-modal">
+        <div class="visor-header">
+            <h5 id="visorTitulo"></h5>
+            <button class="visor-close" onclick="cerrarVisor(null, true)">&#x2715;</button>
+        </div>
+        <div class="visor-body">
+            <iframe id="visorFrame" src="about:blank" title="Documento" style="display:none;"></iframe>
+            <div id="visorCanvas"
+                 style="display:none; overflow-y:auto; height:100%; background:#525659; padding:12px; box-sizing:border-box; text-align:center;"
+                 oncontextmenu="return false;"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    let blobActual   = null;
+    let pdfDocActual = null;
+
     function toggleVisibility(id) {
         const body   = document.getElementById('body-' + id);
         const button = body.previousElementSibling.querySelector('.toggle-btn');
@@ -236,6 +344,95 @@
             button.textContent = '+';
         }
     }
+
+    async function renderizarPagina(pdfDoc, numPagina, contenedor) {
+        const pagina   = await pdfDoc.getPage(numPagina);
+        const anchoCont = contenedor.clientWidth - 24;
+        const vpBase   = pagina.getViewport({ scale: 1 });
+        const escala   = Math.max(1, anchoCont / vpBase.width);
+        const viewport = pagina.getViewport({ scale: escala });
+
+        const canvas       = document.createElement('canvas');
+        canvas.width       = viewport.width;
+        canvas.height      = viewport.height;
+        canvas.style.display      = 'block';
+        canvas.style.margin       = '0 auto 10px';
+        canvas.style.maxWidth     = '100%';
+        canvas.style.borderRadius = '4px';
+        canvas.style.boxShadow    = '0 2px 8px rgba(0,0,0,0.4)';
+        canvas.oncontextmenu = function() { return false; };
+        contenedor.appendChild(canvas);
+
+        await pagina.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+    }
+
+    async function abrirVisor(url, titulo) {
+        const overlay    = document.getElementById('visorOverlay');
+        const frame      = document.getElementById('visorFrame');
+        const canvasCont = document.getElementById('visorCanvas');
+        const tituloEl   = document.getElementById('visorTitulo');
+
+        tituloEl.textContent = titulo;
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+
+        const esPDF = url.toLowerCase().split('?')[0].endsWith('.pdf');
+
+        if (esPDF) {
+            frame.style.display      = 'none';
+            canvasCont.style.display = 'block';
+            canvasCont.innerHTML     = '<p style="color:#ccc;padding:30px;">Cargando documento...</p>';
+
+            try {
+                const resp        = await fetch(url);
+                const arrayBuffer = await resp.arrayBuffer();
+
+                if (pdfDocActual) { pdfDocActual.destroy(); pdfDocActual = null; }
+                pdfDocActual = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+                canvasCont.innerHTML = '';
+                for (let i = 1; i <= pdfDocActual.numPages; i++) {
+                    await renderizarPagina(pdfDocActual, i, canvasCont);
+                }
+            } catch (e) {
+                canvasCont.innerHTML = '<p style="color:#f88;padding:30px;">No se pudo cargar el documento.</p>';
+            }
+        } else {
+            canvasCont.style.display = 'none';
+            frame.style.display      = 'block';
+            frame.src = 'about:blank';
+
+            fetch(url)
+                .then(function(r) { return r.blob(); })
+                .then(function(blob) {
+                    if (blobActual) URL.revokeObjectURL(blobActual);
+                    blobActual = URL.createObjectURL(blob);
+                    frame.src  = blobActual;
+                })
+                .catch(function() {
+                    frame.style.display = 'none';
+                    canvasCont.style.display = 'block';
+                    canvasCont.innerHTML = '<p style="color:#f88;padding:30px;">No se pudo cargar el archivo.</p>';
+                });
+        }
+    }
+
+    function cerrarVisor(event, forzar) {
+        if (forzar || (event && event.target === document.getElementById('visorOverlay'))) {
+            document.getElementById('visorOverlay').classList.remove('active');
+            document.getElementById('visorFrame').src           = 'about:blank';
+            document.getElementById('visorFrame').style.display = 'none';
+            document.getElementById('visorCanvas').innerHTML    = '';
+            document.getElementById('visorCanvas').style.display = 'none';
+            document.body.style.overflow = '';
+            if (blobActual)   { URL.revokeObjectURL(blobActual); blobActual = null; }
+            if (pdfDocActual) { pdfDocActual.destroy(); pdfDocActual = null; }
+        }
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') cerrarVisor(null, true);
+    });
 
     document.getElementById('buscadorSecciones').addEventListener('input', function () {
         const filtro   = this.value.toLowerCase();
