@@ -453,35 +453,6 @@
                         {% endif %}
                     {% endif %}
 
-                    <!-- REPORTES -->
-                    {% if municipio.secciones_hab and municipio.secciones_hab.reportes %}
-                        {% if secciones_reportes %}
-                            <li class="nav-item dropdown {% if sidebar == 'reportes' %}active{% endif %}">
-                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
-                                   data-bs-toggle="dropdown" aria-expanded="false">
-                                    Reportes
-                                    <i class="fa fa-chevron-down ms-1 dropdown-icon"></i>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'homeReportes' %}">Reportes</a>
-                                    </li>
-                                    {% for seccion in secciones_reportes %}
-                                        <li>
-                                            <a class="dropdown-item" href="{% url 'seccionplus_detail' seccion.pk seccion.slug %}">
-                                                {{ seccion.nombre }}
-                                            </a>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </li>
-                        {% else %}
-                            <li class="nav-item {% if sidebar == 'reportes' %}active{% endif %}">
-                                <a class="nav-link" href="{% url 'homeReportes' %}">Reportes</a>
-                            </li>
-                        {% endif %}
-                    {% endif %}
-
                     <!-- Dropdown "Más" -->
                     <li class="nav-item dropdown {% if sidebar == 'mas' %}active{% endif %}">
                         <a
@@ -515,6 +486,13 @@
                                 {% if municipio.secciones_hab and municipio.secciones_hab.sesion_cabildo %}
                                 <li>
                                     <a class="dropdown-item" href="{% url 'homeSesionesCabildo' %}">Acuerdos de Sesiones de Cabildo</a>
+                                </li>
+                                {% endif %}
+
+                                <!-- Reportes -->
+                                {% if municipio.secciones_hab and municipio.secciones_hab.reportes %}
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'homeReportes' %}">Reportes</a>
                                 </li>
                                 {% endif %}
 
