@@ -3881,6 +3881,8 @@ class HablaHome(TemplateView, LoginRequiredMixin):
         }
         context['regreso_url'] = reverse('dashboard')
         context['sidebar'] = 'habla'
+        context['secciones_historia'] = SeccionHistoria.objects.filter(activo=True).order_by('orden')
+
         return context
     
 class ArticuloCreateView(CreateView):
@@ -4180,3 +4182,89 @@ class HomeSesionesCabildo(TemplateView):
         context['sidebar'] = 'sesion_cabildo'
         context['sesiones'] = SesionCabildo.objects.all().order_by('fecha_creacion').prefetch_related('archivos')
         return context
+    
+# ── Lista de secciones ───────────────────────────────────
+def historia_seccion_lista(request):
+    """
+    Muestra todas las secciones de Historia en tarjetas.
+    También calcula los rubros que todavía no tienen sección.
+    """
+    secciones = SeccionHistoria.objects.all().order_by('orden')
+ 
+    # Rubros que ya tienen sección registrada
+    rubros_usados = set(secciones.values_list('rubro', flat=True))
+ 
+    # Rubros pendientes (sin sección aún)
+    rubros_pendientes = [
+        (key, label)
+        for key, label in SeccionHistoria.RUBROS
+        if key not in rubros_usados
+    ]
+ 
+    return render(request, 'admin_historia_secciones.html', {
+        'secciones': secciones,
+        'rubros_pendientes': rubros_pendientes,
+    })
+ 
+from eventos.models import SeccionHistoria
+from eventos.forms import SeccionHistoriaForm
+# ── Crear sección ─────────────────────────────────────────
+def historia_seccion_crear(request):
+    """
+    Formulario para crear una nueva sección.
+    Acepta ?rubro=<key> para preseleccionar el rubro desde la lista.
+    """
+    if request.method == 'POST':
+        form = SeccionHistoriaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Sección creada correctamente.')
+            return redirect('historia_seccion_lista')
+    else:
+        form = SeccionHistoriaForm()
+ 
+    return render(request, 'hablaHijos/admin_historia_form.html', {
+        'form': form,
+        'seccion': None,     # None indica modo "crear"
+    })
+ 
+ 
+# ── Editar sección ────────────────────────────────────────
+def historia_seccion_editar(request, pk):
+    seccion = get_object_or_404(SeccionHistoria, pk=pk)
+ 
+    if request.method == 'POST':
+        form = SeccionHistoriaForm(request.POST, instance=seccion)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Sección "{seccion.get_rubro_display()}" actualizada.')
+            return redirect('historia_seccion_lista')
+    else:
+        form = SeccionHistoriaForm(instance=seccion)
+ 
+    return render(request, 'hablaHijos/admin_historia_form.html', {
+        'form': form,
+        'seccion': seccion,   # Instancia indica modo "editar"
+    })
+ 
+ 
+# ── Activar / Desactivar ──────────────────────────────────
+def historia_seccion_toggle(request, pk):
+    """Alterna el estado activo/inactivo de una sección."""
+    if request.method == 'POST':
+        seccion = get_object_or_404(SeccionHistoria, pk=pk)
+        seccion.activo = not seccion.activo
+        seccion.save(update_fields=['activo'])
+        estado = 'activada' if seccion.activo else 'desactivada'
+        messages.success(request, f'Sección {estado} correctamente.')
+    return redirect('historia_seccion_lista')
+ 
+ 
+# ── Eliminar sección ──────────────────────────────────────
+def historia_seccion_eliminar(request, pk):
+    if request.method == 'POST':
+        seccion = get_object_or_404(SeccionHistoria, pk=pk)
+        nombre = seccion.get_rubro_display()
+        seccion.delete()
+        messages.success(request, f'Sección "{nombre}" eliminada.')
+    return redirect('historia_seccion_lista')

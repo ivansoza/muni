@@ -6,6 +6,7 @@ import random
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.cache import cache
+from .models import SeccionHistoria
 
 # Create your views here.
 class HomeEventosView(TemplateView):
@@ -44,6 +45,7 @@ class HomeHablaView(TemplateView):
 
         # Obtener los artículos más recientes (excluyendo el destacado si existe)
         context['articulos_recientes'] = Articulo.objects.exclude(id=context['articulo_destacado'].id if context['articulo_destacado'] else None).order_by('-fecha_publicacion')
+        context['secciones_historia']= SeccionHistoria.objects.filter(activo=True).order_by('orden')
 
         # Obtener todas las categorías disponibles
         categorias = Categoria.objects.all()

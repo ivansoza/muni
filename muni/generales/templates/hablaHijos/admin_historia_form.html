@@ -1,0 +1,450 @@
+{% extends "baseTemplate.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+{% block header %}
+{{ form.media }}
+{% endblock %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+  .form-historia-wrapper {
+    max-width: 1160px;
+    margin: 0 auto;
+  }
+
+  /* Encabezado de la página */
+  .form-historia-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+  }
+
+  .form-historia-header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+  }
+
+  .form-historia-header p {
+    color: #6b7280;
+    margin: 4px 0 0;
+    font-size: 0.9rem;
+  }
+
+  /* Tarjeta contenedora del formulario */
+  .form-historia-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+
+  /* Grupos de campos */
+  .campo-grupo {
+    margin-bottom: 22px;
+  }
+
+  .campo-grupo label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+  }
+
+  .campo-grupo .campo-ayuda {
+    font-size: 0.78rem;
+    color: #9ca3af;
+    margin-top: 4px;
+  }
+
+  /* Inputs base */
+  .campo-grupo input[type="text"],
+  .campo-grupo input[type="number"],
+  .campo-grupo select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: #1f2937;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  .campo-grupo input:focus,
+  .campo-grupo select:focus {
+    border-color: #3A6284;
+    box-shadow: 0 0 0 3px rgba(58, 98, 132, 0.12);
+  }
+
+  /* Checkbox activo */
+  .campo-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f9fafb;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .campo-check input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #3A6284;
+    cursor: pointer;
+  }
+
+  .campo-check span {
+    font-size: 0.875rem;
+    color: #374151;
+    font-weight: 500;
+  }
+
+  /* Grilla de 2 columnas para campos cortos */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  @media (max-width: 600px) {
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+
+  /* Separador de sección */
+  .form-section-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+    margin: 28px 0 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  /* Previsualización del icono */
+  .icono-preview {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 6px 14px;
+    background: #eff6ff;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    color: #1d4ed8;
+  }
+
+  /* Errores */
+  .campo-error {
+    font-size: 0.78rem;
+    color: #dc2626;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Botones de acción */
+  .form-historia-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+
+  .btn-guardar {
+    background: linear-gradient(90deg, #3A6284 0%, #28455E 100%);
+    color: #fff;
+    border: none;
+    padding: 11px 28px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: opacity 0.2s;
+  }
+
+  .btn-guardar:hover { opacity: 0.88; }
+
+  .btn-cancelar {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    padding: 11px 24px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+  }
+
+  .btn-cancelar:hover { background: #e2e8f0; text-decoration: none; }
+
+  /* Tabla de íconos sugeridos */
+  .iconos-sugeridos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .icono-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    color: #374151;
+    cursor: pointer;
+    background: #f9fafb;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .icono-chip:hover,
+  .icono-chip.seleccionado {
+    border-color: #3A6284;
+    background: #eff6ff;
+    color: #3A6284;
+  }
+
+  /* CKEditor wrapper */
+  .ck-editor-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  /* Forzar que CKEditor ocupe el ancho completo */
+  .django-ckeditor-widget,
+  .ck-editor,
+  .ck-editor__main,
+  .ck-editor__editable {
+    width: 100% !important;
+  }
+</style>
+
+<div class="container-fluid">
+<div class="form-historia-wrapper">
+
+  <!-- Encabezado -->
+  <div class="form-historia-header">
+    <div>
+      <br>
+      <h1>
+        {% if seccion %}
+          <i class="fas fa-pen" style="color:#3A6284; font-size:1.2rem;"></i>
+          Editar sección: {{ seccion.get_rubro_display }}
+        {% else %}
+          <i class="fas fa-plus-circle" style="color:#3A6284; font-size:1.2rem;"></i>
+          Nueva sección de Historia
+        {% endif %}
+      </h1>
+      <p>Completa los campos y usa el editor para agregar el contenido de esta sección.</p>
+    </div>
+    <a href="{% url 'historia_seccion_lista' %}" class="btn-cancelar">
+      <i class="fas fa-arrow-left"></i> Volver
+    </a>
+  </div>
+
+  <!-- Formulario -->
+  <div class="form-historia-card">
+    <form method="post" id="formHistoria">
+      {% csrf_token %}
+
+      <!-- ── Identificación ── -->
+      <div class="form-section-label">Identificación de la sección</div>
+
+      <div class="grid-2">
+        <!-- Rubro -->
+        <div class="campo-grupo">
+          <label for="id_rubro"><i class="fas fa-tag" style="color:#3A6284;"></i> Rubro</label>
+          {{ form.rubro }}
+          {% if form.rubro.errors %}
+            <p class="campo-error"><i class="fas fa-exclamation-circle"></i> {{ form.rubro.errors|join:", " }}</p>
+          {% endif %}
+          <p class="campo-ayuda">Cada rubro puede tener solo una sección.</p>
+        </div>
+
+        <!-- Orden -->
+        <div class="campo-grupo">
+          <label for="id_orden"><i class="fas fa-sort-numeric-up-alt" style="color:#3A6284;"></i> Orden en el menú</label>
+          {{ form.orden }}
+          {% if form.orden.errors %}
+            <p class="campo-error"><i class="fas fa-exclamation-circle"></i> {{ form.orden.errors|join:", " }}</p>
+          {% endif %}
+          <p class="campo-ayuda">Número menor = aparece primero en el menú lateral.</p>
+        </div>
+      </div>
+
+      <!-- Título -->
+      <div class="campo-grupo">
+        <label for="id_titulo"><i class="fas fa-heading" style="color:#3A6284;"></i> Título visible</label>
+        {{ form.titulo }}
+        {% if form.titulo.errors %}
+          <p class="campo-error"><i class="fas fa-exclamation-circle"></i> {{ form.titulo.errors|join:", " }}</p>
+        {% endif %}
+        <p class="campo-ayuda">Este título aparecerá como encabezado del panel de contenido.</p>
+      </div>
+
+      <!-- ── Icono ── -->
+      <div class="form-section-label">Icono (Feather Icons)</div>
+
+      <div class="campo-grupo">
+        <label for="id_icono"><i class="fas fa-icons" style="color:#3A6284;"></i> Nombre del icono</label>
+        {{ form.icono }}
+        {% if form.icono.errors %}
+          <p class="campo-error"><i class="fas fa-exclamation-circle"></i> {{ form.icono.errors|join:", " }}</p>
+        {% endif %}
+        <p class="campo-ayuda">
+          Escribe el nombre del icono de
+          <a href="https://feathericons.com/" target="_blank" rel="noopener">Feather Icons</a>
+          (ej: <code>book-open</code>, <code>map-pin</code>, <code>users</code>, <code>flag</code>).
+        </p>
+
+        <!-- Chips de íconos sugeridos -->
+        <div class="iconos-sugeridos" id="iconosSugeridos">
+          <span class="icono-chip" data-icono="book-open">book-open</span>
+          <span class="icono-chip" data-icono="map-pin">map-pin</span>
+          <span class="icono-chip" data-icono="users">users</span>
+          <span class="icono-chip" data-icono="flag">flag</span>
+          <span class="icono-chip" data-icono="clock">clock</span>
+          <span class="icono-chip" data-icono="home">home</span>
+          <span class="icono-chip" data-icono="star">star</span>
+          <span class="icono-chip" data-icono="camera">camera</span>
+          <span class="icono-chip" data-icono="briefcase">briefcase</span>
+          <span class="icono-chip" data-icono="award">award</span>
+          <span class="icono-chip" data-icono="anchor">anchor</span>
+          <span class="icono-chip" data-icono="compass">compass</span>
+        </div>
+      </div>
+
+      <!-- ── Visibilidad ── -->
+      <div class="form-section-label">Visibilidad</div>
+
+      <div class="campo-grupo">
+        <label class="campo-check" for="id_activo">
+          {{ form.activo }}
+          <span>Sección activa (visible en el sitio público)</span>
+        </label>
+        {% if form.activo.errors %}
+          <p class="campo-error"><i class="fas fa-exclamation-circle"></i> {{ form.activo.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+
+      <!-- ── Contenido ── -->
+      <div class="form-section-label">Contenido</div>
+
+      <div class="campo-grupo">
+        <span class="ck-editor-label">
+          <i class="fas fa-align-left" style="color:#3A6284;"></i>
+          Contenido de la sección
+        </span>
+        {{ form.contenido }}
+        {% if form.contenido.errors %}
+          <p class="campo-error"><i class="fas fa-exclamation-circle"></i> {{ form.contenido.errors|join:", " }}</p>
+        {% endif %}
+        <p class="campo-ayuda">
+          Usa el editor para dar formato al texto: títulos, listas, tablas, imágenes, citas, etc.
+        </p>
+      </div>
+
+      <!-- Errores generales del formulario -->
+      {% if form.non_field_errors %}
+      <div style="background:#fef2f2; border:1px solid #fca5a5; border-radius:10px; padding:12px 16px; margin-bottom:16px; color:#991b1b; font-size:0.875rem;">
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ form.non_field_errors|join:", " }}
+      </div>
+      {% endif %}
+
+      <!-- Botones -->
+      <div class="form-historia-actions">
+        <a href="{% url 'historia_seccion_lista' %}" class="btn-cancelar">
+          <i class="fas fa-times"></i> Cancelar
+        </a>
+        <button type="submit" class="btn-guardar">
+          <i class="fas fa-save"></i>
+          {% if seccion %}Guardar cambios{% else %}Crear sección{% endif %}
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+</div>
+</div>
+<br>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const inputIcono = document.getElementById("id_icono");
+  const chips = document.querySelectorAll(".icono-chip");
+
+  /* ── Marcar el chip activo al cargar (modo edición) ── */
+  if (inputIcono && inputIcono.value) {
+    chips.forEach(chip => {
+      if (chip.dataset.icono === inputIcono.value.trim()) {
+        chip.classList.add("seleccionado");
+      }
+    });
+  }
+
+  /* ── Clic en chip → rellena el input ── */
+  chips.forEach(chip => {
+    chip.addEventListener("click", function () {
+      chips.forEach(c => c.classList.remove("seleccionado"));
+      this.classList.add("seleccionado");
+      if (inputIcono) inputIcono.value = this.dataset.icono;
+    });
+  });
+
+  /* ── Preseleccionar rubro desde la URL ── */
+  const params = new URLSearchParams(window.location.search);
+  const rubroParam = params.get("rubro");
+  const selectRubro = document.getElementById("id_rubro");
+  if (rubroParam && selectRubro && !selectRubro.value) {
+    selectRubro.value = rubroParam;
+  }
+
+  /* ── Estilizar los campos del formulario de Django ── */
+  const inputs = document.querySelectorAll(
+    '#formHistoria input[type="text"], #formHistoria input[type="number"], #formHistoria select'
+  );
+  inputs.forEach(el => {
+    el.style.width = "100%";
+    el.style.padding = "10px 14px";
+    el.style.border = "1px solid #d1d5db";
+    el.style.borderRadius = "10px";
+    el.style.fontSize = "0.9rem";
+    el.style.outline = "none";
+  });
+
+});
+</script>
+
+{% endblock %}

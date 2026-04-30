@@ -120,3 +120,66 @@ class VideoArticulo(models.Model):
 
     def __str__(self):
         return f'{self.titulo or "Video"} - {self.articulo.titulo}'
+    
+class SeccionHistoria(models.Model):
+    """
+    Modelo para las secciones de Historia del municipio.
+    Cada instancia representa un apartado (Nomenclatura, Historia, Personajes Ilustres, etc.)
+    """
+ 
+    RUBROS = [
+        ('nomenclatura', 'Nomenclatura'),
+        ('historia', 'Historia'),
+        ('personajes_ilustres', 'Personajes Ilustres'),
+        ('cronologia_hechos', 'Cronología de Hechos Históricos'),
+        ('medio_fisico', 'Medio Físico'),
+        ('atractivos_turisticos', 'Atractivos Turísticos'),
+        ('gobierno', 'Gobierno'),
+        ('cronologia_presidentes', 'Cronología de Presidentes'),
+    ]
+ 
+    rubro = models.CharField(
+        max_length=50,
+        choices=RUBROS,
+        unique=True,
+        verbose_name='Rubro'
+    )
+    titulo = models.CharField(
+        max_length=200,
+        verbose_name='Título',
+        help_text='Título que se mostrará en el panel de contenido'
+    )
+    icono = models.CharField(
+        max_length=50,
+        default='book-open',
+        verbose_name='Icono (Feather Icons)',
+        help_text='Nombre del icono de Feather Icons (ej: book-open, map-pin, users)'
+    )
+    contenido = CKEditor5Field(
+        'Contenido',
+        config_name='extends',
+        blank=False,
+        null=False
+    )
+    orden = models.PositiveIntegerField(
+        default=0,
+        verbose_name='Orden de aparición',
+        help_text='Número para ordenar las secciones en el menú lateral'
+    )
+    activo = models.BooleanField(
+        default=True,
+        verbose_name='Activo',
+        help_text='Desactiva para ocultar esta sección sin eliminarla'
+    )
+    fecha_actualizacion = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Última actualización'
+    )
+ 
+    class Meta:
+        verbose_name = 'Sección de Historia'
+        verbose_name_plural = 'Secciones de Historia'
+        ordering = ['orden']
+ 
+    def __str__(self):
+        return self.get_rubro_display()
