@@ -205,4 +205,9 @@ urlpatterns = [
     path('generales/sesiones-cabildo/crear/', SesionCabildoCreateView.as_view(), name='crear_sesion_cabildo'),
     path('generales/sesiones-cabildo/<int:pk>/editar/', SesionCabildoUpdateView.as_view(), name='editar_sesion_cabildo'),
     path('generales/sesiones-cabildo/<int:pk>/eliminar/', views.eliminar_sesion_cabildo, name='eliminar_sesion_cabildo'),
+    path('admin-historia/',               views.historia_seccion_lista,    name='historia_seccion_lista'),
+    path('admin-historia/nueva/',         views.historia_seccion_crear,    name='historia_seccion_crear'),
+    path('admin-historia/<int:pk>/editar/',    views.historia_seccion_editar,   name='historia_seccion_editar'),
+    path('admin-historia/<int:pk>/toggle/',    views.historia_seccion_toggle,   name='historia_seccion_toggle'),
+    path('admin-historia/<int:pk>/eliminar/',  views.historia_seccion_eliminar, name='historia_seccion_eliminar'),
 ]

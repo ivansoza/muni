@@ -114,13 +114,13 @@ button {
 
 @media (min-width: 768px) {
   .hero-section {
-    padding: 1rem 0; /* Cambié de 6rem a 2rem */
+    padding: 1rem 0;
   }
 }
 
 @media (min-width: 1024px) {
   .hero-section {
-    padding: 2rem 0; /* Cambié de 8rem a 4rem */
+    padding: 2rem 0;
   }
 }
 
@@ -679,6 +679,356 @@ button {
     from { opacity: 0; transform: scale(0.9); }
     to { opacity: 1; transform: scale(1); }
   }
+
+/* ═══════════════════════════════════════════
+   HISTORIA ENCICLOPEDIA — estilos
+   ═══════════════════════════════════════════ */
+
+/* Botones para alternar vistas */
+.historia-toggle-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.5rem 0 0.5rem;
+}
+
+.historia-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.25rem;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid var(--color-border);
+  background-color: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.historia-toggle-btn svg {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.historia-toggle-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.historia-toggle-btn.active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+/* Vista enciclopedia */
+.historia-enciclopedia-section {
+  padding: 2rem 0 3rem;
+}
+
+.historia-enciclopedia-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (min-width: 768px) {
+  .historia-enciclopedia-layout {
+    grid-template-columns: 260px 1fr;
+  }
+}
+
+/* Sidebar de navegación */
+.historia-sidebar {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background-color: var(--color-white);
+  position: sticky;
+  top: 80px;
+}
+
+.historia-sidebar-header {
+  padding: 0.875rem 1rem;
+  background-color: var(--color-gray-100);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.historia-sidebar-header h3 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-light);
+}
+
+.historia-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.historia-nav-item {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.historia-nav-item:last-child {
+  border-bottom: none;
+}
+
+.historia-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+  text-align: left;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.historia-nav-btn svg {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: var(--color-text-light);
+  transition: color 0.15s;
+}
+
+.historia-nav-btn:hover {
+  background-color: var(--color-gray-50);
+  color: var(--color-primary);
+}
+
+.historia-nav-btn:hover svg {
+  color: var(--color-primary);
+}
+
+.historia-nav-btn.active {
+  background-color: var(--color-primary-bg);
+  color: var(--color-primary);
+  font-weight: 600;
+  border-left: 3px solid var(--color-primary);
+}
+
+.historia-nav-btn.active svg {
+  color: var(--color-primary);
+}
+
+/* Panel de contenido */
+.historia-content-panel {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-white);
+  overflow: hidden;
+  min-height: 400px;
+}
+
+.historia-content-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-gray-50);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.historia-content-header-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius);
+  background-color: var(--color-primary-light);
+  flex-shrink: 0;
+}
+
+.historia-content-header-icon svg {
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-primary);
+}
+
+.historia-content-header h2 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+/* Cada sección de contenido */
+.historia-seccion {
+  display: none;
+  padding: 1.5rem;
+  animation: fadeInSection 0.25s ease;
+}
+
+.historia-seccion.active {
+  display: block;
+}
+
+@keyframes fadeInSection {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilos para el contenido de CKEditor */
+.historia-ckeditor-content {
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  color: var(--color-text);
+}
+
+.historia-ckeditor-content h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 1.5rem 0 0.75rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.historia-ckeditor-content h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 1.25rem 0 0.5rem;
+}
+
+.historia-ckeditor-content p {
+  margin-bottom: 1rem;
+  text-align: justify;
+}
+
+.historia-ckeditor-content ul,
+.historia-ckeditor-content ol {
+  list-style: revert;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.historia-ckeditor-content li {
+  margin-bottom: 0.35rem;
+}
+
+.historia-ckeditor-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+}
+
+.historia-ckeditor-content table th {
+  background-color: var(--color-gray-100);
+  font-weight: 600;
+  padding: 0.6rem 0.875rem;
+  border: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.historia-ckeditor-content table td {
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--color-border);
+}
+
+.historia-ckeditor-content table tr:nth-child(even) td {
+  background-color: var(--color-gray-50);
+}
+
+.historia-ckeditor-content blockquote {
+  border-left: 4px solid var(--color-primary);
+  padding: 0.5rem 1rem;
+  margin: 1rem 0;
+  background-color: var(--color-gray-50);
+  color: var(--color-text-light);
+  font-style: italic;
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.historia-ckeditor-content img {
+  max-width: 100%;
+  border-radius: var(--radius);
+  margin: 0.75rem 0;
+}
+
+.historia-ckeditor-content a {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+/* Estado vacío */
+.historia-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  color: var(--color-text-light);
+  text-align: center;
+  gap: 0.75rem;
+}
+
+.historia-empty-state svg {
+  width: 2.5rem;
+  height: 2.5rem;
+  opacity: 0.4;
+}
+
+.historia-empty-state p {
+  font-size: 0.875rem;
+}
+
+/* Mobile: sidebar colapsable */
+.historia-sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.historia-sidebar-toggle svg {
+  width: 1rem;
+  height: 1rem;
+  transition: transform 0.2s;
+}
+
+.historia-sidebar-toggle.open svg {
+  transform: rotate(180deg);
+}
+
+.historia-sidebar-nav-wrapper {
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .historia-sidebar-toggle {
+    display: none;
+  }
+  .historia-sidebar-nav-wrapper {
+    max-height: none !important;
+    overflow: visible;
+  }
+}
   </style>
 <body>
 <section class="hero-section">
@@ -706,123 +1056,241 @@ button {
           ¡Explora nuestras publicaciones!
         {% endif %}
       </p>
-
     </div>
   </div>
 </section>
 
-{% if articulo_destacado %}
-<section class="featured-post-section">
-    <div class="container2">
-        <h2 class="section-title">Destacado</h2>
-        <div class="featured-post">
-            <div class="featured-post-content">
-                <div class="featured-post-categories">
-                    <span class="badge badge-primary">Destacado</span>
-                    <span class="badge badge-outline"><i data-feather="tag"></i>{{ articulo_destacado.categoria.nombre }}</span>
-                </div>
-                <h3 class="featured-post-title">
-                    <a href="{% url 'articuloHabla' articulo_destacado.id %}">{{ articulo_destacado.titulo }}</a>
-                </h3>
-                <p class="featured-post-excerpt">
-                    {{ articulo_destacado.abstract }}
-                </p>
-                <div class="featured-post-meta">
-                    <div class="post-meta-item">
-                        <i data-feather="calendar"></i>
-                        <span>{{ articulo_destacado.fecha_publicacion|date:"j \\d\\e F, Y" }}</span>
-                    </div>
-                    <div class="post-meta-item">
-                        <i data-feather="clock"></i>
-                        <span>{{ articulo_destacado.tiempo_lectura }} min de lectura</span>
-                    </div>
-                </div>
-                <div class="featured-post-actions">
-                    <a href="{% url 'articuloHabla' articulo_destacado.id %}" class="button button-primary">Leer Artículo</a>
-                    <a href="{% url 'articuloHabla' articulo_destacado.id %}" class="button button-outline">
-                        Ver Comentarios ({{ articulo_destacado.comentarios.count }})
-                    </a>
-                </div>
-            </div>
-            <div class="featured-post-image">
-                <img src="{{ articulo_destacado.imagen.url }}" alt="{{ articulo_destacado.titulo }}">
-            </div>
-        </div>
-    </div>
-</section>
+
+{% if filtro == 'historia' %}
+
+<div class="container2">
+  <div class="historia-toggle-bar">
+    <button
+      id="btnVerEnciclopedia"
+      class="historia-toggle-btn active"
+      onclick="mostrarVista('enciclopedia')"
+    >
+      <i data-feather="book-open"></i>
+      Historia del Municipio
+    </button>
+    <button
+      id="btnVerArticulos"
+      class="historia-toggle-btn"
+      onclick="mostrarVista('articulos')"
+    >
+      <i data-feather="file-text"></i>
+      Artículos del Blog
+    </button>
+  </div>
+</div>
 {% endif %}
 
-<section class="recent-posts-section">
+
+{% if filtro == 'historia' %}
+<section
+  id="vistaEnciclopedia"
+  class="historia-enciclopedia-section"
+>
   <div class="container2">
-    <div class="recent-posts-header">
-      <h2 class="section-title">Publicaciones Recientes</h2>
-      <div class="search-filter">
-        <div class="search-box">
-          <i data-feather="search"></i>
-          <input type="search" placeholder="Buscar publicaciones...">
+    <div class="historia-enciclopedia-layout">
+
+      {# ── Sidebar de navegación ── #}
+      <aside class="historia-sidebar">
+        <div class="historia-sidebar-header">
+          <h3>Contenido</h3>
         </div>
-        <button class="filter-button">
-          <i data-feather="menu"></i>
-          <span class="sr-only">Filtrar</span>
+
+        {# Botón colapsable para móvil #}
+        <button
+          class="historia-sidebar-toggle"
+          id="sidebarToggle"
+          onclick="toggleSidebar()"
+        >
+          <span>Selecciona una sección</span>
+          <i data-feather="chevron-down"></i>
         </button>
-        <div class="category-filter hidden">
-          <p class="category-title">
-            <i data-feather="tag"></i> Selecciona una categoría de tu interés
-          </p>                        
-          <hr>
-          <ul>
-            <li data-category="all">Todas</li> <!-- Opción para mostrar todas las categorías -->
-            {% for categoria in categorias %}
-              <li data-category="{{ categoria.nombre }}">{{ categoria.nombre }}</li>
+
+        <div class="historia-sidebar-nav-wrapper" id="sidebarNavWrapper" style="max-height: 0;">
+          <ul class="historia-nav" id="historiaNave">
+            {% for seccion in secciones_historia %}
+            <li class="historia-nav-item">
+              <button
+                class="historia-nav-btn {% if forloop.first %}active{% endif %}"
+                data-seccion="{{ seccion.rubro }}"
+                onclick="mostrarSeccion('{{ seccion.rubro }}', this)"
+              >
+                <i data-feather="{{ seccion.icono }}"></i>
+                {{ seccion.get_rubro_display }}
+              </button>
+            </li>
+            {% empty %}
+            <li class="historia-nav-item">
+              <span class="historia-nav-btn" style="color: var(--color-text-light); cursor: default;">
+                Sin secciones aún
+              </span>
+            </li>
             {% endfor %}
           </ul>
         </div>
+      </aside>
+
+      {# ── Panel de contenido ── #}
+      <div class="historia-content-panel" id="historiaContentPanel">
+
+        {% for seccion in secciones_historia %}
+        {# Cabecera — se actualiza dinámicamente con JS #}
+        <div
+          class="historia-content-header historia-header-{% if forloop.first %}active{% endif %}"
+          id="header-{{ seccion.rubro }}"
+          style="{% if not forloop.first %}display:none;{% endif %}"
+        >
+          <div class="historia-content-header-icon">
+            <i data-feather="{{ seccion.icono }}"></i>
+          </div>
+          <h2>{{ seccion.titulo }}</h2>
+        </div>
+        {% empty %}
+        <div class="historia-content-header">
+          <h2>Historia</h2>
+        </div>
+        {% endfor %}
+
+        {# Cuerpos de cada sección #}
+        {% for seccion in secciones_historia %}
+        <div
+          class="historia-seccion {% if forloop.first %}active{% endif %}"
+          id="seccion-{{ seccion.rubro }}"
+        >
+          <div class="historia-ckeditor-content">
+            {{ seccion.contenido|safe }}
+          </div>
+        </div>
+        {% empty %}
+        <div class="historia-seccion active">
+          <div class="historia-empty-state">
+            <i data-feather="inbox"></i>
+            <p>Aún no se ha agregado contenido.<br>Ve al panel de administración para añadir secciones de historia.</p>
+          </div>
+        </div>
+        {% endfor %}
+
+      </div>{# /historia-content-panel #}
+    </div>{# /historia-enciclopedia-layout #}
+  </div>{# /container2 #}
+</section>
+{% endif %}
+
+<div id="vistaArticulos" {% if filtro == 'historia' %}style="display:none;"{% endif %}>
+
+  {% if articulo_destacado %}
+  <section class="featured-post-section">
+      <div class="container2">
+          <h2 class="section-title">Destacado</h2>
+          <div class="featured-post">
+              <div class="featured-post-content">
+                  <div class="featured-post-categories">
+                      <span class="badge badge-primary">Destacado</span>
+                      <span class="badge badge-outline"><i data-feather="tag"></i>{{ articulo_destacado.categoria.nombre }}</span>
+                  </div>
+                  <h3 class="featured-post-title">
+                      <a href="{% url 'articuloHabla' articulo_destacado.id %}">{{ articulo_destacado.titulo }}</a>
+                  </h3>
+                  <p class="featured-post-excerpt">
+                      {{ articulo_destacado.abstract }}
+                  </p>
+                  <div class="featured-post-meta">
+                      <div class="post-meta-item">
+                          <i data-feather="calendar"></i>
+                          <span>{{ articulo_destacado.fecha_publicacion|date:"j \\d\\e F, Y" }}</span>
+                      </div>
+                      <div class="post-meta-item">
+                          <i data-feather="clock"></i>
+                          <span>{{ articulo_destacado.tiempo_lectura }} min de lectura</span>
+                      </div>
+                  </div>
+                  <div class="featured-post-actions">
+                      <a href="{% url 'articuloHabla' articulo_destacado.id %}" class="button button-primary">Leer Artículo</a>
+                      <a href="{% url 'articuloHabla' articulo_destacado.id %}" class="button button-outline">
+                          Ver Comentarios ({{ articulo_destacado.comentarios.count }})
+                      </a>
+                  </div>
+              </div>
+              <div class="featured-post-image">
+                  <img src="{{ articulo_destacado.imagen.url }}" alt="{{ articulo_destacado.titulo }}">
+              </div>
+          </div>
+      </div>
+  </section>
+  {% endif %}
+
+  <section class="recent-posts-section">
+    <div class="container2">
+      <div class="recent-posts-header">
+        <h2 class="section-title">Publicaciones Recientes</h2>
+        <div class="search-filter">
+          <div class="search-box">
+            <i data-feather="search"></i>
+            <input type="search" placeholder="Buscar publicaciones...">
+          </div>
+          <button class="filter-button">
+            <i data-feather="menu"></i>
+            <span class="sr-only">Filtrar</span>
+          </button>
+          <div class="category-filter hidden">
+            <p class="category-title">
+              <i data-feather="tag"></i> Selecciona una categoría de tu interés
+            </p>                        
+            <hr>
+            <ul>
+              <li data-category="all">Todas</li>
+              {% for categoria in categorias %}
+                <li data-category="{{ categoria.nombre }}">{{ categoria.nombre }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="posts-grid">
+        {% for articulo in articulos %}
+          <a href="{% url 'articuloHabla' articulo.id %}" class="post-card-link">
+            <article class="post-card {% if forloop.counter > 6 %}hidden{% endif %}" data-categories="{{ articulo.categoria.nombre|lower }}">
+              <div class="post-card-image">
+                <img src="{{ articulo.imagen.url }}" alt="{{ articulo.titulo }}">
+                <div class="post-type-badge">
+                  <i data-feather="file-text"></i>
+                  <span>Artículo</span>
+                </div>
+              </div>
+              <div class="post-card-content">
+                <h3 class="post-card-title">
+                  {{ articulo.titulo }}
+                </h3>
+                <p class="post-card-excerpt">
+                  {{ articulo.abstract|safe }}
+                </p>
+                <div class="post-card-meta">
+                  <div class="post-meta-item">
+                    <i data-feather="calendar"></i>
+                    <span>{{ articulo.fecha_publicacion|date:"j \\d\\e F, Y" }}</span>
+                  </div>
+                  <div class="post-meta-item">
+                    <i data-feather="message-square"></i>
+                    <span>{{ articulo.comentarios.count }} comentarios</span>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </a>
+        {% endfor %}
+      </div>
+
+      <div class="load-more-container2">
+        <button id="loadMoreButton" class="button button-outline load-more-button">Cargar Más</button>
       </div>
     </div>
-    <div class="posts-grid">
-  {% for articulo in articulos %}
-    <a href="{% url 'articuloHabla' articulo.id %}" class="post-card-link">
-      <article class="post-card {% if forloop.counter > 6 %}hidden{% endif %}" data-categories="{{ articulo.categoria.nombre|lower }}">
-        
-        <div class="post-card-image">
-          <img src="{{ articulo.imagen.url }}" alt="{{ articulo.titulo }}">
-          <div class="post-type-badge">
-            <i data-feather="file-text"></i>
-            <span>Artículo</span>
-          </div>
-        </div>
+  </section>
 
-        <div class="post-card-content">
-          <h3 class="post-card-title">
-            {{ articulo.titulo }}
-          </h3>
-
-          <p class="post-card-excerpt">
-            {{ articulo.abstract|safe  }}
-          </p>
-
-          <div class="post-card-meta">
-            <div class="post-meta-item">
-              <i data-feather="calendar"></i>
-              <span>{{ articulo.fecha_publicacion|date:"j \\d\\e F, Y" }}</span>
-            </div>
-            <div class="post-meta-item">
-              <i data-feather="message-square"></i>
-              <span>{{ articulo.comentarios.count }} comentarios</span>
-            </div>
-          </div>
-        </div>
-
-      </article>
-    </a>
-  {% endfor %}
-</div>
-
-    <div class="load-more-container2">
-      <button id="loadMoreButton" class="button button-outline load-more-button">Cargar Más</button>
-    </div>
-  </div>
-</section>
+</div>{# /vistaArticulos #}
 
 <!-- Sugerencias de Temas -->
 <section id="sugerencias" class="newsletter-section">
@@ -857,113 +1325,192 @@ button {
   </div>
 </section>
 
-
-
   <script>
-    // Inicializar los iconos de Feather
     document.addEventListener('DOMContentLoaded', function() {
       feather.replace();
     });
   </script>
+
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      document.querySelector(".button-primary").addEventListener("click", function (event) {
-        event.preventDefault(); // Evita la navegación si es un enlace
-        document.getElementById("sugerencias").scrollIntoView({ behavior: "smooth" });
+  /* ── Scroll suave al botón de sugerencias ── */
+  document.addEventListener("DOMContentLoaded", function () {
+    const firstPrimary = document.querySelector(".button-primary");
+    if (firstPrimary) {
+      firstPrimary.addEventListener("click", function (event) {
+        const sugerencias = document.getElementById("sugerencias");
+        if (sugerencias && !this.closest('a')) {
+          event.preventDefault();
+          sugerencias.scrollIntoView({ behavior: "smooth" });
+        }
+      });
+    }
+  });
+  </script>
+
+  <script>
+  /* ══════════════════════════════════════════
+     LÓGICA DE ALTERNANCIA: Enciclopedia / Artículos
+     ══════════════════════════════════════════ */
+  function mostrarVista(vista) {
+    const enciclopedia  = document.getElementById('vistaEnciclopedia');
+    const articulos     = document.getElementById('vistaArticulos');
+    const btnEnc        = document.getElementById('btnVerEnciclopedia');
+    const btnArt        = document.getElementById('btnVerArticulos');
+
+    if (!enciclopedia || !articulos) return;
+
+    if (vista === 'enciclopedia') {
+      enciclopedia.style.display = 'block';
+      articulos.style.display    = 'none';
+      if (btnEnc) btnEnc.classList.add('active');
+      if (btnArt) btnArt.classList.remove('active');
+    } else {
+      enciclopedia.style.display = 'none';
+      articulos.style.display    = 'block';
+      if (btnArt) btnArt.classList.add('active');
+      if (btnEnc) btnEnc.classList.remove('active');
+    }
+
+    /* Re-renderizar iconos Feather por si quedaron algunos pendientes */
+    if (typeof feather !== 'undefined') feather.replace();
+  }
+
+  /* ══════════════════════════════════════════
+     LÓGICA DE SECCIONES EN LA ENCICLOPEDIA
+     ══════════════════════════════════════════ */
+  function mostrarSeccion(rubro, btnClicado) {
+    /* Ocultar todas las secciones y cabeceras */
+    document.querySelectorAll('.historia-seccion').forEach(function(el) {
+      el.classList.remove('active');
+    });
+    document.querySelectorAll('[id^="header-"]').forEach(function(el) {
+      el.style.display = 'none';
+    });
+
+    /* Mostrar la sección activa */
+    const seccionEl = document.getElementById('seccion-' + rubro);
+    const headerEl  = document.getElementById('header-' + rubro);
+    if (seccionEl) seccionEl.classList.add('active');
+    if (headerEl)  headerEl.style.display = 'flex';
+
+    /* Actualizar botones del nav */
+    document.querySelectorAll('.historia-nav-btn').forEach(function(btn) {
+      btn.classList.remove('active');
+    });
+    if (btnClicado) btnClicado.classList.add('active');
+
+    /* Cerrar sidebar en móvil */
+    const navWrapper = document.getElementById('sidebarNavWrapper');
+    const toggleBtn  = document.getElementById('sidebarToggle');
+    if (navWrapper && window.innerWidth < 768) {
+      navWrapper.style.maxHeight = '0';
+      if (toggleBtn) toggleBtn.classList.remove('open');
+    }
+
+    if (typeof feather !== 'undefined') feather.replace();
+  }
+
+  /* ── Sidebar colapsable en móvil ── */
+  function toggleSidebar() {
+    const wrapper   = document.getElementById('sidebarNavWrapper');
+    const toggleBtn = document.getElementById('sidebarToggle');
+    if (!wrapper) return;
+
+    const abierto = wrapper.style.maxHeight !== '0px' && wrapper.style.maxHeight !== '0' && wrapper.style.maxHeight !== '';
+    if (abierto) {
+      wrapper.style.maxHeight = '0';
+      if (toggleBtn) toggleBtn.classList.remove('open');
+    } else {
+      wrapper.style.maxHeight = wrapper.scrollHeight + 'px';
+      if (toggleBtn) toggleBtn.classList.add('open');
+    }
+  }
+  </script>
+
+  <script>
+  /* ── Búsqueda y filtros de artículos ── */
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput    = document.querySelector(".search-box input");
+    const articles       = document.querySelectorAll(".post-card");
+    const loadMoreButton = document.getElementById("loadMoreButton");
+    const filterButton   = document.querySelector(".filter-button");
+    const categoryFilter = document.querySelector(".category-filter");
+    const categoryItems  = document.querySelectorAll(".category-filter li");
+    let isExpanded = false;
+    let selectedCategory = "all";
+
+    if (filterButton) {
+      filterButton.addEventListener("click", function () {
+        categoryFilter.style.display = categoryFilter.style.display === "block" ? "none" : "block";
+      });
+    }
+
+    categoryItems.forEach(item => {
+      item.addEventListener("click", function () {
+        categoryItems.forEach(cat => cat.classList.remove("active"));
+        this.classList.add("active");
+        selectedCategory = this.getAttribute("data-category").toLowerCase();
+        filterArticles();
+        categoryFilter.style.display = "none";
       });
     });
-  </script>
-    <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const searchInput = document.querySelector(".search-box input");
-    const articles = document.querySelectorAll(".post-card");
-    const loadMoreButton = document.getElementById("loadMoreButton");
-    const filterButton = document.querySelector(".filter-button");
-    const categoryFilter = document.querySelector(".category-filter");
-    const categoryItems = document.querySelectorAll(".category-filter li");
-    let isExpanded = false; // Estado del botón "Cargar Más"
-    let selectedCategory = "all"; // Categoría seleccionada
 
-    // Mostrar/Ocultar el menú de categorías
-    filterButton.addEventListener("click", function () {
-        categoryFilter.style.display = categoryFilter.style.display === "block" ? "none" : "block";
-    });
-
-    // Filtrar artículos según la categoría seleccionada
-    categoryItems.forEach(item => {
-        item.addEventListener("click", function () {
-            // Remover la clase "active" de todas las categorías
-            categoryItems.forEach(cat => cat.classList.remove("active"));
-
-            // Agregar la clase "active" a la categoría seleccionada
-            this.classList.add("active");
-
-            selectedCategory = this.getAttribute("data-category").toLowerCase();
-            filterArticles(); // Aplicar filtro
-            categoryFilter.style.display = "none"; // Ocultar menú después de seleccionar
-        });
-    });
-
-    // Filtrar artículos en base a búsqueda y categoría
     function filterArticles() {
-        const searchText = searchInput.value.toLowerCase();
-        let matchFound = false;
+      if (!searchInput) return;
+      const searchText = searchInput.value.toLowerCase();
 
-        articles.forEach(article => {
-            const title = article.querySelector(".post-card-title a").textContent.toLowerCase();
-            const excerpt = article.querySelector(".post-card-excerpt").textContent.toLowerCase();
-            const categories = article.getAttribute("data-categories").toLowerCase().split(",").map(cat => cat.trim());
-            const isSearchMatch = title.includes(searchText) || excerpt.includes(searchText);
-            const isCategoryMatch = selectedCategory === "all" || categories.includes(selectedCategory);
+      articles.forEach(article => {
+        const titleEl    = article.querySelector(".post-card-title a");
+        const excerptEl  = article.querySelector(".post-card-excerpt");
+        const title      = titleEl   ? titleEl.textContent.toLowerCase()   : '';
+        const excerpt    = excerptEl ? excerptEl.textContent.toLowerCase() : '';
+        const categories = article.getAttribute("data-categories").toLowerCase().split(",").map(c => c.trim());
+        const isSearchMatch   = title.includes(searchText) || excerpt.includes(searchText);
+        const isCategoryMatch = selectedCategory === "all" || categories.includes(selectedCategory);
 
-            if (isSearchMatch && isCategoryMatch) {
-                article.style.display = "block"; // Mostrar si coincide con búsqueda y categoría
-                matchFound = true;
-            } else {
-                article.style.display = "none"; // Ocultar si no coincide
-            }
-        });
+        article.style.display = (isSearchMatch && isCategoryMatch) ? "block" : "none";
+      });
 
-        if (!searchText && selectedCategory === "all") {
-            resetArticleVisibility();
-        }
+      if (!searchText && selectedCategory === "all") {
+        resetArticleVisibility();
+      }
     }
 
-    // Resetear visibilidad de artículos
     function resetArticleVisibility() {
-        articles.forEach((article, index) => {
-            article.style.display = index < 6 || isExpanded ? "block" : "none";
-        });
+      articles.forEach((article, index) => {
+        article.style.display = index < 6 || isExpanded ? "block" : "none";
+      });
     }
 
-    searchInput.addEventListener("input", filterArticles);
+    if (searchInput) searchInput.addEventListener("input", filterArticles);
 
-    loadMoreButton.addEventListener("click", function () {
+    if (loadMoreButton) {
+      loadMoreButton.addEventListener("click", function () {
         isExpanded = !isExpanded;
         resetArticleVisibility();
         loadMoreButton.textContent = isExpanded ? "Mostrar Menos" : "Cargar Más";
-    });
+      });
+    }
 
     resetArticleVisibility();
-});
+  });
+  </script>
 
-    </script>
-    
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const form = document.querySelector(".newsletter-form");
-            const successMessage = document.querySelector(".success-message");
-      
-            form.addEventListener("submit", function (event) {
-                event.preventDefault(); // Evita que la página se recargue
-      
-                form.classList.add("hidden2"); // Oculta el formulario
-                successMessage.classList.remove("hidden2"); // Muestra el mensaje de éxito
-      
-                feather.replace(); // Asegura que el icono de check se renderice correctamente
-            });
-        });
-      </script>
-  
+  <script>
+  /* ── Formulario de sugerencias ── */
+  document.addEventListener("DOMContentLoaded", function () {
+    const form           = document.querySelector(".newsletter-form");
+    const successMessage = document.querySelector(".success-message");
+    if (!form) return;
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      form.classList.add("hidden2");
+      successMessage.classList.remove("hidden2");
+      if (typeof feather !== 'undefined') feather.replace();
+    });
+  });
+  </script>
+
 </body>
 {% endblock %}

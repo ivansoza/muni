@@ -4,208 +4,704 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
+  /* ══════════════════════════════════
+     TOGGLE DE VISTAS
+  ══════════════════════════════════ */
+  .vista-toggle-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .vista-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 20px;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: 1.5px solid #d1d5db;
+    background: #fff;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .vista-toggle-btn:hover {
+    border-color: #3A6284;
+    color: #3A6284;
+  }
+
+  .vista-toggle-btn.active {
+    background: linear-gradient(90deg, #3A6284 0%, #28455E 100%);
+    border-color: transparent;
+    color: #fff;
+  }
+
+  /* ══════════════════════════════════
+     BUSCADOR
+  ══════════════════════════════════ */
+  .buscador-wrapper {
+    position: relative;
+    max-width: 400px;
+    margin-bottom: 1.4rem;
+  }
+
+  .buscador-wrapper input {
+    width: 100%;
+    padding: 10px 16px 10px 40px;
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 2px 6px rgba(61, 84, 120, 0.15);
+    font-size: 15px;
+    background: #fff;
+    color: #333;
+    outline: none;
+    transition: box-shadow 0.2s;
+  }
+
+  .buscador-wrapper input:focus {
+    box-shadow: 0 0 0 3px rgba(58, 98, 132, 0.15);
+  }
+
+  .buscador-wrapper i {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #45638e;
+    font-size: 16px;
+  }
+
+  /* ══════════════════════════════════
+     GRID DE TARJETAS — ARTÍCULOS
+  ══════════════════════════════════ */
   .tarjeta-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
   }
 
+  /* ── Tarjeta ── */
   .tarjeta {
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 12px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
     overflow: hidden;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
-    transition: transform 0.2s ease;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
   }
 
   .tarjeta:hover {
     transform: translateY(-4px);
+    border-color: #c5d4e3;
+    box-shadow: 0 8px 24px rgba(58, 98, 132, 0.10);
   }
 
-  .tarjeta img {
+  /* ── Imagen ── */
+  .tarjeta-img-wrap {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #f1f5f9;
+  }
+
+  .tarjeta-img-wrap img {
     width: 100%;
-    height: 200px;
+    height: 100%;
     object-fit: cover;
+    display: block;
+    transition: transform 0.32s ease;
   }
 
-  .tarjeta-contenido {
-    padding: 16px;
+  .tarjeta:hover .tarjeta-img-wrap img {
+    transform: scale(1.04);
+  }
+
+  /* ── Pill de categoría sobre la imagen ── */
+  .tarjeta-categoria {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #28455E;
+    color: #ddeaf5;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+
+  /* ── Cuerpo ── */
+  .tarjeta-body {
+    padding: 14px 16px 16px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
+    flex: 1;
+    gap: 8px;
   }
 
-  .tarjeta h3 {
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #333;
+  .tarjeta-titulo {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.4;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
-  .tarjeta p {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 6px;
-  }
-
-  .tarjeta .acciones {
-    margin-top: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .tarjeta .acciones a,
-  .tarjeta .acciones button {
-    font-size: 0.85rem;
+  .tarjeta-fecha {
     display: flex;
     align-items: center;
-    border: none;
-    background: none;
+    gap: 5px;
+    font-size: 0.78rem;
+    color: #94a3b8;
+  }
+
+  .tarjeta-fecha i {
+    font-size: 0.72rem;
+  }
+
+  /* ── Separador ── */
+  .tarjeta-divider {
+    height: 1px;
+    background: #f1f5f9;
+    margin: 2px 0;
+  }
+
+  /* ── Acciones ── */
+  .tarjeta-acciones {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-tarjeta {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 7px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: 1px solid transparent;
     cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.15s, transform 0.12s;
+    white-space: nowrap;
+  }
+
+  .btn-tarjeta:hover {
+    opacity: 0.80;
     text-decoration: none;
   }
 
-  .tarjeta .acciones a:hover,
-  .tarjeta .acciones button:hover {
-    text-decoration: underline;
+  .btn-tarjeta:active {
+    transform: scale(0.97);
   }
 
+  .btn-ver {
+    background: #E6F1FB;
+    color: #0C447C;
+    border-color: #B5D4F4;
+  }
 
+  .btn-editar {
+    background: #FAEEDA;
+    color: #633806;
+    border-color: #FAC775;
+  }
 
+  .btn-eliminar {
+    background: #FCEBEB;
+    color: #791F1F;
+    border-color: #F7C1C1;
+    margin-left: auto;
+  }
+
+  /* ══════════════════════════════════
+     GRID DE TARJETAS — HISTORIA
+  ══════════════════════════════════ */
+  .historia-admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .historia-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+  }
+
+  .historia-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.11);
+  }
+
+  .historia-card-header {
+    background: linear-gradient(90deg, #3A6284 0%, #28455E 100%);
+    padding: 18px 20px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .historia-card-header .icono-circulo {
+    width: 40px;
+    height: 40px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .historia-card-header .icono-circulo i {
+    font-size: 1rem;
+    color: #fff;
+  }
+
+  .historia-card-header h3 {
+    color: #fff;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .badge-estado {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .badge-activo   { background: #d1fae5; color: #065f46; }
+  .badge-inactivo { background: #fee2e2; color: #991b1b; }
+
+  .historia-card-body {
+    padding: 14px 18px;
+    flex-grow: 1;
+  }
+
+  .historia-card-body .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.83rem;
+    color: #555;
+    margin-bottom: 5px;
+  }
+
+  .historia-card-body .meta-item i {
+    width: 14px;
+    color: #3A6284;
+    flex-shrink: 0;
+    font-size: 0.75rem;
+  }
+
+  .historia-card-body .preview-texto {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: #9ca3af;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    border-top: 1px solid #f3f4f6;
+    padding-top: 10px;
+  }
+
+  .historia-card-actions {
+    padding: 10px 18px 14px;
+    display: flex;
+    gap: 7px;
+    border-top: 1px solid #f3f4f6;
+    flex-wrap: wrap;
+  }
+
+  .btn-accion {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 13px;
+    border-radius: 7px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.15s;
+  }
+
+  .btn-accion:hover { opacity: 0.78; text-decoration: none; }
+
+  .btn-h-editar    { background: #eff6ff; color: #1d4ed8; }
+  .btn-h-toggle    { background: #f0fdf4; color: #166534; }
+  .btn-h-toggle.desactivar { background: #fff7ed; color: #9a3412; }
+  .btn-h-eliminar  { background: #fef2f2; color: #991b1b; }
+
+  /* ── Rubros pendientes ── */
+  .rubros-pendientes {
+    margin-top: 2rem;
+  }
+
+  .rubros-pendientes h2 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rubros-lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .rubro-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1.5px dashed #3A6284;
+    background: #f0f6ff;
+    color: #3A6284;
+    font-size: 0.83rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .rubro-pill:hover { background: #dbeafe; text-decoration: none; }
+
+  /* ── Empty state ── */
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: #cbd5e1;
+  }
+
+  .empty-state i { font-size: 2.8rem; margin-bottom: 14px; display: block; }
+  .empty-state p { font-size: 0.9rem; color: #94a3b8; }
 </style>
 
 <div class="container-fluid">
-  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+
+  <!-- ── Encabezado ── -->
+  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 16px;">
     <div>
-     <br>
+      <br>
       <h1>Artículos</h1>
-      <p class="text-muted mt-1">Administra todos los artículos del blog habla con tus hijos y ven, vive y Vuelve</p>
+      <p class="text-muted mt-1">Administra todos los artículos del blog y las secciones de Historia del municipio.</p>
     </div>
-    <a href="{% url 'registro_articulo' %}" class="btn btn-primary" style="background:linear-gradient(90deg, #3A6284 20%, #28455E 100%) !important; color: white; padding: 10px 20px; border-radius: 8px;">
-      <i class="fas fa-plus mr-2"></i> Nuevo artículo
-    </a>
+    <div id="headerAccion">
+      <a href="{% url 'registro_articulo' %}" id="btnNuevoArticulo"
+         class="btn btn-primary"
+         style="background: linear-gradient(90deg, #3A6284 20%, #28455E 100%) !important; color: white; padding: 10px 20px; border-radius: 8px;">
+        <i class="fas fa-plus mr-2"></i> Nuevo artículo
+      </a>
+      <a href="{% url 'historia_seccion_crear' %}" id="btnNuevaSeccion"
+         class="btn btn-primary"
+         style="background: linear-gradient(90deg, #3A6284 20%, #28455E 100%) !important; color: white; padding: 10px 20px; border-radius: 8px; display: none;">
+        <i class="fas fa-plus mr-2"></i> Nueva sección
+      </a>
+    </div>
   </div>
-  <div style="width: 100%; max-width: 400px; margin-top: 1rem; margin-bottom: 1rem; position: relative;">
-    <input type="text" id="buscador" placeholder="Buscar Articulo..." autocomplete="off" style="
-      width: 100%;
-      padding: 10px 40px 10px 40px;  /* espacio para icono izquierda */
-      border-radius: 12px;
-      border: none;
-      box-shadow: 0 2px 6px rgb(61 84 120 / 15%);
-      font-size: 16px;
-      background: #fff;
-      color: #333;
-    ">
-    <i class="fas fa-search" style="
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #45638e;
-      font-size: 18px;
-    "></i>
+
+  <!-- ── Barra de alternancia ── -->
+  <div class="vista-toggle-bar">
+    <button class="vista-toggle-btn active" id="btnVerArticulos" onclick="mostrarVista('articulos')">
+      <i class="fas fa-newspaper"></i> Artículos del Blog
+    </button>
+    <button class="vista-toggle-btn" id="btnVerHistoria" onclick="mostrarVista('historia')">
+      <i class="fas fa-book-open"></i> Secciones de Historia
+    </button>
   </div>
-  
-  
-  <div class="tarjeta-grid">
-    {% for articulo in articulos %}
-    <div class="tarjeta">
-      <img src="{{ articulo.imagen.url }}" alt="Imagen del artículo">
-      <div class="tarjeta-contenido">
-        <h3>{{ articulo.titulo }}</h3>
-        <p><strong>Categoría:</strong> {{ articulo.categoria }}</p>
-        <p><strong>Autor:</strong> {{ articulo.autor }}</p>
-        <p><strong>Fecha:</strong> {{ articulo.fecha_publicacion|date:"d/m/Y H:i" }}</p>
-        <div class="acciones">
-          <a href="{% url 'articuloHabla' articulo.id %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye mr-1"></i> Ver</a>
-          <a href="{% url "articulo_editar" articulo.id %}" class="editar btn btn-sm btn-outline-warning"><i class="fas fa-pen mr-1"></i> Editar</a>
-          <form action="{% url 'eliminar_articulo' articulo.id %}" method="post" class="form-eliminar"
-          data-titulo="{{ articulo.titulo }}" data-categoria="{{ articulo.categoria }}">
-      {% csrf_token %}
-      <button type="submit" class="eliminar btn btn-sm btn-outline-danger btn-eliminar">
-        <i class="fas fa-trash-alt mr-1"></i> Eliminar
-      </button>
-    </form>
-    
+
+  <!-- ══════════════════════════════════
+       VISTA: ARTÍCULOS
+  ══════════════════════════════════ -->
+  <div id="vistaArticulos">
+
+    <div class="buscador-wrapper">
+      <i class="fas fa-search"></i>
+      <input type="text" id="buscadorArticulos" placeholder="Buscar artículo..." autocomplete="off">
+    </div>
+
+    <div class="tarjeta-grid" id="gridArticulos">
+      {% for articulo in articulos %}
+      <div class="tarjeta" data-titulo-art="{{ articulo.titulo|lower }}">
+
+        <!-- Imagen + categoría -->
+        <div class="tarjeta-img-wrap">
+          <img src="{{ articulo.imagen.url }}" alt="{{ articulo.titulo }}">
+          <span class="tarjeta-categoria">{{ articulo.categoria }}</span>
         </div>
+
+        <!-- Cuerpo -->
+        <div class="tarjeta-body">
+          <h3 class="tarjeta-titulo">{{ articulo.titulo }}</h3>
+
+          <div class="tarjeta-fecha">
+            <i class="fas fa-calendar-alt"></i>
+            {{ articulo.fecha_publicacion|date:"j \\d\\e F, Y" }}
+          </div>
+
+          <div class="tarjeta-divider"></div>
+
+          <!-- Acciones -->
+          <div class="tarjeta-acciones">
+            <a href="{% url 'articuloHabla' articulo.id %}" class="btn-tarjeta btn-ver">
+              <i class="fas fa-eye"></i> Ver
+            </a>
+            <a href="{% url 'articulo_editar' articulo.id %}" class="btn-tarjeta btn-editar">
+              <i class="fas fa-pen"></i> Editar
+            </a>
+            <form action="{% url 'eliminar_articulo' articulo.id %}" method="post"
+                  class="form-eliminar" style="margin: 0; margin-left: auto;"
+                  data-titulo="{{ articulo.titulo }}"
+                  data-categoria="{{ articulo.categoria }}">
+              {% csrf_token %}
+              <button type="submit" class="btn-tarjeta btn-eliminar">
+                <i class="fas fa-trash-alt"></i> Eliminar
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+      {% empty %}
+      <div class="empty-state">
+        <i class="fas fa-newspaper"></i>
+        <p>No hay artículos disponibles.<br>Haz clic en <strong>Nuevo artículo</strong> para comenzar.</p>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>{# /vistaArticulos #}
+
+  <!-- ══════════════════════════════════
+       VISTA: SECCIONES DE HISTORIA
+  ══════════════════════════════════ -->
+  <div id="vistaHistoria" style="display: none;">
+
+    <div class="buscador-wrapper">
+      <i class="fas fa-search"></i>
+      <input type="text" id="buscadorHistoria" placeholder="Buscar sección..." autocomplete="off">
+    </div>
+
+    <div class="historia-admin-grid" id="gridSecciones">
+
+      {% for seccion in secciones_historia %}
+      <div class="historia-card" data-titulo-hist="{{ seccion.titulo|lower }}">
+
+        <span class="badge-estado {% if seccion.activo %}badge-activo{% else %}badge-inactivo{% endif %}">
+          {% if seccion.activo %}Activo{% else %}Inactivo{% endif %}
+        </span>
+
+        <div class="historia-card-header">
+          <div class="icono-circulo">
+            <i class="fas fa-book-open"></i>
+          </div>
+          <h3>{{ seccion.get_rubro_display }}</h3>
+        </div>
+
+        <div class="historia-card-body">
+          <div class="meta-item">
+            <i class="fas fa-heading"></i>
+            <span>{{ seccion.titulo }}</span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-sort-numeric-up-alt"></i>
+            <span>Orden: {{ seccion.orden }}</span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-icons"></i>
+            <span>Icono: {{ seccion.icono }}</span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-clock"></i>
+            <span>Actualizado: {{ seccion.fecha_actualizacion|date:"d/m/Y H:i" }}</span>
+          </div>
+          <div class="preview-texto">{{ seccion.contenido|striptags|truncatechars:120 }}</div>
+        </div>
+
+        <div class="historia-card-actions">
+          <a href="{% url 'historia_seccion_editar' seccion.id %}" class="btn-accion btn-h-editar">
+            <i class="fas fa-pen"></i> Editar
+          </a>
+
+          <form method="post" action="{% url 'historia_seccion_toggle' seccion.id %}" style="margin:0;">
+            {% csrf_token %}
+            <button type="submit" class="btn-accion btn-h-toggle {% if seccion.activo %}desactivar{% endif %}">
+              {% if seccion.activo %}
+                <i class="fas fa-eye-slash"></i> Desactivar
+              {% else %}
+                <i class="fas fa-eye"></i> Activar
+              {% endif %}
+            </button>
+          </form>
+
+          <form method="post" action="{% url 'historia_seccion_eliminar' seccion.id %}"
+                class="form-eliminar-hist"
+                data-titulo="{{ seccion.get_rubro_display }}"
+                style="margin:0;">
+            {% csrf_token %}
+            <button type="submit" class="btn-accion btn-h-eliminar">
+              <i class="fas fa-trash-alt"></i> Eliminar
+            </button>
+          </form>
+        </div>
+
+      </div>
+      {% empty %}
+      <div class="empty-state">
+        <i class="fas fa-book-open"></i>
+        <p>Aún no hay secciones de Historia.<br>Haz clic en <strong>Nueva sección</strong> para comenzar.</p>
+      </div>
+      {% endfor %}
+
+    </div>
+
+    <!-- Rubros pendientes -->
+    {% if rubros_pendientes %}
+    <div class="rubros-pendientes">
+      <h2><i class="fas fa-exclamation-circle" style="color:#f59e0b;"></i> Rubros sin contenido aún</h2>
+      <div class="rubros-lista">
+        {% for rubro_key, rubro_label in rubros_pendientes %}
+        <a href="{% url 'historia_seccion_crear' %}?rubro={{ rubro_key }}" class="rubro-pill">
+          <i class="fas fa-plus"></i> {{ rubro_label }}
+        </a>
+        {% endfor %}
       </div>
     </div>
-    {% empty %}
-    <p style="text-align: center; color: #999; grid-column: span 3;">No hay artículos disponibles.</p>
-    {% endfor %}
-  </div>
+    {% endif %}
+
+  </div>{# /vistaHistoria #}
+
 </div>
 <br>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const inputBuscador = document.getElementById("buscador");
-    inputBuscador.addEventListener("input", function () {
-      const filtro = this.value.toLowerCase();
-      const tarjetas = document.querySelectorAll(".tarjeta");
 
-      tarjetas.forEach(function (tarjeta) {
-        const titulo = tarjeta.querySelector("h3").textContent.toLowerCase();
-        if (titulo.includes(filtro)) {
-          tarjeta.style.display = "";
-        } else {
-          tarjeta.style.display = "none";
-        }
-      });
-    });
-  });
-</script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    // Buscador (tu código ya existente)
-    const inputBuscador = document.getElementById("buscador");
-    inputBuscador.addEventListener("input", function () {
-      const filtro = this.value.toLowerCase();
-      const tarjetas = document.querySelectorAll(".tarjeta");
+document.addEventListener("DOMContentLoaded", function () {
 
-      tarjetas.forEach(function (tarjeta) {
-        const titulo = tarjeta.querySelector("h3").textContent.toLowerCase();
-        if (titulo.includes(filtro)) {
-          tarjeta.style.display = "";
-        } else {
-          tarjeta.style.display = "none";
-        }
+  /* ── Alternancia de vistas ── */
+  window.mostrarVista = function (vista) {
+    const elArt  = document.getElementById("vistaArticulos");
+    const elHist = document.getElementById("vistaHistoria");
+    const btnArt = document.getElementById("btnVerArticulos");
+    const btnHist= document.getElementById("btnVerHistoria");
+    const btnNuevoArt = document.getElementById("btnNuevoArticulo");
+    const btnNuevaSec = document.getElementById("btnNuevaSeccion");
+
+    if (vista === "articulos") {
+      elArt.style.display  = "";
+      elHist.style.display = "none";
+      btnArt.classList.add("active");
+      btnHist.classList.remove("active");
+      btnNuevoArt.style.display = "";
+      btnNuevaSec.style.display = "none";
+    } else {
+      elArt.style.display  = "none";
+      elHist.style.display = "";
+      btnHist.classList.add("active");
+      btnArt.classList.remove("active");
+      btnNuevoArt.style.display = "none";
+      btnNuevaSec.style.display = "";
+    }
+  };
+
+  /* ── Buscador artículos ── */
+  const buscadorArt = document.getElementById("buscadorArticulos");
+  if (buscadorArt) {
+    buscadorArt.addEventListener("input", function () {
+      const filtro = this.value.toLowerCase();
+      document.querySelectorAll(".tarjeta").forEach(function (t) {
+        t.style.display = (t.dataset.tituloArt || "").includes(filtro) ? "" : "none";
       });
     });
+  }
 
-    // Manejar confirmación de eliminación con SweetAlert2
-    const formsEliminar = document.querySelectorAll("form.form-eliminar");
-
-    formsEliminar.forEach(form => {
-      form.addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        const titulo = this.dataset.titulo;
-        const categoria = this.dataset.categoria;
-
-        Swal.fire({
-          title: '¿Eliminar artículo?',
-          html: `<strong>Título:</strong> ${titulo} <br> <strong>Categoría:</strong> ${categoria}`,
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#dc2626',
-          cancelButtonColor: '#6b7280',
-          confirmButtonText: 'Sí, eliminar',
-          cancelButtonText: 'Cancelar'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            this.submit();
-          }
-        });
+  /* ── Buscador historia ── */
+  const buscadorHist = document.getElementById("buscadorHistoria");
+  if (buscadorHist) {
+    buscadorHist.addEventListener("input", function () {
+      const filtro = this.value.toLowerCase();
+      document.querySelectorAll(".historia-card").forEach(function (c) {
+        c.style.display = (c.dataset.tituloHist || "").includes(filtro) ? "" : "none";
       });
+    });
+  }
+
+  /* ── SweetAlert: eliminar artículo ── */
+  document.querySelectorAll("form.form-eliminar").forEach(function (form) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const titulo    = this.dataset.titulo;
+      const categoria = this.dataset.categoria;
+      Swal.fire({
+        title: "¿Eliminar artículo?",
+        html: `<strong>Título:</strong> ${titulo}<br><strong>Categoría:</strong> ${categoria}`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc2626",
+        cancelButtonColor: "#6b7280",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
+      }).then(result => { if (result.isConfirmed) this.submit(); });
     });
   });
+
+  /* ── SweetAlert: eliminar sección historia ── */
+  document.querySelectorAll("form.form-eliminar-hist").forEach(function (form) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const titulo = this.dataset.titulo;
+      Swal.fire({
+        title: "¿Eliminar sección?",
+        html: `Se eliminará permanentemente la sección <strong>${titulo}</strong>.`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc2626",
+        cancelButtonColor: "#6b7280",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
+      }).then(result => { if (result.isConfirmed) this.submit(); });
+    });
+  });
+
+});
 </script>
 
 {% endblock %}

@@ -133,3 +133,19 @@ VideoFormSet = inlineformset_factory(
     extra=1,
     can_delete=True,
 )
+
+from .models import SeccionHistoria
+ 
+ 
+# ── Formulario ────────────────────────────────────────────
+class SeccionHistoriaForm(forms.ModelForm):
+    class Meta:
+        model = SeccionHistoria
+        fields = ['rubro', 'titulo', 'icono', 'orden', 'activo', 'contenido']
+        widgets = {
+            'rubro':  forms.Select(attrs={'class': 'form-control'}),
+            'titulo': forms.TextInput(attrs={'placeholder': 'Ej: Nomenclatura del Municipio'}),
+            'icono':  forms.TextInput(attrs={'placeholder': 'Ej: book-open'}),
+            'orden':  forms.NumberInput(attrs={'min': 0}),
+        }
+ 

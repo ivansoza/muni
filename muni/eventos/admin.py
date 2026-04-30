@@ -8,3 +8,12 @@ admin.site.register(Articulo)
 admin.site.register(Comentario)
 admin.site.register(Like)
 admin.site.register(VideoArticulo)
+
+from .models import SeccionHistoria
+
+@admin.register(SeccionHistoria)
+class SeccionHistoriaAdmin(admin.ModelAdmin):
+    list_display = ('get_rubro_display', 'titulo', 'orden', 'activo', 'fecha_actualizacion')
+    list_editable = ('orden', 'activo')
+    list_filter = ('activo', 'rubro')
+    ordering = ('orden',)
