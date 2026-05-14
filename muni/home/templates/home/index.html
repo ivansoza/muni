@@ -691,6 +691,10 @@
                                     {% endif %}
                             {% endif %}
 
+                            {% if municipio.secciones_hab and municipio.secciones_hab.banner %}
+                                {% include "home/components/banner_carrusel.html" %}
+                            {% endif %}
+
                         {% elif seccion.nombre == 'redes_sociales' %}
                             {% include "home/components/nuestras_redes.html" %}
                         {% elif seccion.nombre == 'contactos' %}
@@ -798,6 +802,9 @@
 
                 {% endif %}
 
+                {% if municipio.secciones_hab and municipio.secciones_hab.banner %}
+                    {% include "home/components/banner_carrusel.html" %}
+                {% endif %}
 
                 {% include "home/components/nuestras_redes.html" %}
                 {% include "home/components/nuestros_contactos.html" %}

@@ -306,6 +306,18 @@
           <label class="toggle-label" for="{{ form.sesion_cabildo.id_for_label }}"></label>
         </div>
       </div>
+
+      {# ------------------ BANNER ------------------ #}
+      <div class="form-card">
+        <div class="card-header">
+          <i class="fas fa-image icon"></i>
+          <label for="{{ form.banner.id_for_label }}">Banner</label>
+        </div>
+        <div class="toggle-wrapper">
+          {{ form.banner }}
+          <label class="toggle-label" for="{{ form.banner.id_for_label }}"></label>
+        </div>
+      </div>
     </div>
 
     <div class="form-actions">

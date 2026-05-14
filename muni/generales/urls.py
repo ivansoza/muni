@@ -8,6 +8,7 @@ from .views import CrearCarpetaView, SubirArchivoView, ListarCarpetasView, Edita
 from .views import ListaObligacionesView, ListaObligacionesCreateView, ListaObligacionesUpdateView, ListaObligacionesDeleteView, GestionarArticulosView, CrearArticuloView, EditarArticuloView, EliminarArticuloView, actualizar_orden_articulos, convocatoriaHome, filtrar_convocatorias, GestionarArticulosArView, CrearArticuloLigaView, EditarArticuloLigaArchivoView, ArticuloUpdateView
 from .views import crear_noticia, HablaHome, ArticuloCreateView, eliminar_articulo
 from .views import SesionesCabildoAdminView, SesionCabildoCreateView, SesionCabildoUpdateView
+from .views import BannerView, banner_create, banner_update, banner_delete, banner_reorder
 
 urlpatterns = [
     path("", CustomLoginView.as_view(),name='login'),
@@ -205,4 +206,9 @@ urlpatterns = [
     path('generales/sesiones-cabildo/crear/', SesionCabildoCreateView.as_view(), name='crear_sesion_cabildo'),
     path('generales/sesiones-cabildo/<int:pk>/editar/', SesionCabildoUpdateView.as_view(), name='editar_sesion_cabildo'),
     path('generales/sesiones-cabildo/<int:pk>/eliminar/', views.eliminar_sesion_cabildo, name='eliminar_sesion_cabildo'),
+    path('generales/banner/', BannerView.as_view(), name='BannerView'),
+    path('generales/banner/crear/', banner_create, name='banner_create'),
+    path('generales/banner/<int:pk>/editar/', banner_update, name='banner_update'),
+    path('generales/banner/<int:pk>/eliminar/', banner_delete, name='banner_delete'),
+    path('generales/banner/reordenar/', banner_reorder, name='banner_reorder'),
 ]

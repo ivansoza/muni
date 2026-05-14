@@ -555,6 +555,21 @@
             </div>
         {% endif %}
 
+        {# ==================== BANNER ==================== #}
+        {% if is_superuser %}
+            <a class="app-item" href="{% url 'BannerView' %}">
+                <div class="app-card" style="background-image: url('{% if icons.banner and icons.banner.imagen %}{{ icons.banner.imagen.url }}{% else %}{% static 'img/apps/banner.png' %}{% endif %}');"></div>
+                <div class="app-name">Banner</div>
+            </a>
+        {% else %}
+            <div class="app-item app-disabled">
+                <div class="app-card" style="background-image: url('{% if icons.banner and icons.banner.imagen %}{{ icons.banner.imagen.url }}{% else %}{% static 'img/apps/banner.png' %}{% endif %}');">
+                    <div class="disabled-overlay">{{ lock }}</div>
+                </div>
+                <div class="app-name">Banner</div>
+            </div>
+        {% endif %}
+
         {% endwith %}{# lock #}
     </div>{# apps-grid #}
 </div>{# contenedor #}

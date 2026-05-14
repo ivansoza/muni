@@ -1,0 +1,363 @@
+{% if diapositivas %}
+<style>
+  /* ── Namespace bc- para no colisionar con otros estilos ── */
+  .bc-section {
+    padding: 3rem 0 2rem;
+    overflow: hidden;
+    background: transparent;
+  }
+
+  /* ── Pista de desplazamiento ── */
+  .bc-track-wrap {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    /* Degradados laterales para efecto de fade */
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 6%,
+      black 94%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 6%,
+      black 94%,
+      transparent 100%
+    );
+  }
+
+  .bc-track {
+    display: flex;
+    gap: 1.25rem;
+    width: max-content;
+    animation: bc-scroll 35s linear infinite;
+  }
+
+  .bc-track-wrap:hover .bc-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes bc-scroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ── Tarjeta imagen ── */
+  .bc-card {
+    width: 220px;
+    height: 220px;
+    flex-shrink: 0;
+    border-radius: 1rem;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    box-shadow: 0 4px 16px rgba(0,0,0,.10);
+    transition: transform .3s ease, box-shadow .3s ease;
+    background: #e2e8f0;
+  }
+
+  .bc-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 12px 32px rgba(0,0,0,.18);
+  }
+
+  .bc-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .45s ease;
+    pointer-events: none;
+  }
+
+  .bc-card:hover img {
+    transform: scale(1.08);
+  }
+
+  /* ── Overlay hover ── */
+  .bc-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(var(--color-primario-rgb, 30,71,101), 0);
+    transition: background .3s ease;
+    border-radius: 1rem;
+  }
+
+  .bc-card:hover::after {
+    background: rgba(var(--color-primario-rgb, 30,71,101), .15);
+  }
+
+  /* ── Icono lupa al hover ── */
+  .bc-card .bc-zoom {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity .3s ease;
+    z-index: 2;
+  }
+
+  .bc-card:hover .bc-zoom {
+    opacity: 1;
+  }
+
+  .bc-zoom svg {
+    width: 44px;
+    height: 44px;
+    color: #fff;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,.4));
+  }
+
+  /* ── Lightbox ── */
+  .bc-lb {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s ease;
+    padding: 1rem;
+  }
+
+  .bc-lb.bc-lb--open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .bc-lb__img {
+    max-width: 90vw;
+    max-height: 88vh;
+    border-radius: .75rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    transform: scale(.92);
+    transition: transform .3s ease;
+    object-fit: contain;
+    display: block;
+  }
+
+  .bc-lb--open .bc-lb__img {
+    transform: scale(1);
+  }
+
+  .bc-lb__close {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.5rem;
+    background: rgba(255,255,255,.12);
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #fff;
+    transition: background .2s ease, transform .2s ease;
+  }
+
+  .bc-lb__close:hover {
+    background: rgba(255,255,255,.25);
+    transform: scale(1.1);
+  }
+
+  /* Navegación prev/next */
+  .bc-lb__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,.12);
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #fff;
+    transition: background .2s ease;
+  }
+  .bc-lb__nav:hover { background: rgba(255,255,255,.25); }
+  .bc-lb__nav--prev { left: 1.25rem; }
+  .bc-lb__nav--next { right: 1.25rem; }
+
+  /* Contador */
+  .bc-lb__counter {
+    position: absolute;
+    bottom: 1.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,255,255,.65);
+    font-size: .85rem;
+    font-family: system-ui, sans-serif;
+    letter-spacing: .05em;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .bc-card { width: 160px; height: 160px; }
+    .bc-track { gap: .85rem; }
+    .bc-lb__nav { display: none; }
+  }
+</style>
+
+<section class="bc-section">
+  <div class="bc-track-wrap">
+    <div class="bc-track" id="bc-track">
+
+      {% for d in diapositivas %}
+      <div class="bc-card" data-idx="{{ forloop.counter0 }}">
+        <img src="{{ d.imagen.url }}" alt="" loading="lazy">
+        <div class="bc-zoom">
+          <!-- magnify glass -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <line x1="11" y1="8" x2="11" y2="14"/>
+            <line x1="8" y1="11" x2="14" y2="11"/>
+          </svg>
+        </div>
+      </div>
+      {% endfor %}
+
+      {# Duplicado para el loop infinito #}
+      {% for d in diapositivas %}
+      <div class="bc-card" data-idx="{{ forloop.counter0 }}" aria-hidden="true">
+        <img src="{{ d.imagen.url }}" alt="" loading="lazy">
+        <div class="bc-zoom">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <line x1="11" y1="8" x2="11" y2="14"/>
+            <line x1="8" y1="11" x2="14" y2="11"/>
+          </svg>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Lightbox ── -->
+<div class="bc-lb" id="bc-lb" role="dialog" aria-modal="true">
+  <button class="bc-lb__close" id="bc-lb-close" aria-label="Cerrar">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"/>
+      <line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>
+
+  <button class="bc-lb__nav bc-lb__nav--prev" id="bc-lb-prev" aria-label="Anterior">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6"/>
+    </svg>
+  </button>
+
+  <img class="bc-lb__img" id="bc-lb-img" src="" alt="">
+
+  <button class="bc-lb__nav bc-lb__nav--next" id="bc-lb-next" aria-label="Siguiente">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="9 18 15 12 9 6"/>
+    </svg>
+  </button>
+
+  <span class="bc-lb__counter" id="bc-lb-counter"></span>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── Imágenes (solo del primer set, sin duplicados) ── */
+  const _bcUrls = [
+    {% for d in diapositivas %}"{{ d.imagen.url }}"{% if not forloop.last %},{% endif %}{% endfor %}
+  ];
+
+  const _bcLb      = document.getElementById('bc-lb');
+  const _bcLbImg   = document.getElementById('bc-lb-img');
+  const _bcLbCtr   = document.getElementById('bc-lb-counter');
+  const _bcLbClose = document.getElementById('bc-lb-close');
+  const _bcLbPrev  = document.getElementById('bc-lb-prev');
+  const _bcLbNext  = document.getElementById('bc-lb-next');
+  const _bcTrack   = document.getElementById('bc-track');
+
+  let _bcCurrent = 0;
+
+  function _bcOpen(idx) {
+    _bcCurrent = idx;
+    _bcLbImg.src = _bcUrls[_bcCurrent];
+    _bcLbCtr.textContent = (_bcCurrent + 1) + ' / ' + _bcUrls.length;
+    _bcLb.classList.add('bc-lb--open');
+    document.body.style.overflow = 'hidden';
+    if (_bcTrack) _bcTrack.style.animationPlayState = 'paused';
+  }
+
+  function _bcClose() {
+    _bcLb.classList.remove('bc-lb--open');
+    document.body.style.overflow = '';
+    if (_bcTrack) _bcTrack.style.animationPlayState = 'running';
+  }
+
+  function _bcGo(delta) {
+    _bcCurrent = (_bcCurrent + delta + _bcUrls.length) % _bcUrls.length;
+    _bcLbImg.src = _bcUrls[_bcCurrent];
+    _bcLbCtr.textContent = (_bcCurrent + 1) + ' / ' + _bcUrls.length;
+  }
+
+  /* Clicks en tarjetas */
+  document.querySelectorAll('.bc-card').forEach(function (card) {
+    card.addEventListener('click', function () {
+      var idx = parseInt(card.dataset.idx, 10);
+      if (!isNaN(idx)) _bcOpen(idx);
+    });
+  });
+
+  _bcLbClose.addEventListener('click', _bcClose);
+  _bcLbPrev.addEventListener('click', function () { _bcGo(-1); });
+  _bcLbNext.addEventListener('click', function () { _bcGo(1); });
+
+  /* Cerrar al hacer clic fuera de la imagen */
+  _bcLb.addEventListener('click', function (e) {
+    if (e.target === _bcLb) _bcClose();
+  });
+
+  /* Teclado */
+  document.addEventListener('keydown', function (e) {
+    if (!_bcLb.classList.contains('bc-lb--open')) return;
+    if (e.key === 'Escape')     _bcClose();
+    if (e.key === 'ArrowLeft')  _bcGo(-1);
+    if (e.key === 'ArrowRight') _bcGo(1);
+  });
+
+  /* Swipe táctil */
+  var _bcTouchX = null;
+  _bcLb.addEventListener('touchstart', function (e) {
+    _bcTouchX = e.touches[0].clientX;
+  }, { passive: true });
+  _bcLb.addEventListener('touchend', function (e) {
+    if (_bcTouchX === null) return;
+    var dx = e.changedTouches[0].clientX - _bcTouchX;
+    if (Math.abs(dx) > 40) _bcGo(dx < 0 ? 1 : -1);
+    _bcTouchX = null;
+  }, { passive: true });
+
+}());
+</script>
+{% endif %}

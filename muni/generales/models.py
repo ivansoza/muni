@@ -1,5 +1,53 @@
+import os
 import uuid
 from django.db import models
+from django.core.exceptions import ValidationError
+
+
+def validate_image_extension(value):
+    ext = os.path.splitext(value.name)[1].lower()
+    if ext not in ['.jpg', '.jpeg', '.png', '.webp']:
+        raise ValidationError(
+            'Solo se permiten imágenes JPG, PNG o WEBP. '
+            'Extensión recibida: {}'.format(ext or '(sin extensión)')
+        )
+
+
+def validate_image_size(value):
+    max_size = 8 * 1024 * 1024  # 8 MB
+    if value.size > max_size:
+        raise ValidationError(
+            'La imagen es demasiado grande ({:.1f} MB). Máximo permitido: 8 MB.'.format(
+                value.size / 1024 / 1024
+            )
+        )
+
+
+def diapositiva_path(instance, filename):
+    ext = os.path.splitext(filename)[1].lower()
+    return 'carrusel/{}{}'.format(uuid.uuid4().hex, ext)
+
+
+class Diapositiva(models.Model):
+    titulo     = models.CharField(max_length=200, blank=True, verbose_name='Título')
+    subtitulo  = models.CharField(max_length=300, blank=True, verbose_name='Subtítulo')
+    imagen     = models.ImageField(
+        upload_to=diapositiva_path,
+        validators=[validate_image_extension, validate_image_size],
+        verbose_name='Imagen'
+    )
+    orden      = models.PositiveIntegerField(default=0, verbose_name='Orden')
+    activo     = models.BooleanField(default=True, verbose_name='Visible en portal')
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_actualiz = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name        = 'Diapositiva'
+        verbose_name_plural = 'Diapositivas'
+        ordering            = ['orden', 'fecha_creacion']
+
+    def __str__(self):
+        return self.titulo or f'Diapositiva #{self.pk}'
 
 from informacion_municipal.models import Municipio
 from django.db.models import Q
@@ -105,6 +153,7 @@ class Secciones(models.Model):
     videos = models.BooleanField(default=False)
     normatividad = models.BooleanField(default=False)  # Nuevo módulo
     sesion_cabildo = models.BooleanField(default=False)
+    banner = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Secciones de {self.municipio}"
@@ -451,6 +500,7 @@ class AppIcon(models.Model):
         ('habla',           'Habla con tus hijos'),
         ('normatividad',    'Normatividad'),
         ('sesion_cabildo',  'Sesiones de Cabildo'),
+        ('banner',          'Banner'),
     ]
 
     app = models.CharField(max_length=50, choices=APP_CHOICES, unique=True, verbose_name='Aplicación')

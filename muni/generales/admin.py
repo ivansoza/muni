@@ -1,6 +1,6 @@
 # admin.py
 from django.contrib import admin
-from .models import AppIcon, ArchivoRelacionadoRecomendacion, ArchivoSesionCabildo, ContadorVisitas, MetaMunicipio, Recomendaciones, SeccionPlus, SesionCabildo, Secciones, SocialNetwork, personalizacionPlantilla, VideoMunicipio, SeccionPlusArchivo, NormatividadSeccion, ArchivoNormatividad
+from .models import AppIcon, ArchivoRelacionadoRecomendacion, ArchivoSesionCabildo, ContadorVisitas, Diapositiva, MetaMunicipio, Recomendaciones, SeccionPlus, SesionCabildo, Secciones, SocialNetwork, personalizacionPlantilla, VideoMunicipio, SeccionPlusArchivo, NormatividadSeccion, ArchivoNormatividad
 from django.utils.html import format_html
 
 admin.site.register(NormatividadSeccion)
@@ -89,6 +89,22 @@ class ArchivoRelacionadoRecomendacionAdmin(admin.ModelAdmin):
 admin.site.register(VideoMunicipio)
 admin.site.register(SeccionPlusArchivo)
 
+
+
+@admin.register(Diapositiva)
+class DiapositivaAdmin(admin.ModelAdmin):
+    list_display   = ('__str__', 'orden', 'activo', 'imagen_preview', 'fecha_creacion')
+    list_editable  = ('orden', 'activo')
+    list_filter    = ('activo',)
+    search_fields  = ('titulo', 'subtitulo')
+    readonly_fields = ('fecha_creacion', 'fecha_actualiz', 'imagen_preview')
+    ordering       = ('orden', 'fecha_creacion')
+
+    def imagen_preview(self, obj):
+        if obj.imagen:
+            return format_html('<img src="{}" style="width:80px; height:50px; border-radius:6px; object-fit:cover;">', obj.imagen.url)
+        return '—'
+    imagen_preview.short_description = 'Vista previa'
 
 
 @admin.register(AppIcon)
