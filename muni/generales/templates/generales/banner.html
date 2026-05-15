@@ -1,0 +1,816 @@
+{% extends "baseTemplate.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+  :root {
+    --cp: #2F698F;
+    --cs: #295E84;
+    --cp-rgb: 47, 105, 143;
+    --grad: linear-gradient(135deg, var(--cp), var(--cs));
+    --success: #10b981;
+    --danger:  #ef4444;
+    --light:   #f8fafc;
+    --border:  #e2e8f0;
+    --shadow:  0 4px 12px rgba(0,0,0,.08);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,.12);
+    --radius:  0.75rem;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { animation: spin .8s linear infinite; display:inline-block; }
+
+  /* ── Encabezado ── */
+  .banner-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .banner-header h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--cp);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .banner-header p { color: #64748b; margin: .25rem 0 0; font-size: .92rem; }
+
+  /* ── Botón agregar ── */
+  .btn-add-banner {
+    background: var(--grad);
+    color: #fff;
+    border: none;
+    padding: .7rem 1.4rem;
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: .95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    box-shadow: 0 4px 14px rgba(var(--cp-rgb),.35);
+    transition: all .25s;
+  }
+  .btn-add-banner:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(var(--cp-rgb),.45); }
+
+  /* ── Grid ── */
+  #banner-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* ── Tarjeta ── */
+  .banner-card {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: all .3s;
+    cursor: grab;
+    position: relative;
+    border: 2px solid transparent;
+  }
+  .banner-card:active { cursor: grabbing; }
+  .banner-card.sortable-ghost  { opacity: .35; border: 2px dashed var(--cp); }
+  .banner-card.sortable-chosen { box-shadow: var(--shadow-lg); transform: scale(1.02); }
+  .banner-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+  .banner-card.inactivo .banner-img-wrap::after {
+    content: 'Oculto';
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,.45);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: .85rem; letter-spacing: .05em;
+  }
+
+  /* ── Imagen ── */
+  .banner-img-wrap {
+    width: 100%; aspect-ratio: 1;
+    overflow: hidden; position: relative;
+    background: var(--light);
+  }
+  .banner-img-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+    transition: transform .4s;
+  }
+  .banner-card:hover .banner-img-wrap img { transform: scale(1.05); }
+
+  /* ── Handle arrastre ── */
+  .drag-handle {
+    position: absolute; top: 8px; left: 8px;
+    background: rgba(0,0,0,.5); color: #fff;
+    border-radius: 6px; width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: grab; z-index: 2;
+  }
+
+  /* ── Badge orden ── */
+  .order-badge {
+    position: absolute; top: 8px; right: 8px;
+    background: var(--cp); color: #fff;
+    border-radius: 99px; padding: 2px 10px;
+    font-size: .75rem; font-weight: 700; z-index: 2;
+  }
+
+  /* ── Cuerpo tarjeta ── */
+  .banner-body { padding: .85rem 1rem; }
+  .banner-title {
+    font-weight: 600; font-size: .95rem; color: #1e293b;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: .5rem;
+  }
+  .banner-title.empty { color: #94a3b8; font-style: italic; }
+
+  /* ── Acciones ── */
+  .banner-actions { display: flex; gap: .4rem; }
+  .btn-icon {
+    flex: 1; border: none; border-radius: 6px; padding: .4rem;
+    font-size: .8rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    gap: .3rem; font-weight: 500; transition: all .2s;
+  }
+  .btn-edit   { background: #eff6ff; color: #3b82f6; }
+  .btn-edit:hover   { background: #3b82f6; color: #fff; }
+  .btn-toggle { background: #f0fdf4; color: #10b981; }
+  .btn-toggle:hover { background: #10b981; color: #fff; }
+  .btn-toggle.is-hidden { background: #fef2f2; color: #ef4444; }
+  .btn-toggle.is-hidden:hover { background: #ef4444; color: #fff; }
+  .btn-del    { background: #fef2f2; color: #ef4444; }
+  .btn-del:hover    { background: #ef4444; color: #fff; }
+
+  /* ── Estado vacío ── */
+  .empty-state {
+    grid-column: 1 / -1; text-align: center;
+    padding: 4rem 2rem; color: #94a3b8;
+  }
+  .empty-state svg { width: 80px; height: 80px; margin-bottom: 1rem; opacity: .4; }
+  .empty-state h3  { font-size: 1.15rem; font-weight: 600; color: #64748b; }
+  .empty-state p   { font-size: .9rem; }
+
+  /* ── Toast ── */
+  .toast-container {
+    position: fixed; bottom: 1.5rem; right: 1.5rem;
+    z-index: 9999; display: flex; flex-direction: column; gap: .5rem;
+  }
+  .toast {
+    background: #1e293b; color: #fff;
+    padding: .75rem 1.25rem; border-radius: .6rem;
+    font-size: .9rem; font-weight: 500; box-shadow: var(--shadow-lg);
+    display: flex; align-items: center; gap: .6rem;
+    animation: slideIn .3s ease; min-width: 220px;
+  }
+  .toast.ok  { border-left: 4px solid var(--success); }
+  .toast.err { border-left: 4px solid var(--danger); }
+  @keyframes slideIn {
+    from { opacity:0; transform:translateX(40px); }
+    to   { opacity:1; transform:translateX(0); }
+  }
+
+  /* ── Modal base ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.55);
+    z-index: 1000; display: flex; align-items: center; justify-content: center;
+    padding: 1rem; opacity: 0; pointer-events: none; transition: opacity .25s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal-box {
+    background: #fff; border-radius: var(--radius);
+    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto;
+    transform: scale(.95); transition: transform .25s;
+  }
+  .modal-overlay.open .modal-box { transform: scale(1); }
+  .modal-header {
+    padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .modal-header h3 { margin: 0; font-size: 1.1rem; font-weight: 700; color: #1e293b; }
+  .modal-close {
+    background: none; border: none; cursor: pointer;
+    color: #94a3b8; display: flex; align-items: center; transition: color .2s;
+    padding: 4px;
+  }
+  .modal-close:hover { color: var(--danger); }
+  .modal-body   { padding: 1.5rem; }
+  .modal-footer {
+    padding: 1rem 1.5rem; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: .75rem;
+  }
+
+  /* ── Formulario modal ── */
+  .field-label {
+    display: block; font-size: .875rem; font-weight: 600;
+    color: #334155; margin-bottom: .35rem;
+  }
+  .field-input {
+    width: 100%; border: 1.5px solid var(--border); border-radius: .5rem;
+    padding: .6rem .85rem; font-size: .95rem;
+    transition: border-color .2s, box-shadow .2s; outline: none;
+    box-sizing: border-box; margin-bottom: 1rem;
+  }
+  .field-input:focus {
+    border-color: var(--cp);
+    box-shadow: 0 0 0 3px rgba(var(--cp-rgb), .15);
+  }
+  .field-group { margin-bottom: .5rem; }
+
+  /* ── Zona drop ── */
+  .img-drop-zone {
+    border: 2px dashed var(--border); border-radius: .6rem;
+    padding: 1.5rem; text-align: center; cursor: pointer;
+    transition: all .2s; background: var(--light); margin-bottom: 1rem;
+  }
+  .img-drop-zone:hover { border-color: var(--cp); background: rgba(var(--cp-rgb),.04); }
+  .img-drop-zone .drop-icon { color: #94a3b8; margin-bottom: .5rem; }
+  .img-drop-zone p { margin: 0; font-size: .85rem; color: #64748b; }
+  #img-input { display: none; }
+
+  /* ── Cropper ── */
+  .cropper-wrap {
+    display: none; border-radius: .6rem; overflow: hidden;
+    max-height: 340px; margin-bottom: 1rem; background: #000;
+  }
+  .cropper-wrap img { max-width: 100%; display: block; }
+
+  /* ── Preview edición ── */
+  #current-img-wrap { margin-bottom: 1rem; }
+  #current-img {
+    width: 100px; height: 100px; object-fit: cover;
+    border-radius: .5rem; border: 2px solid var(--border);
+  }
+
+  /* ── Botones modal ── */
+  .btn-cancel {
+    background: var(--light); border: 1.5px solid var(--border);
+    color: #475569; padding: .6rem 1.2rem; border-radius: .5rem;
+    font-weight: 600; cursor: pointer; transition: all .2s;
+    display: flex; align-items: center; gap: .4rem;
+  }
+  .btn-cancel:hover { background: var(--border); }
+  .btn-save-modal {
+    background: var(--grad); color: #fff; border: none;
+    padding: .6rem 1.4rem; border-radius: .5rem;
+    font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: .4rem;
+    transition: all .2s; box-shadow: 0 4px 12px rgba(var(--cp-rgb),.3);
+  }
+  .btn-save-modal:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(var(--cp-rgb),.4); }
+  .btn-save-modal:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+  /* ── Modal eliminar ── */
+  .del-modal-box { max-width: 380px; }
+  .del-icon {
+    width: 56px; height: 56px; background: #fef2f2; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1rem; color: var(--danger);
+  }
+  .btn-confirm-del {
+    background: var(--danger); color: #fff; border: none;
+    padding: .6rem 1.2rem; border-radius: .5rem;
+    font-weight: 600; cursor: pointer; transition: all .2s;
+    display: flex; align-items: center; gap: .4rem;
+  }
+  .btn-confirm-del:hover { background: #dc2626; }
+</style>
+
+<!-- ── CONTENIDO ── -->
+<div style="max-width:1300px;margin:0 auto;padding:2rem 1.5rem;">
+
+  <div class="banner-header">
+    <div>
+      <h2>
+        <!-- image icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <path d="m21 15-5-5L5 21"/>
+        </svg>
+        Gestión de Banners
+      </h2>
+      <p>Arrastra las tarjetas para reordenar · Los cambios se guardan automáticamente.</p>
+    </div>
+    <button class="btn-add-banner" id="btn-open-create">
+      <!-- plus -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Agregar banner
+    </button>
+  </div>
+
+  <!-- Grid sortable -->
+  <div id="banner-grid">
+    {% for d in diapositivas %}
+    <div class="banner-card {% if not d.activo %}inactivo{% endif %}"
+         data-id="{{ d.pk }}" data-orden="{{ d.orden }}">
+      <div class="banner-img-wrap">
+        <div class="drag-handle" title="Arrastrar">
+          <!-- grip dots -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="9"  cy="5"  r="1.5"/><circle cx="15" cy="5"  r="1.5"/>
+            <circle cx="9"  cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/>
+            <circle cx="9"  cy="19" r="1.5"/><circle cx="15" cy="19" r="1.5"/>
+          </svg>
+        </div>
+        <span class="order-badge">#{{ d.orden }}</span>
+        <img src="{{ d.imagen.url }}" alt="{{ d.titulo }}">
+      </div>
+      <div class="banner-body">
+        <div class="banner-title {% if not d.titulo %}empty{% endif %}">
+          {{ d.titulo|default:"Sin título" }}
+        </div>
+        <div class="banner-actions">
+
+          <button class="btn-icon btn-edit"
+                  data-id="{{ d.pk }}" data-titulo="{{ d.titulo }}"
+                  data-orden="{{ d.orden }}" data-imagen="{{ d.imagen.url }}" title="Editar">
+            <!-- pencil -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Editar
+          </button>
+
+          <button class="btn-icon btn-toggle {% if not d.activo %}is-hidden{% endif %}"
+                  data-id="{{ d.pk }}" data-activo="{{ d.activo|lower }}" title="Visibilidad">
+            {% if d.activo %}
+            <!-- eye -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+            {% else %}
+            <!-- eye-off -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+              <path d="m14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+            {% endif %}
+          </button>
+
+          <button class="btn-icon btn-del" data-id="{{ d.pk }}" title="Eliminar">
+            <!-- trash -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+              <path d="M10 11v6"/><path d="M14 11v6"/>
+              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+            </svg>
+          </button>
+
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="empty-state" id="empty-msg">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <path d="M3 9l4-4 4 4 4-4 4 4"/><circle cx="8.5" cy="14.5" r="1.5"/>
+      </svg>
+      <h3>Aún no hay banners</h3>
+      <p>Haz clic en <strong>Agregar banner</strong> para subir el primero.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ── TOASTS ── -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ── MODAL CREAR / EDITAR ── -->
+<div class="modal-overlay" id="modal-form">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="modal-title">Agregar banner</h3>
+      <button class="modal-close" id="modal-close-btn" title="Cerrar">
+        <!-- x -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+
+      <div class="field-group">
+        <label class="field-label" for="f-titulo">Título <span style="color:#94a3b8;font-weight:400;">(opcional)</span></label>
+        <input class="field-input" type="text" id="f-titulo" placeholder="Ej. Oferta de verano…" maxlength="200">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="f-orden">Orden</label>
+        <input class="field-input" type="number" id="f-orden" value="0" min="0" style="width:110px;">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Imagen <span style="color:#ef4444;">*</span></label>
+
+        <div class="img-drop-zone" id="drop-zone">
+          <input type="file" id="img-input" accept="image/jpeg,image/png,image/webp">
+          <div class="drop-icon">
+            <!-- upload-cloud -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 16 12 12 8 16"/>
+              <line x1="12" y1="12" x2="12" y2="21"/>
+              <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+            </svg>
+          </div>
+          <p>Haz clic o arrastra una imagen aquí<br>
+            <small style="color:#94a3b8;">JPG · PNG · WEBP · máx. 8 MB · se recortará en cuadrado</small>
+          </p>
+        </div>
+
+        <div class="cropper-wrap" id="cropper-wrap">
+          <img id="cropper-img" src="" alt="">
+        </div>
+
+        <div id="current-img-wrap" style="display:none;">
+          <p style="font-size:.8rem;color:#64748b;margin-bottom:.4rem;">Imagen actual (sube otra para reemplazarla):</p>
+          <img id="current-img" src="" alt="">
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="modal-cancel-btn">
+        <!-- x-circle -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+        </svg>
+        Cancelar
+      </button>
+      <button class="btn-save-modal" id="btn-save" disabled>
+        <!-- save -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/>
+          <polyline points="7 3 7 8 15 8"/>
+        </svg>
+        Guardar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL CONFIRMAR ELIMINAR ── -->
+<div class="modal-overlay" id="modal-del">
+  <div class="modal-box del-modal-box">
+    <div class="modal-body" style="text-align:center;padding:2rem 1.5rem;">
+      <div class="del-icon">
+        <!-- alert-triangle -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </div>
+      <h3 style="margin:0 0 .5rem;color:#1e293b;">¿Eliminar este banner?</h3>
+      <p style="color:#64748b;font-size:.9rem;margin:0 0 1.5rem;">La imagen se borrará permanentemente y no podrás recuperarla.</p>
+      <div style="display:flex;gap:.75rem;justify-content:center;">
+        <button class="btn-cancel" id="del-cancel">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+          Cancelar
+        </button>
+        <button class="btn-confirm-del" id="del-confirm">
+          <!-- trash -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            <path d="M10 11v6"/><path d="M14 11v6"/>
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+          </svg>
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block scriptcontent %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+
+<script>
+/* ─── SVG strings reutilizables en JS ─── */
+const SVG = {
+  grip: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="5" r="1.5"/><circle cx="15" cy="5" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="19" r="1.5"/></svg>`,
+  pencil: `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
+  eye: `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
+  eyeOff: `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="m14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`,
+  trash: `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`,
+  check: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+  alert: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+  save: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>`,
+  spin: `<svg class="spin" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`,
+};
+
+/* ─── CSRF ─── */
+function getCsrf() {
+  return document.cookie.split(';')
+    .map(c => c.trim()).find(c => c.startsWith('csrftoken='))?.split('=')[1] || '';
+}
+
+/* ─── TOAST ─── */
+function toast(msg, type = 'ok') {
+  const wrap = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `${type === 'ok' ? SVG.check : SVG.alert} ${msg}`;
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+/* ─── SORTABLE ─── */
+const grid = document.getElementById('banner-grid');
+Sortable.create(grid, {
+  animation: 180,
+  ghostClass: 'sortable-ghost',
+  chosenClass: 'sortable-chosen',
+  handle: '.drag-handle',
+  onEnd() {
+    const items = [...grid.querySelectorAll('.banner-card')];
+    const orden = items.map((el, i) => ({ id: el.dataset.id, orden: i + 1 }));
+    items.forEach((el, i) => {
+      el.querySelector('.order-badge').textContent = `#${i + 1}`;
+      el.dataset.orden = i + 1;
+    });
+    fetch("{% url 'banner_reorder' %}", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
+      body: JSON.stringify({ orden })
+    })
+    .then(r => r.json())
+    .then(() => toast('Orden actualizado'))
+    .catch(() => toast('Error al reordenar', 'err'));
+  }
+});
+
+/* ─── CROPPER ─── */
+let cropperInstance = null;
+
+function initCropper(src) {
+  const wrap  = document.getElementById('cropper-wrap');
+  const imgEl = document.getElementById('cropper-img');
+  wrap.style.display = 'block';
+  document.getElementById('drop-zone').style.display = 'none';
+  if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
+  imgEl.src = src;
+  cropperInstance = new Cropper(imgEl, {
+    aspectRatio: 1, viewMode: 1, dragMode: 'move',
+    autoCropArea: 1, responsive: true, restore: false,
+    guides: true, center: true, highlight: false,
+    cropBoxMovable: true, cropBoxResizable: true,
+    toggleDragModeOnDblclick: false,
+  });
+  document.getElementById('btn-save').disabled = false;
+}
+
+function resetCropper() {
+  if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
+  document.getElementById('cropper-wrap').style.display = 'none';
+  document.getElementById('drop-zone').style.display = '';
+  document.getElementById('img-input').value = '';
+}
+
+document.getElementById('drop-zone').addEventListener('click', () =>
+  document.getElementById('img-input').click()
+);
+document.getElementById('img-input').addEventListener('change', function() {
+  const file = this.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => initCropper(e.target.result);
+  reader.readAsDataURL(file);
+});
+
+const dropZone = document.getElementById('drop-zone');
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--cp)'; });
+dropZone.addEventListener('dragleave', () => dropZone.style.borderColor = '');
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.style.borderColor = '';
+  const file = e.dataTransfer.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => initCropper(ev.target.result);
+  reader.readAsDataURL(file);
+});
+
+/* ─── MODAL CREAR / EDITAR ─── */
+let editingId = null;
+
+function openModal(mode, data = {}) {
+  editingId = data.id || null;
+  document.getElementById('modal-title').textContent =
+    mode === 'edit' ? 'Editar banner' : 'Agregar banner';
+  document.getElementById('f-titulo').value = data.titulo || '';
+  document.getElementById('f-orden').value  = data.orden  ?? 0;
+
+  const curWrap = document.getElementById('current-img-wrap');
+  if (mode === 'edit' && data.imagen) {
+    curWrap.style.display = '';
+    document.getElementById('current-img').src = data.imagen;
+    document.getElementById('btn-save').disabled = false;
+  } else {
+    curWrap.style.display = 'none';
+    document.getElementById('btn-save').disabled = true;
+  }
+  resetCropper();
+  document.getElementById('modal-form').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal-form').classList.remove('open');
+  resetCropper(); editingId = null;
+}
+
+document.getElementById('btn-open-create').addEventListener('click', () => openModal('create'));
+document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+document.getElementById('modal-cancel-btn').addEventListener('click', closeModal);
+document.getElementById('modal-form').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+/* botones editar en tarjetas */
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.btn-edit'); if (!btn) return;
+  openModal('edit', {
+    id: btn.dataset.id, titulo: btn.dataset.titulo,
+    orden: btn.dataset.orden, imagen: btn.dataset.imagen,
+  });
+});
+
+/* ─── GUARDAR ─── */
+document.getElementById('btn-save').addEventListener('click', async function() {
+  this.disabled = true;
+  this.innerHTML = `${SVG.spin} Guardando…`;
+
+  const titulo = document.getElementById('f-titulo').value.trim();
+  const orden  = document.getElementById('f-orden').value;
+  const fd     = new FormData();
+  fd.append('titulo', titulo);
+  fd.append('orden',  orden);
+
+  if (cropperInstance) {
+    const blob = await new Promise(resolve =>
+      cropperInstance.getCroppedCanvas({ width: 800, height: 800 })
+        .toBlob(resolve, 'image/jpeg', .9)
+    );
+    fd.append('imagen', blob, 'banner.jpg');
+  }
+
+  const url = editingId
+    ? `/admin/generales/banner/${editingId}/editar/`
+    : "{% url 'banner_create' %}";
+
+  try {
+    const res  = await fetch(url, { method: 'POST', headers: { 'X-CSRFToken': getCsrf() }, body: fd });
+    const data = await res.json();
+    if (!res.ok) { toast(data.error || 'Error al guardar.', 'err'); return; }
+
+    if (editingId) {
+      updateCardInDOM(data); toast('Banner actualizado ✓');
+    } else {
+      addCardToDOM(data);
+      document.getElementById('empty-msg')?.remove();
+      toast('Banner creado ✓');
+    }
+    closeModal();
+  } catch {
+    toast('Error de conexión.', 'err');
+  } finally {
+    this.disabled = false;
+    this.innerHTML = `${SVG.save} Guardar`;
+  }
+});
+
+/* ─── TOGGLE VISIBILIDAD ─── */
+document.addEventListener('click', async e => {
+  const btn = e.target.closest('.btn-toggle'); if (!btn) return;
+  const id     = btn.dataset.id;
+  const activo = btn.dataset.activo === 'true';
+  const fd     = new FormData();
+  fd.append('activo', !activo);
+  try {
+    const res  = await fetch(`/admin/generales/banner/${id}/editar/`, {
+      method: 'POST', headers: { 'X-CSRFToken': getCsrf() }, body: fd
+    });
+    const data = await res.json();
+    if (!res.ok) { toast(data.error || 'Error', 'err'); return; }
+    updateCardInDOM(data);
+    toast(data.activo ? 'Banner visible ✓' : 'Banner oculto');
+  } catch { toast('Error de conexión.', 'err'); }
+});
+
+/* ─── ELIMINAR ─── */
+let deletingId = null;
+
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.btn-del'); if (!btn) return;
+  deletingId = btn.dataset.id;
+  document.getElementById('modal-del').classList.add('open');
+});
+document.getElementById('del-cancel').addEventListener('click', () => {
+  document.getElementById('modal-del').classList.remove('open'); deletingId = null;
+});
+document.getElementById('modal-del').addEventListener('click', function(e) {
+  if (e.target === this) { this.classList.remove('open'); deletingId = null; }
+});
+document.getElementById('del-confirm').addEventListener('click', async function() {
+  if (!deletingId) return; this.disabled = true;
+  try {
+    const res = await fetch(`/admin/generales/banner/${deletingId}/eliminar/`, {
+      method: 'POST', headers: { 'X-CSRFToken': getCsrf() }
+    });
+    if (!res.ok) { toast('Error al eliminar.', 'err'); return; }
+    document.querySelector(`.banner-card[data-id="${deletingId}"]`)?.remove();
+    if (!grid.querySelector('.banner-card')) {
+      grid.innerHTML = `
+        <div class="empty-state" id="empty-msg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <path d="M3 9l4-4 4 4 4-4 4 4"/><circle cx="8.5" cy="14.5" r="1.5"/>
+          </svg>
+          <h3>Aún no hay banners</h3>
+          <p>Haz clic en <strong>Agregar banner</strong> para subir el primero.</p>
+        </div>`;
+    }
+    toast('Banner eliminado');
+    document.getElementById('modal-del').classList.remove('open');
+  } catch { toast('Error de conexión.', 'err'); }
+  finally { this.disabled = false; deletingId = null; }
+});
+
+/* ─── DOM HELPERS ─── */
+function addCardToDOM(d) {
+  grid.insertAdjacentHTML('beforeend', buildCard(d));
+}
+
+function updateCardInDOM(d) {
+  const card = grid.querySelector(`.banner-card[data-id="${d.id}"]`); if (!card) return;
+  card.classList.toggle('inactivo', !d.activo);
+  card.dataset.orden = d.orden;
+  card.querySelector('.order-badge').textContent = `#${d.orden}`;
+  card.querySelector('.banner-img-wrap img').src = d.imagen + '?t=' + Date.now();
+  const titleEl = card.querySelector('.banner-title');
+  titleEl.textContent = d.titulo || 'Sin título';
+  titleEl.classList.toggle('empty', !d.titulo);
+
+  const eb = card.querySelector('.btn-edit');
+  eb.dataset.titulo = d.titulo; eb.dataset.orden = d.orden; eb.dataset.imagen = d.imagen;
+
+  const tb = card.querySelector('.btn-toggle');
+  tb.dataset.activo = d.activo;
+  tb.classList.toggle('is-hidden', !d.activo);
+  tb.innerHTML = d.activo ? SVG.eye : SVG.eyeOff;
+}
+
+function buildCard(d) {
+  return `
+  <div class="banner-card ${d.activo ? '' : 'inactivo'}" data-id="${d.id}" data-orden="${d.orden}">
+    <div class="banner-img-wrap">
+      <div class="drag-handle" title="Arrastrar">${SVG.grip}</div>
+      <span class="order-badge">#${d.orden}</span>
+      <img src="${d.imagen}" alt="${d.titulo || ''}">
+    </div>
+    <div class="banner-body">
+      <div class="banner-title ${d.titulo ? '' : 'empty'}">${d.titulo || 'Sin título'}</div>
+      <div class="banner-actions">
+        <button class="btn-icon btn-edit"
+                data-id="${d.id}" data-titulo="${d.titulo||''}"
+                data-orden="${d.orden}" data-imagen="${d.imagen}" title="Editar">
+          ${SVG.pencil} Editar
+        </button>
+        <button class="btn-icon btn-toggle ${d.activo ? '' : 'is-hidden'}"
+                data-id="${d.id}" data-activo="${d.activo}" title="Visibilidad">
+          ${d.activo ? SVG.eye : SVG.eyeOff}
+        </button>
+        <button class="btn-icon btn-del" data-id="${d.id}" title="Eliminar">
+          ${SVG.trash}
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+</script>
+{% endblock scriptcontent %}

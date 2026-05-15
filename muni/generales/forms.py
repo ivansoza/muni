@@ -192,6 +192,7 @@ class SeccionesForm(forms.ModelForm):
             'reportes', 'encuestas', 'servicios_en_linea', 'videos',
             'normatividad',
             'sesion_cabildo',
+            'banner',
         ]
 
 class SeccionPlusForm(forms.ModelForm):

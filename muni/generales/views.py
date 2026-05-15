@@ -25,7 +25,7 @@ from django.views.generic import FormView
 from django.http import JsonResponse, HttpResponseNotAllowed
 
 from informacion_municipal.models import ElementoLista, InformacionCiudad, Municipio, Video
-from generales.models import AppIcon, ArchivoNormatividad, ArchivoSesionCabildo, ArchivoSesionCabildo, ContadorVisitas, NormatividadSeccion, SeccionPlus, SesionCabildo, SesionCabildo, Secciones, SocialNetwork, VideoMunicipio
+from generales.models import AppIcon, ArchivoNormatividad, ArchivoSesionCabildo, ArchivoSesionCabildo, ContadorVisitas, Diapositiva, NormatividadSeccion, SeccionPlus, SesionCabildo, SesionCabildo, Secciones, SocialNetwork, VideoMunicipio
 from reportes.models import ReporteStatus
 from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, AvisoDePrivacidadForm
 from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
@@ -4174,14 +4174,100 @@ class HomeSesionesCabildo(TemplateView):
         return context
 
 
-class HomeSesionesCabildo(TemplateView):
-    template_name = 'homeSesionesCabildo.html'
+class BannerView(LoginRequiredMixin, TemplateView):
+    template_name = 'generales/banner.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['sidebar'] = 'sesion_cabildo'
-        context['sesiones'] = SesionCabildo.objects.all().order_by('fecha_creacion').prefetch_related('archivos')
+        context["breadcrumb"] = {
+            'parent': {'name': 'Panel', 'url': reverse('dashboard')},
+            'child':  {'name': 'Banner', 'url': ''}
+        }
+        context['sidebar'] = 'Generales'
+        context['regreso_url'] = reverse('dashboard')
+        context['diapositivas'] = Diapositiva.objects.all()
         return context
+
+
+@require_POST
+def banner_create(request):
+    titulo = request.POST.get('titulo', '').strip()
+    orden  = request.POST.get('orden', 0)
+    imagen = request.FILES.get('imagen')
+
+    if not imagen:
+        return JsonResponse({'error': 'La imagen es obligatoria.'}, status=400)
+
+    diapositiva = Diapositiva(titulo=titulo, orden=orden, imagen=imagen)
+    try:
+        diapositiva.full_clean()
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+    diapositiva.save()
+    return JsonResponse({
+        'id':     diapositiva.pk,
+        'titulo': diapositiva.titulo,
+        'orden':  diapositiva.orden,
+        'imagen': diapositiva.imagen.url,
+        'activo': diapositiva.activo,
+    }, status=201)
+
+
+@require_POST
+def banner_update(request, pk):
+    try:
+        diapositiva = Diapositiva.objects.get(pk=pk)
+    except Diapositiva.DoesNotExist:
+        return JsonResponse({'error': 'No encontrado.'}, status=404)
+
+    diapositiva.titulo = request.POST.get('titulo', diapositiva.titulo).strip()
+    diapositiva.orden  = request.POST.get('orden', diapositiva.orden)
+    diapositiva.activo = request.POST.get('activo', str(diapositiva.activo)).lower() in ('true', '1', 'on')
+
+    if request.FILES.get('imagen'):
+        diapositiva.imagen = request.FILES['imagen']
+
+    try:
+        diapositiva.full_clean()
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+    diapositiva.save()
+    return JsonResponse({
+        'id':     diapositiva.pk,
+        'titulo': diapositiva.titulo,
+        'orden':  diapositiva.orden,
+        'imagen': diapositiva.imagen.url,
+        'activo': diapositiva.activo,
+    })
+
+
+@require_POST
+def banner_delete(request, pk):
+    try:
+        diapositiva = Diapositiva.objects.get(pk=pk)
+    except Diapositiva.DoesNotExist:
+        return JsonResponse({'error': 'No encontrado.'}, status=404)
+
+    diapositiva.imagen.delete(save=False)
+    diapositiva.delete()
+    return JsonResponse({'ok': True})
+
+
+@require_POST
+def banner_reorder(request):
+    import json as _json
+    try:
+        data = _json.loads(request.body)
+        orden = data.get('orden', [])
+    except Exception:
+        return JsonResponse({'error': 'JSON inválido.'}, status=400)
+
+    for item in orden:
+        Diapositiva.objects.filter(pk=item['id']).update(orden=item['orden'])
+
+    return JsonResponse({'ok': True})
     
 # ── Lista de secciones ───────────────────────────────────
 def historia_seccion_lista(request):

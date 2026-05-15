@@ -3,7 +3,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.views.generic.base import TemplateView
 
-from generales.models import ContadorVisitas
+from generales.models import ContadorVisitas, Diapositiva
 from noticias.models import Noticia
 from convocatorias.models import Convocatoria
 from django.core.exceptions import ObjectDoesNotExist
@@ -21,6 +21,8 @@ class HomePageView(TemplateView):
         context['convocatorias'] = Convocatoria.objects.filter(
             estado__in=['ABIERTA', 'PRÓXIMA']
         ).order_by('-fecha_apertura')[:5]
+
+        context['diapositivas'] = Diapositiva.objects.filter(activo=True).order_by('orden')
 
         if 'visita' not in self.request.session:
             self.request.session['visita'] = True
