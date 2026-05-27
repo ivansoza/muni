@@ -1,5 +1,6 @@
 from django.db import models
 from django_ckeditor_5.fields import CKEditor5Field
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 class Categoria(models.Model):
@@ -9,19 +10,19 @@ class Categoria(models.Model):
     
 class Autor(models.Model):
     nombre_completo = models.CharField(max_length=300, verbose_name='Nombre completo')
-    perfil = models.CharField(max_length=225, verbose_name='Perfil del autor')
-    trayectoria = models.TextField()
-    fotografia = models.ImageField(upload_to='fotografias/', verbose_name='Fotografía del autor')
+    perfil = models.CharField(max_length=225, verbose_name='Perfil del autor', blank=True, null=True)
+    trayectoria = models.TextField(blank=True, null=True)
+    fotografia = models.ImageField(upload_to='fotografias/', verbose_name='Fotografía del autor', blank=True, null=True)
     def __str__(self):
-        return f"{self.nombre_completo} - {self.perfil}"
+        return f"{self.nombre_completo}"
 
 class Articulo(models.Model):
     titulo = models.CharField(max_length=255, verbose_name='Titulo del articulo')
-    abstract = models.TextField()
+    abstract = CKEditor5Field(blank=True, null=True)
     contenido = CKEditor5Field('Contenido', config_name='extends', blank=False, null=False)  
     imagen = models.ImageField(upload_to='habla_con_tus_hijos/imagenes/', verbose_name='Imagen principal')
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Categoría')  # Usamos ForeignKey en lugar de ManyToMany
-    etiquetas = models.CharField(max_length=225, verbose_name='Etiquetas del articulo', blank=True, null=True)
+    etiquetas = models.CharField(max_length=225, verbose_name='Etiquetas del articulo', blank=True, null=True, default='#Zacatelco fuerte y seguro')
     autor = models.ForeignKey(Autor, on_delete=models.CASCADE, verbose_name='Autor del articulo', blank=True, null=True)
     destacado = models.BooleanField(default=False)
     tiempo_lectura = models.PositiveIntegerField(default=1, verbose_name='Tiempo estimado de lectura')  # Tiempo en minutos
@@ -29,6 +30,7 @@ class Articulo(models.Model):
     likes = models.PositiveIntegerField(default=0)  # Contador de likes
     habla = models.BooleanField(default=False, verbose_name= "Habla con tus hijos")
     ven_vive = models.BooleanField(default=False, verbose_name= "Ven vive y vuelve a tu municipio")
+    historia = models.BooleanField(default=False, verbose_name= "Historia")
     video_url = models.URLField(
         verbose_name='Enlace de video',
         max_length=500,
@@ -64,3 +66,183 @@ class Comentario(models.Model):
     def __str__(self):
         return f'Comentario de {self.nombre or "Anónimo"} en {self.articulo.titulo}'
 
+class VideoArticulo(models.Model):
+    TIPO_VIDEO = [
+        ('url', 'URL externa (YouTube, Facebook, Vimeo, etc.)'),
+        ('archivo', 'Archivo de video'),
+    ]
+
+    articulo = models.ForeignKey(
+        Articulo,
+        on_delete=models.CASCADE,
+        related_name='videos',
+        verbose_name='Artículo'
+    )
+    titulo = models.CharField(
+        max_length=255,
+        verbose_name='Título del video',
+        blank=True,
+        null=True
+    )
+    tipo = models.CharField(
+        max_length=10,
+        choices=TIPO_VIDEO,
+        default='url',
+        verbose_name='Tipo de video'
+    )
+    url = models.URLField(
+        verbose_name='URL del video',
+        max_length=500,
+        blank=True,
+        null=True,
+        help_text='URL de YouTube, Facebook, Vimeo u otra plataforma.'
+    )
+    archivo = models.FileField(
+        upload_to='articulos/videos/',
+        verbose_name='Archivo de video',
+        blank=True,
+        null=True,
+        help_text='Formatos soportados: mp4, webm, ogg.'
+    )
+    orden = models.PositiveIntegerField(default=0, verbose_name='Orden')
+    fecha_agregado = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['orden', 'fecha_agregado']
+        verbose_name = 'Video del artículo'
+        verbose_name_plural = 'Videos del artículo'
+
+    def clean(self):
+        if self.tipo == 'url' and not self.url:
+            raise ValidationError('Debes proporcionar una URL si el tipo es URL externa.')
+        if self.tipo == 'archivo' and not self.archivo:
+            raise ValidationError('Debes subir un archivo si el tipo es Archivo de video.')
+
+    # ── Detectores de plataforma ──────────────────────────────────────────────
+
+    @property
+    def es_facebook(self):
+        """True si la URL pertenece a Facebook."""
+        return bool(self.url and 'facebook.com' in self.url)
+
+    @property
+    def es_youtube(self):
+        """True si la URL pertenece a YouTube."""
+        return bool(self.url and (
+            'youtube.com' in self.url or
+            'youtu.be' in self.url
+        ))
+
+    @property
+    def es_vimeo(self):
+        """True si la URL pertenece a Vimeo."""
+        return bool(self.url and 'vimeo.com' in self.url)
+
+    # ── URL de incrustación ───────────────────────────────────────────────────
+
+    @property
+    def embed_url(self):
+        """
+        Devuelve la URL lista para usar en <iframe>.
+        - YouTube  → https://www.youtube.com/embed/{id}
+        - Vimeo    → https://player.vimeo.com/video/{id}
+        - Facebook → None  (se incrusta con el SDK, no con iframe)
+        - Otros    → la URL original tal cual
+        """
+        if not self.url:
+            return None
+
+        # YouTube: soporta youtube.com/watch?v=ID  y  youtu.be/ID
+        yt = re.search(
+            r'(?:youtube\.com/watch\?v=|youtu\.be/)([^&?\s]+)',
+            self.url
+        )
+        if yt:
+            return f'https://www.youtube.com/embed/{yt.group(1)}'
+
+        # Vimeo: soporta vimeo.com/ID
+        vimeo = re.search(r'vimeo\.com/(\d+)', self.url)
+        if vimeo:
+            return f'https://player.vimeo.com/video/{vimeo.group(1)}'
+
+        # Facebook: el SDK usa la URL original, no un iframe embed
+        if self.es_facebook:
+            return None
+
+        # Cualquier otra plataforma: intentar con la URL directa
+        return self.url
+
+    # ── URL del archivo subido ────────────────────────────────────────────────
+
+    @property
+    def archivo_url(self):
+        """Devuelve la URL del archivo subido, o None si no existe."""
+        if self.archivo:
+            return self.archivo.url
+        return None
+
+    def __str__(self):
+        return f'{self.titulo or "Video"} - {self.articulo.titulo}'
+    
+class SeccionHistoria(models.Model):
+    """
+    Modelo para las secciones de Historia del municipio.
+    Cada instancia representa un apartado (Nomenclatura, Historia, Personajes Ilustres, etc.)
+    """
+ 
+    RUBROS = [
+        ('nomenclatura', 'Nomenclatura'),
+        ('historia', 'Historia'),
+        ('personajes_ilustres', 'Personajes Ilustres'),
+        ('cronologia_hechos', 'Cronología de Hechos Históricos'),
+        ('medio_fisico', 'Medio Físico'),
+        ('atractivos_turisticos', 'Atractivos Turísticos'),
+        ('gobierno', 'Gobierno'),
+        ('cronologia_presidentes', 'Cronología de Presidentes'),
+    ]
+ 
+    rubro = models.CharField(
+        max_length=50,
+        choices=RUBROS,
+        unique=True,
+        verbose_name='Rubro'
+    )
+    titulo = models.CharField(
+        max_length=200,
+        verbose_name='Título',
+        help_text='Título que se mostrará en el panel de contenido'
+    )
+    icono = models.CharField(
+        max_length=50,
+        default='book-open',
+        verbose_name='Icono (Feather Icons)',
+        help_text='Nombre del icono de Feather Icons (ej: book-open, map-pin, users)'
+    )
+    contenido = CKEditor5Field(
+        'Contenido',
+        config_name='extends',
+        blank=False,
+        null=False
+    )
+    orden = models.PositiveIntegerField(
+        default=0,
+        verbose_name='Orden de aparición',
+        help_text='Número para ordenar las secciones en el menú lateral'
+    )
+    activo = models.BooleanField(
+        default=True,
+        verbose_name='Activo',
+        help_text='Desactiva para ocultar esta sección sin eliminarla'
+    )
+    fecha_actualizacion = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Última actualización'
+    )
+ 
+    class Meta:
+        verbose_name = 'Sección de Historia'
+        verbose_name_plural = 'Secciones de Historia'
+        ordering = ['orden']
+ 
+    def __str__(self):
+        return self.get_rubro_display()
