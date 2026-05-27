@@ -1,5 +1,6 @@
 from django.db import models
 from django_ckeditor_5.fields import CKEditor5Field
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 class Categoria(models.Model):
@@ -67,7 +68,7 @@ class Comentario(models.Model):
 
 class VideoArticulo(models.Model):
     TIPO_VIDEO = [
-        ('url', 'URL externa (YouTube, Vimeo, etc.)'),
+        ('url', 'URL externa (YouTube, Facebook, Vimeo, etc.)'),
         ('archivo', 'Archivo de video'),
     ]
 
@@ -94,7 +95,7 @@ class VideoArticulo(models.Model):
         max_length=500,
         blank=True,
         null=True,
-        help_text='URL de YouTube, Vimeo u otra plataforma.'
+        help_text='URL de YouTube, Facebook, Vimeo u otra plataforma.'
     )
     archivo = models.FileField(
         upload_to='articulos/videos/',
@@ -112,11 +113,73 @@ class VideoArticulo(models.Model):
         verbose_name_plural = 'Videos del artículo'
 
     def clean(self):
-        from django.core.exceptions import ValidationError
         if self.tipo == 'url' and not self.url:
             raise ValidationError('Debes proporcionar una URL si el tipo es URL externa.')
         if self.tipo == 'archivo' and not self.archivo:
             raise ValidationError('Debes subir un archivo si el tipo es Archivo de video.')
+
+    # ── Detectores de plataforma ──────────────────────────────────────────────
+
+    @property
+    def es_facebook(self):
+        """True si la URL pertenece a Facebook."""
+        return bool(self.url and 'facebook.com' in self.url)
+
+    @property
+    def es_youtube(self):
+        """True si la URL pertenece a YouTube."""
+        return bool(self.url and (
+            'youtube.com' in self.url or
+            'youtu.be' in self.url
+        ))
+
+    @property
+    def es_vimeo(self):
+        """True si la URL pertenece a Vimeo."""
+        return bool(self.url and 'vimeo.com' in self.url)
+
+    # ── URL de incrustación ───────────────────────────────────────────────────
+
+    @property
+    def embed_url(self):
+        """
+        Devuelve la URL lista para usar en <iframe>.
+        - YouTube  → https://www.youtube.com/embed/{id}
+        - Vimeo    → https://player.vimeo.com/video/{id}
+        - Facebook → None  (se incrusta con el SDK, no con iframe)
+        - Otros    → la URL original tal cual
+        """
+        if not self.url:
+            return None
+
+        # YouTube: soporta youtube.com/watch?v=ID  y  youtu.be/ID
+        yt = re.search(
+            r'(?:youtube\.com/watch\?v=|youtu\.be/)([^&?\s]+)',
+            self.url
+        )
+        if yt:
+            return f'https://www.youtube.com/embed/{yt.group(1)}'
+
+        # Vimeo: soporta vimeo.com/ID
+        vimeo = re.search(r'vimeo\.com/(\d+)', self.url)
+        if vimeo:
+            return f'https://player.vimeo.com/video/{vimeo.group(1)}'
+
+        # Facebook: el SDK usa la URL original, no un iframe embed
+        if self.es_facebook:
+            return None
+
+        # Cualquier otra plataforma: intentar con la URL directa
+        return self.url
+
+    # ── URL del archivo subido ────────────────────────────────────────────────
+
+    @property
+    def archivo_url(self):
+        """Devuelve la URL del archivo subido, o None si no existe."""
+        if self.archivo:
+            return self.archivo.url
+        return None
 
     def __str__(self):
         return f'{self.titulo or "Video"} - {self.articulo.titulo}'
