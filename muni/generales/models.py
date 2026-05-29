@@ -251,6 +251,19 @@ class personalizacionPlantilla(models.Model):
         verbose_name="Anuncios"
     )
 
+    TAMANO_BANNER_CHOICES = [
+        ('pequeno',    'Pequeño (160×160)'),
+        ('mediano',    'Mediano (220×220)'),
+        ('grande',     'Grande (300×300)'),
+        ('panoramico', 'Panorámico (400×220)'),
+    ]
+    tamano_banner = models.CharField(
+        max_length=20,
+        choices=TAMANO_BANNER_CHOICES,
+        default='mediano',
+        verbose_name='Tamaño de banner'
+    )
+
     def __str__(self):
         return f"{self.municipio} - {self.get_entrada_display()}"
     

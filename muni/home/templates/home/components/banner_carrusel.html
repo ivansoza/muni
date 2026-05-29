@@ -47,8 +47,15 @@
 
   /* ── Tarjeta imagen ── */
   .bc-card {
-    width: 220px;
-    height: 220px;
+    {% if municipio.cortina.tamano_banner == "pequeno" %}
+      width: 160px; height: 160px;
+    {% elif municipio.cortina.tamano_banner == "grande" %}
+      width: 300px; height: 300px;
+    {% elif municipio.cortina.tamano_banner == "panoramico" %}
+      width: 400px; height: 220px;
+    {% else %}
+      width: 220px; height: 220px;
+    {% endif %}
     flex-shrink: 0;
     border-radius: 1rem;
     overflow: hidden;
@@ -206,7 +213,17 @@
 
   /* ── Responsive ── */
   @media (max-width: 768px) {
-    .bc-card { width: 160px; height: 160px; }
+    .bc-card {
+      {% if municipio.cortina.tamano_banner == "pequeno" %}
+        width: 110px; height: 110px;
+      {% elif municipio.cortina.tamano_banner == "grande" %}
+        width: 200px; height: 200px;
+      {% elif municipio.cortina.tamano_banner == "panoramico" %}
+        width: 260px; height: 145px;
+      {% else %}
+        width: 160px; height: 160px;
+      {% endif %}
+    }
     .bc-track { gap: .85rem; }
     .bc-lb__nav { display: none; }
   }

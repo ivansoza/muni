@@ -40,6 +40,36 @@
   }
   .banner-header p { color: #64748b; margin: .25rem 0 0; font-size: .92rem; }
 
+  /* ── Selector de tamaño ── */
+  .size-selector {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    background: #f1f5f9;
+    border-radius: var(--radius);
+    padding: .35rem .5rem;
+  }
+  .size-selector span {
+    font-size: .8rem;
+    color: #64748b;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .btn-size {
+    background: none;
+    border: 1.5px solid transparent;
+    border-radius: .5rem;
+    padding: .3rem .75rem;
+    font-size: .82rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+  .btn-size:hover { background: #fff; border-color: var(--cp); color: var(--cp); }
+  .btn-size.active { background: var(--grad); color: #fff; border-color: transparent; box-shadow: 0 2px 8px rgba(var(--cp-rgb),.3); }
+
   /* ── Botón agregar ── */
   .btn-add-banner {
     background: var(--grad);
@@ -296,14 +326,25 @@
       </h2>
       <p>Arrastra las tarjetas para reordenar · Los cambios se guardan automáticamente.</p>
     </div>
-    <button class="btn-add-banner" id="btn-open-create">
-      <!-- plus -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-      </svg>
-      Agregar banner
-    </button>
+    <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+      <!-- Selector de tamaño global -->
+      <div class="size-selector">
+        <span>Tamaño:</span>
+        <button class="btn-size {% if tamano_banner == 'pequeno' %}active{% endif %}" data-tamano="pequeno">Pequeño</button>
+        <button class="btn-size {% if tamano_banner == 'mediano' or not tamano_banner %}active{% endif %}" data-tamano="mediano">Mediano</button>
+        <button class="btn-size {% if tamano_banner == 'grande' %}active{% endif %}" data-tamano="grande">Grande</button>
+        <button class="btn-size {% if tamano_banner == 'panoramico' %}active{% endif %}" data-tamano="panoramico">Panorámico</button>
+      </div>
+
+      <button class="btn-add-banner" id="btn-open-create">
+        <!-- plus -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Agregar banner
+      </button>
+    </div>
   </div>
 
   <!-- Grid sortable -->
@@ -784,6 +825,38 @@ function updateCardInDOM(d) {
   tb.classList.toggle('is-hidden', !d.activo);
   tb.innerHTML = d.activo ? SVG.eye : SVG.eyeOff;
 }
+
+/* ─── SELECTOR DE TAMAÑO ─── */
+const SwalToast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 2500,
+  timerProgressBar: true,
+});
+
+document.querySelectorAll('.btn-size').forEach(btn => {
+  btn.addEventListener('click', async function() {
+    const tamano = this.dataset.tamano;
+    try {
+      const res = await fetch("{% url 'banner_size_update' %}", {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCsrf() },
+        body: new URLSearchParams({ tamano })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        SwalToast.fire({ icon: 'error', title: data.error || 'Error al guardar tamaño.' });
+        return;
+      }
+      document.querySelectorAll('.btn-size').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      SwalToast.fire({ icon: 'success', title: 'Tamaño de banner actualizado.' });
+    } catch {
+      SwalToast.fire({ icon: 'error', title: 'Error de conexión.' });
+    }
+  });
+});
 
 function buildCard(d) {
   return `

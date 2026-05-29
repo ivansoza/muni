@@ -4186,7 +4186,29 @@ class BannerView(LoginRequiredMixin, TemplateView):
         context['sidebar'] = 'Generales'
         context['regreso_url'] = reverse('dashboard')
         context['diapositivas'] = Diapositiva.objects.all()
+        municipio = Municipio.objects.filter(status='activo').first()
+        if municipio and hasattr(municipio, 'cortina'):
+            context['tamano_banner'] = municipio.cortina.tamano_banner
+        else:
+            context['tamano_banner'] = 'mediano'
         return context
+
+
+@require_POST
+@login_required
+def banner_size_update(request):
+    from generales.models import personalizacionPlantilla
+    municipio = Municipio.objects.filter(status='activo').first()
+    if not municipio:
+        return JsonResponse({'error': 'No hay municipio activo.'}, status=404)
+    tamano = request.POST.get('tamano', 'mediano')
+    opciones_validas = ['pequeno', 'mediano', 'grande', 'panoramico']
+    if tamano not in opciones_validas:
+        return JsonResponse({'error': 'Tamaño no válido.'}, status=400)
+    config, _ = personalizacionPlantilla.objects.get_or_create(municipio=municipio)
+    config.tamano_banner = tamano
+    config.save(update_fields=['tamano_banner'])
+    return JsonResponse({'ok': True, 'tamano': tamano})
 
 
 @require_POST

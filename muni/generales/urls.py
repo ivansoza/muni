@@ -8,7 +8,7 @@ from .views import CrearCarpetaView, SubirArchivoView, ListarCarpetasView, Edita
 from .views import ListaObligacionesView, ListaObligacionesCreateView, ListaObligacionesUpdateView, ListaObligacionesDeleteView, GestionarArticulosView, CrearArticuloView, EditarArticuloView, EliminarArticuloView, actualizar_orden_articulos, convocatoriaHome, filtrar_convocatorias, GestionarArticulosArView, CrearArticuloLigaView, EditarArticuloLigaArchivoView, ArticuloUpdateView
 from .views import crear_noticia, HablaHome, ArticuloCreateView, eliminar_articulo
 from .views import SesionesCabildoAdminView, SesionCabildoCreateView, SesionCabildoUpdateView
-from .views import BannerView, banner_create, banner_update, banner_delete, banner_reorder
+from .views import BannerView, banner_create, banner_update, banner_delete, banner_reorder, banner_size_update
 
 urlpatterns = [
     path("", CustomLoginView.as_view(),name='login'),
@@ -211,6 +211,7 @@ urlpatterns = [
     path('generales/banner/<int:pk>/editar/', banner_update, name='banner_update'),
     path('generales/banner/<int:pk>/eliminar/', banner_delete, name='banner_delete'),
     path('generales/banner/reordenar/', banner_reorder, name='banner_reorder'),
+    path('generales/banner/tamano/', banner_size_update, name='banner_size_update'),
     path('admin-historia/',               views.historia_seccion_lista,    name='historia_seccion_lista'),
     path('admin-historia/nueva/',         views.historia_seccion_crear,    name='historia_seccion_crear'),
     path('admin-historia/<int:pk>/editar/',    views.historia_seccion_editar,   name='historia_seccion_editar'),
