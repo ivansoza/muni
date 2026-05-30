@@ -115,39 +115,66 @@
             background: rgba(255, 255, 255, 0.7);
         }
 
-        /* Acordeón de trámite */
+        /* Acordeón de trámite: estilo unificado con Privacidad */
         .tramite-v3-card summary {
             list-style: none;
             cursor: pointer;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            gap: 0.6rem;
-            padding: 0.1rem 0 0.1rem;
+            align-items: center;
+            padding: 7px;
+            background-color: var(--color-primario);
+            color: #fff;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .tramite-v3-card summary:hover {
+            background-color: var(--color-secundario);
         }
 
         .tramite-v3-card summary::-webkit-details-marker { display: none; }
 
         .tramite-v3-card summary h3 {
             margin: 0;
-            flex: 1;
+            margin-left: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .tramite-v3-toggle-icon {
-            flex-shrink: 0;
-            width: 28px;
-            height: 28px;
+        .tramite-v3-toggle-btn {
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            background: #e5f0f3;
-            color: #0f6070;
-            display: grid;
-            place-items: center;
-            font-size: 1rem;
-            transition: transform 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
-        details[open] .tramite-v3-toggle-icon {
-            transform: rotate(180deg);
+        .tramite-v3-toggle-btn::before {
+            content: '+';
+            line-height: 1;
+        }
+
+        details[open] .tramite-v3-toggle-btn::before {
+            content: '-';
+        }
+
+        .tramite-v3-card summary:hover .tramite-v3-toggle-btn {
+            background-color: rgba(255, 255, 255, 0.25);
+            transform: rotate(90deg);
+            border-color: rgba(255, 255, 255, 0.6);
         }
 
         .tramite-v3-body {
@@ -252,9 +279,8 @@
             <article class="tramite-v3-card">
                 <details {% if forloop.first and forloop.last %}open{% endif %}>
                     <summary>
-                        <h3>{{ servicio.titulo }}</h3>
-                        <span class="tramite-v3-toggle-icon" aria-hidden="true">
-                            <i class="fas fa-chevron-down"></i>
+                        <h3><i class="fa-solid fa-laptop"></i> {{ servicio.titulo }}</h3>
+                        <span class="tramite-v3-toggle-btn" aria-hidden="true">
                         </span>
                     </summary>
 
