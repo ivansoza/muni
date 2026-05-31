@@ -51,9 +51,11 @@
                     <tr>
                         <th>#</th>
                         <th>Nombre</th>
+                        {% if config.plantilla_home_version != 3 %}
                         <th>Tipo</th>
                         <th>Original</th>
                         <th>Copia</th>
+                        {% endif %}
                         {% if config.plantilla_home_version != 3 %}
                         <th>Archivo principal</th>
                         {% endif %}
@@ -68,9 +70,11 @@
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ r.nombre }}</td>
+                        {% if config.plantilla_home_version != 3 %}
                         <td>{{ r.tipo_documento }}</td>
                         <td>{{ r.presentar_original|yesno:"Sí,No" }}</td>
                         <td>{{ r.presentar_copia|yesno:"Sí,No" }}</td>
+                        {% endif %}
                         {% if config.plantilla_home_version != 3 %}
                         <td>
                             {% if r.archivo_descarga %}
@@ -139,7 +143,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="{% if config.plantilla_home_version == 3 %}8{% else %}7{% endif %}" class="text-center text-muted">
+                        <td colspan="{% if config.plantilla_home_version == 3 %}4{% else %}7{% endif %}" class="text-center text-muted">
                             No hay requisitos registrados.
                         </td>
                     </tr>

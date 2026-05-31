@@ -92,12 +92,14 @@ class TramitesPorAreaView(TemplateView):
 
         organismo_id = self.kwargs.get('organismo_id')
         query = self.request.GET.get('q', '')
+        config = ConfiguracionServicio.objects.first()
 
         organismo = Dependencia.objects.filter(id=organismo_id).only('id', 'nombre').first()
 
         tramites = Servicio.objects.filter(organismo_id=organismo_id).prefetch_related(
             Prefetch('requisitos', queryset=QueSeRequiere.objects.prefetch_related('adjuntos')),
             Prefetch('instrucciones', queryset=ComoLoRealizo.objects.select_related('canal_presentacion').order_by('paso')),
+            'costos',
         )
 
         if query:
@@ -107,6 +109,7 @@ class TramitesPorAreaView(TemplateView):
             'organismo': organismo,
             'query': query,
             'tramites': tramites,
+            'mostrar_seccion_costo': (config.mostrar_seccion_costo if config else True),
         })
         return context
 

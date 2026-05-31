@@ -17,10 +17,9 @@
             max-width: 1200px;
             margin: 0 auto 1rem;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.6rem;
         }
 
         .tramites-v3-back {
@@ -40,16 +39,57 @@
             font-weight: 800;
         }
 
+        .tramites-v3-header {
+            width: 100%;
+        }
+
+        .tramites-v3-header .news-title {
+            margin: 0;
+        }
+
+        .tramites-v3-header p {
+            margin: 0.45rem 0 0;
+            color: #3b5661;
+        }
+
         .tramites-v3-search {
             max-width: 1200px;
             margin: 0 auto 1rem;
         }
 
-        .tramites-v3-search .input-group {
-            background: #ffffff;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid #cfe0e6;
+        .tramites-v3-search form {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .tramites-v3-search .buscador-input {
+            width: 500px;
+            max-width: 100%;
+            padding: 10px 15px;
+            font-size: 15px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .tramites-v3-search .buscador-input:focus {
+            outline: none;
+            border-color: var(--color-primario);
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+
+        .tramites-v3-search .buscador-input::placeholder {
+            color: #aaa;
+        }
+
+        .tramites-v3-search .search-btn {
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-weight: 600;
         }
 
         .tramites-v3-list {
@@ -115,45 +155,109 @@
             background: rgba(255, 255, 255, 0.7);
         }
 
-        /* Acordeón de trámite */
+        /* Acordeón de trámite: estilo unificado con Privacidad */
         .tramite-v3-card summary {
             list-style: none;
             cursor: pointer;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            gap: 0.6rem;
-            padding: 0.1rem 0 0.1rem;
+            align-items: center;
+            padding: 7px;
+            background-color: var(--color-primario);
+            color: #fff;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .tramite-v3-card summary:hover {
+            background-color: var(--color-secundario);
         }
 
         .tramite-v3-card summary::-webkit-details-marker { display: none; }
 
         .tramite-v3-card summary h3 {
             margin: 0;
-            flex: 1;
+            margin-left: 25px;
+            margin-top: 5px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .tramite-v3-toggle-icon {
-            flex-shrink: 0;
-            width: 28px;
-            height: 28px;
+        .tramite-v3-toggle-btn {
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            background: #e5f0f3;
-            color: #0f6070;
-            display: grid;
-            place-items: center;
-            font-size: 1rem;
-            transition: transform 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
-        details[open] .tramite-v3-toggle-icon {
-            transform: rotate(180deg);
+        .tramite-v3-toggle-btn::before {
+            content: '+';
+            line-height: 1;
+        }
+
+        details[open] .tramite-v3-toggle-btn::before {
+            content: '-';
+        }
+
+        .tramite-v3-card summary:hover .tramite-v3-toggle-btn {
+            background-color: rgba(255, 255, 255, 0.25);
+            transform: rotate(90deg);
+            border-color: rgba(255, 255, 255, 0.6);
         }
 
         .tramite-v3-body {
-            padding-top: 0.8rem;
-            border-top: 1px solid #e4ecef;
-            margin-top: 0.6rem;
+            padding: 20px;
+            margin-top: 0.55rem;
+            background-color: #f9f9f9;
+            border-top: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .tramite-v3-section-card {
+            padding: 15px;
+            background-color: #f1f1f1;
+            border-radius: 10px;
+            border-left: 5px solid var(--color-primario);
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .tramite-v3-section-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .tramite-v3-costos {
+            margin: 0;
+            padding-left: 1.2rem;
+            color: #2c4953;
+        }
+
+        .tramite-v3-costos li {
+            margin-bottom: 0.45rem;
+        }
+
+        .tramite-v3-costo-monto {
+            display: inline-block;
+            margin-left: 0.35rem;
+            padding: 0.12rem 0.45rem;
+            border-radius: 999px;
+            background: #e4f1f4;
+            color: #0f6070;
+            font-size: 0.82rem;
+            font-weight: 700;
         }
 
         /* Visor inline de archivos */
@@ -229,21 +333,22 @@
 <section class="tramites-v3-wrap" aria-label="Trámites por área">
     <div class="tramites-v3-topbar">
         <a class="tramites-v3-back" href="{% url 'homeServicios' %}">Regresar a áreas</a>
-        <h1 class="tramites-v3-title">
-            {% if organismo %}
-                Trámites de {{ organismo.nombre }}
-            {% else %}
-                Trámites del área
-            {% endif %}
-        </h1>
+        <div class="tramites-v3-header">
+            <h2 class="news-title">Trámites y Servicios <span>| Por Área</span></h2>
+            <p>
+                {% if organismo %}
+                    Consulta los trámites y requisitos disponibles para el área de {{ organismo.nombre }}.
+                {% else %}
+                    Consulta los trámites y requisitos disponibles para el área seleccionada.
+                {% endif %}
+            </p>
+        </div>
     </div>
 
     <div class="tramites-v3-search">
         <form method="GET" action="">
-            <div class="input-group">
-                <input type="text" class="form-control" name="q" placeholder="Buscar trámite en esta área" value="{{ query }}">
-                <button class="btn search-btn" type="submit">Buscar</button>
-            </div>
+            <input type="text" class="form-control buscador-input" name="q" placeholder="Buscar área..." value="{{ query }}">
+            <button class="btn search-btn" type="submit">Buscar</button>
         </form>
     </div>
 
@@ -252,47 +357,88 @@
             <article class="tramite-v3-card">
                 <details {% if forloop.first and forloop.last %}open{% endif %}>
                     <summary>
-                        <h3>{{ servicio.titulo }}</h3>
-                        <span class="tramite-v3-toggle-icon" aria-hidden="true">
-                            <i class="fas fa-chevron-down"></i>
+                        <h3><i class="fa-solid fa-laptop"></i> {{ servicio.titulo }}</h3>
+                        <span class="tramite-v3-toggle-btn" aria-hidden="true">
                         </span>
                     </summary>
 
                     <div class="tramite-v3-body">
-                        <p class="tramite-v3-descripcion">{{ servicio.descripcion }}</p>
+                        <div class="tramite-v3-section-card">
+                            <p class="tramite-v3-descripcion">{{ servicio.descripcion }}</p>
+                        </div>
 
-                        <h4 class="tramite-v3-subtitle">Requisitos</h4>
-                        <ul class="tramite-v3-points">
-                            {% for req in servicio.requisitos.all %}
-                                <li>
-                                    <strong>{{ req.nombre }}</strong>
-                                    {% if req.especificaciones %}
-                                        <br>{{ req.especificaciones }}
-                                    {% endif %}
+                        <div class="tramite-v3-section-card">
+                            <h4 class="tramite-v3-subtitle">Requisitos</h4>
+                            <ul class="tramite-v3-points">
+                                {% for req in servicio.requisitos.all %}
+                                    <li>
+                                        <strong>{{ req.nombre }}</strong>
+                                        {% if req.especificaciones %}
+                                            <br>{{ req.especificaciones }}
+                                        {% endif %}
 
-                                    {% if req.adjuntos.all %}
-                                        {% for adjunto in req.adjuntos.all %}
+                                        {% if req.adjuntos.all %}
+                                            {% for adjunto in req.adjuntos.all %}
+                                                <div class="req-archivo">
+                                                    {% if adjunto.es_imagen %}
+                                                        <img
+                                                            class="req-archivo-img"
+                                                            src="{{ adjunto.archivo.url }}"
+                                                            alt="Archivo de {{ req.nombre }}"
+                                                            loading="lazy"
+                                                        >
+                                                        <div class="req-archivo-actions">
+                                                            <a href="{{ adjunto.archivo.url }}" download class="req-archivo-btn req-archivo-btn--download">
+                                                                <i class="fas fa-download"></i> Descargar
+                                                            </a>
+                                                            <button type="button" class="req-archivo-btn req-archivo-btn--print" onclick="imprimirArchivo('{{ adjunto.archivo.url }}', 'imagen')">
+                                                                <i class="fas fa-print"></i> Imprimir
+                                                            </button>
+                                                        </div>
+                                                    {% elif adjunto.es_pdf %}
+                                                        <details class="req-archivo-pdf">
+                                                            <summary><i class="fas fa-file-pdf"></i> Ver PDF del requisito</summary>
+                                                            <object
+                                                                data-src="{% url 'requisito_adjunto_pdf_inline' adjunto.id %}"
+                                                                type="application/pdf"
+                                                                aria-label="PDF de {{ req.nombre }}"
+                                                            >
+                                                                <p>No se pudo mostrar el PDF en línea.</p>
+                                                            </object>
+                                                        </details>
+                                                        <div class="req-archivo-actions">
+                                                            <a href="{{ adjunto.archivo.url }}" download class="req-archivo-btn req-archivo-btn--download">
+                                                                <i class="fas fa-download"></i> Descargar
+                                                            </a>
+                                                            <button type="button" class="req-archivo-btn req-archivo-btn--print" onclick="imprimirArchivo('{{ adjunto.archivo.url }}', 'pdf')">
+                                                                <i class="fas fa-print"></i> Imprimir
+                                                            </button>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        {% elif req.archivo_descarga %}
                                             <div class="req-archivo">
-                                                {% if adjunto.es_imagen %}
+                                                {% if req.archivo_es_imagen %}
                                                     <img
                                                         class="req-archivo-img"
-                                                        src="{{ adjunto.archivo.url }}"
+                                                        src="{{ req.archivo_descarga.url }}"
                                                         alt="Archivo de {{ req.nombre }}"
                                                         loading="lazy"
                                                     >
                                                     <div class="req-archivo-actions">
-                                                        <a href="{{ adjunto.archivo.url }}" download class="req-archivo-btn req-archivo-btn--download">
+                                                        <a href="{{ req.archivo_descarga.url }}" download class="req-archivo-btn req-archivo-btn--download">
                                                             <i class="fas fa-download"></i> Descargar
                                                         </a>
-                                                        <button type="button" class="req-archivo-btn req-archivo-btn--print" onclick="imprimirArchivo('{{ adjunto.archivo.url }}', 'imagen')">
+                                                        <button type="button" class="req-archivo-btn req-archivo-btn--print" onclick="imprimirArchivo('{{ req.archivo_descarga.url }}', 'imagen')">
                                                             <i class="fas fa-print"></i> Imprimir
                                                         </button>
                                                     </div>
-                                                {% elif adjunto.es_pdf %}
+                                                {% elif req.archivo_es_pdf %}
                                                     <details class="req-archivo-pdf">
                                                         <summary><i class="fas fa-file-pdf"></i> Ver PDF del requisito</summary>
                                                         <object
-                                                            data-src="{% url 'requisito_adjunto_pdf_inline' adjunto.id %}"
+                                                            data-src="{% url 'requisito_pdf_inline' req.id %}"
                                                             type="application/pdf"
                                                             aria-label="PDF de {{ req.nombre }}"
                                                         >
@@ -300,74 +446,56 @@
                                                         </object>
                                                     </details>
                                                     <div class="req-archivo-actions">
-                                                        <a href="{{ adjunto.archivo.url }}" download class="req-archivo-btn req-archivo-btn--download">
+                                                        <a href="{{ req.archivo_descarga.url }}" download class="req-archivo-btn req-archivo-btn--download">
                                                             <i class="fas fa-download"></i> Descargar
                                                         </a>
-                                                        <button type="button" class="req-archivo-btn req-archivo-btn--print" onclick="imprimirArchivo('{{ adjunto.archivo.url }}', 'pdf')">
+                                                        <button type="button" class="req-archivo-btn req-archivo-btn--print" onclick="imprimirArchivo('{{ req.archivo_descarga.url }}', 'pdf')">
                                                             <i class="fas fa-print"></i> Imprimir
                                                         </button>
                                                     </div>
                                                 {% endif %}
                                             </div>
-                                        {% endfor %}
-                                    {% elif req.archivo_descarga %}
-                                        <div class="req-archivo">
-                                            {% if req.archivo_es_imagen %}
-                                                <img
-                                                    class="req-archivo-img"
-                                                    src="{{ req.archivo_descarga.url }}"
-                                                    alt="Archivo de {{ req.nombre }}"
-                                                    loading="lazy"
-                                                >
-                                                <div class="req-archivo-actions">
-                                                    <a href="{{ req.archivo_descarga.url }}" download class="req-archivo-btn req-archivo-btn--download">
-                                                        <i class="fas fa-download"></i> Descargar
-                                                    </a>
-                                                    <button type="button" class="req-archivo-btn req-archivo-btn--print" onclick="imprimirArchivo('{{ req.archivo_descarga.url }}', 'imagen')">
-                                                        <i class="fas fa-print"></i> Imprimir
-                                                    </button>
-                                                </div>
-                                            {% elif req.archivo_es_pdf %}
-                                                <details class="req-archivo-pdf">
-                                                    <summary><i class="fas fa-file-pdf"></i> Ver PDF del requisito</summary>
-                                                    <object
-                                                        data-src="{% url 'requisito_pdf_inline' req.id %}"
-                                                        type="application/pdf"
-                                                        aria-label="PDF de {{ req.nombre }}"
-                                                    >
-                                                        <p>No se pudo mostrar el PDF en línea.</p>
-                                                    </object>
-                                                </details>
-                                                <div class="req-archivo-actions">
-                                                    <a href="{{ req.archivo_descarga.url }}" download class="req-archivo-btn req-archivo-btn--download">
-                                                        <i class="fas fa-download"></i> Descargar
-                                                    </a>
-                                                    <button type="button" class="req-archivo-btn req-archivo-btn--print" onclick="imprimirArchivo('{{ req.archivo_descarga.url }}', 'pdf')">
-                                                        <i class="fas fa-print"></i> Imprimir
-                                                    </button>
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                    {% endif %}
-                                </li>
-                            {% empty %}
-                                <li>Sin requisitos registrados.</li>
-                            {% endfor %}
-                        </ul>
+                                        {% endif %}
+                                    </li>
+                                {% empty %}
+                                    <li>Sin requisitos registrados.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
 
-                        <h4 class="tramite-v3-subtitle">Cómo realizar el trámite</h4>
-                        <ol class="tramite-v3-points">
-                            {% for paso in servicio.instrucciones.all %}
-                                <li>
-                                    {% if paso.canal_presentacion %}
-                                        <strong>{{ paso.canal_presentacion }}</strong>:
-                                    {% endif %}
-                                    {{ paso.descripcion }}
-                                </li>
-                            {% empty %}
-                                <li>Sin pasos registrados.</li>
-                            {% endfor %}
-                        </ol>
+                        <div class="tramite-v3-section-card">
+                            <h4 class="tramite-v3-subtitle">Cómo realizar el trámite</h4>
+                            <ol class="tramite-v3-points">
+                                {% for paso in servicio.instrucciones.all %}
+                                    <li>
+                                        {% if paso.canal_presentacion %}
+                                            <strong>{{ paso.canal_presentacion }}</strong>:
+                                        {% endif %}
+                                        {{ paso.descripcion }}
+                                    </li>
+                                {% empty %}
+                                    <li>Sin pasos registrados.</li>
+                                {% endfor %}
+                            </ol>
+                        </div>
+
+                        {% if mostrar_seccion_costo and servicio.costos.all %}
+                        <div class="tramite-v3-section-card">
+                            <h4 class="tramite-v3-subtitle">Conceptos de costo</h4>
+                            <ul class="tramite-v3-costos">
+                                {% for costo in servicio.costos.all %}
+                                    <li>
+                                        <strong>{{ costo.concepto }}</strong>
+                                        {% if costo.costo %}
+                                            <span class="tramite-v3-costo-monto">$ {{ costo.costo }}</span>
+                                        {% endif %}
+                                    </li>
+                                {% empty %}
+                                    <li>Sin costos registrados.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
                     </div>
                 </details>
             </article>

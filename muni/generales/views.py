@@ -1421,9 +1421,9 @@ class GestionarServicioView(TemplateView):
             'costos': costos
         })
 
-        # ✅ Agrega esta línea para activar el botón condicional
         config = ConfiguracionServicio.objects.first()
         context['usar_requisitos_v2'] = config.usar_requisitos_v2 if config else False
+        context['ocultar_consiste_v3'] = bool(config and config.plantilla_home_version == 3)
         
         return context
     
