@@ -16,10 +16,15 @@
                 
                 {{ form.descripcion|as_crispy_field }}
 
+                {% if form.clasificacion %}
                 {{ form.clasificacion|as_crispy_field }}
+                {% endif %}
 
+                {% if form.sector %}
                 {{ form.sector|as_crispy_field }}
+                {% endif %}
 
+                {% if form.organismo %}
                 <div class="mb-3">
                     <label for="{{ form.organismo.id_for_label }}" class="form-label">
                         {{ form.organismo.label }}
@@ -34,12 +39,19 @@
                         <div class="text-danger">{{ form.organismo.errors }}</div>
                     {% endif %}
                 </div>
+                {% endif %}
 
+                {% if form.pago_en_linea %}
                 {{ form.pago_en_linea|as_crispy_field }}
+                {% endif %}
 
+                {% if form.ahora_en_linea %}
                 {{ form.ahora_en_linea|as_crispy_field }}
+                {% endif %}
 
+                {% if form.responsable %}
                 {{ form.responsable|as_crispy_field }}
+                {% endif %}
 
                 
                 <div class="form-group text-center">
@@ -58,12 +70,12 @@
                 <form id="formNuevoOrganismo">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="modalOrganismoLabel">Agregar nuevo organismo</h5>
+                            <h5 class="modal-title" id="modalOrganismoLabel">Agregar nueva área</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                         </div>
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label for="nombreOrganismo" class="form-label">Nombre del organismo</label>
+                                <label for="nombreOrganismo" class="form-label">Nombre del área</label>
                                 <input type="text" class="form-control" id="nombreOrganismo" required>
                             </div>
                         </div>

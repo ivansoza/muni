@@ -239,6 +239,27 @@
             margin-bottom: 0;
         }
 
+        .tramite-v3-costos {
+            margin: 0;
+            padding-left: 1.2rem;
+            color: #2c4953;
+        }
+
+        .tramite-v3-costos li {
+            margin-bottom: 0.45rem;
+        }
+
+        .tramite-v3-costo-monto {
+            display: inline-block;
+            margin-left: 0.35rem;
+            padding: 0.12rem 0.45rem;
+            border-radius: 999px;
+            background: #e4f1f4;
+            color: #0f6070;
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
         /* Visor inline de archivos */
         .req-archivo {
             margin-top: 0.5rem;
@@ -457,6 +478,24 @@
                                 {% endfor %}
                             </ol>
                         </div>
+
+                        {% if mostrar_seccion_costo and servicio.costos.all %}
+                        <div class="tramite-v3-section-card">
+                            <h4 class="tramite-v3-subtitle">Conceptos de costo</h4>
+                            <ul class="tramite-v3-costos">
+                                {% for costo in servicio.costos.all %}
+                                    <li>
+                                        <strong>{{ costo.concepto }}</strong>
+                                        {% if costo.costo %}
+                                            <span class="tramite-v3-costo-monto">$ {{ costo.costo }}</span>
+                                        {% endif %}
+                                    </li>
+                                {% empty %}
+                                    <li>Sin costos registrados.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
                     </div>
                 </details>
             </article>

@@ -2,6 +2,7 @@
 
 {% block content %}
 <div class="container-fluid">
+    {% if not ocultar_consiste_v3 %}
     <div class="card shadow-lg">
         <div class="card-header">
             <h2 class="mb-0">
@@ -21,6 +22,7 @@
             {% endif %}
         </div>
     </div>
+    {% endif %}
 
     <!-- Sección ¿Qué se requiere? -->
     <div class="card shadow-lg">
