@@ -67,8 +67,8 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.mixins import  PermissionRequiredMixin
 from noticias.forms import ImagenGaleriaForm
 
-from eventos.models import Articulo, Categoria as CategoriaHabla, Autor
-from eventos.forms import ArticuloForm
+from eventos.models import Articulo, Categoria as CategoriaHabla, Autor, ConfiguracionHabla, RecursoHabla
+from eventos.forms import ArticuloForm, ConfiguracionHablaForm, RecursoHablaForm
 from .forms import SeccionPlusForm, SeccionPlusArchivoFormSet
 from django.db import transaction
 from django.http import HttpResponseRedirect
@@ -3884,7 +3884,105 @@ class HablaHome(TemplateView, LoginRequiredMixin):
         context['secciones_historia'] = SeccionHistoria.objects.filter(activo=True).order_by('orden')
 
         return context
-    
+
+
+class QRHablaAdminView(LoginRequiredMixin, View):
+    template_name = 'hablaHijos/qr_habla_admin.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm('eventos.change_configuracionhabla')):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        config = ConfiguracionHabla.get_solo()
+        form = ConfiguracionHablaForm(instance=config)
+        return render(request, self.template_name, {'form': form, 'config': config})
+
+    def post(self, request):
+        config = ConfiguracionHabla.get_solo()
+        form = ConfiguracionHablaForm(request.POST, request.FILES, instance=config)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Imagen QR actualizada correctamente.')
+            return redirect('qr_habla_admin')
+        return render(request, self.template_name, {'form': form, 'config': config})
+
+
+class RecursoHablaListView(LoginRequiredMixin, View):
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm('eventos.view_recursohabla')):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        recursos = RecursoHabla.objects.all()
+        return render(request, 'hablaHijos/recursos_habla_lista.html', {'recursos': recursos})
+
+
+class RecursoHablaCreateView(LoginRequiredMixin, View):
+    template_name = 'hablaHijos/recurso_habla_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm('eventos.add_recursohabla')):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        return render(request, self.template_name, {'form': RecursoHablaForm(), 'accion': 'Agregar'})
+
+    def post(self, request):
+        form = RecursoHablaForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Recurso agregado correctamente.')
+            return redirect('recursos_habla_lista')
+        return render(request, self.template_name, {'form': form, 'accion': 'Agregar'})
+
+
+class RecursoHablaUpdateView(LoginRequiredMixin, View):
+    template_name = 'hablaHijos/recurso_habla_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.has_perm('eventos.change_recursohabla')):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, pk):
+        recurso = get_object_or_404(RecursoHabla, pk=pk)
+        return render(request, self.template_name, {'form': RecursoHablaForm(instance=recurso), 'recurso': recurso, 'accion': 'Editar'})
+
+    def post(self, request, pk):
+        recurso = get_object_or_404(RecursoHabla, pk=pk)
+        form = RecursoHablaForm(request.POST, request.FILES, instance=recurso)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Recurso actualizado correctamente.')
+            return redirect('recursos_habla_lista')
+        return render(request, self.template_name, {'form': form, 'recurso': recurso, 'accion': 'Editar'})
+
+
+def recurso_habla_eliminar(request, pk):
+    if not (request.user.is_superuser or request.user.has_perm('eventos.delete_recursohabla')):
+        raise PermissionDenied
+    recurso = get_object_or_404(RecursoHabla, pk=pk)
+    if request.method == 'POST':
+        recurso.archivo.delete(save=False)
+        recurso.delete()
+        messages.success(request, 'Recurso eliminado.')
+    return redirect('recursos_habla_lista')
+
+
+def recurso_habla_toggle(request, pk):
+    if not (request.user.is_superuser or request.user.has_perm('eventos.change_recursohabla')):
+        raise PermissionDenied
+    recurso = get_object_or_404(RecursoHabla, pk=pk)
+    if request.method == 'POST':
+        recurso.activo = not recurso.activo
+        recurso.save()
+    return redirect('recursos_habla_lista')
+
+
 class ArticuloCreateView(CreateView):
     model = Articulo
     form_class = ArticuloForm

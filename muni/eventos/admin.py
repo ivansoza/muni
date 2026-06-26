@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Categoria, Autor, Articulo, Comentario, Like, VideoArticulo
+from .models import Categoria, Autor, Articulo, Comentario, Like, VideoArticulo, ConfiguracionHabla, RecursoHabla
 # Register your models here.
 
 admin.site.register(Categoria)
@@ -8,6 +8,8 @@ admin.site.register(Articulo)
 admin.site.register(Comentario)
 admin.site.register(Like)
 admin.site.register(VideoArticulo)
+admin.site.register(ConfiguracionHabla)
+admin.site.register(RecursoHabla)
 
 from .models import SeccionHistoria
 

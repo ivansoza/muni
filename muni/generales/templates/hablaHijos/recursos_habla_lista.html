@@ -1,0 +1,235 @@
+{% extends "baseTemplate.html" %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+  .rec-wrapper { max-width: 960px; margin: 0 auto; }
+
+  .rec-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .rec-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .rec-header h1 i { color: #667eea; }
+
+  .btn-nuevo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    padding: 0.55rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .btn-nuevo:hover { opacity: 0.88; color: #fff; }
+
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #64748b;
+    font-size: 0.875rem;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-right: 8px;
+    transition: all 0.2s;
+  }
+  .btn-back:hover { border-color: #667eea; color: #667eea; }
+
+  .alert-msg {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    color: #15803d;
+    font-size: 0.875rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .rec-table-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+
+  .rec-table { width: 100%; border-collapse: collapse; }
+  .rec-table th {
+    background: #f8fafc;
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+  }
+  .rec-table td {
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.875rem;
+    color: #374151;
+    vertical-align: middle;
+  }
+  .rec-table tr:last-child td { border-bottom: none; }
+
+  .ext-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .ext-pdf  { background: #fee2e2; color: #991b1b; }
+  .ext-img  { background: #dbeafe; color: #1d4ed8; }
+  .ext-doc  { background: #fef3c7; color: #92400e; }
+  .ext-otro { background: #f3f4f6; color: #4b5563; }
+
+  .badge-activo   { background: #dcfce7; color: #16a34a; padding: 3px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+  .badge-inactivo { background: #fee2e2; color: #dc2626; padding: 3px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+
+  .acciones { display: flex; gap: 6px; }
+
+  .btn-ac {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0.3rem 0.75rem;
+    border-radius: 7px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .btn-ac:hover { opacity: 0.8; }
+  .btn-edit   { background: #eff6ff; color: #2563eb; }
+  .btn-toggle { background: #fefce8; color: #a16207; }
+  .btn-del    { background: #fef2f2; color: #dc2626; }
+
+  .empty-state {
+    padding: 3rem;
+    text-align: center;
+    color: #94a3b8;
+  }
+  .empty-state i { font-size: 2.5rem; margin-bottom: 10px; display: block; }
+</style>
+
+<div class="rec-wrapper">
+
+  <div class="rec-header">
+    <h1><i class="fas fa-folder-open"></i> Recursos – Habla con tus Hijos</h1>
+    <div>
+      <a href="{% url 'habla_home' %}" class="btn-back"><i class="fas fa-arrow-left"></i> Regresar</a>
+      <a href="{% url 'recurso_habla_crear' %}" class="btn-nuevo"><i class="fas fa-plus"></i> Nuevo recurso</a>
+    </div>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert-msg"><i class="fas fa-check-circle"></i> {{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="rec-table-card">
+    {% if recursos %}
+    <table class="rec-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Título</th>
+          <th>Archivo</th>
+          <th>Orden</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in recursos %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>
+            <strong>{{ r.titulo }}</strong>
+            {% if r.descripcion %}<br><small style="color:#94a3b8;">{{ r.descripcion }}</small>{% endif %}
+          </td>
+          <td>
+            {% with ext=r.extension %}
+              {% if ext == 'pdf' %}
+                <span class="ext-badge ext-pdf"><i class="fas fa-file-pdf"></i> PDF</span>
+              {% elif ext in 'jpg,jpeg,png,gif,webp' %}
+                <span class="ext-badge ext-img"><i class="fas fa-image"></i> Imagen</span>
+              {% elif ext in 'doc,docx' %}
+                <span class="ext-badge ext-doc"><i class="fas fa-file-word"></i> Word</span>
+              {% else %}
+                <span class="ext-badge ext-otro"><i class="fas fa-file"></i> {{ ext|upper }}</span>
+              {% endif %}
+            {% endwith %}
+          </td>
+          <td>{{ r.orden }}</td>
+          <td>
+            {% if r.activo %}
+              <span class="badge-activo">Activo</span>
+            {% else %}
+              <span class="badge-inactivo">Inactivo</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="acciones">
+              <a href="{% url 'recurso_habla_editar' r.pk %}" class="btn-ac btn-edit"><i class="fas fa-pencil-alt"></i> Editar</a>
+              <form method="post" action="{% url 'recurso_habla_toggle' r.pk %}" style="margin:0;">
+                {% csrf_token %}
+                <button type="submit" class="btn-ac btn-toggle">
+                  {% if r.activo %}<i class="fas fa-eye-slash"></i> Ocultar{% else %}<i class="fas fa-eye"></i> Mostrar{% endif %}
+                </button>
+              </form>
+              <form method="post" action="{% url 'recurso_habla_eliminar' r.pk %}" style="margin:0;"
+                    onsubmit="return confirm('¿Eliminar este recurso? El archivo también se borrará.')">
+                {% csrf_token %}
+                <button type="submit" class="btn-ac btn-del"><i class="fas fa-trash"></i> Eliminar</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+      <i class="fas fa-folder-open"></i>
+      <p>Aún no hay recursos. <a href="{% url 'recurso_habla_crear' %}">Agrega el primero.</a></p>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
