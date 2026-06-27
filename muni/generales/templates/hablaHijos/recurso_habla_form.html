@@ -1,0 +1,104 @@
+{% extends "baseTemplate.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+  .rf-wrapper { max-width: 640px; margin: 0 auto; }
+
+  .rf-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .rf-header-icon {
+    width: 46px; height: 46px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 1.1rem; flex-shrink: 0;
+  }
+  .rf-header h1 { font-size: 1.4rem; font-weight: 700; color: #1e293b; margin: 0; }
+  .rf-header p  { font-size: 0.85rem; color: #64748b; margin: 2px 0 0; }
+
+  .rf-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  .form-label { font-weight: 600; font-size: 0.875rem; color: #374151; }
+
+  {% if recurso and recurso.archivo %}
+  .file-preview {
+    margin-bottom: 1.25rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border: 1px dashed #c4b5fd;
+    border-radius: 10px;
+    text-align: center;
+  }
+  .file-preview p { font-size: 0.8rem; color: #7c3aed; font-weight: 600; margin-bottom: 8px; }
+  {% endif %}
+
+  .btn-guardar {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff; border: none;
+    padding: 0.65rem 1.75rem;
+    border-radius: 10px; font-size: 0.9rem; font-weight: 600;
+    cursor: pointer; transition: opacity 0.2s; margin-top: 1.25rem;
+  }
+  .btn-guardar:hover { opacity: 0.88; }
+
+  .btn-cancelar {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: #64748b; font-size: 0.875rem; font-weight: 500;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border: 1px solid #e2e8f0; border-radius: 8px;
+    transition: all 0.2s; margin-left: 10px; margin-top: 1.25rem;
+  }
+  .btn-cancelar:hover { border-color: #667eea; color: #667eea; }
+</style>
+
+<div class="rf-wrapper">
+
+  <div class="rf-header">
+    <div class="rf-header-icon"><i class="fas fa-file-upload"></i></div>
+    <div>
+      <h1>{{ accion }} recurso</h1>
+      <p>Los recursos se mostrarán como desplegables en la sección pública de Habla con tus Hijos.</p>
+    </div>
+  </div>
+
+  <div class="rf-card">
+
+    {% if recurso and recurso.archivo %}
+    <div class="file-preview">
+      <p><i class="fas fa-paperclip"></i> Archivo actual</p>
+      <a href="{{ recurso.archivo.url }}" target="_blank" style="font-size:0.85rem; color:#4f46e5;">
+        <i class="fas fa-external-link-alt"></i> {{ recurso.archivo.name|truncatechars:60 }}
+      </a>
+    </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <div>
+        <button type="submit" class="btn-guardar">
+          <i class="fas fa-save"></i> Guardar recurso
+        </button>
+        <a href="{% url 'recursos_habla_lista' %}" class="btn-cancelar">
+          <i class="fas fa-times"></i> Cancelar
+        </a>
+      </div>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

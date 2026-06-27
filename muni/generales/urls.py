@@ -6,7 +6,7 @@ from .views import TransparenciaView, crear_seccion, EjercicioFiscalListView, Ej
 from . import views
 from .views import CrearCarpetaView, SubirArchivoView, ListarCarpetasView, EditarCarpetaView, GestionarCarpetaView, EliminarCarpetaView, EditarArchivoView, eliminar_archivo
 from .views import ListaObligacionesView, ListaObligacionesCreateView, ListaObligacionesUpdateView, ListaObligacionesDeleteView, GestionarArticulosView, CrearArticuloView, EditarArticuloView, EliminarArticuloView, actualizar_orden_articulos, convocatoriaHome, filtrar_convocatorias, GestionarArticulosArView, CrearArticuloLigaView, EditarArticuloLigaArchivoView, ArticuloUpdateView
-from .views import crear_noticia, HablaHome, ArticuloCreateView, eliminar_articulo
+from .views import crear_noticia, HablaHome, ArticuloCreateView, eliminar_articulo, QRHablaAdminView, RecursoHablaListView, RecursoHablaCreateView, RecursoHablaUpdateView, recurso_habla_eliminar, recurso_habla_toggle
 from .views import SesionesCabildoAdminView, SesionCabildoCreateView, SesionCabildoUpdateView
 
 urlpatterns = [
@@ -180,6 +180,12 @@ urlpatterns = [
 
 #----------------------- Habla con tus hijos ------------------------------
     path('habla_home/', HablaHome.as_view(), name='habla_home'),
+    path('habla_home/qr/', QRHablaAdminView.as_view(), name='qr_habla_admin'),
+    path('habla_home/recursos/', RecursoHablaListView.as_view(), name='recursos_habla_lista'),
+    path('habla_home/recursos/nuevo/', RecursoHablaCreateView.as_view(), name='recurso_habla_crear'),
+    path('habla_home/recursos/<int:pk>/editar/', RecursoHablaUpdateView.as_view(), name='recurso_habla_editar'),
+    path('habla_home/recursos/<int:pk>/eliminar/', recurso_habla_eliminar, name='recurso_habla_eliminar'),
+    path('habla_home/recursos/<int:pk>/toggle/', recurso_habla_toggle, name='recurso_habla_toggle'),
     path('registro_articulo/', ArticuloCreateView.as_view(), name='registro_articulo'),
     path('agregar_categoria_habla/', views.agregar_categoria_habla, name='agregar_categoria_habla'),
     path('agregar_autor/', views.agregar_autor, name='agregar_autor'),

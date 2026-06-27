@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic.base import TemplateView
-from .models import Articulo, Categoria
+from .models import Articulo, Categoria, ConfiguracionHabla, RecursoHabla
 from django.shortcuts import render, get_object_or_404
 import random
 from django.http import JsonResponse
@@ -27,6 +27,8 @@ class HomeHablaView(TemplateView):
             context['articulos'] = Articulo.objects.filter(habla=True).order_by('-fecha_publicacion')
             # Seleccionar el último artículo de la categoría "Habla con tus hijos"
             context['articulo_destacado'] = Articulo.objects.filter(destacado=True,habla=True).order_by('-fecha_publicacion').first()
+            context['qr_habla'] = ConfiguracionHabla.get_solo()
+            context['recursos_habla'] = RecursoHabla.objects.filter(activo=True)
         elif filtro == 'ven_vive':
             context['articulos'] = Articulo.objects.filter(ven_vive=True).order_by('-fecha_publicacion')
             # Seleccionar el último artículo de la categoría "Ven vive y vuelve a tu municipio"
