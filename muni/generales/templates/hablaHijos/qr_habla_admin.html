@@ -1,0 +1,234 @@
+{% extends "baseTemplate.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+  .qr-admin-wrapper {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .qr-admin-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .qr-admin-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .qr-admin-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+  }
+
+  .qr-admin-header p {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 2px 0 0;
+  }
+
+  .qr-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  .qr-current {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 100%);
+    border-radius: 12px;
+    margin-bottom: 1.75rem;
+    border: 1px dashed #c4b5fd;
+  }
+
+  .qr-current-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #7c3aed;
+  }
+
+  .qr-current img {
+    width: 160px;
+    height: 160px;
+    object-fit: contain;
+    border-radius: 10px;
+    background: #fff;
+    padding: 8px;
+    box-shadow: 0 4px 16px rgba(118, 75, 162, 0.15);
+  }
+
+  .qr-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 1.5rem;
+    color: #94a3b8;
+    font-size: 0.875rem;
+  }
+
+  .qr-empty-state i { font-size: 2rem; }
+
+  .form-section-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .form-section-title i { color: #7c3aed; }
+
+  .qr-hint {
+    margin-top: 0.6rem;
+    font-size: 0.8rem;
+    color: #64748b;
+    background: #f8fafc;
+    border-left: 3px solid #667eea;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .btn-guardar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    border: none;
+    padding: 0.65rem 1.75rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-top: 1.25rem;
+  }
+
+  .btn-guardar:hover { opacity: 0.88; }
+
+  .btn-regresar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #64748b;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    transition: all 0.2s;
+    margin-left: 10px;
+    margin-top: 1.25rem;
+  }
+
+  .btn-regresar:hover {
+    border-color: #667eea;
+    color: #667eea;
+  }
+
+  .alert-success-custom {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    color: #15803d;
+    font-size: 0.875rem;
+    margin-bottom: 1.25rem;
+  }
+</style>
+
+<div class="qr-admin-wrapper">
+
+  <div class="qr-admin-header">
+    <div class="qr-admin-header-icon">
+      <i class="fas fa-qrcode"></i>
+    </div>
+    <div>
+      <h1>QR de Recursos – Habla con tus Hijos</h1>
+      <p>Sube o actualiza el código QR que aparece en la página pública de la sección.</p>
+    </div>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert-success-custom">
+        <i class="fas fa-check-circle"></i>
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="qr-card">
+
+    <div class="qr-current">
+      {% if config.imagen_qr %}
+        <span class="qr-current-label"><i class="fas fa-image"></i> QR actual</span>
+        <img src="{{ config.imagen_qr.url }}" alt="QR actual">
+      {% else %}
+        <div class="qr-empty-state">
+          <i class="fas fa-qrcode"></i>
+          <span>Aún no se ha subido ningún código QR.</span>
+        </div>
+      {% endif %}
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <p class="form-section-title">
+        <i class="fas fa-upload"></i>
+        {% if config.imagen_qr %}Actualizar imagen QR{% else %}Subir imagen QR{% endif %}
+      </p>
+
+      {{ form.imagen_qr }}
+
+      <div class="qr-hint">
+        <i class="fas fa-info-circle"></i>
+        Sube la imagen PNG/JPG de tu código QR. Al escanearlo desde un celular abrirá directamente la carpeta de Drive con los recursos del blog.
+      </div>
+
+      <div>
+        <button type="submit" class="btn-guardar">
+          <i class="fas fa-save"></i>
+          Guardar QR
+        </button>
+        <a href="{% url 'habla_home' %}" class="btn-regresar">
+          <i class="fas fa-arrow-left"></i>
+          Regresar
+        </a>
+      </div>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

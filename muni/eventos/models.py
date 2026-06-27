@@ -49,6 +49,56 @@ class Articulo(models.Model):
     def __str__(self):
         return f'{self.titulo} - {self.autor} - {self.fecha_publicacion}' 
     
+class RecursoHabla(models.Model):
+    titulo = models.CharField(max_length=255, verbose_name='Título del recurso')
+    descripcion = models.CharField(max_length=500, blank=True, null=True, verbose_name='Descripción breve')
+    archivo = models.FileField(upload_to='habla_con_tus_hijos/recursos/', verbose_name='Archivo')
+    orden = models.PositiveIntegerField(default=0, verbose_name='Orden')
+    activo = models.BooleanField(default=True, verbose_name='Activo')
+    fecha_subida = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Recurso – Habla con tus Hijos'
+        verbose_name_plural = 'Recursos – Habla con tus Hijos'
+        ordering = ['orden', 'titulo']
+
+    def __str__(self):
+        return self.titulo
+
+    def extension(self):
+        name = self.archivo.name
+        return name.split('.')[-1].lower() if '.' in name else ''
+
+    def es_pdf(self):
+        return self.extension() == 'pdf'
+
+    def es_imagen(self):
+        return self.extension() in ['jpg', 'jpeg', 'png', 'gif', 'webp']
+
+
+class ConfiguracionHabla(models.Model):
+    imagen_qr = models.ImageField(
+        upload_to='habla_con_tus_hijos/qr/',
+        verbose_name='Imagen QR – Recursos Habla',
+        blank=True,
+        null=True,
+        help_text='Código QR que enlaza a la carpeta de Drive con recursos para "Habla con tus Hijos".'
+    )
+
+    class Meta:
+        verbose_name = 'Configuración – Habla con tus Hijos'
+        verbose_name_plural = 'Configuración – Habla con tus Hijos'
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def get_solo(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+
 class Like(models.Model):
     articulo = models.ForeignKey(Articulo, on_delete=models.CASCADE)
     ip_address = models.GenericIPAddressField()

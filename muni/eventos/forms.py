@@ -1,5 +1,5 @@
 from django import forms
-from .models import Articulo, Categoria, Autor, VideoArticulo
+from .models import Articulo, Categoria, Autor, VideoArticulo, ConfiguracionHabla, RecursoHabla
 from django_ckeditor_5.widgets import CKEditor5Widget
 from django.forms import inlineformset_factory
 
@@ -148,4 +148,25 @@ class SeccionHistoriaForm(forms.ModelForm):
             'icono':  forms.TextInput(attrs={'placeholder': 'Ej: book-open'}),
             'orden':  forms.NumberInput(attrs={'min': 0}),
         }
- 
+
+
+class ConfiguracionHablaForm(forms.ModelForm):
+    class Meta:
+        model = ConfiguracionHabla
+        fields = ['imagen_qr']
+        widgets = {
+            'imagen_qr': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+        }
+
+
+class RecursoHablaForm(forms.ModelForm):
+    class Meta:
+        model = RecursoHabla
+        fields = ['titulo', 'descripcion', 'archivo', 'orden', 'activo']
+        widgets = {
+            'titulo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del recurso'}),
+            'descripcion': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Descripción breve (opcional)'}),
+            'archivo': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+            'orden': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
+            'activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
