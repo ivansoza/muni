@@ -6,7 +6,19 @@ import random
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.cache import cache
+from django.core.files.storage import default_storage
+import re
 from .models import SeccionHistoria
+
+
+def _rewrite_legacy_media_urls(content):
+    if not content:
+        return content
+
+    def build_s3_url(match):
+        return default_storage.url(f"media/uploads/{match.group(1)}")
+
+    return re.sub(r"/media/media/uploads/([^\"'\\s>]+)", build_s3_url, content)
 
 # Create your views here.
 class HomeEventosView(TemplateView):
@@ -113,9 +125,11 @@ def articulo_detalle(request, id):
 
     # video_url del artículo (el campo legacy que ya tenías)
     video_embed_url = convertir_a_embed(articulo.video_url)
+    contenido_html = _rewrite_legacy_media_urls(articulo.contenido)
 
     return render(request, 'articulo_habla.html', {
         'articulo': articulo,
+        'contenido_html': contenido_html,
         'comentarios': comentarios,
         'etiquetas': etiquetas,
         'articulo_anterior': articulo_anterior,

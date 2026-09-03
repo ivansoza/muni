@@ -1324,8 +1324,7 @@ def custom_upload_function(request):
         # Guardar el archivo en la carpeta de "media/uploads/"
         saved_path = default_storage.save(file_path, ContentFile(upload.read()))
 
-        # Construir la URL pública del archivo
-        file_url = f"/media/{saved_path}"
+        file_url = default_storage.url(saved_path)
 
         return JsonResponse({"url": file_url})
     
