@@ -40,6 +40,11 @@ media
 # Local environment settings
 .env
 
+# Deployment artifacts
+db_*.dump
+staticfiles/
+muni/muni/settings_prod.py
+
 # VS Code settings
 .vscode/
 
