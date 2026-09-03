@@ -3,18 +3,10 @@
 <style>
     .hero-section {
         position: relative;
-        background: linear-gradient(
-            135deg,
-            rgba(var(--color-primario-rgb), 0.85), 
-            rgba(var(--color-secundario-rgb), 0.85)
-        ),
-        url(
-            {% if municipio.banner %}
-                '{{ municipio.banner.url }}'
-            {% else %}
-                'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'
-            {% endif %}
-        );
+        background: linear-gradient(135deg,
+            rgba(var(--color-primario-rgb), 0.85),
+            rgba(var(--color-secundario-rgb), 0.85)),
+        url({% if municipio.banner %}'{{ municipio.banner.url|safe }}'{% else %}'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'{% endif %});
         background-size: cover;
         background-position: center;
         color: white;
@@ -108,12 +100,12 @@
             flex-direction: column;
             text-align: center;
         }
-        
+
         .hero-content {
             padding-right: 0;
             margin-bottom: 50px;
         }
-        
+
         .hero-section p {
             margin-left: auto;
             margin-right: auto;
@@ -125,11 +117,11 @@
             padding: 100px 0 150px;
             clip-path: path('M0,0 L100%,0 L100%,90% C75%,97% 50%,92% 25%,95% L0,100% Z');
         }
-        
+
         .hero-section h1 {
             font-size: 2.8rem;
         }
-        
+
         .hero-image {
             flex: 0 0 300px;
         }
@@ -137,27 +129,28 @@
 </style>
 
 <section class="hero-section">
-  
-    
+
+
     <div class="container hero-container">
         <div class="hero-content">
             <h1>{{ municipio.nombre|default:"Bienvenido a nuestro Municipio" }}</h1>
-            
+
             {% if municipio.descripcion %}
-                <p>{{ municipio.descripcion }}</p>
+            <p>{{ municipio.descripcion }}</p>
             {% else %}
-                <p>Aún no has agregado la descripción de tu municipio. ¡Hazlo ahora para que todos lo conozcan!</p>
+            <p>Aún no has agregado la descripción de tu municipio. ¡Hazlo ahora para que todos lo conozcan!</p>
             {% endif %}
-            
+
             <a href="#servicios" class="btn btn-hero">Explora nuestros servicios <i class="fas fa-arrow-right"></i></a>
         </div>
-        
+
         <div class="hero-image">
             <div class="hero-logo-container">
                 {% if municipio.logotipo %}
-                    <img src="{{municipio.logotipo.url}}" alt="Logo del municipio" class="img-fluid" style="width: 200px;">
+                <img src="{{municipio.logotipo.url}}" alt="Logo del municipio" class="img-fluid" style="width: 200px;">
                 {% else %}
-                    <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Logo predeterminado" class="img-fluid" style="width: 200px;">
+                <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Logo predeterminado" class="img-fluid"
+                    style="width: 200px;">
                 {% endif %}
             </div>
         </div>
@@ -165,12 +158,12 @@
 </section>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Efecto sutil de paralaje al hacer scroll
-        window.addEventListener('scroll', function() {
+        window.addEventListener('scroll', function () {
             const scrollPosition = window.pageYOffset;
             const heroSection = document.querySelector('.hero-section');
-            
+
             if (heroSection) {
                 heroSection.style.backgroundPositionY = scrollPosition * 0.3 + 'px';
             }
