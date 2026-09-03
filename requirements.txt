@@ -9,7 +9,3 @@ libsass==0.23.0
 pillow==11.1.0
 sqlparse==0.5.3
 django-ckeditor-5==0.2.17
-gunicorn==23.0.0
-psycopg2-binary==2.9.10
-django-storages==1.14.4
-boto3==1.35.99
