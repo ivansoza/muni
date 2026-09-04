@@ -16,11 +16,8 @@
         top: 0;
         left: 0;
         background-image: url({% if municipio.banner %}'{{ municipio.banner.url|safe }}'{% else %}
- 'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'
-
-            {
-            % endif %
-        });
+            'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'
+            {% endif %});
         background-size: cover;
         background-position: center;
         clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%);

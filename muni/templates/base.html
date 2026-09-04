@@ -24,53 +24,13 @@
 
     <style>
         :root {
-                {
-                % if municipio.colores.exists %
-            }
-
-            --color-primario: {
-                    {
-                    municipio.colores.first.color_primario_dark
-                }
-            }
-
-            ;
-
-            --color-secundario: {
-                    {
-                    municipio.colores.first.color_primario
-                }
-            }
-
-            ;
-
-            --color-iconos: {
-                    {
-                    municipio.colores.first.color_secundario
-                }
-            }
-
-            ;
-
-            --color-primario-rgb: {
-                    {
-                    municipio.colores.first.color_primario_dark_rgb
-                }
-            }
-
-            ;
-
-            --color-secundario-rgb: {
-                    {
-                    municipio.colores.first.color_primario_rgb
-                }
-            }
-
-            ;
-
-                {
-                % else %
-            }
+            {% if municipio.colores.exists %}
+            --color-primario: {{ municipio.colores.first.color_primario_dark }};
+            --color-secundario: {{ municipio.colores.first.color_primario }};
+            --color-iconos: {{ municipio.colores.first.color_secundario }};
+            --color-primario-rgb: {{ municipio.colores.first.color_primario_dark_rgb }};
+            --color-secundario-rgb: {{ municipio.colores.first.color_primario_rgb }};
+            {% else %}
 
             --color-primario: #1e4765;
             --color-secundario: #295E84;
@@ -83,9 +43,7 @@
             94,
             132;
 
-                {
-                % endif %
-            }
+            {% endif %}
 
             --color-gradiente: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
             --degradado: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
@@ -104,11 +62,8 @@
             background: linear-gradient(rgba(var(--color-primario-rgb), 0.8),
                 rgba(var(--color-secundario-rgb), 0.8)),
             url({% if municipio.banner %}'{{ municipio.banner.url|safe }}'{% else %}
- 'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'
-
-                {
-                % endif %
-            });
+                'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'
+                {% endif %});
 
             background-size: cover;
             background-position: center;

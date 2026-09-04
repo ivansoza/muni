@@ -6,11 +6,8 @@
         background: linear-gradient(rgba(var(--color-primario-rgb), 0.8),
             rgba(var(--color-secundario-rgb), 0.8)),
         url({% if municipio.banner %}'{{ municipio.banner.url|safe }}'{% else %}
- 'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'
-
-            {
-            % endif %
-        });
+            'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'
+            {% endif %});
         background-size: cover;
         background-position: center;
         color: white;
