@@ -278,8 +278,7 @@ USE_TZ = True
 
 STATICFILES_DIRS = [BASE_DIR / "static"]  # Carpeta de archivos estáticos
 STATIC_ROOT = BASE_DIR / "staticfiles"  # Carpeta para archivos estáticos recolectados (opcional)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/

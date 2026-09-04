@@ -15,13 +15,12 @@
         height: 100%;
         top: 0;
         left: 0;
-        background-image: url(
-            {% if municipio.banner %}
-                '{{ municipio.banner.url }}'
-            {% else %}
-                'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'
-            {% endif %}
-        );
+        background-image: url({% if municipio.banner %}'{{ municipio.banner.url|safe }}'{% else %}
+ 'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'
+
+            {
+            % endif %
+        });
         background-size: cover;
         background-position: center;
         clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%);
@@ -33,12 +32,10 @@
         height: 100%;
         top: 0;
         left: 0;
-        background: linear-gradient(
-            to right,
-            rgba(var(--color-primario-rgb), 0.9) 0%,
-            rgba(var(--color-primario-rgb), 0.8) 50%,
-            rgba(var(--color-primario-rgb), 0.6) 100%
-        );
+        background: linear-gradient(to right,
+                rgba(var(--color-primario-rgb), 0.9) 0%,
+                rgba(var(--color-primario-rgb), 0.8) 50%,
+                rgba(var(--color-primario-rgb), 0.6) 100%);
         clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%);
     }
 
@@ -143,11 +140,11 @@
             max-width: 100%;
             padding: 0 30px;
         }
-        
+
         .hero-section h1 {
             font-size: 3rem;
         }
-        
+
         .logo-panel {
             right: 5%;
         }
@@ -157,21 +154,22 @@
         .hero-section {
             height: 750px;
         }
-        
-        .hero-bg, .hero-overlay {
+
+        .hero-bg,
+        .hero-overlay {
             clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%);
         }
-        
+
         .hero-section h1 {
             font-size: 2.5rem;
         }
-        
+
         .logo-panel {
             right: 50%;
             transform: translateX(50%) translateY(40px);
             padding: 30px;
         }
-        
+
         .logo-panel:hover {
             transform: translateX(50%) translateY(30px);
         }
@@ -182,27 +180,29 @@
     <div class="hero-bg"></div>
     <div class="hero-overlay"></div>
     <div class="hero-decorator"></div>
-    
+
     <div class="container hero-content-wrapper">
         <div class="hero-content">
             <div class="municipality-tag">Gobierno Municipal</div>
             <h1>{{ municipio.nombre|default:"Bienvenido a nuestro Municipio" }}</h1>
-            
+
             {% if municipio.descripcion %}
-                <p>{{ municipio.descripcion }}</p>
+            <p>{{ municipio.descripcion }}</p>
             {% else %}
-                <p>Aún no has agregado la descripción de tu municipio. ¡Hazlo ahora para que todos lo conozcan!</p>
+            <p>Aún no has agregado la descripción de tu municipio. ¡Hazlo ahora para que todos lo conozcan!</p>
             {% endif %}
-            
+
             <a href="#servicios" class="btn btn-hero">Explora nuestros servicios <i class="fas fa-arrow-right"></i></a>
         </div>
     </div>
-    
+
     <div class="logo-panel">
         {% if municipio.logotipo %}
-            <img src="{{municipio.logotipo.url}}" alt="Logo del municipio" class="img-fluid" style="width: 180px; height: 180px; object-fit: contain;">
+        <img src="{{municipio.logotipo.url}}" alt="Logo del municipio" class="img-fluid"
+            style="width: 180px; height: 180px; object-fit: contain;">
         {% else %}
-            <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Logo predeterminado" class="img-fluid" style="width: 180px; height: 180px; object-fit: contain;">
+        <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Logo predeterminado" class="img-fluid"
+            style="width: 180px; height: 180px; object-fit: contain;">
         {% endif %}
     </div>
 </section>
