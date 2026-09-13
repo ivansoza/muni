@@ -1,6 +1,7 @@
 # app_name/context_processors.py
 from informacion_municipal.models import Municipio
 from generales.models import ContadorVisitas
+from django.contrib.auth.models import AnonymousUser
 
 
 def municipio(request):
@@ -8,7 +9,7 @@ def municipio(request):
     return {'municipio': municipio_obj}
 
 def user_info(request):
-    user = request.user
+    user = getattr(request, 'user', AnonymousUser())
     context = {
         # Información del usuario
         'user_first_name': user.first_name if user.is_authenticated and user.first_name else "nombre anonimo",

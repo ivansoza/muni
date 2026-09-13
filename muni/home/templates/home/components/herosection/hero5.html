@@ -3,12 +3,10 @@
 <style>
     .hero-section {
         position: relative;
-        background: linear-gradient(
-            145deg,
+        background: linear-gradient(145deg,
             rgba(var(--color-primario-rgb), 0.92) 0%,
-            rgba(var(--color-secundario-rgb), 0.88) 100%
-        ),
-        url({% if municipio.banner %}'{{ municipio.banner.url }}'{% else %}'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'{% endif %});
+            rgba(var(--color-secundario-rgb), 0.88) 100%),
+        url({% if municipio.banner %}'{{ municipio.banner.url|safe }}'{% else %}'https://aventurasdeunencuestador.travel.blog/wp-content/uploads/2019/07/maquinita.jpg'{% endif %});
         background-size: cover;
         background-position: center;
         color: white;
@@ -36,7 +34,7 @@
         height: 100px;
         object-fit: contain;
         transition: transform 0.3s ease;
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     }
 
     .hero-logo:hover {
@@ -73,11 +71,11 @@
         margin-bottom: 2.5rem;
         position: relative;
         padding-left: 2rem;
-        border-left: 2px solid rgba(255,255,255,0.2);
+        border-left: 2px solid rgba(255, 255, 255, 0.2);
     }
 
     .btn-hero {
-        background: rgba(255,255,255,0.1);
+        background: rgba(255, 255, 255, 0.1);
         color: white;
         padding: 1rem 2rem;
         border: none;
@@ -97,17 +95,15 @@
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(255,255,255,0.2),
-            transparent
-        );
+        background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent);
         transition: 0.5s;
     }
 
     .btn-hero:hover {
-        background: rgba(255,255,255,0.2);
+        background: rgba(255, 255, 255, 0.2);
         transform: translateY(-2px);
     }
 
@@ -120,17 +116,17 @@
             flex-direction: column;
             text-align: center;
         }
-        
+
         .hero-title::after {
             left: 50%;
             transform: translateX(-50%);
         }
-        
+
         .hero-content {
             margin-left: 0;
             text-align: center;
         }
-        
+
         .hero-description {
             padding-left: 0;
             border-left: none;
@@ -141,11 +137,11 @@
         .hero-title {
             font-size: 2.2rem;
         }
-        
+
         .hero-description {
             font-size: 1.1rem;
         }
-        
+
         .btn-hero {
             width: 100%;
             justify-content: center;
@@ -157,20 +153,21 @@
     <div class="hero-container">
         <div class="hero-header">
             {% if municipio.logotipo %}
-                <img src="{{municipio.logotipo.url}}" alt="Logo {{ municipio.nombre }}" class="hero-logo">
+            <img src="{{municipio.logotipo.url}}" alt="Logo {{ municipio.nombre }}" class="hero-logo">
             {% else %}
-                <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Logo por defecto" class="hero-logo">
+            <img src="{% static 'assets/images/logo/logo-new.png' %}" alt="Logo por defecto" class="hero-logo">
             {% endif %}
             <h1 class="hero-title">{{ municipio.nombre }}</h1>
         </div>
 
         <div class="hero-content">
             {% if municipio.descripcion %}
-                <p class="hero-description">{{ municipio.descripcion }}</p>
+            <p class="hero-description">{{ municipio.descripcion }}</p>
             {% else %}
-                <p class="hero-description">Un municipio comprometido con el desarrollo sostenible y la excelencia en servicios públicos.</p>
+            <p class="hero-description">Un municipio comprometido con el desarrollo sostenible y la excelencia en
+                servicios públicos.</p>
             {% endif %}
-            
+
             <a href="#" class="btn btn-hero">Descubre nuestra gestión</a>
         </div>
     </div>
