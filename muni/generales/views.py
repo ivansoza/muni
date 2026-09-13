@@ -4435,3 +4435,6 @@ def eliminar_edicion_gaceta(request, pk):
         edicion.delete()
         messages.success(request, 'La edición de gaceta se eliminó correctamente.')
     return redirect(reverse_lazy('GacetaAdminView'))
+
+
+#comenrario para commit
