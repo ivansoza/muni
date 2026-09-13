@@ -31,7 +31,8 @@ from privacidad.forms import ArchivoRelacionadoForm, ArchivoRelacionadoFormSet, 
 from privacidad.models import ArchivoRelacionado, AvisoDePrivacidad
 from servicios.forms import ComoLoRealizoForm, CuantoCuestaForm, EnQueConsisteForm, QueSeRequiereForm, RequisitoAdjuntoForm, RequisitosImagenForm, ServicioForm
 from servicios.models import ComoLoRealizo, ConfiguracionServicio, CuantoCuesta, Dependencia, EnQueConsiste, QueSeRequiere, RequisitoAdjunto, RequisitosImagen, Servicio
-from .forms import ArchivoNormatividadForm, ArchivoNormatividadFormSet, ArchivoSesionCabildoForm, ArchivoSesionCabildoFormSet, ArchivoSesionCabildoForm, ArchivoSesionCabildoFormSet, CustomAuthenticationForm, ElementoListaForm, GroupForm, InformacionCiudadForm, NormatividadSeccionForm, SeccionPlusForm, SeccionesForm, SesionCabildoForm, SesionCabildoForm, UserCreationWithGroupForm, UserEditForm, VideoMunicipioForm
+from .forms import ArchivoNormatividadForm, ArchivoNormatividadFormSet, ArchivoSesionCabildoForm, ArchivoSesionCabildoFormSet, ArchivoSesionCabildoForm, ArchivoSesionCabildoFormSet, CustomAuthenticationForm, EdicionGacetaForm, ElementoListaForm, GroupForm, InformacionCiudadForm, NormatividadSeccionForm, SeccionPlusForm, SeccionesForm, SesionCabildoForm, SesionCabildoForm, UserCreationWithGroupForm, UserEditForm, VideoMunicipioForm
+from gaceta.models import EdicionGaceta
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from noticias.models import Noticia, ImagenGaleria, Categoria
@@ -4366,3 +4367,72 @@ def historia_seccion_eliminar(request, pk):
         seccion.delete()
         messages.success(request, f'Sección "{nombre}" eliminada.')
     return redirect('historia_seccion_lista')
+
+
+# ── Gaceta Municipal ───────────────────────────────────────────────────────────
+
+class GacetaAdminView(LoginRequiredMixin, TemplateView):
+    template_name = 'generales/gaceta.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['breadcrumb'] = {
+            'parent': {'name': 'Generales', 'url': '/admin/generales/'},
+            'child':  {'name': 'Gaceta Municipal', 'url': ''}
+        }
+        context['sidebar'] = 'gaceta'
+        ediciones = EdicionGaceta.objects.all().order_by('-anio', '-fecha_publicacion')
+        context['ediciones'] = ediciones
+        context['total'] = ediciones.count()
+        context['activas'] = ediciones.filter(activo=True).count()
+        return context
+
+
+class GacetaCreateView(LoginRequiredMixin, CreateView):
+    model = EdicionGaceta
+    form_class = EdicionGacetaForm
+    template_name = 'generales/gacetaAdmin.html'
+    success_url = reverse_lazy('GacetaAdminView')
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['breadcrumb'] = {
+            'parent': {'name': 'Gaceta Municipal', 'url': reverse('GacetaAdminView')},
+            'child':  {'name': 'Nueva edición', 'url': ''},
+        }
+        ctx['sidebar'] = 'gaceta'
+        ctx['regreso_url'] = reverse('GacetaAdminView')
+        return ctx
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Edición de gaceta creada correctamente.')
+        return super().form_valid(form)
+
+
+class GacetaUpdateView(LoginRequiredMixin, UpdateView):
+    model = EdicionGaceta
+    form_class = EdicionGacetaForm
+    template_name = 'generales/gacetaAdminEdit.html'
+    success_url = reverse_lazy('GacetaAdminView')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['breadcrumb'] = {
+            'parent': {'name': 'Gaceta Municipal', 'url': reverse('GacetaAdminView')},
+            'child':  {'name': 'Editar edición', 'url': ''},
+        }
+        context['sidebar'] = 'gaceta'
+        context['regreso_url'] = reverse('GacetaAdminView')
+        return context
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Edición actualizada correctamente.')
+        return super().form_valid(form)
+
+
+def eliminar_edicion_gaceta(request, pk):
+    edicion = get_object_or_404(EdicionGaceta, pk=pk)
+    if request.method == 'POST':
+        edicion.delete()
+        messages.success(request, 'La edición de gaceta se eliminó correctamente.')
+    return redirect(reverse_lazy('GacetaAdminView'))

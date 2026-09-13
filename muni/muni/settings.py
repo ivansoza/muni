@@ -59,7 +59,8 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'django_ckeditor_5',
     'usuario',
-    'reportes'
+    'reportes',
+    'gaceta',
 
 
 ]

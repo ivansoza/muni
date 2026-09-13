@@ -24,7 +24,8 @@ urlpatterns = [
     path('sevac/', include('sevac.urls')),  
     path('admin/', include('generales.urls')), 
     path('usuario/', include('usuario.urls')), 
-    path('reportes/', include('reportes.urls')), 
+    path('reportes/', include('reportes.urls')),
+    path('gaceta/', include('gaceta.urls')),
 
     path('ckeditor5/', include('django_ckeditor_5.urls')),
     path('normatividad/', HomeNormatividad.as_view(), name='homeNormatividad'),

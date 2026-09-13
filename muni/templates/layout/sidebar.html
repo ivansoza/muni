@@ -269,6 +269,22 @@
                         </li>
                       {% endif %}
 
+            {% if is_superuser or 'gaceta.view_ediciongaceta' in user_permissions %}
+              <li class="sidebar-list {% if sidebar == 'gaceta' %}active{% endif %}">
+                <a class="sidebar-link sidebar-title" href="{% url 'GacetaAdminView' %}">
+                  <i class="fa fa-newspaper" style="color:white;"></i>
+                  <span>Gaceta Municipal</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="sidebar-list">
+                <div class="sidebar-link sidebar-title desactivar">
+                  <i class="fa fa-newspaper" style="color:white;"></i>
+                  <span>Gaceta Municipal</span>
+                </div>
+              </li>
+            {% endif %}
+
             <!-- Enlace Generales (solo para superuser) -->
             {% if is_superuser or 'transparencia.view_secciontransparencia' in user_permissions %}
               <li class="sidebar-list {% if sidebar == 'Generales' %}active{% endif %}">

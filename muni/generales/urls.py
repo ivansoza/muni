@@ -8,6 +8,7 @@ from .views import CrearCarpetaView, SubirArchivoView, ListarCarpetasView, Edita
 from .views import ListaObligacionesView, ListaObligacionesCreateView, ListaObligacionesUpdateView, ListaObligacionesDeleteView, GestionarArticulosView, CrearArticuloView, EditarArticuloView, EliminarArticuloView, actualizar_orden_articulos, convocatoriaHome, filtrar_convocatorias, GestionarArticulosArView, CrearArticuloLigaView, EditarArticuloLigaArchivoView, ArticuloUpdateView
 from .views import crear_noticia, HablaHome, ArticuloCreateView, eliminar_articulo, QRHablaAdminView, RecursoHablaListView, RecursoHablaCreateView, RecursoHablaUpdateView, recurso_habla_eliminar, recurso_habla_toggle
 from .views import SesionesCabildoAdminView, SesionCabildoCreateView, SesionCabildoUpdateView
+from .views import GacetaAdminView, GacetaCreateView, GacetaUpdateView, eliminar_edicion_gaceta
 
 urlpatterns = [
     path("", CustomLoginView.as_view(),name='login'),
@@ -211,6 +212,12 @@ urlpatterns = [
     path('generales/sesiones-cabildo/crear/', SesionCabildoCreateView.as_view(), name='crear_sesion_cabildo'),
     path('generales/sesiones-cabildo/<int:pk>/editar/', SesionCabildoUpdateView.as_view(), name='editar_sesion_cabildo'),
     path('generales/sesiones-cabildo/<int:pk>/eliminar/', views.eliminar_sesion_cabildo, name='eliminar_sesion_cabildo'),
+    # ─── Gaceta Municipal ──────────────────────────────────────────────────────
+    path('generales/gaceta/', GacetaAdminView.as_view(), name='GacetaAdminView'),
+    path('generales/gaceta/nueva/', GacetaCreateView.as_view(), name='crear_edicion_gaceta'),
+    path('generales/gaceta/<int:pk>/editar/', GacetaUpdateView.as_view(), name='editar_edicion_gaceta'),
+    path('generales/gaceta/<int:pk>/eliminar/', eliminar_edicion_gaceta, name='eliminar_edicion_gaceta'),
+
     path('admin-historia/',               views.historia_seccion_lista,    name='historia_seccion_lista'),
     path('admin-historia/nueva/',         views.historia_seccion_crear,    name='historia_seccion_crear'),
     path('admin-historia/<int:pk>/editar/',    views.historia_seccion_editar,   name='historia_seccion_editar'),

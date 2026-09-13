@@ -1,0 +1,168 @@
+{% extends "baseTemplate.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+  :root {
+    --color-primario: #2F698F;
+    --color-secundario: #295E84;
+    --color-primario-rgb: 47, 105, 143;
+    --color-gradiente: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+    --color-light: #f8fafc;
+    --color-dark: #1e293b;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.05);
+    --shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
+    --radius: 0.5rem;
+    --radius-lg: 0.75rem;
+    --color-border: #e2e8f0;
+    --color-text: #334155;
+    --color-text-muted: #64748b;
+    --header-bg: #f1f5f9;
+    --transition-speed: 0.3s;
+  }
+  body { color: var(--color-text); background-color: #f5f7fa; }
+  .gaceta-container { margin: 2rem auto; padding: 0 1rem; }
+  .section-title { color: var(--color-primario); font-weight: 700; margin-bottom: 1.75rem; padding-bottom: .5rem; border-bottom: 2px solid var(--color-secundario); position: relative; font-size: 1.5rem; }
+  .section-title::after { content: ''; position: absolute; left: 0; bottom: -2px; width: 60px; height: 4px; background: var(--color-primario); border-radius: var(--radius); }
+  .custom-card { border: none; border-radius: var(--radius-lg); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 2rem; background: #fff; }
+  .card-header { background: var(--header-bg); color: var(--color-dark); font-weight: 600; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--color-border); display: flex; align-items: center; gap: .5rem; }
+  .card-header i { color: var(--color-primario); font-size: 1.1rem; }
+  .card-body { padding: 1.75rem; }
+  .privacy-notice-form .form-group { margin-bottom: 1.5rem; }
+  .privacy-notice-form label { display: block; margin-bottom: .5rem; font-weight: 500; color: var(--color-dark); font-size: .95rem; }
+  .privacy-notice-form input[type="text"],
+  .privacy-notice-form input[type="number"],
+  .privacy-notice-form input[type="date"],
+  .privacy-notice-form textarea {
+    width: 100%; padding: .75rem 1rem; border: 1px solid var(--color-border);
+    border-radius: var(--radius); font-size: 1rem; background: var(--color-light);
+    color: var(--color-dark); box-shadow: var(--shadow-sm); line-height: 1.5; transition: all var(--transition-speed);
+  }
+  .privacy-notice-form input[type="file"] {
+    width: 100%; padding: .75rem; border: 1px dashed var(--color-border);
+    border-radius: var(--radius); background: var(--color-light); cursor: pointer; transition: all var(--transition-speed);
+  }
+  .privacy-notice-form input[type="file"]:hover { border-color: var(--color-primario); background: rgba(var(--color-primario-rgb),.05); }
+  .privacy-notice-form input:focus,
+  .privacy-notice-form textarea:focus { border-color: var(--color-primario); box-shadow: 0 0 0 3px rgba(var(--color-primario-rgb),.2); outline: none; }
+  .form-actions-container { display: flex; gap: 1rem; margin-top: 2.5rem; justify-content: flex-end; }
+  .btn { padding: .65rem 1.5rem; border-radius: var(--radius); font-weight: 500; transition: all .25s; display: inline-flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); border: none; font-size: .95rem; cursor: pointer; }
+  .btn i { margin-right: .5rem; }
+  .btn-primary { background: var(--color-primario); color: #fff; }
+  .btn-primary:hover { background: var(--color-secundario); transform: translateY(-2px); box-shadow: var(--shadow); color: #fff; }
+  .btn-secondary { background: #64748b; color: #fff; }
+  .btn-secondary:hover { background: #475569; transform: translateY(-2px); box-shadow: var(--shadow); color: #fff; }
+  .btn-save, .btn-cancel { min-width: 160px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } .form-actions-container { flex-direction: column; } .btn-save, .btn-cancel { width: 100%; } }
+  .help-text { font-size: .8rem; color: var(--color-text-muted); margin-top: .3rem; }
+  .form-header-decoration { width: 30px; height: 5px; background: var(--color-gradiente); border-radius: 2px; margin-bottom: 15px; }
+  .archivo-actual { display: inline-flex; align-items: center; gap: .4rem; background: rgba(var(--color-primario-rgb),.08); color: var(--color-primario); border-radius: .4rem; padding: .3rem .75rem; font-size: .8rem; font-weight: 600; margin-bottom: .5rem; text-decoration: none; }
+  .archivo-actual:hover { background: rgba(var(--color-primario-rgb),.16); color: var(--color-primario); }
+</style>
+
+<div class="gaceta-container">
+  <h3 class="section-title">Editar edición de Gaceta Municipal</h3>
+
+  <form method="post" enctype="multipart/form-data" class="privacy-notice-form">
+    {% csrf_token %}
+
+    <!-- Datos principales -->
+    <div class="custom-card">
+      <div class="card-header">
+        <i class="fas fa-newspaper"></i> Datos de la edición
+      </div>
+      <div class="card-body">
+        <div class="form-header-decoration"></div>
+        {{ form.non_field_errors }}
+
+        <div class="two-col">
+          <div class="form-group">
+            {{ form.numero.label_tag }}
+            {{ form.numero }}
+          </div>
+          <div class="form-group">
+            {{ form.anio.label_tag }}
+            {{ form.anio }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          {{ form.titulo.label_tag }}
+          {{ form.titulo }}
+        </div>
+
+        <div class="form-group">
+          {{ form.descripcion.label_tag }}
+          {{ form.descripcion }}
+        </div>
+
+        <div class="form-group">
+          {{ form.fecha_publicacion.label_tag }}
+          {{ form.fecha_publicacion }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Archivos -->
+    <div class="custom-card">
+      <div class="card-header">
+        <i class="fas fa-file-pdf"></i> Archivo PDF y portada
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          {{ form.archivo.label_tag }}
+          {% if object.archivo %}
+            <div style="margin-bottom:.5rem;">
+              <a href="{{ object.archivo.url }}" target="_blank" class="archivo-actual">
+                <i class="fas fa-file-pdf"></i> Ver PDF actual
+              </a>
+            </div>
+          {% endif %}
+          {{ form.archivo }}
+          <p class="help-text">Deja vacío para conservar el archivo actual. Solo se permiten PDF.</p>
+        </div>
+        <div class="form-group">
+          {{ form.portada.label_tag }}
+          {% if object.portada %}
+            <div style="margin-bottom:.5rem;">
+              <img src="{{ object.portada.url }}" alt="Portada actual" style="max-height:80px; border-radius:.4rem; border:1px solid #e2e8f0;">
+            </div>
+          {% endif %}
+          {{ form.portada }}
+          <p class="help-text">Deja vacío para conservar la imagen actual.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Publicación -->
+    <div class="custom-card">
+      <div class="card-header">
+        <i class="fas fa-eye"></i> Visibilidad
+      </div>
+      <div class="card-body">
+        <div class="form-check">
+          {{ form.activo }}
+          <label class="form-check-label ms-2" for="{{ form.activo.id_for_label }}">
+            Visible al público en el portal
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions-container">
+      <a href="{{ regreso_url }}" class="btn btn-secondary btn-cancel">
+        <i class="fa fa-times"></i> Cancelar
+      </a>
+      <button class="btn btn-primary btn-save" type="submit">
+        <i class="fa fa-save"></i> Guardar cambios
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scriptcontent %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock scriptcontent %}

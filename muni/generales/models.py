@@ -105,6 +105,7 @@ class Secciones(models.Model):
     videos = models.BooleanField(default=False)
     normatividad = models.BooleanField(default=False)  # Nuevo módulo
     sesion_cabildo = models.BooleanField(default=False)
+    gaceta = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Secciones de {self.municipio}"

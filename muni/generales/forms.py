@@ -7,6 +7,7 @@ from django.contrib.auth.models import User, Group, Permission
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
 from generales.models import SeccionPlus, Secciones, VideoMunicipio
+from gaceta.models import EdicionGaceta
 from informacion_municipal.models import ElementoLista, InformacionCiudad
 from django.forms import inlineformset_factory
 from .models import SeccionPlus, SeccionPlusArchivo
@@ -317,3 +318,16 @@ ArchivoSesionCabildoFormSet = inlineformset_factory(
     extra=1,
     can_delete=False
 )
+
+
+class EdicionGacetaForm(forms.ModelForm):
+    class Meta:
+        model = EdicionGaceta
+        fields = ['numero', 'titulo', 'descripcion', 'anio', 'fecha_publicacion', 'archivo', 'portada', 'activo']
+        widgets = {
+            'numero': forms.TextInput(attrs={'placeholder': 'Ej: 001 o 2024-01'}),
+            'titulo': forms.TextInput(attrs={'placeholder': 'Ej: Gaceta Municipal No. 1 – Enero 2024'}),
+            'descripcion': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Resumen breve del contenido de esta edición'}),
+            'anio': forms.NumberInput(attrs={'placeholder': '2024', 'min': 2000, 'max': 2100}),
+            'fecha_publicacion': forms.DateInput(attrs={'type': 'date'}),
+        }

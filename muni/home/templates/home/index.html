@@ -524,6 +524,12 @@
                                 <a class="dropdown-item" href="{% url 'HomeConvocatoriasView' %}">Convocatorias</a>
                             </li>
                             {% endif %}
+                              <!-- Gaceta Municipal -->
+                            {% if municipio.secciones_hab and municipio.secciones_hab.gaceta %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'homeGaceta' %}">Gaceta Municipal</a>
+                            </li>
+                            {% endif %}
                 
                             <!-- Habla con tus hijos -->
                             {% if municipio.secciones_hab and municipio.secciones_hab.habla_con_tus_hijos %}
