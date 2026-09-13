@@ -59,7 +59,8 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'django_ckeditor_5',
     'usuario',
-    'reportes'
+    'reportes',
+    'gaceta',
 
 
 ]
@@ -207,6 +208,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 ROOT_URLCONF = 'muni.urls'
 

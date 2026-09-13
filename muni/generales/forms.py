@@ -7,6 +7,7 @@ from django.contrib.auth.models import User, Group, Permission
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
 from generales.models import SeccionPlus, Secciones, VideoMunicipio
+from gaceta.models import EdicionGaceta
 from informacion_municipal.models import ElementoLista, InformacionCiudad
 from django.forms import inlineformset_factory
 from .models import SeccionPlus, SeccionPlusArchivo
@@ -187,16 +188,17 @@ class SeccionesForm(forms.ModelForm):
         model  = Secciones
         fields = [
             'noticias', 'convocatorias', 'transparencia', 'servicios',
-            'habla_con_tus_hijos','ven_vive_y_vuelve', 'aviso_de_privacidad', 'gabinete',
-            'sevac', 'contacts', 'reportes', 'encuestas',
-            'servicios_en_linea', 'videos',                      # ← agregado
+            'habla_con_tus_hijos','ven_vive_y_vuelve', 'historia_municipio',
+            'aviso_de_privacidad', 'gabinete', 'sevac', 'contacts',
+            'reportes', 'encuestas', 'servicios_en_linea', 'videos',
+            'normatividad',
+            'sesion_cabildo',
         ]
-
 
 class SeccionPlusForm(forms.ModelForm):
     class Meta:
         model = SeccionPlus
-        fields = ['categoria_convocatoria', 'nombre', 'banner', 'status', 'detalles', 'es_general', 'archivo']
+        fields = ['categoria_convocatoria', 'nombre', 'banner', 'status', 'detalles', 'es_general', 'archivo','nav_seccion']
         widgets = {
             'categoria_convocatoria': forms.Select(attrs={'class': 'form-control'}),
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
@@ -245,4 +247,87 @@ class VideoMunicipioForm(forms.ModelForm):
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'frame': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://www.youtube.com/embed/…'}),
             'orden': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+
+
+
+
+from django import forms
+from django.forms import inlineformset_factory
+from .models import ArchivoSesionCabildo, NormatividadSeccion, ArchivoNormatividad, SesionCabildo
+
+class NormatividadSeccionForm(forms.ModelForm):
+    class Meta:
+        model  = NormatividadSeccion
+        fields = ['seccion', 'descripcion']
+        widgets = {
+            'seccion'    : forms.TextInput(attrs={
+                'placeholder': 'Nombre de la sección (ej. Reglamentos Municipales)'}),
+            'descripcion': forms.TextInput(attrs={
+                'placeholder': 'Descripción breve de la sección'}),
+        }
+
+class ArchivoNormatividadForm(forms.ModelForm):
+    class Meta:
+        model  = ArchivoNormatividad
+        fields = ['archivo', 'descripcion']
+        widgets = {
+            'archivo'    : forms.ClearableFileInput(attrs={
+                'placeholder': 'Selecciona un archivo PDF, DOCX, etc.'}),
+            'descripcion': forms.TextInput(attrs={
+                'placeholder': 'Descripción del archivo (opcional)'}),
+        }
+
+ArchivoNormatividadFormSet = inlineformset_factory(
+    NormatividadSeccion,
+    ArchivoNormatividad,
+    form=ArchivoNormatividadForm,
+    extra=1,
+    can_delete=False
+)
+
+
+class SesionCabildoForm(forms.ModelForm):
+    class Meta:
+        model  = SesionCabildo
+        fields = ['sesion', 'descripcion']
+        widgets = {
+            'sesion'     : forms.TextInput(attrs={
+                'placeholder': 'Nombre de la sesión (ej. Sesión Ordinaria No. 1)'}),
+            'descripcion': forms.TextInput(attrs={
+                'placeholder': 'Descripción breve de la sesión'}),
+        }
+
+
+class ArchivoSesionCabildoForm(forms.ModelForm):
+    class Meta:
+        model  = ArchivoSesionCabildo
+        fields = ['archivo', 'descripcion']
+        widgets = {
+            'archivo'    : forms.ClearableFileInput(attrs={
+                'placeholder': 'Selecciona un archivo PDF, DOCX, etc.'}),
+            'descripcion': forms.TextInput(attrs={
+                'placeholder': 'Descripción del archivo (opcional)'}),
+        }
+
+
+ArchivoSesionCabildoFormSet = inlineformset_factory(
+    SesionCabildo,
+    ArchivoSesionCabildo,
+    form=ArchivoSesionCabildoForm,
+    extra=1,
+    can_delete=False
+)
+
+
+class EdicionGacetaForm(forms.ModelForm):
+    class Meta:
+        model = EdicionGaceta
+        fields = ['numero', 'titulo', 'descripcion', 'anio', 'fecha_publicacion', 'archivo', 'portada', 'activo']
+        widgets = {
+            'numero': forms.TextInput(attrs={'placeholder': 'Ej: 001 o 2024-01'}),
+            'titulo': forms.TextInput(attrs={'placeholder': 'Ej: Gaceta Municipal No. 1 – Enero 2024'}),
+            'descripcion': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Resumen breve del contenido de esta edición'}),
+            'anio': forms.NumberInput(attrs={'placeholder': '2024', 'min': 2000, 'max': 2100}),
+            'fecha_publicacion': forms.DateInput(attrs={'type': 'date'}),
         }
