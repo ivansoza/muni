@@ -1,0 +1,10 @@
+{% extends "baseTemplate.html" %}
+{% block content %}
+<div class="container py-4">
+<h1>Imagen QR — Habla con tus hijos</h1>
+{% if config.imagen_qr %}<img src="{{ config.imagen_qr.url }}" alt="Código QR" style="max-width:240px">{% endif %}
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+{{ form.as_p }}<button class="btn btn-primary" type="submit">Guardar</button>
+<a href="{% url 'habla_home' %}">Volver</a></form>
+</div>
+{% endblock %}

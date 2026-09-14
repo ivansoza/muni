@@ -107,8 +107,6 @@ customColorPalette = [
         },
     ]
 
-CKEDITOR_5_CUSTOM_CSS = 'path_to.css' # optional
-CKEDITOR_5_FILE_STORAGE = "path_to_storage.CustomStorage" # optional
 CKEDITOR_5_CONFIGS = {
     'default': {
         'toolbar': {
@@ -297,5 +295,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'dashboard'   
 LOGOUT_REDIRECT_URL = 'home'
-
 
