@@ -1,8 +1,27 @@
+import re
+
 from django.db import models
 from django_ckeditor_5.fields import CKEditor5Field
 from django.core.exceptions import ValidationError
 
-# Create your models here.
+class ConfiguracionHabla(models.Model):
+    imagen_qr = models.ImageField(upload_to='habla_con_tus_hijos/qr/', blank=True)
+
+    @classmethod
+    def get_solo(cls):
+        config, _ = cls.objects.get_or_create(pk=1)
+        return config
+
+
+class RecursoHabla(models.Model):
+    titulo = models.CharField(max_length=255)
+    archivo = models.FileField(upload_to='habla_con_tus_hijos/recursos/')
+    activo = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.titulo
+
+
 class Categoria(models.Model):
     nombre = models.CharField(max_length=225, unique=True, verbose_name='Nombre de la categoría')
     def __str__(self):

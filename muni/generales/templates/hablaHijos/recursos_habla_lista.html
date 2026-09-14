@@ -1,0 +1,14 @@
+{% extends "baseTemplate.html" %}
+{% block content %}
+<div class="container py-4"><h1>Recursos — Habla con tus hijos</h1>
+<a class="btn btn-primary" href="{% url 'recurso_habla_crear' %}">Agregar recurso</a>
+<a href="{% url 'habla_home' %}">Volver</a>
+<table class="table"><thead><tr><th>Título</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>
+{% for recurso in recursos %}<tr><td><a href="{{ recurso.archivo.url }}">{{ recurso.titulo }}</a></td>
+<td>{{ recurso.activo|yesno:"Visible,Oculto" }}</td><td>
+<a href="{% url 'recurso_habla_editar' recurso.pk %}">Editar</a>
+<form method="post" action="{% url 'recurso_habla_toggle' recurso.pk %}">{% csrf_token %}<button type="submit">{{ recurso.activo|yesno:"Ocultar,Mostrar" }}</button></form>
+<form method="post" action="{% url 'recurso_habla_eliminar' recurso.pk %}">{% csrf_token %}<button type="submit" onclick="return confirm('¿Eliminar este recurso?')">Eliminar</button></form>
+</td></tr>{% empty %}<tr><td colspan="3">No hay recursos registrados.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}
