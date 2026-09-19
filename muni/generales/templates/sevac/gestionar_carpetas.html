@@ -46,6 +46,11 @@
     border: 1.5px solid rgba(255,255,255,0.4);
   }
   .btn-hdr-outline:hover { background: rgba(255,255,255,0.25); color: #fff; }
+  .btn-hdr-extract {
+    background: rgba(251,191,36,.2); color: #fef08a;
+    border: 1.5px solid rgba(251,191,36,.45);
+  }
+  .btn-hdr-extract:hover { background: rgba(251,191,36,.35); color: #fff; }
 
   /* ── Buscador ── */
   .gf-search-wrap { margin-bottom: 1.25rem; }
@@ -254,6 +259,13 @@
       <a href="{% url 'subir_archivo' %}?carpeta={{ carpeta.id }}" class="btn-hdr btn-hdr-outline">
         <i class="fas fa-upload"></i> Subir Archivo
       </a>
+      {% if subcarpetas %}
+      <a href="{% url 'extraer_subcarpetas' carpeta.id %}"
+         class="btn-hdr btn-hdr-extract"
+         title="Convierte todas las subcarpetas en carpetas principales">
+        <i class="fas fa-up-right-from-square"></i> Extraer subcarpetas
+      </a>
+      {% endif %}
     </div>
   </div>
 
@@ -701,6 +713,7 @@
       });
     });
   });
+
 </script>
 
 {% endblock %}

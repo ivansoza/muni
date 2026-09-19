@@ -4,7 +4,7 @@ from .views import AvisoDePrivacidadCreateView, AvisoDePrivacidadUpdateView, Agr
 from django.contrib.auth.views import LogoutView
 from .views import TransparenciaView, crear_seccion, EjercicioFiscalListView, EjercicioFiscalCreateView, DocumentoTransparenciaListView, registrar_documento, SeccionTransparenciaUpdateView, eliminar_seccion, EjercicioFiscalUpdateView, eliminar_ejercicio_fiscal, DocumentoTransparenciaUpdateView, eliminar_documento_transparencia
 from . import views
-from .views import CrearCarpetaView, SubirArchivoView, ListarCarpetasView, EditarCarpetaView, GestionarCarpetaView, EliminarCarpetaView, EditarArchivoView, eliminar_archivo
+from .views import CrearCarpetaView, SubirArchivoView, ListarCarpetasView, EditarCarpetaView, GestionarCarpetaView, EliminarCarpetaView, EditarArchivoView, eliminar_archivo, extraer_subcarpetas, decision_carpeta_vacia
 from .views import ListaObligacionesView, ListaObligacionesCreateView, ListaObligacionesUpdateView, ListaObligacionesDeleteView, GestionarArticulosView, CrearArticuloView, EditarArticuloView, EliminarArticuloView, actualizar_orden_articulos, convocatoriaHome, filtrar_convocatorias, GestionarArticulosArView, CrearArticuloLigaView, EditarArticuloLigaArchivoView, ArticuloUpdateView
 from .views import crear_noticia, HablaHome, ArticuloCreateView, eliminar_articulo, QRHablaAdminView, RecursoHablaListView, RecursoHablaCreateView, RecursoHablaUpdateView, recurso_habla_eliminar, recurso_habla_toggle
 from .views import SesionesCabildoAdminView, SesionCabildoCreateView, SesionCabildoUpdateView
@@ -108,6 +108,8 @@ urlpatterns = [
     path('eliminar-carpeta/<int:carpeta_id>/', EliminarCarpetaView.as_view(), name='eliminar_carpeta'),
     path('editar-archivo/<int:archivo_id>/', EditarArchivoView.as_view(), name='editar_archivo'),
     path('eliminar-archivo/<int:id>/', eliminar_archivo, name='eliminar_archivo'),
+    path('extraer-subcarpetas/<int:carpeta_id>/', extraer_subcarpetas, name='extraer_subcarpetas'),
+    path('decision-carpeta-vacia/<int:carpeta_id>/', decision_carpeta_vacia, name='decision_carpeta_vacia'),
     path('sevac/categorias/nueva/', CrearCategoriaView.as_view(), name='crear_categoria'),
     path('categorias/crear/ajax/', views.crear_categoria_ajax_sevac, name='crear_categoria_ajax_sevac'),
     path('editar-categoria/<int:pk>/', views.editar_categoria, name='editar_categoria'),
