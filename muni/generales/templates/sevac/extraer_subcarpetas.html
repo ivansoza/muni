@@ -1,0 +1,323 @@
+{% extends "baseTemplate.html" %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+  :root {
+    --brand:     #3B5BDB;
+    --brand-rgb: 59, 91, 219;
+    --radius:    .75rem;
+    --shadow:    0 4px 20px rgba(0,0,0,.08);
+  }
+
+  .ex-page {
+    max-width: 680px;
+    margin: 2.5rem auto;
+    padding: 0 1rem 4rem;
+  }
+
+  /* Encabezado */
+  .ex-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .ex-header-icon {
+    width: 50px; height: 50px; flex-shrink: 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--brand), #5C7CFA);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 1.2rem;
+    box-shadow: 0 4px 14px rgba(var(--brand-rgb), .35);
+  }
+  .ex-header-text h2 {
+    font-size: 1.2rem; font-weight: 800;
+    color: #1e293b; margin: 0 0 3px;
+  }
+  .ex-header-text p {
+    font-size: .84rem; color: #64748b; margin: 0;
+  }
+
+  /* Tarjeta */
+  .ex-card {
+    background: #fff;
+    border: 1px solid #e8edf3;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-bottom: 18px;
+  }
+  .ex-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    background: #f8fafc;
+    border-bottom: 1px solid #e8edf3;
+    font-size: .88rem;
+    font-weight: 700;
+    color: #334155;
+  }
+  .ex-card-header i { color: var(--brand); font-size: .9rem; }
+  .ex-card-body { padding: 20px; }
+
+  /* Lista de subcarpetas */
+  .ex-folder-list {
+    list-style: none;
+    padding: 0; margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .ex-folder-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: #f8fafc;
+    border: 1px solid #e8edf3;
+    border-radius: .5rem;
+    font-size: .88rem;
+    color: #334155;
+  }
+  .ex-folder-item i { color: #f59e0b; font-size: 1rem; flex-shrink: 0; }
+  .ex-folder-count {
+    margin-left: auto;
+    font-size: .72rem;
+    color: #94a3b8;
+    white-space: nowrap;
+  }
+
+  /* Selector de categoría */
+  .ex-field { margin-bottom: 0; }
+  .ex-label {
+    display: block;
+    font-size: .88rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 8px;
+  }
+  .ex-label span {
+    color: #ef4444;
+    margin-left: 2px;
+  }
+  .ex-select-wrap { position: relative; }
+  .ex-select-wrap i {
+    position: absolute;
+    left: 13px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--brand);
+    font-size: .85rem;
+    pointer-events: none;
+  }
+  .ex-select {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    padding: 11px 40px 11px 36px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: .5rem;
+    font-size: .92rem;
+    color: #1e293b;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color .18s, box-shadow .18s;
+    outline: none;
+  }
+  .ex-select:focus {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(var(--brand-rgb), .13);
+  }
+  .ex-chevron {
+    position: absolute;
+    right: 13px; top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8; font-size: .75rem;
+    pointer-events: none;
+  }
+  .ex-help {
+    font-size: .78rem;
+    color: #94a3b8;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .ex-help i { color: var(--brand); font-size: .72rem; }
+
+  /* Preview de resultado */
+  .ex-preview {
+    display: none;
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: rgba(var(--brand-rgb), .05);
+    border: 1px solid rgba(var(--brand-rgb), .15);
+    border-radius: .5rem;
+    font-size: .82rem;
+    color: #475569;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .ex-preview.visible { display: flex; }
+  .ex-preview i { color: var(--brand); flex-shrink: 0; margin-top: 2px; }
+
+  /* Acciones */
+  .ex-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 6px;
+  }
+  .ex-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 22px;
+    border-radius: .5rem;
+    font-size: .88rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all .18s;
+  }
+  .ex-btn-primary {
+    background: linear-gradient(135deg, var(--brand), #5C7CFA);
+    color: #fff;
+    box-shadow: 0 3px 12px rgba(var(--brand-rgb), .3);
+  }
+  .ex-btn-primary:hover { opacity: .88; transform: translateY(-1px); color: #fff; }
+  .ex-btn-ghost {
+    background: #f1f5f9;
+    color: #475569;
+  }
+  .ex-btn-ghost:hover { background: #e2e8f0; color: #1e293b; }
+
+  @media (max-width: 500px) {
+    .ex-actions { flex-direction: column-reverse; }
+    .ex-btn { justify-content: center; }
+  }
+</style>
+
+<div class="ex-page">
+
+  <!-- Encabezado -->
+  <div class="ex-header">
+    <div class="ex-header-icon" aria-hidden="true">
+      <i class="fas fa-up-right-from-square"></i>
+    </div>
+    <div class="ex-header-text">
+      <h2>Extraer subcarpetas</h2>
+      <p>De: <strong>{{ carpeta.nombre }}</strong> · {{ subcarpetas|length }} subcarpeta{{ subcarpetas|length|pluralize }} encontrada{{ subcarpetas|length|pluralize }}</p>
+    </div>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <!-- Lista de subcarpetas a extraer -->
+    <div class="ex-card">
+      <div class="ex-card-header">
+        <i class="fas fa-list" aria-hidden="true"></i>
+        Subcarpetas que se convertirán en carpetas principales
+      </div>
+      <div class="ex-card-body">
+        <ul class="ex-folder-list" aria-label="Subcarpetas a extraer">
+          {% for sub in subcarpetas %}
+          <li class="ex-folder-item">
+            <i class="fas fa-folder" aria-hidden="true"></i>
+            <span>{{ sub.nombre }}</span>
+            <span class="ex-folder-count">
+              {{ sub.archivos.count }} archivo{{ sub.archivos.count|pluralize }}
+              · {{ sub.subcarpetas.count }} subcarpeta{{ sub.subcarpetas.count|pluralize }}
+            </span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Selector de categoría -->
+    <div class="ex-card">
+      <div class="ex-card-header">
+        <i class="fas fa-tag" aria-hidden="true"></i>
+        Asignar categoría
+      </div>
+      <div class="ex-card-body">
+        <div class="ex-field">
+          <label class="ex-label" for="id-categoria">
+            ¿A qué categoría pertenecerán las carpetas extraídas?
+            <span aria-hidden="true">*</span>
+          </label>
+          <div class="ex-select-wrap">
+            <i class="fas fa-tag" aria-hidden="true"></i>
+            <select
+              id="id-categoria"
+              name="categoria"
+              class="ex-select"
+              required
+              aria-required="true"
+              aria-describedby="cat-help"
+            >
+              <option value="" disabled selected>— Selecciona una categoría —</option>
+              {% for cat in categorias %}
+              <option value="{{ cat.id }}">{{ cat.nombre }}</option>
+              {% endfor %}
+            </select>
+            <i class="fas fa-chevron-down ex-chevron" aria-hidden="true"></i>
+          </div>
+          <p class="ex-help" id="cat-help">
+            <i class="fas fa-circle-info" aria-hidden="true"></i>
+            La misma categoría se aplicará a todas las carpetas extraídas.
+          </p>
+          <!-- Preview dinámico -->
+          <div class="ex-preview" id="ex-preview" role="status" aria-live="polite">
+            <i class="fas fa-check-circle" aria-hidden="true"></i>
+            <span id="ex-preview-text"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="ex-actions">
+      <a href="{% url 'gestionar_carpetas' carpeta.id %}" class="ex-btn ex-btn-ghost">
+        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+        Cancelar
+      </a>
+      <button type="submit" class="ex-btn ex-btn-primary" id="btn-confirmar">
+        <i class="fas fa-up-right-from-square" aria-hidden="true"></i>
+        Extraer y continuar
+      </button>
+    </div>
+  </form>
+
+</div>
+{% endblock %}
+
+{% block scriptcontent %}
+<script>
+(function () {
+  const select  = document.getElementById('id-categoria');
+  const preview = document.getElementById('ex-preview');
+  const preText = document.getElementById('ex-preview-text');
+  const count   = {{ subcarpetas|length }};
+
+  if (!select) return;
+
+  select.addEventListener('change', function () {
+    const catName = this.options[this.selectedIndex].text;
+    if (this.value) {
+      preText.textContent =
+        count + ' carpeta' + (count !== 1 ? 's' : '') +
+        ' pasará' + (count !== 1 ? 'n' : '') +
+        ' a ser carpetas principales en la categoría "' + catName + '".';
+      preview.classList.add('visible');
+    } else {
+      preview.classList.remove('visible');
+    }
+  });
+})();
+</script>
+{% endblock scriptcontent %}
