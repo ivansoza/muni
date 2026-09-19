@@ -2326,6 +2326,94 @@ def eliminar_archivo(request, id):
         return JsonResponse({'status': 'success'})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+# ── Extraer subcarpetas ────────────────────────────────────────────────────────
+
+def extraer_subcarpetas(request, carpeta_id):
+    """
+    GET  → muestra el formulario de extracción con selector de categoría.
+    POST → aplica la extracción y redirige a la decisión sobre la carpeta vacía.
+    """
+    if not (request.user.is_superuser or request.user.has_perm("sevac.change_carpeta")):
+        raise PermissionDenied
+
+    carpeta     = get_object_or_404(Carpeta, id=carpeta_id)
+    subcarpetas = list(carpeta.subcarpetas.all())
+    categorias  = CategoriaSevac.objects.all().order_by('nombre')
+
+    if not subcarpetas:
+        messages.warning(request, f'La carpeta "{carpeta.nombre}" no tiene subcarpetas para extraer.')
+        return redirect('gestionar_carpetas', carpeta_id=carpeta_id)
+
+    if request.method == 'POST':
+        categoria_id = request.POST.get('categoria')
+        categoria    = get_object_or_404(CategoriaSevac, id=categoria_id) if categoria_id else None
+
+        for sub in subcarpetas:
+            sub.padre     = None
+            sub.categoria = categoria
+            sub.save()
+
+        messages.success(
+            request,
+            f'Se extrajeron {len(subcarpetas)} subcarpeta(s) de "{carpeta.nombre}" '
+            f'como carpetas principales{" en la categoría "" + categoria.nombre + """ if categoria else ""}.'
+        )
+        return redirect('decision_carpeta_vacia', carpeta_id=carpeta_id)
+
+    context = {
+        'carpeta':     carpeta,
+        'subcarpetas': subcarpetas,
+        'categorias':  categorias,
+        'sidebar':     'sevac',
+        'breadcrumb':  {
+            'parent': {'name': 'SEVAC',              'url': reverse('listar_carpetas')},
+            'child':  {'name': 'Extraer subcarpetas', 'url': ''},
+        },
+    }
+    return render(request, 'sevac/extraer_subcarpetas.html', context)
+
+
+def decision_carpeta_vacia(request, carpeta_id):
+    if not (request.user.is_superuser or request.user.has_perm("sevac.change_carpeta")):
+        raise PermissionDenied
+
+    carpeta = get_object_or_404(Carpeta, id=carpeta_id)
+
+    if request.method == 'POST':
+        accion = request.POST.get('accion')
+
+        if accion == 'eliminar':
+            nombre = carpeta.nombre
+            carpeta.delete()
+            messages.success(request, f'La carpeta "{nombre}" fue eliminada.')
+            return redirect('listar_carpetas')
+
+        elif accion == 'conservar':
+            messages.info(request, f'La carpeta "{carpeta.nombre}" se conservó vacía.')
+            return redirect('listar_carpetas')
+
+        elif accion == 'renombrar':
+            nuevo_nombre = request.POST.get('nuevo_nombre', '').strip()
+            if nuevo_nombre:
+                carpeta.nombre = nuevo_nombre
+                carpeta.save()
+                messages.success(request, f'La carpeta fue renombrada a "{nuevo_nombre}" y se conservó.')
+            else:
+                messages.warning(request, 'Debes ingresar un nombre válido.')
+                return redirect('decision_carpeta_vacia', carpeta_id=carpeta_id)
+            return redirect('listar_carpetas')
+
+    context = {
+        'carpeta': carpeta,
+        'sidebar': 'sevac',
+        'breadcrumb': {
+            'parent': {'name': 'SEVAC', 'url': reverse('listar_carpetas')},
+            'child':  {'name': 'Carpeta vacía — decisión', 'url': ''},
+        },
+    }
+    return render(request, 'sevac/decision_carpeta_vacia.html', context)
     
 class ListaObligacionesView(LoginRequiredMixin, ListView):
     model = ListaObligaciones

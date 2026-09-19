@@ -1,0 +1,313 @@
+{% extends "baseTemplate.html" %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+  :root {
+    --brand:     #3B5BDB;
+    --brand-rgb: 59, 91, 219;
+    --radius:    .75rem;
+    --shadow:    0 4px 20px rgba(0,0,0,.08);
+    --shadow-lg: 0 10px 40px rgba(0,0,0,.12);
+  }
+
+  .dc-page {
+    max-width: 640px;
+    margin: 2.5rem auto;
+    padding: 0 1rem;
+  }
+
+  /* Alerta informativa superior */
+  .dc-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: rgba(var(--brand-rgb), .06);
+    border: 1.5px solid rgba(var(--brand-rgb), .18);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 28px;
+  }
+  .dc-alert-icon {
+    width: 38px; height: 38px; flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(var(--brand-rgb), .12);
+    color: var(--brand);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    margin-top: 1px;
+  }
+  .dc-alert-text h4 {
+    font-size: .95rem; font-weight: 700;
+    color: #1e293b; margin: 0 0 4px;
+  }
+  .dc-alert-text p {
+    font-size: .84rem; color: #475569;
+    margin: 0; line-height: 1.5;
+  }
+  .dc-alert-text strong { color: var(--brand); }
+
+  /* Título */
+  .dc-title {
+    font-size: 1.25rem; font-weight: 800;
+    color: #1e293b; margin: 0 0 6px;
+  }
+  .dc-subtitle {
+    font-size: .875rem; color: #64748b;
+    margin: 0 0 28px;
+  }
+
+  /* Opciones */
+  .dc-options { display: flex; flex-direction: column; gap: 14px; }
+
+  .dc-option {
+    display: flex; align-items: flex-start; gap: 16px;
+    background: #fff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    cursor: pointer;
+    transition: border-color .18s, box-shadow .18s, transform .18s;
+    text-align: left;
+    width: 100%;
+  }
+  .dc-option:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+  }
+
+  /* Colores por tipo */
+  .dc-option-danger:hover  { border-color: #ef4444; }
+  .dc-option-keep:hover    { border-color: #10b981; }
+  .dc-option-rename:hover  { border-color: var(--brand); }
+
+  .dc-opt-icon {
+    width: 44px; height: 44px; flex-shrink: 0;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+  }
+  .icon-danger  { background: rgba(239,68,68,.1);  color: #dc2626; }
+  .icon-keep    { background: rgba(16,185,129,.1); color: #059669; }
+  .icon-rename  { background: rgba(var(--brand-rgb),.1); color: var(--brand); }
+
+  .dc-opt-body { flex: 1; }
+  .dc-opt-body h5 {
+    font-size: .95rem; font-weight: 700;
+    color: #1e293b; margin: 0 0 4px;
+  }
+  .dc-opt-body p {
+    font-size: .82rem; color: #64748b;
+    margin: 0; line-height: 1.5;
+  }
+
+  .dc-opt-arrow {
+    color: #cbd5e1; font-size: .8rem;
+    align-self: center; flex-shrink: 0;
+    transition: color .18s, transform .18s;
+  }
+  .dc-option:hover .dc-opt-arrow { color: #64748b; transform: translateX(3px); }
+
+  /* Panel de renombrar (oculto inicialmente) */
+  .dc-rename-panel {
+    display: none;
+    margin-top: 14px;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: .5rem;
+    border: 1px solid #e2e8f0;
+  }
+  .dc-rename-panel.open { display: block; }
+  .dc-rename-label {
+    font-size: .82rem; font-weight: 600;
+    color: #475569; margin-bottom: 8px; display: block;
+  }
+  .dc-rename-input {
+    width: 100%; padding: 9px 12px;
+    border: 1.5px solid #e2e8f0; border-radius: .5rem;
+    font-size: .9rem; color: #1e293b; background: #fff;
+    transition: border-color .18s, box-shadow .18s;
+    outline: none;
+  }
+  .dc-rename-input:focus {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(var(--brand-rgb), .14);
+  }
+  .dc-rename-actions {
+    display: flex; gap: 8px; margin-top: 10px;
+    justify-content: flex-end;
+  }
+  .dc-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 18px; border-radius: .5rem;
+    font-size: .84rem; font-weight: 600;
+    border: none; cursor: pointer; transition: all .18s;
+  }
+  .dc-btn-primary { background: var(--brand); color: #fff; }
+  .dc-btn-primary:hover { opacity: .88; }
+  .dc-btn-ghost { background: #f1f5f9; color: #475569; }
+  .dc-btn-ghost:hover { background: #e2e8f0; }
+</style>
+
+<div class="dc-page">
+
+  <!-- Aviso informativo -->
+  <div class="dc-alert">
+    <div class="dc-alert-icon">
+      <i class="fas fa-check-circle" aria-hidden="true"></i>
+    </div>
+    <div class="dc-alert-text">
+      <h4>Subcarpetas extraídas correctamente</h4>
+      <p>
+        Las subcarpetas de <strong>"{{ carpeta.nombre }}"</strong> ahora son carpetas principales.
+        La carpeta original ha quedado vacía. ¿Qué deseas hacer con ella?
+      </p>
+    </div>
+  </div>
+
+  <h2 class="dc-title">
+    <i class="fas fa-folder" style="color:#f59e0b; margin-right:8px;" aria-hidden="true"></i>
+    "{{ carpeta.nombre }}"
+  </h2>
+  <p class="dc-subtitle">Esta carpeta ya no contiene subcarpetas. Elige una acción:</p>
+
+  <div class="dc-options">
+
+    <!-- Opción 1: Eliminar -->
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="accion" value="eliminar">
+      <button type="button" class="dc-option dc-option-danger" id="btn-eliminar"
+              aria-label="Eliminar carpeta vacía">
+        <div class="dc-opt-icon icon-danger" aria-hidden="true">
+          <i class="fas fa-trash-alt"></i>
+        </div>
+        <div class="dc-opt-body">
+          <h5>Eliminar carpeta</h5>
+          <p>Elimina definitivamente la carpeta vacía. Esta acción no se puede deshacer.</p>
+        </div>
+        <i class="fas fa-chevron-right dc-opt-arrow" aria-hidden="true"></i>
+      </button>
+    </form>
+
+    <!-- Opción 2: Conservar -->
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="accion" value="conservar">
+      <button type="submit" class="dc-option dc-option-keep"
+              aria-label="Conservar carpeta vacía">
+        <div class="dc-opt-icon icon-keep" aria-hidden="true">
+          <i class="fas fa-folder-open"></i>
+        </div>
+        <div class="dc-opt-body">
+          <h5>Conservar carpeta vacía</h5>
+          <p>Mantén la carpeta tal como está. Puedes añadirle contenido más adelante.</p>
+        </div>
+        <i class="fas fa-chevron-right dc-opt-arrow" aria-hidden="true"></i>
+      </button>
+    </form>
+
+    <!-- Opción 3: Renombrar y conservar -->
+    <div>
+      <button type="button" class="dc-option dc-option-rename" id="btn-toggle-rename"
+              aria-expanded="false" aria-controls="rename-panel">
+        <div class="dc-opt-icon icon-rename" aria-hidden="true">
+          <i class="fas fa-pen"></i>
+        </div>
+        <div class="dc-opt-body">
+          <h5>Renombrar y conservar</h5>
+          <p>Cambia el nombre de la carpeta y mantenla disponible en SEVAC.</p>
+        </div>
+        <i class="fas fa-chevron-right dc-opt-arrow" aria-hidden="true"></i>
+      </button>
+
+      <!-- Panel de renombrar -->
+      <div class="dc-rename-panel" id="rename-panel" role="region" aria-label="Renombrar carpeta">
+        <form method="post" id="form-renombrar">
+          {% csrf_token %}
+          <input type="hidden" name="accion" value="renombrar">
+          <label class="dc-rename-label" for="nuevo-nombre">Nuevo nombre para la carpeta</label>
+          <input
+            type="text"
+            id="nuevo-nombre"
+            name="nuevo_nombre"
+            class="dc-rename-input"
+            placeholder="Escribe el nuevo nombre..."
+            value="{{ carpeta.nombre }}"
+            autocomplete="off"
+            required
+          >
+          <div class="dc-rename-actions">
+            <button type="button" class="dc-btn dc-btn-ghost" id="btn-cancelar-rename">
+              <i class="fas fa-times" aria-hidden="true"></i> Cancelar
+            </button>
+            <button type="submit" class="dc-btn dc-btn-primary">
+              <i class="fas fa-save" aria-hidden="true"></i> Guardar nombre
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scriptcontent %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+(function () {
+  /* ── Eliminar con confirmación ── */
+  const btnEliminar = document.getElementById('btn-eliminar');
+  if (btnEliminar) {
+    btnEliminar.addEventListener('click', function () {
+      Swal.fire({
+        title: '¿Eliminar carpeta?',
+        html: `<span style="color:#64748b;font-size:.9rem;">
+                 Se eliminará permanentemente la carpeta
+                 <strong>"{{ carpeta.nombre }}"</strong>.<br>
+                 Esta acción <strong>no se puede deshacer</strong>.
+               </span>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor:  '#64748b',
+        confirmButtonText:  'Sí, eliminar',
+        cancelButtonText:   'Cancelar',
+        focusCancel: true,
+        heightAuto: false,
+      }).then(result => {
+        if (result.isConfirmed) {
+          btnEliminar.closest('form').submit();
+        }
+      });
+    });
+  }
+
+  /* ── Toggle panel de renombrar ── */
+  const btnToggle  = document.getElementById('btn-toggle-rename');
+  const panel      = document.getElementById('rename-panel');
+  const btnCancel  = document.getElementById('btn-cancelar-rename');
+  const inputNombre = document.getElementById('nuevo-nombre');
+
+  if (btnToggle && panel) {
+    btnToggle.addEventListener('click', function () {
+      const isOpen = panel.classList.toggle('open');
+      btnToggle.setAttribute('aria-expanded', isOpen);
+      if (isOpen) {
+        inputNombre.focus();
+        inputNombre.select();
+      }
+    });
+  }
+
+  if (btnCancel && panel) {
+    btnCancel.addEventListener('click', function () {
+      panel.classList.remove('open');
+      btnToggle.setAttribute('aria-expanded', 'false');
+    });
+  }
+})();
+</script>
+{% endblock scriptcontent %}
