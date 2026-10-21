@@ -1027,7 +1027,7 @@ button {
           <!-- Contenido principal -->
           <div class="main-content">
             <div class="article-body">
-                <p class="article-lead">{{ articulo.contenido|safe }}</p>
+                <p class="article-lead">{{ contenido_html|safe }}</p>
                 {% if video_embed_url %}
                 <div class="video-container" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;">
                     <iframe src="{{ video_embed_url }}" 
