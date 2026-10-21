@@ -404,7 +404,9 @@
 
 <div class="contenedor-detalle-noticia custom-padding-top ">
     <div class="columna-izquierda">
+        {% if noticia.imagen %}
         <img src="{{ noticia.imagen.url }}" alt="Imagen de portada" class="imagen-noticia">
+        {% endif %}
         <span class="fecha-noticia">{{ noticia.fecha }}</span> <!-- Etiqueta de fecha -->
         <div class="informacion-noticia">
             <p class="autor-noticia">
