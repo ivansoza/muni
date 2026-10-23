@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import FileExtensionValidator
 import uuid
 
 class Categoria(models.Model):
@@ -78,6 +79,11 @@ class ConfiguracionServicio(models.Model):
 
     # Campo especifico para usar la plantilla v1 o v2
     usar_plantilla_v2 = models.BooleanField(default=True, help_text='')
+    plantilla_home_version = models.PositiveSmallIntegerField(
+        choices=[(1, 'Plantilla v1'), (2, 'Plantilla v2'), (3, 'Plantilla v3')],
+        default=2,
+        help_text='Selecciona la versión de plantilla para la página principal de servicios.',
+    )
 
     class Meta:
         verbose_name = "Configuración de servicio"
@@ -136,6 +142,18 @@ class QueSeRequiere(models.Model):
     
     class Meta:
         verbose_name_plural = "2. ¿Que se requiere?"
+
+class RequisitoAdjunto(models.Model):
+    requisito = models.ForeignKey(QueSeRequiere, on_delete=models.CASCADE, related_name='adjuntos')
+    archivo = models.FileField(
+        upload_to='requisitos/',
+        validators=[FileExtensionValidator(allowed_extensions=['pdf', 'jpg', 'jpeg', 'png', 'webp'])],
+    )
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = '2. ¿Que se requiere? Adjuntos'
+
 
 class RequisitosImagen(models.Model):
     servicio = models.OneToOneField(Servicio, on_delete=models.CASCADE)

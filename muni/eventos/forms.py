@@ -1,6 +1,31 @@
 from django import forms
-from .models import Articulo, Categoria, Autor
+from .models import Articulo, Categoria, Autor, ConfiguracionHabla, RecursoHabla, VideoArticulo, SeccionHistoria
 from django_ckeditor_5.widgets import CKEditor5Widget
+
+
+class ConfiguracionHablaForm(forms.ModelForm):
+    class Meta:
+        model = ConfiguracionHabla
+        fields = ['imagen_qr']
+
+
+class RecursoHablaForm(forms.ModelForm):
+    class Meta:
+        model = RecursoHabla
+        fields = ['titulo', 'archivo', 'activo']
+
+
+class SeccionHistoriaForm(forms.ModelForm):
+    class Meta:
+        model = SeccionHistoria
+        fields = ['rubro', 'titulo', 'icono', 'contenido', 'orden', 'activo']
+
+
+VideoFormSet = forms.inlineformset_factory(
+    Articulo, VideoArticulo,
+    fields=['titulo', 'tipo', 'url', 'archivo', 'orden'],
+    extra=1, can_delete=True,
+)
 
 class ArticuloForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):

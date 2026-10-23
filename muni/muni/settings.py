@@ -59,7 +59,8 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'django_ckeditor_5',
     'usuario',
-    'reportes'
+    'reportes',
+    'gaceta',
 
 
 ]
@@ -106,8 +107,6 @@ customColorPalette = [
         },
     ]
 
-CKEDITOR_5_CUSTOM_CSS = 'path_to.css' # optional
-CKEDITOR_5_FILE_STORAGE = "path_to_storage.CustomStorage" # optional
 CKEDITOR_5_CONFIGS = {
     'default': {
         'toolbar': {
@@ -208,6 +207,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
 ROOT_URLCONF = 'muni.urls'
 
 TEMPLATES = [
@@ -278,8 +279,7 @@ USE_TZ = True
 
 STATICFILES_DIRS = [BASE_DIR / "static"]  # Carpeta de archivos estáticos
 STATIC_ROOT = BASE_DIR / "staticfiles"  # Carpeta para archivos estáticos recolectados (opcional)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -295,5 +295,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'dashboard'   
 LOGOUT_REDIRECT_URL = 'home'
-
 

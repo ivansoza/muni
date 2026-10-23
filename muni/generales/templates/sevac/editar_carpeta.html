@@ -3,131 +3,397 @@
 
 {% block content %}
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.3.1/css/tom-select.bootstrap5.min.css" rel="stylesheet" />
 
-<div class="container-fluid">
-    <div class="card shadow-lg">
-        <div class="card-header">
-            <h2 class="mb-0">
-                ✏️ Editar Carpeta: {{ carpeta.nombre }}
-            </h2>
-        </div>
-    <div class="card-body">
+<style>
+  :root {
+    --brand: #3B5BDB;
+    --brand-light: #EEF2FF;
+    --radius-card: 16px;
+    --radius-input: 10px;
+    --shadow-card: 0 4px 24px rgba(59,91,219,0.08), 0 1px 4px rgba(0,0,0,0.06);
+  }
 
-    <form method="post">
-        {% csrf_token %}
-              <!-- CATEGORÍA + BOTÓN MODAL -->
-              {% if not form.fields.padre %}
-              <div class="form-group">
-                  <label for="{{ form.categoria.id_for_label }}">{{ form.categoria.label }}</label>
-                  <div class="input-group">
-                      {{ form.categoria }}
-                      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#crearCategoriaModal" style='color:white;'>
-                          <i class="fa-solid fa-circle-plus"></i>
-                      </button>
-                  </div>
-              </div>
-          {% endif %}
-      
-          <!-- NOMBRE -->
-          <div class="form-group">
-              <label for="{{ form.nombre.id_for_label }}">{{ form.nombre.label }}</label>
-              {{ form.nombre }}
-          </div>
-      
-          <!-- PADRE (si aplica) -->
-          {% if form.fields.padre %}
-              <div class="form-group">
-                  <label for="{{ form.padre.id_for_label }}">{{ form.padre.label }}</label>
-                  {{ form.padre }}
-              </div>
-          {% endif %}
-      
-          <!-- ESTATUS -->
-          <div class="form-group">
-              <label for="{{ form.estatus.id_for_label }}">{{ form.estatus.label }}</label>
-              {{ form.estatus }}
-          </div>
-      
-        <div class="form-group text-center">
+  .cf-wrapper {
+    max-width: 1020px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
 
-            <button type="submit" class="btn btn-primary btn-lg me-3">
-                💾 Guardar Cambios
+  .cf-header {
+    background: linear-gradient(135deg, var(--brand) 0%, #5C7CFA 100%);
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    padding: 2rem 2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .cf-header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+  }
+  .cf-header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: 30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .cf-header-icon {
+    width: 48px; height: 48px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    margin-bottom: 0.75rem;
+    position: relative; z-index: 1;
+  }
+  .cf-header h2 {
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0 0 0.25rem;
+    position: relative; z-index: 1;
+  }
+  .cf-header p {
+    color: rgba(255,255,255,0.75);
+    font-size: 0.875rem;
+    margin: 0;
+    position: relative; z-index: 1;
+  }
+
+  .cf-card {
+    background: #fff;
+    border-radius: 0 0 var(--radius-card) var(--radius-card);
+    box-shadow: var(--shadow-card);
+    padding: 2rem;
+    border: 1px solid #E8ECF4;
+    border-top: none;
+  }
+
+  .cf-field { margin-bottom: 1.25rem; }
+
+  .cf-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #4A5568;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.45rem;
+  }
+  .cf-label i { font-size: 14px; color: #748FFC; }
+
+  .cf-card .form-control,
+  .cf-card select.form-control {
+    border: 1.5px solid #E2E8F0;
+    border-radius: var(--radius-input);
+    padding: 0.6rem 0.875rem;
+    font-size: 0.9375rem;
+    color: #2D3748;
+    background: #FAFBFF;
+    transition: border-color 0.18s, box-shadow 0.18s;
+    width: 100%;
+  }
+  .cf-card .form-control:focus {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(59,91,219,0.12);
+    outline: none;
+    background: #fff;
+  }
+
+  .cf-input-group {
+    display: flex;
+    gap: 8px;
+  }
+  .cf-input-group .form-control { flex: 1; }
+
+  .btn-add-cat {
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-input);
+    padding: 0 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    white-space: nowrap;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-add-cat:hover { background: #2F4AC0; }
+  .btn-add-cat:active { transform: scale(0.97); }
+
+  /* Tom Select */
+  .ts-wrapper.single .ts-control {
+    border: 1.5px solid #E2E8F0 !important;
+    border-radius: var(--radius-input) !important;
+    padding: 0.6rem 0.875rem !important;
+    font-size: 0.9375rem;
+    color: #2D3748;
+    background: #FAFBFF !important;
+    box-shadow: none !important;
+    min-height: unset;
+  }
+  .ts-wrapper.single.focus .ts-control {
+    border-color: var(--brand) !important;
+    box-shadow: 0 0 0 3px rgba(59,91,219,0.12) !important;
+    background: #fff !important;
+  }
+  .ts-dropdown {
+    border: 1.5px solid #E2E8F0;
+    border-radius: var(--radius-input);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    margin-top: 4px;
+  }
+  .ts-dropdown .option.selected,
+  .ts-dropdown .option:hover {
+    background: var(--brand-light);
+    color: var(--brand);
+  }
+
+  .cf-hint {
+    font-size: 0.78rem;
+    color: #94A3B8;
+    margin-top: 0.3rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .cf-divider {
+    border: none;
+    border-top: 1.5px dashed #EDF2F7;
+    margin: 1.75rem 0;
+  }
+
+  .cf-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1.75rem;
+  }
+  .btn-save {
+    background: linear-gradient(135deg, var(--brand), #5C7CFA);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-input);
+    padding: 0.7rem 2rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 4px 12px rgba(59,91,219,0.3);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn-save:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(59,91,219,0.35);
+  }
+  .btn-save:active { transform: scale(0.98); }
+
+  .btn-cancel {
+    background: #F7FAFC;
+    color: #718096;
+    border: 1.5px solid #E2E8F0;
+    border-radius: var(--radius-input);
+    padding: 0.7rem 1.5rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-decoration: none;
+    display: flex; align-items: center; gap: 6px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn-cancel:hover { background: #EDF2F7; color: #4A5568; }
+
+  /* Modal */
+  .modal-content {
+    border: none;
+    border-radius: var(--radius-card);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  }
+  .modal-header {
+    background: linear-gradient(135deg, var(--brand), #5C7CFA);
+    color: #fff;
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    border: none;
+    padding: 1.25rem 1.5rem;
+  }
+  .modal-header .btn-close { filter: invert(1); }
+  .modal-title { font-weight: 600; font-size: 1rem; }
+  .modal-footer { border-top: 1px solid #EDF2F7; }
+  .btn-success {
+    background: var(--brand);
+    border-color: var(--brand);
+    border-radius: 8px;
+    font-weight: 500;
+  }
+  .btn-success:hover { background: #2F4AC0; border-color: #2F4AC0; }
+</style>
+
+<div class="cf-wrapper">
+  <div class="cf-header">
+    <div class="cf-header-icon">✏️</div>
+    <h2>Editar Carpeta</h2>
+    <p>{{ carpeta.nombre }}</p>
+  </div>
+
+  <div class="cf-card">
+    <form method="post" id="editar-carpeta-form">
+      {% csrf_token %}
+
+      <!-- CATEGORÍA + BOTÓN MODAL -->
+      {% if not form.fields.padre %}
+        <div class="cf-field">
+          <label class="cf-label" for="{{ form.categoria.id_for_label }}">
+            <i class="fa-solid fa-tag"></i> Categoría
+          </label>
+          <div class="cf-input-group">
+            {{ form.categoria }}
+            <button type="button" class="btn-add-cat" data-bs-toggle="modal" data-bs-target="#crearCategoriaModal">
+              <i class="fa-solid fa-plus"></i> Nueva
             </button>
-                    {% if carpeta.padre %}
-                        <a href="{% url 'gestionar_carpetas' carpeta_principal.id %}" class="btn btn-secondary btn-lg">
-                            ❌ Cancelar
-                        </a>
-                    {% else %}
-                        <a href="{% url 'listar_carpetas' %}" class="btn btn-secondary btn-lg">
-                            ❌ Cancelar
-                        </a>
-                    {% endif %}
- 
+          </div>
         </div>
-        
+      {% endif %}
+
+      <!-- NOMBRE -->
+      <div class="cf-field">
+        <label class="cf-label" for="{{ form.nombre.id_for_label }}">
+          <i class="fa-solid fa-folder"></i> Nombre de la carpeta
+        </label>
+        {{ form.nombre }}
+      </div>
+
+      <!-- PADRE (si aplica) -->
+      {% if form.fields.padre %}
+        <div class="cf-field">
+          <label class="cf-label" for="{{ form.padre.id_for_label }}">
+            <i class="fa-solid fa-sitemap"></i> Carpeta padre
+          </label>
+          {{ form.padre }}
+          <p class="cf-hint"><i class="fa-solid fa-circle-info"></i> Escribe para filtrar y encontrar rápido</p>
+        </div>
+      {% endif %}
+
+      <hr class="cf-divider">
+
+      <!-- ESTATUS -->
+      <div class="cf-field">
+        <label class="cf-label" for="{{ form.estatus.id_for_label }}">
+          <i class="fa-solid fa-toggle-on"></i> Estatus
+        </label>
+        {{ form.estatus }}
+      </div>
+
+      <div class="cf-actions">
+        <button type="submit" class="btn-save">
+          <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+        </button>
+        {% if carpeta.padre %}
+          <a href="{% url 'gestionar_carpetas' carpeta_principal.id %}" class="btn-cancel">
+            <i class="fa-solid fa-arrow-left"></i> Cancelar
+          </a>
+        {% else %}
+          <a href="{% url 'listar_carpetas' %}" class="btn-cancel">
+            <i class="fa-solid fa-arrow-left"></i> Cancelar
+          </a>
+        {% endif %}
+      </div>
     </form>
+  </div>
 </div>
 
-</div>
-
-</div>
 <!-- Modal: Crear nueva categoría -->
 <div class="modal fade" id="crearCategoriaModal" tabindex="-1" aria-labelledby="crearCategoriaModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <form id="form-nueva-categoria">
-          <div class="modal-header">
-            <h5 class="modal-title" id="crearCategoriaModalLabel">➕ Nueva Categoría</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-            <div class="form-group">
-              <label for="categoria-nombre">Nombre:</label>
-              <input type="text" class="form-control" id="categoria-nombre" name="nombre" required>
-              <div class="invalid-feedback">Este campo es obligatorio.</div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-success">Guardar</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          </div>
-        </form>
-      </div>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form id="form-nueva-categoria">
+        <div class="modal-header">
+          <h5 class="modal-title" id="crearCategoriaModalLabel">
+            <i class="fa-solid fa-circle-plus me-2"></i> Nueva Categoría
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+          <label class="cf-label mb-2" for="categoria-nombre">
+            <i class="fa-solid fa-tag"></i> Nombre
+          </label>
+          <input type="text" class="form-control" id="categoria-nombre" name="nombre"
+                 placeholder="Ej. Documentos legales" required
+                 style="border-radius:10px; border:1.5px solid #E2E8F0; padding:0.6rem 0.875rem;">
+          <div class="invalid-feedback">Este campo es obligatorio.</div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success px-4">
+            <i class="fa-solid fa-check me-1"></i> Guardar
+          </button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius:8px;">
+            Cancelar
+          </button>
+        </div>
+      </form>
     </div>
   </div>
-  <script>
-    document.getElementById('form-nueva-categoria').addEventListener('submit', function (e) {
-        e.preventDefault();
-        const nombre = document.getElementById('categoria-nombre').value.trim();
-    
-        if (!nombre) {
-            document.getElementById('categoria-nombre').classList.add('is-invalid');
-            return;
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.3.1/js/tom-select.complete.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Tom Select en todos los <select> del formulario
+    document.querySelectorAll('#editar-carpeta-form select').forEach(function (el) {
+      new TomSelect(el, {
+        placeholder: 'Escribe para buscar...',
+        allowEmptyOption: true,
+        maxOptions: null,
+        plugins: ['clear_button'],
+        render: {
+          no_results: function (data, escape) {
+            return '<div style="padding:10px;color:#94A3B8;font-size:0.875rem;">Sin resultados para "' + escape(data.input) + '"</div>';
+          }
         }
-    
-        fetch("{% url 'crear_categoria_ajax_sevac' %}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}',
-            },
-            body: JSON.stringify({ nombre: nombre })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.id) {
-                // Crear la opción nueva
-                const select = document.getElementById("id_categoria");
-                const option = new Option(data.nombre, data.id, true, true);
-                select.add(option);
-                // Cerrar modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('crearCategoriaModal'));
-                modal.hide();
-                document.getElementById('categoria-nombre').value = '';
-            } else {
-                alert("⚠️ Error al crear la categoría.");
-            }
-        });
+      });
     });
-    </script>
+  });
+
+  // AJAX: crear nueva categoría
+  document.getElementById('form-nueva-categoria').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const nombre = document.getElementById('categoria-nombre').value.trim();
+
+    if (!nombre) {
+      document.getElementById('categoria-nombre').classList.add('is-invalid');
+      return;
+    }
+
+    fetch("{% url 'crear_categoria_ajax_sevac' %}", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}',
+      },
+      body: JSON.stringify({ nombre: nombre })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.id) {
+        const select = document.getElementById("id_categoria");
+        const option = new Option(data.nombre, data.id, true, true);
+        select.add(option);
+        bootstrap.Modal.getInstance(document.getElementById('crearCategoriaModal')).hide();
+        document.getElementById('categoria-nombre').value = '';
+      } else {
+        alert("⚠️ Error al crear la categoría.");
+      }
+    });
+  });
+</script>
+
 {% endblock %}

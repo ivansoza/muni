@@ -25,6 +25,9 @@
                 <div class="form-group mb-3">
                     <label for="id_nombre">Nombre</label>
                     {{ form.nombre }}
+                    {% if form.nombre.errors %}
+                        <div class="text-danger small">{{ form.nombre.errors }}</div>
+                    {% endif %}
                 </div>
 
                 <div class="form-group mb-3">

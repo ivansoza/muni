@@ -1,6 +1,6 @@
 from django import forms
 
-from servicios.models import ComoLoRealizo, CuantoCuesta, EnQueConsiste, QueSeRequiere, RequisitosImagen, Servicio
+from servicios.models import ComoLoRealizo, CuantoCuesta, EnQueConsiste, QueSeRequiere, RequisitoAdjunto, RequisitosImagen, Servicio
 
 class ServicioForm(forms.ModelForm):
     class Meta:
@@ -23,6 +23,11 @@ class EnQueConsisteForm(forms.ModelForm):
         fields = ['tramite', 'canal_presentacion', 'solicitado_por', 'momento_solicitud']
 
 class QueSeRequiereForm(forms.ModelForm):
+    def __init__(self, *args, hide_archivo=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        if hide_archivo:
+            self.fields.pop('archivo_descarga')
+
     class Meta:
         model = QueSeRequiere
         exclude = ['servicio']  
@@ -30,6 +35,12 @@ class QueSeRequiereForm(forms.ModelForm):
             'especificaciones': forms.Textarea(attrs={'rows': 3}),
             'tipo_documento': forms.Textarea(attrs={'rows': 3})
         }
+
+class RequisitoAdjuntoForm(forms.ModelForm):
+    class Meta:
+        model = RequisitoAdjunto
+        fields = ['archivo']
+
 
 class RequisitosImagenForm(forms.ModelForm):
     class Meta:

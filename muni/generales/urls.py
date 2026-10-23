@@ -1,12 +1,14 @@
 from django.urls import path, include
 
-from .views import AvisoDePrivacidadCreateView, AvisoDePrivacidadUpdateView, CrearCategoriaView, CrearSeccionPlusView, CustomLoginView, DashboardView, EditarRequisitoView, DetailMunicipioView, EditarSeccionPlusView, EliminarRequisitoView, EliminarSeccionPlusView, EnQueConsisteView, EncuestaDetailView, EncuestasView, GeneralesDashboardView, GestionarServicioView, GroupCreateView, GroupUpdateView, GruposView, NewsView, PersonalizacionView, PrivacidadView, ReportesView, RequisitosImagenView, RequisitosView, SeccionPlusDetailView, SeccionesNuevasView, SeccionesUpdateView, SeccionesView, ServicioCreateView, ServicioUpdateView,SocialMediaView,ServicesView, UsuarioCreateView, UsuarioEditView, UsuarioEditView, UsuarioPasswordChangeView, UsuariosView, VideoCreateView, VideoUpdateView, VideoView, VideosView, actualizar_video, crear_dependencia_ajax, create_social_network, custom_upload_function, agregar_categoria, delete_group, delete_social_network, editar_convocatoria, elemento_api, eliminar_noticia, editar_noticia, informacion_ciudad_api, list_social_networks, toggle_favorite, toggle_user_status, video_delete
+from .views import AvisoDePrivacidadCreateView, AvisoDePrivacidadUpdateView, AgregarAdjuntoView, CrearCategoriaView, CrearSeccionPlusView, CustomLoginView, DashboardView, EditarRequisitoView, DetailMunicipioView, EditarSeccionPlusView, EliminarAdjuntoView, EliminarRequisitoView, EliminarSeccionPlusView, EnQueConsisteView, EncuestaDetailView, EncuestasView, GeneralesDashboardView, GestionarServicioView, GroupCreateView, GroupUpdateView, GruposView, HomeNormatividad, NewsView, NormatividadSeccionCreateView, NormatividadSeccionUpdateView, NormatividadView, PersonalizacionView, PrivacidadView, ReportesView, RequisitosImagenView, RequisitosView, SeccionPlusDetailView, SeccionesNuevasView, SeccionesUpdateView, SeccionesView, ServicioCreateView, ServicioUpdateView,SocialMediaView,ServicesView, UsuarioCreateView, UsuarioEditView, UsuarioEditView, UsuarioPasswordChangeView, UsuariosView, VideoCreateView, VideoUpdateView, VideoView, VideosView, actualizar_video, crear_dependencia_ajax, create_social_network, custom_upload_function, agregar_categoria, delete_group, delete_social_network, editar_convocatoria, elemento_api, eliminar_noticia, editar_noticia, informacion_ciudad_api, list_social_networks, toggle_favorite, toggle_user_status, video_delete
 from django.contrib.auth.views import LogoutView
 from .views import TransparenciaView, crear_seccion, EjercicioFiscalListView, EjercicioFiscalCreateView, DocumentoTransparenciaListView, registrar_documento, SeccionTransparenciaUpdateView, eliminar_seccion, EjercicioFiscalUpdateView, eliminar_ejercicio_fiscal, DocumentoTransparenciaUpdateView, eliminar_documento_transparencia
 from . import views
 from .views import CrearCarpetaView, SubirArchivoView, ListarCarpetasView, EditarCarpetaView, GestionarCarpetaView, EliminarCarpetaView, EditarArchivoView, eliminar_archivo
 from .views import ListaObligacionesView, ListaObligacionesCreateView, ListaObligacionesUpdateView, ListaObligacionesDeleteView, GestionarArticulosView, CrearArticuloView, EditarArticuloView, EliminarArticuloView, actualizar_orden_articulos, convocatoriaHome, filtrar_convocatorias, GestionarArticulosArView, CrearArticuloLigaView, EditarArticuloLigaArchivoView, ArticuloUpdateView
-from .views import crear_noticia, HablaHome, ArticuloCreateView, eliminar_articulo
+from .views import crear_noticia, HablaHome, ArticuloCreateView, eliminar_articulo, QRHablaAdminView, RecursoHablaListView, RecursoHablaCreateView, RecursoHablaUpdateView, recurso_habla_eliminar, recurso_habla_toggle
+from .views import SesionesCabildoAdminView, SesionCabildoCreateView, SesionCabildoUpdateView
+from .views import GacetaAdminView, GacetaCreateView, GacetaUpdateView, eliminar_edicion_gaceta
 
 urlpatterns = [
     path("", CustomLoginView.as_view(),name='login'),
@@ -42,6 +44,8 @@ urlpatterns = [
     path('servicios/<uuid:servicio_id>/requisitos/', RequisitosView.as_view(), name='gestionar_requisitos'),
     path('servicio/<uuid:servicio_id>/requisitos/<int:requisito_id>/editar/', EditarRequisitoView.as_view(), name='editar_requisito'),
     path('servicio/<uuid:servicio_id>/requisitos/<int:requisito_id>/eliminar/', EliminarRequisitoView.as_view(), name='eliminar_requisito'),
+    path('servicio/<uuid:servicio_id>/requisitos/<int:requisito_id>/adjunto/agregar/', AgregarAdjuntoView.as_view(), name='agregar_adjunto'),
+    path('servicio/<uuid:servicio_id>/adjunto/<int:adjunto_id>/eliminar/', EliminarAdjuntoView.as_view(), name='eliminar_adjunto'),
     path('servicio/<uuid:servicio_id>/requisitos-imagen/', RequisitosImagenView.as_view(), name='gestionar_requisitos_imagen'),
     path('servicios/<uuid:servicio_id>/realizo/', views.RealizoView.as_view(), name='gestionar_realizo'),
     path('servicios/<uuid:servicio_id>/realizo/<int:paso_id>/', views.RealizoView.as_view(), name='editar_realizo'),  
@@ -177,13 +181,46 @@ urlpatterns = [
 
 #----------------------- Habla con tus hijos ------------------------------
     path('habla_home/', HablaHome.as_view(), name='habla_home'),
+    path('habla_home/qr/', QRHablaAdminView.as_view(), name='qr_habla_admin'),
+    path('habla_home/recursos/', RecursoHablaListView.as_view(), name='recursos_habla_lista'),
+    path('habla_home/recursos/nuevo/', RecursoHablaCreateView.as_view(), name='recurso_habla_crear'),
+    path('habla_home/recursos/<int:pk>/editar/', RecursoHablaUpdateView.as_view(), name='recurso_habla_editar'),
+    path('habla_home/recursos/<int:pk>/eliminar/', recurso_habla_eliminar, name='recurso_habla_eliminar'),
+    path('habla_home/recursos/<int:pk>/toggle/', recurso_habla_toggle, name='recurso_habla_toggle'),
     path('registro_articulo/', ArticuloCreateView.as_view(), name='registro_articulo'),
     path('agregar_categoria_habla/', views.agregar_categoria_habla, name='agregar_categoria_habla'),
     path('agregar_autor/', views.agregar_autor, name='agregar_autor'),
     path('articulo_editar/<int:pk>/', ArticuloUpdateView.as_view(), name='articulo_editar'),
 
     path('articulo_eliminar/<int:pk>/', eliminar_articulo, name='eliminar_articulo'),
+    path('generales/normatividad/', NormatividadView.as_view(), name='NormatividadView'),
 
+    path(
+        'generales/normatividad/nuevo/',
+        NormatividadSeccionCreateView.as_view(),
+        name='crear_normatividad_seccion'
+    ),
+    path(
+        'normatividad/<int:pk>/editar/',
+        NormatividadSeccionUpdateView.as_view(),
+        name='editar_normatividad_seccion'
+    ),
+    path('normatividad/<int:pk>/eliminar/', views.eliminar_normatividad_seccion, name='eliminar_normatividad_seccion'),
 
+    # ─── Sesiones de Cabildo ───────────────────────────────────────────────
+    path('generales/sesiones-cabildo/', SesionesCabildoAdminView.as_view(), name='SesionesCabildoAdminView'),
+    path('generales/sesiones-cabildo/crear/', SesionCabildoCreateView.as_view(), name='crear_sesion_cabildo'),
+    path('generales/sesiones-cabildo/<int:pk>/editar/', SesionCabildoUpdateView.as_view(), name='editar_sesion_cabildo'),
+    path('generales/sesiones-cabildo/<int:pk>/eliminar/', views.eliminar_sesion_cabildo, name='eliminar_sesion_cabildo'),
+    # ─── Gaceta Municipal ──────────────────────────────────────────────────────
+    path('generales/gaceta/', GacetaAdminView.as_view(), name='GacetaAdminView'),
+    path('generales/gaceta/nueva/', GacetaCreateView.as_view(), name='crear_edicion_gaceta'),
+    path('generales/gaceta/<int:pk>/editar/', GacetaUpdateView.as_view(), name='editar_edicion_gaceta'),
+    path('generales/gaceta/<int:pk>/eliminar/', eliminar_edicion_gaceta, name='eliminar_edicion_gaceta'),
 
+    path('admin-historia/',               views.historia_seccion_lista,    name='historia_seccion_lista'),
+    path('admin-historia/nueva/',         views.historia_seccion_crear,    name='historia_seccion_crear'),
+    path('admin-historia/<int:pk>/editar/',    views.historia_seccion_editar,   name='historia_seccion_editar'),
+    path('admin-historia/<int:pk>/toggle/',    views.historia_seccion_toggle,   name='historia_seccion_toggle'),
+    path('admin-historia/<int:pk>/eliminar/',  views.historia_seccion_eliminar, name='historia_seccion_eliminar'),
 ]

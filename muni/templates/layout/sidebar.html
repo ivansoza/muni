@@ -142,7 +142,7 @@
                 <a class="sidebar-link sidebar-title" href="{% url 'noticias_view' %}">
                   <i class="fa fa-newspaper-o stroke-icon"></i>
                   <i class="fa fa-newspaper-o fill-icon"></i>
-                  <span>Prensa</span>
+                  <span>Noticias</span>
                 </a>
               </li>
             {% else %}
@@ -150,7 +150,7 @@
                 <div class="sidebar-link sidebar-title desactivar">
                   <i class="fa fa-newspaper-o stroke-icon"></i>
                   <i class="fa fa-newspaper-o fill-icon"></i>
-                  <span>Prensa</span>
+                  <span>Noticias</span>
                 </div>
               </li>
             {% endif %}
@@ -268,6 +268,22 @@
                           </div>
                         </li>
                       {% endif %}
+
+            {% if is_superuser or 'gaceta.view_ediciongaceta' in user_permissions %}
+              <li class="sidebar-list {% if sidebar == 'gaceta' %}active{% endif %}">
+                <a class="sidebar-link sidebar-title" href="{% url 'GacetaAdminView' %}">
+                  <i class="fa fa-newspaper" style="color:white;"></i>
+                  <span>Gaceta Municipal</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="sidebar-list">
+                <div class="sidebar-link sidebar-title desactivar">
+                  <i class="fa fa-newspaper" style="color:white;"></i>
+                  <span>Gaceta Municipal</span>
+                </div>
+              </li>
+            {% endif %}
 
             <!-- Enlace Generales (solo para superuser) -->
             {% if is_superuser or 'transparencia.view_secciontransparencia' in user_permissions %}

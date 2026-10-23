@@ -1,0 +1,596 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+<style>
+/* ══════════════════════════════════════
+   GACETA MUNICIPAL — Página pública
+══════════════════════════════════════ */
+
+.gm-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 36px 20px 64px;
+}
+
+/* ── Encabezado discreto (estilo gobierno) ── */
+.gm-page-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 8px;
+}
+
+.gm-page-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(var(--color-primario-rgb), .3);
+}
+
+.gm-page-title {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(to right, var(--color-primario), var(--color-secundario));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 4px;
+  line-height: 1.15;
+}
+
+.gm-page-subtitle {
+  font-size: .95rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Línea decorativa bajo el encabezado */
+.gm-divider {
+  width: 100%;
+  height: 1px;
+  background: #e2e8f0;
+  margin: 20px 0 28px;
+  position: relative;
+}
+.gm-divider::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0;
+  width: 64px; height: 3px;
+  background: linear-gradient(to right, var(--color-primario), var(--color-secundario));
+  border-radius: 2px;
+  margin-top: -1px;
+}
+
+/* ── Panel de filtros ── */
+.gm-filters {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: #fff;
+  border: 1px solid #e8edf3;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.05);
+  margin-bottom: 28px;
+  overflow: hidden;
+}
+
+/* Búsqueda */
+.gm-search-icon {
+  padding: 0 12px 0 18px;
+  color: #94a3b8;
+  font-size: .95rem;
+  flex-shrink: 0;
+}
+.gm-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 14px 0;
+  font-size: .92rem;
+  color: #1e293b;
+  background: transparent;
+  min-width: 0;
+}
+.gm-search-input::placeholder { color: #cbd5e1; }
+
+.gm-search-clear {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px; height: 28px;
+  border: none;
+  background: #f1f5f9;
+  border-radius: 50%;
+  color: #64748b;
+  font-size: .75rem;
+  cursor: pointer;
+  transition: all .18s;
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+.gm-search-clear:hover { background: #e2e8f0; color: #1e293b; }
+.gm-search-clear.visible { display: flex; }
+
+/* Divisor vertical */
+.gm-vdiv {
+  width: 1px;
+  height: 28px;
+  background: #e8edf3;
+  flex-shrink: 0;
+  margin: 0 2px;
+}
+
+/* Select de año */
+.gm-year-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.gm-year-wrap i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-primario);
+  font-size: .8rem;
+  pointer-events: none;
+}
+.gm-year-select {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 14px 36px 14px 34px;
+  font-size: .88rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.gm-year-select:focus { color: var(--color-primario); }
+
+/* Flecha del select */
+.gm-year-arrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: .7rem;
+  pointer-events: none;
+}
+
+/* Contador */
+.gm-count {
+  font-size: .8rem;
+  color: #94a3b8;
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 0 18px 0 10px;
+}
+.gm-count strong { color: var(--color-primario); font-weight: 700; }
+
+/* ── Grid de tarjetas ── */
+.gm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 22px;
+}
+
+/* ── Tarjeta ── */
+.gm-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e8edf3;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform .22s, box-shadow .22s;
+  position: relative;
+}
+.gm-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 36px rgba(var(--color-primario-rgb), .14);
+}
+
+/* Franja superior de color */
+.gm-card-stripe {
+  height: 5px;
+  background: linear-gradient(to right, var(--color-primario), var(--color-secundario));
+  flex-shrink: 0;
+}
+
+/* Imagen / placeholder */
+.gm-card-cover {
+  height: 175px;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--color-primario-rgb), .07),
+    rgba(var(--color-primario-rgb), .16)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.gm-card-cover img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform .4s;
+}
+.gm-card:hover .gm-card-cover img { transform: scale(1.04); }
+
+.gm-cover-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--color-primario);
+  height: 100%; width: 100%;
+}
+.gm-cover-placeholder i    { font-size: 2.8rem; opacity: .4; }
+.gm-cover-placeholder span {
+  font-size: .68rem; opacity: .55;
+  font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+}
+
+/* Badge de año sobre la imagen */
+.gm-year-badge {
+  position: absolute;
+  top: 10px; left: 10px;
+  background: rgba(0,0,0,.5);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+}
+
+/* Cuerpo */
+.gm-card-body {
+  padding: 16px 18px 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.gm-card-num {
+  font-size: .68rem;
+  font-weight: 700;
+  color: var(--color-primario);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 5px;
+}
+.gm-card-title {
+  font-size: .94rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.gm-card-desc {
+  font-size: .8rem;
+  color: #64748b;
+  line-height: 1.55;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.gm-card-date {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: .74rem;
+  color: #94a3b8;
+}
+.gm-card-date i { color: var(--color-primario); font-size: .7rem; }
+
+/* Footer de botones */
+.gm-card-footer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #f1f5f9;
+  background: #fafbfc;
+}
+.gm-btn-dl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+  color: #fff;
+  border-radius: 7px;
+  font-size: .82rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: opacity .18s;
+}
+.gm-btn-dl:hover { opacity: .88; color: #fff; }
+
+.gm-btn-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 12px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 7px;
+  color: #64748b;
+  font-size: .82rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all .18s;
+}
+.gm-btn-view:hover {
+  border-color: var(--color-primario);
+  color: var(--color-primario);
+  background: rgba(var(--color-primario-rgb), .04);
+}
+
+/* ── Sin resultados de filtro ── */
+.gm-no-filter {
+  grid-column: 1/-1;
+  text-align: center;
+  padding: 48px 20px;
+  color: #94a3b8;
+  display: none;
+  font-size: .9rem;
+}
+.gm-no-filter i {
+  display: block;
+  font-size: 2.2rem;
+  margin-bottom: 12px;
+  opacity: .35;
+}
+
+/* ── Sin ediciones ── */
+.gm-empty {
+  text-align: center;
+  padding: 72px 20px;
+  color: #94a3b8;
+}
+.gm-empty i   { font-size: 3.5rem; display: block; margin-bottom: 16px; opacity: .3; }
+.gm-empty h3  { font-size: 1.15rem; font-weight: 700; color: #475569; margin-bottom: 8px; }
+.gm-empty p   { font-size: .9rem; }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .gm-page-title { font-size: 1.5rem; }
+  .gm-grid { grid-template-columns: 1fr; }
+  .gm-wrap { padding: 20px 14px 48px; }
+  .gm-search-input { font-size: .85rem; }
+  .gm-count { display: none; }
+}
+</style>
+
+<div class="gm-wrap">
+
+  <!-- ══ ENCABEZADO DISCRETO ══ -->
+  <div class="gm-page-header">
+    <div class="gm-page-icon" aria-hidden="true">
+      <i class="fas fa-newspaper"></i>
+    </div>
+    <div>
+      <h1 class="gm-page-title">Gaceta Municipal</h1>
+      <p class="gm-page-subtitle">Publicación oficial del Ayuntamiento — consulta y descarga las ediciones</p>
+    </div>
+  </div>
+
+  <div class="gm-divider"></div>
+
+  {% if ediciones %}
+
+    <!-- ══ PANEL DE FILTROS ══ -->
+    <div class="gm-filters" role="search" aria-label="Filtros de búsqueda">
+
+      <!-- Ícono lupa -->
+      <span class="gm-search-icon" aria-hidden="true">
+        <i class="fas fa-search"></i>
+      </span>
+
+      <!-- Campo de texto -->
+      <input
+        type="search"
+        id="gm-search"
+        class="gm-search-input"
+        placeholder="Buscar por título o número..."
+        autocomplete="off"
+        aria-label="Buscar edición de gaceta"
+      >
+
+      <!-- Botón limpiar búsqueda -->
+      <button class="gm-search-clear" id="gm-search-clear" aria-label="Limpiar búsqueda" title="Limpiar">
+        <i class="fas fa-times" aria-hidden="true"></i>
+      </button>
+
+      <!-- Divisor -->
+      <div class="gm-vdiv" aria-hidden="true"></div>
+
+      <!-- Select de año -->
+      <div class="gm-year-wrap">
+        <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+        <select id="gm-year-select" class="gm-year-select" aria-label="Filtrar por año">
+          <option value="all">Todos los años</option>
+          {% for anio in anios_disponibles %}
+          <option value="{{ anio }}">{{ anio }}</option>
+          {% endfor %}
+        </select>
+        <i class="fas fa-chevron-down gm-year-arrow" aria-hidden="true"></i>
+      </div>
+
+      <!-- Divisor -->
+      <div class="gm-vdiv" aria-hidden="true"></div>
+
+      <!-- Contador -->
+      <span class="gm-count" id="gm-count" aria-live="polite">
+        <strong>{{ total }}</strong> edición{% if total != 1 %}es{% endif %}
+      </span>
+
+    </div>
+
+    <!-- ══ GRID ══ -->
+    <div class="gm-grid" id="gm-grid" role="list">
+
+      {% for edicion in ediciones %}
+      <article
+        class="gm-card"
+        role="listitem"
+        data-year="{{ edicion.anio }}"
+        data-title="{{ edicion.titulo|lower }}"
+        data-num="{{ edicion.numero|lower }}"
+        aria-label="Edición No. {{ edicion.numero }}: {{ edicion.titulo }}"
+      >
+        <div class="gm-card-stripe" aria-hidden="true"></div>
+
+        <div class="gm-card-cover">
+          {% if edicion.portada %}
+            <img src="{{ edicion.portada.url }}" alt="Portada de {{ edicion.titulo }}" loading="lazy">
+          {% else %}
+            <div class="gm-cover-placeholder" aria-hidden="true">
+              <i class="fas fa-file-pdf"></i>
+              <span>Gaceta Municipal</span>
+            </div>
+          {% endif %}
+          <span class="gm-year-badge" aria-label="Año {{ edicion.anio }}">{{ edicion.anio }}</span>
+        </div>
+
+        <div class="gm-card-body">
+          <div class="gm-card-num">No. {{ edicion.numero }}</div>
+          <h2 class="gm-card-title" title="{{ edicion.titulo }}">{{ edicion.titulo }}</h2>
+          {% if edicion.descripcion %}
+            <p class="gm-card-desc">{{ edicion.descripcion }}</p>
+          {% else %}
+            <p class="gm-card-desc" style="font-style:italic;opacity:.55;">Sin descripción.</p>
+          {% endif %}
+          <div class="gm-card-date">
+            <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+            <time datetime="{{ edicion.fecha_publicacion|date:'Y-m-d' }}">
+              {{ edicion.fecha_publicacion|date:"d/m/Y" }}
+            </time>
+          </div>
+        </div>
+
+        <footer class="gm-card-footer">
+          <a href="{{ edicion.archivo.url }}"
+             download
+             class="gm-btn-dl"
+             aria-label="Descargar PDF: {{ edicion.titulo }}">
+            <i class="fas fa-download" aria-hidden="true"></i>
+            Descargar PDF
+          </a>
+          <a href="{{ edicion.archivo.url }}"
+             target="_blank"
+             rel="noopener noreferrer"
+             class="gm-btn-view"
+             aria-label="Ver en el navegador: {{ edicion.titulo }}">
+            <i class="fas fa-eye" aria-hidden="true"></i>
+            Ver
+          </a>
+        </footer>
+      </article>
+      {% endfor %}
+
+      <div class="gm-no-filter" id="gm-no-filter" role="status" aria-live="polite">
+        <i class="fas fa-calendar-xmark" aria-hidden="true"></i>
+        No hay ediciones publicadas para ese año.
+      </div>
+
+    </div>
+
+  {% else %}
+    <div class="gm-empty" role="status">
+      <i class="fas fa-newspaper" aria-hidden="true"></i>
+      <h3>Sin publicaciones disponibles</h3>
+      <p>Aún no se han publicado ediciones de la gaceta municipal.</p>
+    </div>
+  {% endif %}
+
+</div>
+
+<script>
+(function () {
+  const cards    = document.querySelectorAll('.gm-card');
+  const noFilt   = document.getElementById('gm-no-filter');
+  const countEl  = document.getElementById('gm-count');
+  const searchEl = document.getElementById('gm-search');
+  const clearBtn = document.getElementById('gm-search-clear');
+  const yearSel  = document.getElementById('gm-year-select');
+
+  if (!cards.length) return;
+
+  let activeYear = 'all';
+  let searchTerm = '';
+
+  function applyFilters() {
+    let visible = 0;
+    cards.forEach(card => {
+      const matchYear = activeYear === 'all' || card.dataset.year === activeYear;
+      const matchText = !searchTerm
+        || card.dataset.title.includes(searchTerm)
+        || card.dataset.num.includes(searchTerm);
+      const show = matchYear && matchText;
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    if (noFilt)  noFilt.style.display = visible === 0 ? 'block' : 'none';
+    if (countEl) countEl.innerHTML =
+      '<strong>' + visible + '</strong> edición' + (visible !== 1 ? 'es' : '');
+  }
+
+  /* Select de año */
+  if (yearSel) {
+    yearSel.addEventListener('change', function () {
+      activeYear = this.value;
+      applyFilters();
+    });
+  }
+
+  /* Búsqueda por texto */
+  if (searchEl) {
+    searchEl.addEventListener('input', function () {
+      searchTerm = this.value.trim().toLowerCase();
+      clearBtn && (searchTerm
+        ? clearBtn.classList.add('visible')
+        : clearBtn.classList.remove('visible'));
+      applyFilters();
+    });
+  }
+
+  /* Limpiar búsqueda */
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function () {
+      searchEl.value = '';
+      searchTerm = '';
+      clearBtn.classList.remove('visible');
+      searchEl.focus();
+      applyFilters();
+    });
+  }
+})();
+</script>
+
+{% endblock %}
