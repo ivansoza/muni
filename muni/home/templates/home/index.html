@@ -611,6 +611,7 @@
         {% include "home/components/herosection/hero1.html" %}
     {% endif %}
 
+    {% include "home/components/servicios/nuestros_servicios_pagos.html" %}
 
 {% if municipio.cortina %}
                         {% if municipio.cortina.informacion_municipio == "info1" %}
@@ -746,6 +747,7 @@
                                 {% include "home/components/informacion/alcalde.html" %}
                             {% endif %}
 
+
                         {% endif %}
                     {% endif %}
                 {% endfor %}
@@ -829,6 +831,24 @@
 
                 {% include "home/components/nuestras_redes.html" %}
                 {% include "home/components/nuestros_contactos.html" %}
+
+                    {% if municipio.cortina %}
+                        {% if municipio.cortina.informacion_municipio == "info1" %}
+                            {% include "home/components/informacion/alcalde.html" %}
+                        {% elif municipio.cortina.informacion_municipio == "info2" %}
+                            {% include "home/components/informacion/alcalde2.html" %}
+                        {% elif municipio.cortina.informacion_municipio == "info3" %}
+                            {% include "home/components/informacion/alcalde3.html" %}
+                        {% elif municipio.cortina.informacion_municipio == "info4" %}
+                            {% include "home/components/informacion/alcalde4.html" %}
+                        {% elif municipio.cortina.informacion_municipio == "sininfo" %}
+                        {% else %}
+                            {% include "home/components/informacion/alcalde.html" %}
+                        {% endif %}
+                    {% else %}
+                        {% include "home/components/informacion/alcalde.html" %}
+                    {% endif %}
+
 
                     
             
